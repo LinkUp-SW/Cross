@@ -11,6 +11,7 @@ class AppThemes {
     fontFamily: 'Open Sans',
     useMaterial3: true,
     brightness: Brightness.light,
+    scaffoldBackgroundColor: AppColors.lightBackground,
     colorScheme: const ColorScheme.light(
       surface: AppColors.lightBackground,
       primary: AppColors.lightMain,
@@ -20,7 +21,9 @@ class AppThemes {
   );
 
   static ThemeData darkTheme = ThemeData(
+    fontFamily: 'Open Sans',
     useMaterial3: true,
+    scaffoldBackgroundColor: AppColors.darkBackground,
     colorScheme: const ColorScheme.dark(
       surface: AppColors.darkBackground,
       primary: AppColors.darkMain,
