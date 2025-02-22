@@ -51,7 +51,7 @@ class LinkUpButtonStyles {
         RoundedRectangleBorder(
           borderRadius: borderRadius,
           side: BorderSide(
-            color: AppColors.lightBlue,
+            color: AppColors.darkBlue,
             width: 1.w,
           ),
         ),
