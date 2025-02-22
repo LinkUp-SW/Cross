@@ -1,1 +1,0 @@
-// Pathes of images inside the program

@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/routes/app_routes.dart';
 import 'package:link_up/shared/themes/app_themes.dart';
-import 'package:link_up/shared/themes/button_styles.dart';
-import 'package:skeletonizer/skeletonizer.dart';
+
+import 'shared/themes/theme_provider.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -15,28 +15,31 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ScreenUtilInit(
-        designSize: const Size(360, 690),
-        minTextAdapt: true,
-        builder: (context, child) {
-          final goRouter = ref.watch(goRouterProvider);
-          return GestureDetector(
-            onTap: () {
-              final currentFocus = FocusManager.instance.primaryFocus;
-              if (currentFocus != null) {
-                currentFocus.unfocus();
-              }
-            },
-            child: MaterialApp.router(
-              debugShowCheckedModeBanner: false,
-              routerConfig: goRouter,
-              title: 'LinkUp',
-              theme: AppThemes.lightTheme,
-              darkTheme: AppThemes.darkTheme,
-              themeMode: ThemeMode.system,
-            ),
-          );
-        });
+    return SafeArea(
+      child: ScreenUtilInit(
+          designSize: const Size(360, 690),
+          minTextAdapt: true,
+          builder: (context, child) {
+            final goRouter = ref.watch(goRouterProvider);
+            final theme = ref.watch(themeNotifierProvider);
+            return GestureDetector(
+              onTap: () {
+                final currentFocus = FocusManager.instance.primaryFocus;
+                if (currentFocus != null) {
+                  currentFocus.unfocus();
+                }
+              },
+              child: MaterialApp.router(
+                debugShowCheckedModeBanner: false,
+                routerConfig: goRouter,
+                title: 'LinkUp',
+                theme: AppThemes.lightTheme,
+                darkTheme: AppThemes.darkTheme,
+                themeMode: theme,
+              ),
+            );
+          }),
+    );
   }
 }
 

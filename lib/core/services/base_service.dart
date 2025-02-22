@@ -27,10 +27,39 @@ class BaseService {
     return response;
   }
 
+  Future<Response> put(String endpoint, Map<String, dynamic> body) async {
+    final token = await getToken();
+    final uri = Uri.parse('${ExternalEndPoints.baseUrl}$endpoint');
+    final response = await http
+        .put(
+          uri,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token'
+          },
+          body: jsonEncode(body),
+        )
+        .timeout(const Duration(seconds: 10));
+    return response;
+  }
+
   Future<Response> get(String endpoint) async {
     final token = await getToken();
     final uri = Uri.parse('${ExternalEndPoints.baseUrl}$endpoint');
     final response = await http.get(
+      uri,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token'
+      },
+    ).timeout(const Duration(seconds: 10));
+    return response;
+  }
+  
+  Future<Response> delete(String endpoint) async {
+    final token = await getToken();
+    final uri = Uri.parse('${ExternalEndPoints.baseUrl}$endpoint');
+    final response = await http.delete(
       uri,
       headers: {
         'Content-Type': 'application/json',

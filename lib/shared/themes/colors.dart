@@ -23,6 +23,7 @@ class AppColors {
   static const Color lightGreen = Color(0xff01754f);
   static const Color lightBlue = Color(0xff0a66c2);
   static const Color lightTextColor = Colors.black;
+  static const Color lightSecondaryText = Color(0xff616161);
 
 
   // Dark theme main colors  
@@ -31,5 +32,6 @@ class AppColors {
   static const Color darkGreen = Color(0xff37c898);
   static const Color darkBlue = Color(0xff71b7fb);
   static const Color darkTextColor = Color(0xffc6c7c8);
+  static const Color darkSecondaryText = Color(0xffffffff);
 
 }

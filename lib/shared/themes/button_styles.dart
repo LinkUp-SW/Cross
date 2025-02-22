@@ -3,7 +3,48 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 
+
+// Need to be revised but for the outlined and text buttons
+
 class LinkUpButtonStyles {
+
+  ElevatedButtonThemeData lightElevatedButtonTheme() {
+    return ElevatedButtonThemeData(
+      style: profileOpenToLight(),
+    );
+  }
+
+  ElevatedButtonThemeData darkElevatedButtonTheme() {
+    return ElevatedButtonThemeData(
+      style: profileOpenToDark(),
+    );
+  }
+
+  OutlinedButtonThemeData lightOutlinedButtonTheme() {
+    return OutlinedButtonThemeData(
+      style: profileOpenToLight(),
+    );
+  }
+
+  OutlinedButtonThemeData darkOutlinedButtonTheme() {
+    return OutlinedButtonThemeData(
+      style: profileOpenToDark(),
+    );
+  }
+
+  TextButtonThemeData lightTextButtonTheme() {
+    return TextButtonThemeData(
+      style: profileOpenToLight(),
+    );
+  }
+
+  TextButtonThemeData darkTextButtonTheme() {
+    return TextButtonThemeData(
+      style: profileOpenToDark(),
+    );
+  }
+
+
   ButtonStyle profileOpenToLight({
     double elevation = 0.0,
     EdgeInsets? padding,
