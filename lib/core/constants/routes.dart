@@ -1,1 +1,0 @@
-// the route for each of the view in our app

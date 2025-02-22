@@ -31,6 +31,8 @@ migrate_working_dir/
 .pub/
 /build/
 
+/ios
+
 # Symbolication related
 app.*.symbols
 
