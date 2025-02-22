@@ -19,6 +19,14 @@ class TextStyles {
     fontSize: 13.sp,
     fontWeight: FontWeight.w700,
   );
+  static TextStyle font12_700Weight = TextStyle(
+    fontSize: 12.sp,
+    fontWeight: FontWeight.w700,
+  );
+  static TextStyle font11_700Weight = TextStyle(
+    fontSize: 11.sp,
+    fontWeight: FontWeight.w700,
+  );
 
   //semibold textstyles
   static TextStyle font30_600Weight = TextStyle(

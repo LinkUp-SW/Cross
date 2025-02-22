@@ -38,26 +38,26 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
               },
               icon: const Icon(Icons.arrow_back),
             ),
-          title: SizedBox(
-            height: 35.h,
-            child: SearchAnchor.bar(
-              suggestionsBuilder:
-                  (BuildContext context, SearchController searchController) {
-                return [
-                  ListView.builder(
-                    itemCount: 10,
-                    itemBuilder: (BuildContext context, index) {
-                      return ListTile(
-                        title: Text('Item $index'),
-                      );
-                    },
-                  ),
-                ];
-              },
-              barHintText: "Search",
-              barLeading: Icon(barIcon),
-            ),
-          ),
+      title: SizedBox(
+        height: 35.h,
+        child: SearchAnchor.bar(
+          suggestionsBuilder:
+              (BuildContext context, SearchController searchController) {
+            return [
+              ListView.builder(
+                itemCount: 10,
+                itemBuilder: (BuildContext context, index) {
+                  return ListTile(
+                    title: Text('Item $index'),
+                  );
+                },
+              ),
+            ];
+          },
+          barHintText: "Search",
+          barLeading: Icon(barIcon),
+        ),
+      ),
       actions: [
         ...actions,
         viewMessages
