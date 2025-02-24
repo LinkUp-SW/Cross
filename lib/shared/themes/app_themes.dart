@@ -47,10 +47,9 @@ class AppThemes {
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
       backgroundColor: AppColors.lightMain,
       elevation: 0.0,
-      type: BottomNavigationBarType
-          .fixed, // Matches your CustomBottomNavigationBar
-      selectedItemColor: AppColors.lightTextColor, // Matches primary color
-      unselectedItemColor: AppColors.lightSecondaryText, // Matches onSurface
+      type: BottomNavigationBarType.fixed,
+      selectedItemColor: AppColors.lightTextColor,
+      unselectedItemColor: AppColors.lightSecondaryText,
       selectedLabelStyle: TextStyles.font11_700Weight,
       unselectedLabelStyle: TextStyles.font11_400Weight,
       showSelectedLabels: true,

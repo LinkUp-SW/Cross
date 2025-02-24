@@ -16,7 +16,6 @@ class CustomBottomNavigationBar extends ConsumerWidget {
     int getCurrentIndex(String location) {
       switch (location) {
         case '/':
-        case '/home':
           return 0;
         case '/video':
           return 1;
@@ -40,7 +39,7 @@ class CustomBottomNavigationBar extends ConsumerWidget {
         // Navigate to the corresponding route when an item is tapped
         switch (index) {
           case 0:
-            context.go('/home');
+            context.go('/');
             break;
           case 1:
             context.go('/video');
@@ -102,33 +101,31 @@ class CustomBottomNavigationBar extends ConsumerWidget {
     );
   }
 
-  Widget _buildNavItem(BuildContext context,
-      {required int currentIndex,
-      required int index,
-      required IconData asset}) {
-    final theme = Theme.of(context);
+  Widget _buildNavItem(
+    BuildContext context, {
+    required int currentIndex,
+    required int index,
+    required IconData asset,
+  }) {
     final isSelected = currentIndex == index;
-    final color = isSelected ? theme.primaryColor : theme.colorScheme.onSurface;
 
     return SizedBox(
-      height: 35.h,
+      height: 30.h,
+      width: 60.w,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Transform.translate(
-            offset: const Offset(0, -8), // Shift upwards by 6 pixels
+            offset: Offset(0.w, -5.h),
             child: Container(
-              height: 4.0.h, // Height of the top border
-              width: 94.0.w, // Adjust the width to match your design
-              color: isSelected
-                  ? AppColors.lightTextColor
-                  : AppColors.lightSecondaryText,
+              height: 2.0.h, // Height of the top border
+              color:
+                  isSelected ? AppColors.lightTextColor : AppColors.lightMain,
             ),
           ),
           Icon(
             asset,
             size: 24.h,
-            color: color,
           ),
         ],
       ),
