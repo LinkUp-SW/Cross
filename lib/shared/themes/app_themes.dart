@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:link_up/shared/themes/button_styles.dart';
 import 'package:link_up/shared/themes/chip_styles.dart';
 import 'package:link_up/shared/themes/colors.dart';
+import 'package:link_up/shared/themes/text_styles.dart';
 
 class AppThemes {
   AppThemes._();
@@ -43,6 +44,25 @@ class AppThemes {
         ),
       ),
     ),
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      backgroundColor: AppColors.lightMain,
+      elevation: 0.0,
+      type: BottomNavigationBarType.fixed,
+      selectedItemColor: AppColors.lightTextColor,
+      unselectedItemColor: AppColors.lightSecondaryText,
+      selectedLabelStyle: TextStyles.font11_700Weight,
+      unselectedLabelStyle: TextStyles.font11_400Weight,
+      showSelectedLabels: true,
+      showUnselectedLabels: true,
+      selectedIconTheme: const IconThemeData(
+        color: AppColors.lightTextColor,
+        size: 24,
+      ),
+      unselectedIconTheme: const IconThemeData(
+        color: AppColors.lightSecondaryText,
+        size: 24,
+      ),
+    ),
   );
 
   static ThemeData darkTheme = ThemeData(
@@ -77,6 +97,25 @@ class AppThemes {
         RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(5),
         ),
+      ),
+    ),
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      backgroundColor: AppColors.darkMain,
+      elevation: 0.0,
+      type: BottomNavigationBarType.fixed,
+      selectedItemColor: AppColors.darkSecondaryText,
+      unselectedItemColor: AppColors.darkTextColor,
+      selectedLabelStyle: TextStyles.font11_700Weight,
+      unselectedLabelStyle: TextStyles.font11_400Weight,
+      showSelectedLabels: true,
+      showUnselectedLabels: true,
+      selectedIconTheme: const IconThemeData(
+        color: AppColors.darkSecondaryText,
+        size: 24,
+      ),
+      unselectedIconTheme: const IconThemeData(
+        color: AppColors.darkTextColor,
+        size: 24,
       ),
     ),
   );

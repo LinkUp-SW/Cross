@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/shared/themes/theme_provider.dart';
+import 'package:link_up/shared/widgets/bottom_navigation_bar.dart';
 import 'package:link_up/shared/widgets/custom_app_bar.dart';
 import 'package:link_up/shared/widgets/custom_search_bar.dart';
 import 'package:skeletonizer/skeletonizer.dart';
