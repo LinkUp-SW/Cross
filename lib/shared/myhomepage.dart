@@ -33,7 +33,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
           ),
         ],
       ),
-      bottomNavigationBar: const CustomBottomNavigationBar(),
       body: Column(
         children: [
           Wrap(

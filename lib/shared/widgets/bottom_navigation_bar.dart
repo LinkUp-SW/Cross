@@ -5,56 +5,40 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/shared/themes/colors.dart';
 
 class CustomBottomNavigationBar extends ConsumerWidget {
-  const CustomBottomNavigationBar({super.key});
+  const CustomBottomNavigationBar({required this.navigationShell, super.key});
+
+  final StatefulNavigationShell navigationShell;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final currentIndex = navigationShell.currentIndex;
     // Get the current route location to determine the selected index
-    final String location = GoRouterState.of(context).uri.toString();
+    // final String location = GoRouterState.of(context).uri.toString();
 
     // Map routes to indices
-    int getCurrentIndex(String location) {
-      switch (location) {
-        case '/':
-          return 0;
-        case '/video':
-          return 1;
-        case '/network':
-          return 2;
-        case '/notifications':
-          return 3;
-        case '/jobs':
-          return 4;
-        default:
-          return 0;
-      }
-    }
+    // int getCurrentIndex(String location) {
+    //   switch (location) {
+    //     case '/':
+    //       return 0;
+    //     case '/video':
+    //       return 1;
+    //     case '/network':
+    //       return 2;
+    //     case '/notifications':
+    //       return 3;
+    //     case '/jobs':
+    //       return 4;
+    //     default:
+    //       return 0;
+    //   }
+    // }
 
-    final currentIndex = getCurrentIndex(location);
+    // final currentIndex = getCurrentIndex(location);
 
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
       currentIndex: currentIndex,
-      onTap: (int index) {
-        // Navigate to the corresponding route when an item is tapped
-        switch (index) {
-          case 0:
-            context.go('/');
-            break;
-          case 1:
-            context.go('/video');
-            break;
-          case 2:
-            context.go('/network');
-            break;
-          case 3:
-            context.go('/notifications');
-            break;
-          case 4:
-            context.go('/jobs');
-            break;
-        }
-      },
+      onTap: (int index) => navigationShell.goBranch(index),
       showUnselectedLabels: true,
       items: [
         BottomNavigationBarItem(

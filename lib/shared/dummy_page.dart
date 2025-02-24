@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:link_up/shared/widgets/bottom_navigation_bar.dart';
 
 class DummyPage extends StatelessWidget {
   final String title;
@@ -9,7 +8,6 @@ class DummyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: const CustomBottomNavigationBar(),
       body: Center(
         child: Text(
           title,
