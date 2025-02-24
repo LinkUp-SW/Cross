@@ -108,7 +108,17 @@ class CustomBottomNavigationBar extends ConsumerWidget {
     required IconData asset,
   }) {
     final isSelected = currentIndex == index;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
+    Color borderColor;
+    if (isDarkMode) {
+      // In dark mode, switch the colors
+      borderColor =
+          isSelected ? AppColors.darkSecondaryText : AppColors.darkMain;
+    } else {
+      // In light mode, keep the original colors
+      borderColor = isSelected ? AppColors.lightTextColor : AppColors.lightMain;
+    }
     return SizedBox(
       height: 30.h,
       width: 60.w,
@@ -119,8 +129,7 @@ class CustomBottomNavigationBar extends ConsumerWidget {
             offset: Offset(0.w, -5.h),
             child: Container(
               height: 2.0.h, // Height of the top border
-              color:
-                  isSelected ? AppColors.lightTextColor : AppColors.lightMain,
+              color: borderColor,
             ),
           ),
           Icon(

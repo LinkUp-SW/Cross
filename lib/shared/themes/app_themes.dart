@@ -99,5 +99,24 @@ class AppThemes {
         ),
       ),
     ),
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      backgroundColor: AppColors.darkMain,
+      elevation: 0.0,
+      type: BottomNavigationBarType.fixed,
+      selectedItemColor: AppColors.darkSecondaryText,
+      unselectedItemColor: AppColors.darkTextColor,
+      selectedLabelStyle: TextStyles.font11_700Weight,
+      unselectedLabelStyle: TextStyles.font11_400Weight,
+      showSelectedLabels: true,
+      showUnselectedLabels: true,
+      selectedIconTheme: const IconThemeData(
+        color: AppColors.darkSecondaryText,
+        size: 24,
+      ),
+      unselectedIconTheme: const IconThemeData(
+        color: AppColors.darkTextColor,
+        size: 24,
+      ),
+    ),
   );
 }
