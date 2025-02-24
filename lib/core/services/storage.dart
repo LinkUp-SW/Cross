@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/core/constants/endpoints.dart';
-import 'package:link_up/core/utils/globalKeys.dart';
+import 'package:link_up/core/utils/global_keys.dart';
 
 const FlutterSecureStorage secureStorage = FlutterSecureStorage();
 
