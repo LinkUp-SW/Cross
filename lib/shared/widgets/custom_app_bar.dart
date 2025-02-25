@@ -3,14 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
-  final IconData barIcon;
+  final Widget searchBar;
   final List<Widget> actions;
   final Function leadingAction;
   final bool leadingArrow;
   final bool viewMessages;
   const CustomAppBar(
       {super.key,
-      required this.barIcon,
+      required this.searchBar,
       this.actions = const [],
       this.leadingArrow = false,
       this.viewMessages = true,
@@ -40,23 +40,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
             ),
       title: SizedBox(
         height: 35.h,
-        child: SearchAnchor.bar(
-          suggestionsBuilder:
-              (BuildContext context, SearchController searchController) {
-            return [
-              ListView.builder(
-                itemCount: 10,
-                itemBuilder: (BuildContext context, index) {
-                  return ListTile(
-                    title: Text('Item $index'),
-                  );
-                },
-              ),
-            ];
-          },
-          barHintText: "Search",
-          barLeading: Icon(barIcon),
-        ),
+        child: searchBar,
       ),
       actions: [
         ...actions,

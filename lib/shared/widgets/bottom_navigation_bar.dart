@@ -44,11 +44,18 @@ class CustomBottomNavigationBar extends ConsumerWidget {
             ),
             label: 'My Network'),
         BottomNavigationBarItem(
-            icon: _buildNavItem(
-              context,
-              currentIndex: currentIndex,
-              index: 3,
-              asset: Icons.notifications,
+            icon: Badge(
+              backgroundColor: AppColors.red,
+              textColor: AppColors.lightMain,
+              //TODO: Need to be changed to the real number of notifications
+              label: const Text("3"),
+              offset: const Offset(-10, 0),
+              child: _buildNavItem(
+                context,
+                currentIndex: currentIndex,
+                index: 3,
+                asset: Icons.notifications,
+              ),
             ),
             label: 'Notifications'),
         BottomNavigationBarItem(
