@@ -14,7 +14,6 @@ class CustomBottomNavigationBar extends ConsumerWidget {
     final currentIndex = navigationShell.currentIndex;
 
     return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
       currentIndex: currentIndex,
       onTap: (int index) => navigationShell.goBranch(index),
       showUnselectedLabels: true,
