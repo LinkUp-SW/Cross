@@ -12,28 +12,6 @@ class CustomBottomNavigationBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentIndex = navigationShell.currentIndex;
-    // Get the current route location to determine the selected index
-    // final String location = GoRouterState.of(context).uri.toString();
-
-    // Map routes to indices
-    // int getCurrentIndex(String location) {
-    //   switch (location) {
-    //     case '/':
-    //       return 0;
-    //     case '/video':
-    //       return 1;
-    //     case '/network':
-    //       return 2;
-    //     case '/notifications':
-    //       return 3;
-    //     case '/jobs':
-    //       return 4;
-    //     default:
-    //       return 0;
-    //   }
-    // }
-
-    // final currentIndex = getCurrentIndex(location);
 
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
@@ -98,21 +76,21 @@ class CustomBottomNavigationBar extends ConsumerWidget {
     if (isDarkMode) {
       // In dark mode, switch the colors
       borderColor =
-          isSelected ? AppColors.darkSecondaryText : AppColors.darkMain;
+          isSelected ? AppColors.darkSecondaryText : AppColors.darkGrey;
     } else {
       // In light mode, keep the original colors
-      borderColor = isSelected ? AppColors.lightTextColor : AppColors.lightMain;
+      borderColor = isSelected ? AppColors.lightTextColor : AppColors.lightGrey;
     }
     return SizedBox(
       height: 30.h,
-      width: 60.w,
+      width: 120.w,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Transform.translate(
-            offset: Offset(0.w, -5.h),
+            offset: Offset(0.w, -6.h),
             child: Container(
-              height: 2.0.h, // Height of the top border
+              height: isSelected ? 0.9.h : 0.2.h, // Height of the top border
               color: borderColor,
             ),
           ),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:link_up/shared/widgets/bottom_sheet.dart';
 
 class DummyPage extends StatelessWidget {
   final String title;
@@ -9,13 +11,31 @@ class DummyPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Text(
-          title,
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        child: Column(
+            spacing: 8.0.h,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    useRootNavigator: true,
+                    builder: (context) => const CustomModalBottomSheet(
+                      content:
+                          Text('This is the content inside the bottom sheet!'),
+                    ),
+                  );
+                },
+                child: const Text('Show Bottom Sheet'),
+              ),
+            ]),
       ),
     );
   }
