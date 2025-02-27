@@ -67,6 +67,13 @@ class AppThemes {
         modalBackgroundColor: AppColors.lightMain,
         showDragHandle: true,
         dragHandleColor: AppColors.lightTextColor,
+      ),
+      tabBarTheme: TabBarThemeData(
+        indicatorColor: AppColors.lightGreen,
+        indicatorSize: TabBarIndicatorSize.tab,
+        unselectedLabelColor: AppColors.lightTextColor,
+        labelColor: AppColors.lightGreen,
+        labelStyle: TextStyles.font12_700Weight,
       ));
 
   static ThemeData darkTheme = ThemeData(
