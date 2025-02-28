@@ -3,8 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:link_up/features/Home/view/home_page.dart';
+import 'package:link_up/features/Home/widgets/post_page.dart';
 import 'package:link_up/shared/dummy_page.dart';
-import 'package:link_up/shared/myhomepage.dart';
 import 'package:link_up/shared/widgets/bottom_navigation_bar.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) {
@@ -25,9 +26,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           routes: <GoRoute>[
             GoRoute(
                 path: "/",
-                builder: (context, state) => const MyHomePage(
-                      title: "Home",
-                    )),
+                builder: (context, state) => const HomePage()),
           ],
         ),
         StatefulShellBranch(
@@ -60,10 +59,17 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) => const DummyPage(title: 'Jobs')),
           ],
         ),
+        StatefulShellBranch(
+          routes: <GoRoute>[
+            GoRoute(
+                path: "/post_page",
+                builder: (context, state) => const PostPage()),
+          ],
+        ),
       ],
     ),
     GoRoute(path: "/company", builder: (context, state) => Container()),
-    GoRoute(path: "/messages", builder: (context, state) => Container()),
+    GoRoute(path: "/messages", builder: (context, state) => const DummyPage(title: "messages")),
     GoRoute(path: "/chatpage", builder: (context, state) => Container()),
     GoRoute(path: "/settings", builder: (context, state) => Container()),
   ]);

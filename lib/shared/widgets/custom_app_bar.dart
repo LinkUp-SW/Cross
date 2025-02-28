@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 
 class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final Widget searchBar;
@@ -47,7 +48,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
         viewMessages
             ? IconButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, '/messages');
+                  context.push('/messages');
                 },
                 icon: const Icon(Icons.message),
               )
