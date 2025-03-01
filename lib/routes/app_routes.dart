@@ -24,9 +24,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         // The route branch for the first tab of the bottom navigation bar.
         StatefulShellBranch(
           routes: <GoRoute>[
-            GoRoute(
-                path: "/",
-                builder: (context, state) => const HomePage()),
+            GoRoute(path: "/", builder: (context, state) => const HomePage()),
           ],
         ),
         StatefulShellBranch(
@@ -63,13 +61,21 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           routes: <GoRoute>[
             GoRoute(
                 path: "/post_page",
-                builder: (context, state) => const PostPage()),
+                builder: (context, state) => const PostPage(),
+                routes: [
+                  GoRoute(
+                    path: '/focused',
+                    builder: (context, state) => const PostPage(focused: true),
+                  ),
+                ]),
           ],
         ),
       ],
     ),
     GoRoute(path: "/company", builder: (context, state) => Container()),
-    GoRoute(path: "/messages", builder: (context, state) => const DummyPage(title: "messages")),
+    GoRoute(
+        path: "/messages",
+        builder: (context, state) => const DummyPage(title: "messages")),
     GoRoute(path: "/chatpage", builder: (context, state) => Container()),
     GoRoute(path: "/settings", builder: (context, state) => Container()),
   ]);

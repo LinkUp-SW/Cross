@@ -5,14 +5,26 @@ import 'package:go_router/go_router.dart';
 import 'package:link_up/features/Home/widgets/bottom_sheets.dart';
 import 'package:link_up/features/Home/widgets/comment_bubble.dart';
 import 'package:link_up/features/Home/widgets/posts.dart';
+import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/widgets/bottom_sheet.dart';
 
-class PostPage extends StatelessWidget {
+class PostPage extends StatefulWidget {
   final bool isAd;
-  const PostPage({super.key, this.isAd = false});
+  final bool focused;
+
+
+  const PostPage({super.key, this.isAd = false,this.focused = false});
+
+  @override
+  State<PostPage> createState() => _PostPageState();
+}
+
+class _PostPageState extends State<PostPage> {
+  final TextEditingController _textController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -26,10 +38,84 @@ class PostPage extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.more_horiz),
             onPressed: () {
-              aboutPostBottomSheet(context, isAd: isAd);
+              aboutPostBottomSheet(context, isAd: widget.isAd);
             },
           )
         ],
+      ),
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+            color: AppColors.darkMain,
+            border:
+                BorderDirectional(top: BorderSide(color: AppColors.lightGrey)),
+            boxShadow: [BoxShadow(offset: Offset(0, 0))]),
+        height: 100.h,
+        child: Padding(
+          padding: EdgeInsets.all(10.r),
+          child: Column(
+            children: [
+              Expanded(
+                child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: 10,
+                    shrinkWrap: true,
+                    separatorBuilder: (context, index) => SizedBox(width: 5.w),
+                    itemBuilder: (context, index) {
+                      return Chip(label: Text("label $index"));
+                    }),
+              ),
+              SizedBox(
+                height: 10.h,
+              ),
+              Flex(
+                direction: Axis.horizontal,
+                children: [
+                  Flexible(
+                    flex: 1,
+                    child: CircleAvatar(
+                      radius: 15.r,
+                      backgroundImage: const NetworkImage(
+                          'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg'),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 10.w,
+                  ),
+                  Flexible(
+                    flex: 8,
+                    child: TextField(
+                      autofocus: widget.focused,
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.all(10.r),
+                        hintText: "leave your thoughts here...",
+                        border: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                              color: AppColors.lightGrey, width: 0),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(30.r),
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                              color: AppColors.lightGrey, width: 0),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(20.r),
+                          ),
+                        ),
+                      ),
+                      controller: _textController,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 10.h,
+                  ),
+                  GestureDetector(
+                      onTap: () {}, child: const Icon(Icons.alternate_email))
+                ],
+              )
+            ],
+          ),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.only(top: 8.0),
@@ -106,11 +192,11 @@ class PostPage extends StatelessWidget {
                         children: [
                           Text("Most relevant",
                               style: TextStyle(
-                                color: Colors.grey,
+                                color: AppColors.grey,
                               )),
                           Icon(
                             Icons.arrow_drop_down,
-                            color: Colors.grey,
+                            color: AppColors.grey,
                           )
                         ],
                       ),
@@ -125,7 +211,7 @@ class PostPage extends StatelessWidget {
                     height: 10.h,
                   ),
                   itemBuilder: (context, index) {
-                    return CommentBubble(hasReply: index==3);
+                    return CommentBubble(hasReply: index == 3);
                   },
                 ),
               ],
