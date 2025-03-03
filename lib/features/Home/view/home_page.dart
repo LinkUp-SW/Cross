@@ -26,7 +26,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _scrollListener() {
-    print(posts.length);
     if (scrollController.position.extentAfter < 500) {
       setState(() {
         posts.addAll(List.generate(5, (index) => 'Inserted $index'));
@@ -84,7 +83,7 @@ class _HomePageState extends State<HomePage> {
               itemCount: posts.length,
               separatorBuilder: (context, index) => const SizedBox(height: 10),
               itemBuilder: (context, index) {
-                return Card(child: Posts(contentType: index%3 == 1 ? 'video': (index%3 == 2 ? 'image': 'none'),));
+                return Card(child: Posts(contentType: index%4 == 1 ? 'video': (index%4 == 2 ? 'image': (index%4 == 3 ? 'images': 'none')),));
               }),
         ),
       ),

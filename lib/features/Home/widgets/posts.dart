@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'dart:math' as math;
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/Home/widgets/bottom_sheets.dart';
+import 'package:link_up/features/Home/widgets/carousel_images.dart';
 import 'package:link_up/features/Home/widgets/post_header.dart';
 import 'package:link_up/features/Home/widgets/video_player_home.dart';
 import 'package:link_up/shared/themes/colors.dart';
@@ -118,7 +119,7 @@ class _PostsState extends State<Posts> {
               trimCollapsedText: 'more    ',
               trimLines: 3,
               trimMode: TrimMode.Line,
-              'Lorem ipsum dolor sit amet, \n\nconsecteturs adipiscing elit. fnjnf kgkn fgkn gfkd kdn fknd fks ksn sknf knfs fskn sfknsf ksf fkns sk dfnks jdnfjng kdnfkgn gkndkdf kdf ndkj fkjfdn kjfd dfj dfjkf dkdf',
+              'Lorem ipsum dolor sit amet,sknf dkdf kdf ndkj fkjfdn kjfd dfj dfjkf dkdf',
             ),
           ),
           SizedBox(height: 10.h),
@@ -131,6 +132,8 @@ class _PostsState extends State<Posts> {
               'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
               fit: BoxFit.cover,
             ),
+          if (widget.contentType == 'images')
+            const CarouselImages(),
           if (widget.contentType != 'none') SizedBox(height: 10.h),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 10.w),
@@ -140,9 +143,9 @@ class _PostsState extends State<Posts> {
                 Row(
                   children: [
                     CircleAvatar(
-                      backgroundColor: AppColors.lightMain,
+                      backgroundColor: Theme.of(context).colorScheme.secondary,
                       radius: 10.r,
-                      child: const Icon(Icons.thumb_up_alt, size: 15),
+                      child: const Icon(Icons.thumb_up_alt, size: 15,),
                     ),
                     SizedBox(width: 5.w),
                     const Text("400")
@@ -267,3 +270,4 @@ class _PostsState extends State<Posts> {
     );
   }
 }
+

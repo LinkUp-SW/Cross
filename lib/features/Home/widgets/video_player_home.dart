@@ -65,6 +65,25 @@ class _VideoPlayerHomeState extends State<VideoPlayerHome> {
                 size: 30.r,
               ),
             ),
+            
+            ValueListenableBuilder(
+              valueListenable: _videoController,
+             builder: (context, VideoPlayerValue value, child){
+              if (_videoController.value.position == _videoController.value.duration)
+              {
+              return CircleAvatar(
+                radius: 25.r,
+                backgroundColor: AppColors.darkBackground.withOpacity(0.5),
+                child: Icon(
+                  Icons.replay,
+                  color: AppColors.lightMain,
+                  size: 30.r,
+                ),
+              );
+              }
+              return const SizedBox();
+             },
+            ),
           ValueListenableBuilder(
             valueListenable: _videoController,
             builder: (context, VideoPlayerValue value, child) {
@@ -78,7 +97,7 @@ class _VideoPlayerHomeState extends State<VideoPlayerHome> {
                   ),
                   child: Padding(
                     padding: EdgeInsets.all(4.r),
-                    child: Text(getVideoPosition()),
+                    child: Text(getVideoPosition(),style: const TextStyle(color: AppColors.lightMain),),
                   ),
                 ),
               );

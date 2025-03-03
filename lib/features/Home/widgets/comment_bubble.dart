@@ -37,8 +37,6 @@ class CommentBubble extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Card(
-                color: AppColors.grey.withOpacity(0.3),
-                elevation: 5,
                 child: Padding(
                   padding: EdgeInsets.all(5.r),
                   child: Column(

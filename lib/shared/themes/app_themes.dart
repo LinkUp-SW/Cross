@@ -20,7 +20,7 @@ class AppThemes {
         secondary: AppColors.lightBlue,
       ),
       chipTheme: ChipStyle.lightChip,
-      cardTheme: const CardTheme(color: AppColors.lightMain),
+      cardTheme: const CardTheme(color: AppColors.lightMain,elevation: 10),
       iconButtonTheme: IconButtonThemeData(
         style: ButtonStyle(
             iconColor: WidgetStateProperty.all(AppColors.lightSecondaryText)),
@@ -79,7 +79,7 @@ class AppThemes {
       secondary: AppColors.darkBlue,
     ),
     chipTheme: ChipStyle.darkChip,
-    cardTheme: const CardTheme(color: AppColors.darkMain),
+    cardTheme: const CardTheme(color: AppColors.darkMain,elevation: 10),
     iconButtonTheme: IconButtonThemeData(
       style: ButtonStyle(
           iconColor: WidgetStateProperty.all(AppColors.darkTextColor)),
