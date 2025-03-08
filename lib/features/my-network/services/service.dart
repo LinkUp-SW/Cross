@@ -14,9 +14,7 @@ class MyNetworkScreenServices {
       'offset': offset.toString(),
     };
     try {
-      final response = await _baseService.get(
-        endpoint,
-      );
+      final response = await _baseService.get(endpoint, queryParams);
       return jsonDecode(response.body);
     } catch (e) {
       rethrow;
