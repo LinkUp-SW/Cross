@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:link_up/features/my-network/widgets/tab.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/widgets/custom_app_bar.dart';
 import 'package:link_up/shared/widgets/custom_search_bar.dart';
@@ -11,6 +10,7 @@ class MyNetworkPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return DefaultTabController(
       initialIndex: 0,
       length: 2,
@@ -32,19 +32,14 @@ class MyNetworkPage extends ConsumerWidget {
                 ],
               ),
               Container(
-                color: AppColors.lightMain,
+                decoration: BoxDecoration(
+                  color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+                ),
                 child: const TabBar(
-                  indicator: UnderlineTabIndicator(
-                    borderSide: BorderSide(
-                      color: AppColors.lightGreen,
-                      width: 2.0,
-                    ),
-                  ),
+                  indicatorWeight: 0.1,
                   tabs: [
-                    CustomTab(title: "Grow"),
-                    CustomTab(title: "Catch"),
-                    // Tab(text: "Grow"),
-                    // Tab(text: "Catch"),
+                    Tab(text: "Grow"),
+                    Tab(text: "Catch"),
                   ],
                 ),
               ),
@@ -60,18 +55,4 @@ class MyNetworkPage extends ConsumerWidget {
       ),
     );
   }
-
-  // Widget _buildCustomTab(String text) {
-  //   return Container(
-  //     decoration: const BoxDecoration(
-  //       border: Border(
-  //         bottom: BorderSide(
-  //             color: AppColors.lightGrey, // Unselected tab border color
-  //             width: 0.5 // Unselected tab border weight
-  //             ),
-  //       ),
-  //     ),
-  //     child: Tab(text: text),
-  //   );
-  // }
 }
