@@ -1,5 +1,6 @@
+
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:link_up/features/Home/widgets/home_drawer.dart';
 import 'package:link_up/features/Home/widgets/posts.dart';
 import 'package:link_up/shared/widgets/custom_app_bar.dart';
 import 'package:link_up/shared/widgets/custom_search_bar.dart';
@@ -31,18 +32,16 @@ class _HomePageState extends State<HomePage> {
         posts.addAll(List.generate(5, (index) => 'Inserted $index'));
       });
     }
-    if(scrollpostion > scrollController.position.pixels.toInt())
-    {
+    if (scrollpostion > scrollController.position.pixels.toInt()) {
       scrollController2.animateTo(scrollController2.position.minScrollExtent,
-        duration: const Duration(milliseconds: 100), curve: Curves.linear);
+          duration: const Duration(milliseconds: 100), curve: Curves.linear);
     }
 
-    if(scrollpostion < scrollController.position.pixels.toInt())
-    {
+    if (scrollpostion < scrollController.position.pixels.toInt()) {
       scrollController2.animateTo(scrollController2.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 100), curve: Curves.linear);
+          duration: const Duration(milliseconds: 100), curve: Curves.linear);
     }
-    
+
     scrollpostion = scrollController.position.pixels.toInt();
   }
 
@@ -55,6 +54,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const HomeDrawer(),
       body: NestedScrollView(
         controller: scrollController2,
         floatHeaderSlivers: true,
@@ -63,7 +63,7 @@ class _HomePageState extends State<HomePage> {
             child: CustomAppBar(
               searchBar: const CustomSearchBar(),
               leadingAction: () {
-                context.push('/profile');
+                Scaffold.of(context).openDrawer();
               },
               actions: [
                 IconButton(
@@ -83,7 +83,14 @@ class _HomePageState extends State<HomePage> {
               itemCount: posts.length,
               separatorBuilder: (context, index) => const SizedBox(height: 10),
               itemBuilder: (context, index) {
-                return Card(child: Posts(contentType: index%4 == 1 ? 'video': (index%4 == 2 ? 'image': (index%4 == 3 ? 'images': 'none')),));
+                return Card(
+                    child: Posts(
+                  contentType: index % 4 == 1
+                      ? 'video'
+                      : (index % 4 == 2
+                          ? 'image'
+                          : (index % 4 == 3 ? 'images' : 'none')),
+                ));
               }),
         ),
       ),

@@ -164,7 +164,9 @@ class _PostsState extends State<Posts> {
                   ),
                   WidgetSpan(
                     child: GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        context.push("/reposts");
+                      },
                       child: Text(' • $reposts'),
                     ),
                   ),

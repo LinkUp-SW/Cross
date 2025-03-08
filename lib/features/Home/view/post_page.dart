@@ -256,7 +256,7 @@ class _PostPageState extends State<PostPage> {
                     height: 10.h,
                   ),
                   itemBuilder: (context, index) {
-                    return CommentBubble(hasReply: index == 3);
+                    return const CommentBubble(replies: 5);
                   },
                 ),
               ],
