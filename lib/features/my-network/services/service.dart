@@ -7,7 +7,7 @@ class MyNetworkScreenServices {
 
   const MyNetworkScreenServices(this._baseService);
 
-  Future<Map<String, dynamic>> _getMyNetworkData(String endpoint,
+  Future<Map<String, dynamic>> _getMyNetworkGrowTabData(String endpoint,
       {int limit = 4, int offset = 0}) async {
     final queryParams = {
       'limit': limit.toString(),
@@ -21,15 +21,20 @@ class MyNetworkScreenServices {
     }
   }
 
-  Future<Map<String, dynamic>> getFromUniversity() => _getMyNetworkData('');
-  Future<Map<String, dynamic>> getRecentActivity() => _getMyNetworkData('');
-  Future<Map<String, dynamic>> getFollowThesePeople() => _getMyNetworkData('');
+  Future<Map<String, dynamic>> getFromUniversity() =>
+      _getMyNetworkGrowTabData('');
+  Future<Map<String, dynamic>> getRecentActivity() =>
+      _getMyNetworkGrowTabData('');
+  Future<Map<String, dynamic>> getFollowThesePeople() =>
+      _getMyNetworkGrowTabData('');
   Future<Map<String, dynamic>> getTopEmergingCreators() =>
-      _getMyNetworkData('');
+      _getMyNetworkGrowTabData('');
   Future<Map<String, dynamic>> getYourCommunityFollow() =>
-      _getMyNetworkData('');
-  Future<Map<String, dynamic>> getBecauseYouFollow() => _getMyNetworkData('');
-  Future<Map<String, dynamic>> getMoreSuggestions() => _getMyNetworkData('');
+      _getMyNetworkGrowTabData('');
+  Future<Map<String, dynamic>> getBecauseYouFollow() =>
+      _getMyNetworkGrowTabData('');
+  Future<Map<String, dynamic>> getMoreSuggestions() =>
+      _getMyNetworkGrowTabData('');
 }
 
 final myNetworkScreenServicesProvider =

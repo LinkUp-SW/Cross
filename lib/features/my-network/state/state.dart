@@ -8,8 +8,8 @@ class GrowTabState {
   final List<GrowTabNewsletterCardsModel>? yourCommunityFollow;
   final List<GrowTabPeopleCardsModel>? becauseYouFollow;
   final List<GrowTabPeopleCardsModel>? moreSuggestions;
-  final bool? isLoading;
-  final bool? error;
+  final bool isLoading;
+  final bool error;
 
   const GrowTabState({
     required this.fromUniversity,
@@ -59,5 +59,24 @@ class GrowTabState {
       isLoading: isLoading ?? this.isLoading,
       error: error ?? this.error,
     );
+  }
+}
+
+class MyNetworkScreenState {
+  final GrowTabState growTabState;
+
+  const MyNetworkScreenState({
+    required this.growTabState,
+  });
+
+  factory MyNetworkScreenState.initial() {
+    return MyNetworkScreenState(growTabState: GrowTabState.initial());
+  }
+
+  MyNetworkScreenState copyWith({
+    GrowTabState? growTabState,
+  }) {
+    return MyNetworkScreenState(
+        growTabState: growTabState ?? this.growTabState);
   }
 }
