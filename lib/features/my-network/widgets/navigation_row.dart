@@ -17,11 +17,6 @@ class NavigationRow extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-              color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
-              width: 0.2.w),
-        ),
         color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
       ),
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [

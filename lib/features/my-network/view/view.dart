@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:link_up/features/my-network/model/model.dart';
 import 'package:link_up/features/my-network/widgets/navigation_row.dart';
+import 'package:link_up/features/my-network/widgets/people_card.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/widgets/custom_app_bar.dart';
 import 'package:link_up/shared/widgets/custom_search_bar.dart';
@@ -60,6 +62,21 @@ class MyNetworkPage extends ConsumerWidget {
                   title: 'Manage my network',
                   isDarkMode: isDarkMode,
                 ),
+                PeopleCard(
+                    data: const GrowTabPeopleCardsModel(
+                        profilePicture: "assets/images/profile.png",
+                        coverPicture: "assets/images/default-cover-picture.png",
+                        firstName: "Amanda",
+                        lastName: "Williams",
+                        title:
+                            "Teaching Assistant @ Cairo University Faculty of Biomedical and Healthcare Data Engineering",
+                        firstMutualConnectionProfilePicture:
+                            "assets/images/profile.png",
+                        firstMutualConnectionFirstName: "Sarah",
+                        secondMutualConnectionProfilePicture: null,
+                        secondMutualConnectionFirstName: null,
+                        mutualConnectionsNumber: 64),
+                    isDarkMode: isDarkMode)
               ],
             ),
             const Center(child: Text("Catch Tab")),
