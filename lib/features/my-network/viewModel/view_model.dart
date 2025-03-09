@@ -159,6 +159,5 @@ class MyNetworkScreenViewModel extends StateNotifier<MyNetworkScreenState> {
 final myNetworkScreenViewModelProvider =
     StateNotifierProvider<MyNetworkScreenViewModel, MyNetworkScreenState>(
         (ref) {
-  final services = ref.watch(myNetworkScreenServicesProvider);
-  return MyNetworkScreenViewModel(services);
+  return MyNetworkScreenViewModel(ref.read(myNetworkScreenServicesProvider));
 });

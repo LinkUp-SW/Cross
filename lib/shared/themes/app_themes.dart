@@ -70,15 +70,20 @@ class AppThemes {
       dragHandleColor: AppColors.lightTextColor,
     ),
     tabBarTheme: TabBarThemeData(
-      indicator: UnderlineTabIndicator(
-        borderSide: BorderSide(color: AppColors.lightGreen, width: 2.0.w),
+      dividerColor: AppColors.lightGrey,
+      dividerHeight: 0.2.h,
+      indicator: const UnderlineTabIndicator(
+        borderSide: BorderSide(
+          color: AppColors.lightGreen,
+          width: 2.0,
+        ),
       ),
       indicatorColor: AppColors.lightGreen,
       indicatorSize: TabBarIndicatorSize.tab,
       unselectedLabelColor: AppColors.lightTextColor,
-      unselectedLabelStyle: TextStyles.font12_700Weight,
+      unselectedLabelStyle: TextStyles.font15_700Weight,
       labelColor: AppColors.lightGreen,
-      labelStyle: TextStyles.font12_700Weight,
+      labelStyle: TextStyles.font15_700Weight,
     ),
   );
 
@@ -141,15 +146,20 @@ class AppThemes {
       dragHandleColor: AppColors.darkSecondaryText,
     ),
     tabBarTheme: TabBarThemeData(
+      dividerColor: AppColors.darkGrey,
+      dividerHeight: 0.2.h,
       indicator: UnderlineTabIndicator(
-        borderSide: BorderSide(color: AppColors.darkGreen, width: 2.0.w),
+        borderSide: BorderSide(
+          color: AppColors.darkGreen,
+          width: 2.0.w,
+        ),
       ),
       indicatorColor: AppColors.darkGreen,
       indicatorSize: TabBarIndicatorSize.tab,
       unselectedLabelColor: AppColors.darkTextColor,
-      unselectedLabelStyle: TextStyles.font12_700Weight,
+      unselectedLabelStyle: TextStyles.font15_700Weight,
       labelColor: AppColors.darkGreen,
-      labelStyle: TextStyles.font12_700Weight,
+      labelStyle: TextStyles.font15_700Weight,
     ),
   );
 }

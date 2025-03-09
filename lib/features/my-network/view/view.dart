@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:link_up/features/my-network/widgets/navigation_row.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/widgets/custom_app_bar.dart';
 import 'package:link_up/shared/widgets/custom_search_bar.dart';
@@ -31,12 +32,11 @@ class MyNetworkPage extends ConsumerWidget {
                   ),
                 ],
               ),
-              Container(
+              DecoratedBox(
                 decoration: BoxDecoration(
                   color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
                 ),
                 child: const TabBar(
-                  indicatorWeight: 0.1,
                   tabs: [
                     Tab(text: "Grow"),
                     Tab(text: "Catch"),
@@ -46,10 +46,23 @@ class MyNetworkPage extends ConsumerWidget {
             ],
           ),
         ),
-        body: const TabBarView(
+        body: TabBarView(
           children: [
-            Center(child: Text("Grow Tab")),
-            Center(child: Text("Catch Tab")),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 5.h,
+              children: [
+                NavigationRow(
+                  title: 'Invitations',
+                  isDarkMode: isDarkMode,
+                ),
+                NavigationRow(
+                  title: 'Manage my network',
+                  isDarkMode: isDarkMode,
+                ),
+              ],
+            ),
+            const Center(child: Text("Catch Tab")),
           ],
         ),
       ),
