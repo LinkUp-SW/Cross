@@ -7,34 +7,43 @@ import 'package:link_up/shared/themes/text_styles.dart';
 class NavigationRow extends ConsumerWidget {
   final String title;
   final bool isDarkMode;
+  final VoidCallback? onTap;
+
   const NavigationRow({
     super.key,
     required this.title,
     required this.isDarkMode,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
-      ),
-      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Padding(
-          padding: EdgeInsets.all(8.w),
-          child: Text(
-            title,
-            style: TextStyles.font15_700Weight,
-          ),
+    return Material(
+      color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+      child: InkWell(
+        onTap: () {
+          print("Pressed on $title tab");
+        },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+              padding: EdgeInsets.all(8.w),
+              child: Text(
+                title,
+                style: TextStyles.font15_700Weight,
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(8.w),
+              child: Icon(
+                Icons.arrow_forward,
+                size: 16.h,
+              ),
+            )
+          ],
         ),
-        Padding(
-          padding: EdgeInsets.all(8.w),
-          child: Icon(
-            Icons.arrow_forward,
-            size: 16.h,
-          ),
-        )
-      ]),
+      ),
     );
   }
 }
