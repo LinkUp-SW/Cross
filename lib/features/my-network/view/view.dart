@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/my-network/model/model.dart';
 import 'package:link_up/features/my-network/widgets/navigation_row.dart';
 import 'package:link_up/features/my-network/widgets/people_card.dart';
+import 'package:link_up/features/my-network/widgets/section.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/widgets/custom_app_bar.dart';
 import 'package:link_up/shared/widgets/custom_search_bar.dart';
@@ -50,34 +51,169 @@ class MyNetworkPage extends ConsumerWidget {
         ),
         body: TabBarView(
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 5.h,
-              children: [
-                NavigationRow(
-                  title: 'Invitations',
-                  isDarkMode: isDarkMode,
-                ),
-                NavigationRow(
-                  title: 'Manage my network',
-                  isDarkMode: isDarkMode,
-                ),
-                PeopleCard(
-                    data: const GrowTabPeopleCardsModel(
-                        profilePicture: "assets/images/profile.png",
-                        coverPicture: "assets/images/default-cover-picture.png",
-                        firstName: "Amanda",
-                        lastName: "Williams",
-                        title:
-                            "Teaching Assistant @ Cairo University Faculty of Biomedical and Healthcare Data Engineering",
-                        firstMutualConnectionProfilePicture:
-                            "assets/images/profile.png",
-                        firstMutualConnectionFirstName: "Sarah",
-                        secondMutualConnectionProfilePicture: null,
-                        secondMutualConnectionFirstName: null,
-                        mutualConnectionsNumber: 64),
-                    isDarkMode: isDarkMode)
-              ],
+            SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 5.h,
+                children: [
+                  NavigationRow(
+                    title: 'Invitations',
+                    isDarkMode: isDarkMode,
+                  ),
+                  NavigationRow(
+                    title: 'Manage my network',
+                    isDarkMode: isDarkMode,
+                  ),
+                  Section(
+                    title: "People you may know based on your recent activity",
+                    cards: [
+                      PeopleCard(
+                        data: const GrowTabPeopleCardsModel(
+                            profilePicture: "assets/images/profile.png",
+                            coverPicture:
+                                "assets/images/default-cover-picture.png",
+                            firstName: "Amanda",
+                            lastName: "Williams",
+                            title:
+                                "Teaching Assistant @ Cairo University Faculty of Biomedical and Healthcare Data Engineering",
+                            firstMutualConnectionProfilePicture:
+                                "assets/images/profile.png",
+                            firstMutualConnectionFirstName: "Sarah",
+                            secondMutualConnectionProfilePicture: null,
+                            secondMutualConnectionFirstName: null,
+                            mutualConnectionsNumber: 64),
+                        isDarkMode: isDarkMode,
+                      ),
+                      PeopleCard(
+                        data: const GrowTabPeopleCardsModel(
+                            profilePicture: "assets/images/profile.png",
+                            coverPicture:
+                                "assets/images/default-cover-picture.png",
+                            firstName: "Amanda",
+                            lastName: "Williams",
+                            title:
+                                "Teaching Assistant @ Cairo University Faculty of Biomedical and Healthcare Data Engineering",
+                            firstMutualConnectionProfilePicture:
+                                "assets/images/profile.png",
+                            firstMutualConnectionFirstName: "Sarah",
+                            secondMutualConnectionProfilePicture: null,
+                            secondMutualConnectionFirstName: null,
+                            mutualConnectionsNumber: 64),
+                        isDarkMode: isDarkMode,
+                      ),
+                      PeopleCard(
+                        data: const GrowTabPeopleCardsModel(
+                            profilePicture: "assets/images/profile.png",
+                            coverPicture:
+                                "assets/images/default-cover-picture.png",
+                            firstName: "Amanda",
+                            lastName: "Williams",
+                            title:
+                                "Teaching Assistant @ Cairo University Faculty of Biomedical and Healthcare Data Engineering",
+                            firstMutualConnectionProfilePicture:
+                                "assets/images/profile.png",
+                            firstMutualConnectionFirstName: "Sarah",
+                            secondMutualConnectionProfilePicture: null,
+                            secondMutualConnectionFirstName: null,
+                            mutualConnectionsNumber: 64),
+                        isDarkMode: isDarkMode,
+                      ),
+                      PeopleCard(
+                        data: const GrowTabPeopleCardsModel(
+                            profilePicture: "assets/images/profile.png",
+                            coverPicture:
+                                "assets/images/default-cover-picture.png",
+                            firstName: "Amanda",
+                            lastName: "Williams",
+                            title:
+                                "Teaching Assistant @ Cairo University Faculty of Biomedical and Healthcare Data Engineering",
+                            firstMutualConnectionProfilePicture:
+                                "assets/images/profile.png",
+                            firstMutualConnectionFirstName: "Sarah",
+                            secondMutualConnectionProfilePicture: null,
+                            secondMutualConnectionFirstName: null,
+                            mutualConnectionsNumber: 64),
+                        isDarkMode: isDarkMode,
+                      ),
+                    ],
+                    isDarkMode: isDarkMode,
+                  ),
+                  Section(
+                    title: "People you may know from Cairo University",
+                    cards: [
+                      PeopleCard(
+                        data: const GrowTabPeopleCardsModel(
+                            profilePicture: "assets/images/profile.png",
+                            coverPicture:
+                                "assets/images/default-cover-picture.png",
+                            firstName: "Amanda",
+                            lastName: "Williams",
+                            title:
+                                "Teaching Assistant @ Cairo University Faculty of Biomedical and Healthcare Data Engineering",
+                            firstMutualConnectionProfilePicture:
+                                "assets/images/profile.png",
+                            firstMutualConnectionFirstName: "Sarah",
+                            secondMutualConnectionProfilePicture: null,
+                            secondMutualConnectionFirstName: null,
+                            mutualConnectionsNumber: 64),
+                        isDarkMode: isDarkMode,
+                      ),
+                      PeopleCard(
+                        data: const GrowTabPeopleCardsModel(
+                            profilePicture: "assets/images/profile.png",
+                            coverPicture:
+                                "assets/images/default-cover-picture.png",
+                            firstName: "Amanda",
+                            lastName: "Williams",
+                            title:
+                                "Teaching Assistant @ Cairo University Faculty of Biomedical and Healthcare Data Engineering",
+                            firstMutualConnectionProfilePicture:
+                                "assets/images/profile.png",
+                            firstMutualConnectionFirstName: "Sarah",
+                            secondMutualConnectionProfilePicture: null,
+                            secondMutualConnectionFirstName: null,
+                            mutualConnectionsNumber: 64),
+                        isDarkMode: isDarkMode,
+                      ),
+                      PeopleCard(
+                        data: const GrowTabPeopleCardsModel(
+                            profilePicture: "assets/images/profile.png",
+                            coverPicture:
+                                "assets/images/default-cover-picture.png",
+                            firstName: "Amanda",
+                            lastName: "Williams",
+                            title:
+                                "Teaching Assistant @ Cairo University Faculty of Biomedical and Healthcare Data Engineering",
+                            firstMutualConnectionProfilePicture:
+                                "assets/images/profile.png",
+                            firstMutualConnectionFirstName: "Sarah",
+                            secondMutualConnectionProfilePicture: null,
+                            secondMutualConnectionFirstName: null,
+                            mutualConnectionsNumber: 64),
+                        isDarkMode: isDarkMode,
+                      ),
+                      PeopleCard(
+                        data: const GrowTabPeopleCardsModel(
+                            profilePicture: "assets/images/profile.png",
+                            coverPicture:
+                                "assets/images/default-cover-picture.png",
+                            firstName: "Amanda",
+                            lastName: "Williams",
+                            title:
+                                "Teaching Assistant @ Cairo University Faculty of Biomedical and Healthcare Data Engineering",
+                            firstMutualConnectionProfilePicture:
+                                "assets/images/profile.png",
+                            firstMutualConnectionFirstName: "Sarah",
+                            secondMutualConnectionProfilePicture: null,
+                            secondMutualConnectionFirstName: null,
+                            mutualConnectionsNumber: 64),
+                        isDarkMode: isDarkMode,
+                      ),
+                    ],
+                    isDarkMode: isDarkMode,
+                  ),
+                ],
+              ),
             ),
             const Center(child: Text("Catch Tab")),
           ],

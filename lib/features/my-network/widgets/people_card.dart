@@ -19,14 +19,14 @@ class PeopleCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return ConstrainedBox(
       constraints: BoxConstraints(
-        maxWidth: 160.w,
+        maxWidth: 170.w,
         maxHeight: 240.h,
       ),
       child: Card(
-        shadowColor: AppColors.lightMain,
+        shadowColor: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
         elevation: 3.0.r,
         child: Column(
-          spacing: 20.h,
+          spacing: 15.h,
           children: [
             Stack(
               clipBehavior: Clip.none, // Important to allow overflow
@@ -49,15 +49,16 @@ class PeopleCard extends ConsumerWidget {
 
                 // Profile image - positioned to overlap
                 Positioned(
-                  bottom: -20.h,
-                  right: 25.w,
+                  bottom: -25.h,
+                  right: 32.w,
                   child: CircleAvatar(
-                    radius: 40.r,
+                    radius: 45.r,
                     backgroundImage: AssetImage(data.profilePicture),
                   ),
                 ),
               ],
             ),
+            const SizedBox(),
             Column(
               children: [
                 Text(
@@ -117,7 +118,9 @@ class PeopleCard extends ConsumerWidget {
                   ),
                   child: ElevatedButton(
                     onPressed: () {},
-                    style: LinkUpButtonStyles().myNetworkScreenConnectLight(),
+                    style: isDarkMode
+                        ? LinkUpButtonStyles().myNetworkScreenConnectDark()
+                        : LinkUpButtonStyles().myNetworkScreenConnectLight(),
                     child: const Text("Connect"),
                   ),
                 ),

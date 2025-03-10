@@ -100,9 +100,9 @@ class LinkUpButtonStyles {
     BorderRadius? borderRadius,
     TextStyle? textStyle,
   }) {
-    padding ??= EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h);
+    padding ??= EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h);
     borderRadius ??= BorderRadius.all(Radius.circular(20.r));
-    textStyle ??= TextStyles.font13_700Weight;
+    textStyle ??= TextStyles.font15_700Weight;
 
     return ElevatedButton.styleFrom(
       foregroundColor: AppColors.lightBlue,
@@ -114,6 +114,33 @@ class LinkUpButtonStyles {
         borderRadius: borderRadius,
         side: BorderSide(
           color: AppColors.lightBlue,
+          width: 1.0.w,
+        ),
+      ),
+      textStyle: textStyle,
+    );
+  }
+
+  ButtonStyle myNetworkScreenConnectDark({
+    double elevation = 0.0,
+    EdgeInsets? padding,
+    BorderRadius? borderRadius,
+    TextStyle? textStyle,
+  }) {
+    padding ??= EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h);
+    borderRadius ??= BorderRadius.all(Radius.circular(20.r));
+    textStyle ??= TextStyles.font15_700Weight;
+
+    return ElevatedButton.styleFrom(
+      foregroundColor: AppColors.darkBlue,
+      backgroundColor: AppColors.darkMain,
+      elevation: elevation,
+      padding: padding,
+      minimumSize: Size(double.infinity, 5.h),
+      shape: RoundedRectangleBorder(
+        borderRadius: borderRadius,
+        side: BorderSide(
+          color: AppColors.darkBlue,
           width: 1.0.w,
         ),
       ),
