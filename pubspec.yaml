@@ -43,6 +43,7 @@ dependencies:
   video_player: ^2.9.3
   flutter_svg: ^2.0.17
   readmore: ^3.0.0
+  flutter_cached_pdfview: ^0.4.3
 
 dev_dependencies:
   flutter_test:

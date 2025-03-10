@@ -18,6 +18,7 @@ class AppThemes {
         surface: AppColors.lightBackground,
         primary: AppColors.lightMain,
         secondary: AppColors.lightBlue,
+        tertiary: AppColors.lightGreen,
       ),
       chipTheme: ChipStyle.lightChip,
       cardTheme: const CardTheme(color: AppColors.lightMain,elevation: 10),
@@ -77,6 +78,7 @@ class AppThemes {
       surface: AppColors.darkBackground,
       primary: AppColors.darkMain,
       secondary: AppColors.darkBlue,
+      tertiary: AppColors.darkGreen
     ),
     chipTheme: ChipStyle.darkChip,
     cardTheme: const CardTheme(color: AppColors.darkMain,elevation: 10),

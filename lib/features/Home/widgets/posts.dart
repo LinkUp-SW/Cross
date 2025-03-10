@@ -1,10 +1,12 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'dart:math' as math;
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/Home/widgets/bottom_sheets.dart';
 import 'package:link_up/features/Home/widgets/carousel_images.dart';
+import 'package:link_up/features/Home/widgets/pdf_viewer.dart';
 import 'package:link_up/features/Home/widgets/post_header.dart';
+import 'package:link_up/features/Home/widgets/reactions.dart';
 import 'package:link_up/features/Home/widgets/video_player_home.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/widgets/bottom_sheet.dart';
@@ -33,7 +35,6 @@ class _PostsState extends State<Posts> {
 
   bool _following = false;
   final bool _isAd = true;
-  bool _isLiked = false;
 
   @override
   Widget build(BuildContext context) {
@@ -132,24 +133,32 @@ class _PostsState extends State<Posts> {
               'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
               fit: BoxFit.cover,
             ),
-          if (widget.contentType == 'images')
-            const CarouselImages(),
+          if (widget.contentType == 'images') const CarouselImages(),
+          if (widget.contentType == 'none') const PDFViewer(),
           if (widget.contentType != 'none') SizedBox(height: 10.h),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 10.w),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    CircleAvatar(
-                      backgroundColor: Theme.of(context).colorScheme.secondary,
-                      radius: 10.r,
-                      child: const Icon(Icons.thumb_up_alt, size: 15,),
-                    ),
-                    SizedBox(width: 5.w),
-                    const Text("400")
-                  ],
+                GestureDetector(
+                  onTap: () {
+                    context.push("/reactions");
+                  },
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundColor: Theme.of(context).colorScheme.secondary,
+                        radius: 10.r,
+                        child: const Icon(
+                          Icons.thumb_up_alt,
+                          size: 15,
+                        ),
+                      ),
+                      SizedBox(width: 5.w),
+                      const Text("400")
+                    ],
+                  ),
                 ),
                 Text.rich(TextSpan(children: [
                   WidgetSpan(
@@ -184,25 +193,7 @@ class _PostsState extends State<Posts> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _isLiked = !_isLiked;
-                  });
-                },
-                onLongPress: () {},
-                child: Column(
-                  children: [
-                    _isLiked
-                        ? const Icon(
-                            Icons.thumb_up_alt,
-                            color: AppColors.darkBlue,
-                          )
-                        : const Icon(Icons.thumb_up_alt_outlined),
-                    const Text('Like'),
-                  ],
-                ),
-              ),
+              const Reactions(),
               GestureDetector(
                 onTap: () {
                   if (!widget.inMessage) {
@@ -272,4 +263,3 @@ class _PostsState extends State<Posts> {
     );
   }
 }
-

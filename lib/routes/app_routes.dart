@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:link_up/features/Home/view/comment_replies_page.dart';
 import 'package:link_up/features/Home/view/home_page.dart';
 import 'package:link_up/features/Home/view/post_page.dart';
+import 'package:link_up/features/Home/view/reactions_page.dart';
 import 'package:link_up/features/Home/view/reposts_page.dart';
 import 'package:link_up/shared/dummy_page.dart';
 import 'package:link_up/shared/widgets/bottom_navigation_bar.dart';
@@ -84,6 +85,13 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             GoRoute(
                 path: "/reposts",
                 builder: (context, state) => const RepostsPage()),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: <GoRoute>[
+            GoRoute(
+                path: "/reactions",
+                builder: (context, state) => const ReactionsPage()),
           ],
         ),
       ],
