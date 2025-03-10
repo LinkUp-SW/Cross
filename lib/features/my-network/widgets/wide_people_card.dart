@@ -7,11 +7,11 @@ import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/shared/utils/my_network_utils.dart';
 
-class NewsletterCard extends ConsumerWidget {
-  final GrowTabNewsletterCardsModel data;
+class WidePeopleCard extends ConsumerWidget {
+  final GrowTabPeopleCardsModel data;
   final bool isDarkMode;
 
-  const NewsletterCard({
+  const WidePeopleCard({
     super.key,
     required this.data,
     required this.isDarkMode,
@@ -35,51 +35,39 @@ class NewsletterCard extends ConsumerWidget {
         children: [
           Stack(
             clipBehavior: Clip.none, // Important to allow overflow
-            alignment: Alignment
-                .bottomLeft, // Align newsletter profile pic to bottom left
+            alignment: Alignment.bottomLeft, // Align profile pic to bottom left
             children: [
-              // Newsletter cover image
+              // Cover image
               ClipRRect(
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(6.r),
                   topRight: Radius.circular(6.r),
                 ),
                 child: Image(
-                  image: AssetImage(data.newsletterCoverPicture),
+                  image: AssetImage(data.coverPicture),
                   width: double.infinity,
                   height: 65.h,
                   fit: BoxFit.cover,
                 ),
               ),
 
-              // Newsletter profile image positioned to overlap
+              // Profile image positioned to overlap
               Positioned(
                 bottom: -25.h,
                 left: 10.w,
-                child: Container(
-                  width: 80.w,
-                  height: 75.h,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8.r),
-                    border: Border.all(
-                      color: isDarkMode
-                          ? AppColors.darkTextColor
-                          : AppColors.lightMain,
-                      width: 1.0,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8.r),
+                  child: Image(
+                    width: 80.w,
+                    height: 75.h,
+                    image: AssetImage(
+                      data.profilePicture,
                     ),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8.r),
-                    child: Image(
-                      image: AssetImage(
-                        data.newsletterProfilePicture,
-                      ),
-                      fit: BoxFit.cover,
-                    ),
+                    fit: BoxFit.cover,
                   ),
                 ),
               ),
-              // Subscribe Button
+              // Follow Button
               Positioned(
                 right: 7.w,
                 bottom: -40.h,
@@ -90,21 +78,34 @@ class NewsletterCard extends ConsumerWidget {
                   ),
                   child: ElevatedButton(
                     onPressed: () {
-                      print("Pressed on ${data.newsletterName} Subscribe");
+                      print(
+                          "Pressed on ${data.firstName} ${data.lastName} Follow");
                     },
                     style: isDarkMode
                         ? LinkUpButtonStyles().myNetworkScreenConnectDark(
                             padding: EdgeInsets.symmetric(
-                            horizontal: 5.w,
+                            horizontal: 13.w,
                             vertical: 5.h,
                           ))
                         : LinkUpButtonStyles().myNetworkScreenConnectLight(
                             padding: EdgeInsets.symmetric(
-                            horizontal: 5.w,
+                            horizontal: 13.w,
                             vertical: 5.h,
                           )),
-                    child: const Text(
-                      "Subscribe",
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Icon(
+                          Icons.add,
+                          size: 20.w,
+                          color: isDarkMode
+                              ? AppColors.darkBlue
+                              : AppColors.lightBlue,
+                        ),
+                        const Text(
+                          "Follow",
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -115,7 +116,8 @@ class NewsletterCard extends ConsumerWidget {
                 right: 5.w,
                 child: InkWell(
                   onTap: () {
-                    print("Pressed on ${data.newsletterName} cancel");
+                    print(
+                        "Pressed on ${data.firstName} ${data.lastName} cancel");
                   },
                   child: Container(
                     padding: EdgeInsets.all(2.r),
@@ -139,7 +141,7 @@ class NewsletterCard extends ConsumerWidget {
           Padding(
             padding: EdgeInsets.only(left: 10.w),
             child: Text(
-              data.newsletterName,
+              "${data.firstName} ${data.lastName}",
               style: TextStyles.font15_700Weight.copyWith(
                   color: isDarkMode
                       ? AppColors.darkSecondaryText
@@ -147,52 +149,66 @@ class NewsletterCard extends ConsumerWidget {
             ),
           ),
           Padding(
-            padding: EdgeInsets.only(left: 10.w),
-            child: Row(
-              spacing: 5.w,
-              children: [
-                Image(
-                  image: AssetImage(data.companyPicture),
-                  width: 20.w,
-                  height: 20.h,
-                ),
-                Text(
-                  data.companyName,
-                  style: TextStyles.font12_400Weight.copyWith(
-                    color: isDarkMode
-                        ? AppColors.darkTextColor
-                        : AppColors.lightTextColor,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                ),
-              ],
+            padding: EdgeInsets.symmetric(horizontal: 10.w),
+            child: Text(
+              data.title,
+              style: TextStyles.font12_400Weight.copyWith(
+                color: isDarkMode
+                    ? AppColors.darkTextColor
+                    : AppColors.lightTextColor,
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
             ),
           ),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10.w),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 3.h),
+            child: Row(
+              spacing: 18.w,
               children: [
-                Text(
-                  data.newsletterDescription,
-                  style: TextStyles.font13_400Weight.copyWith(
-                    color: isDarkMode
-                        ? AppColors.darkTextColor
-                        : AppColors.lightSecondaryText,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 2,
+                Stack(
+                  clipBehavior: Clip.none,
+                  alignment: Alignment.bottomLeft,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8.r),
+                      child: Image(
+                        width: 20.w,
+                        height: 20.h,
+                        image: AssetImage(
+                          data.profilePicture,
+                        ),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    Positioned(
+                      left: 15.w,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8.r),
+                        child: Image(
+                          width: 20.w,
+                          height: 20.h,
+                          image: AssetImage(
+                            data.secondMutualConnectionProfilePicture ??
+                                "assets/images/default-profile-picture.jpg",
+                          ),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                Text(
-                  "${parseIntegerToCommaSeparatedString(data.subscribersNumber)} subscribers",
-                  style: TextStyles.font12_400Weight.copyWith(
-                    color: isDarkMode
-                        ? AppColors.darkTextColor
-                        : AppColors.lightSecondaryText,
+                Flexible(
+                  child: Text(
+                    "${data.firstMutualConnectionFirstName}, ${data.secondMutualConnectionFirstName} and ${data.mutualConnectionsNumber} others you know followed",
+                    style: TextStyles.font13_400Weight.copyWith(
+                      color: isDarkMode
+                          ? AppColors.darkTextColor
+                          : AppColors.lightSecondaryText,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
                   ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 2,
                 ),
               ],
             ),

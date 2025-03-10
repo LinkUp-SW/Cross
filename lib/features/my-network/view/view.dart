@@ -6,6 +6,7 @@ import 'package:link_up/features/my-network/widgets/navigation_row.dart';
 import 'package:link_up/features/my-network/widgets/newsletter_card.dart';
 import 'package:link_up/features/my-network/widgets/people_card.dart';
 import 'package:link_up/features/my-network/widgets/section.dart';
+import 'package:link_up/features/my-network/widgets/wide_people_card.dart';
 import 'package:link_up/features/my-network/widgets/wide_section.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/widgets/custom_app_bar.dart';
@@ -110,6 +111,20 @@ class MyNetworkPage extends ConsumerWidget {
                     ],
                     isDarkMode: isDarkMode,
                   ),
+                  WideSection(
+                      title:
+                          "People who are in the Software Development industry also follow these people",
+                      cards: [
+                        WidePeopleCard(
+                          data: GrowTabPeopleCardsModel.initial(),
+                          isDarkMode: isDarkMode,
+                        ),
+                        WidePeopleCard(
+                          data: GrowTabPeopleCardsModel.initial(),
+                          isDarkMode: isDarkMode,
+                        ),
+                      ],
+                      isDarkMode: isDarkMode),
                   WideSection(
                     title:
                         "People who are in the Software Development industry also subscribe to these newsletters",

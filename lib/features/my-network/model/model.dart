@@ -51,7 +51,8 @@ class GrowTabPeopleCardsModel {
       firstMutualConnectionProfilePicture: "assets/images/profile.png",
       firstMutualConnectionFirstName: "Sarah",
       secondMutualConnectionFirstName: "Jean",
-      secondMutualConnectionProfilePicture: "assets/images/profile.png",
+      secondMutualConnectionProfilePicture:
+          "assets/images/default-profile-picture.jpg",
       mutualConnectionsNumber: 64,
     );
   }
