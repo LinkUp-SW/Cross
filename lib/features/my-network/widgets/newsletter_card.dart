@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:intl/intl.dart';
 import 'package:link_up/features/my-network/model/model.dart';
 import 'package:link_up/shared/themes/button_styles.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
+import 'package:link_up/shared/utils/my_network_utils.dart';
 
 class NewsletterCard extends ConsumerWidget {
   final GrowTabNewsletterCardsModel data;
@@ -185,7 +185,7 @@ class NewsletterCard extends ConsumerWidget {
                   maxLines: 2,
                 ),
                 Text(
-                  "${NumberFormat.decimalPattern().format(data.subscribersNumber)} subscribers",
+                  "${parseIntegerToCommaSeparatedString(data.subscribersNumber)} subscribers",
                   style: TextStyles.font12_400Weight.copyWith(
                     color: isDarkMode
                         ? AppColors.darkTextColor
