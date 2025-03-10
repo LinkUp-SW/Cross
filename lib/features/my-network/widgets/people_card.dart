@@ -25,6 +25,13 @@ class PeopleCard extends ConsumerWidget {
       child: Card(
         shadowColor: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
         elevation: 3.0.r,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(6.r),
+          side: BorderSide(
+            color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
+            width: 0.5.w,
+          ),
+        ),
         child: Column(
           spacing: 15.h,
           children: [

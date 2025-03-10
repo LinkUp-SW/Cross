@@ -54,7 +54,7 @@ class MyNetworkPage extends ConsumerWidget {
             SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 5.h,
+                spacing: 10.h,
                 children: [
                   NavigationRow(
                     title: 'Invitations',
