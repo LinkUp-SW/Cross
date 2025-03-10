@@ -68,71 +68,19 @@ class MyNetworkPage extends ConsumerWidget {
                     title: "People you may know based on your recent activity",
                     cards: [
                       PeopleCard(
-                        data: const GrowTabPeopleCardsModel(
-                            profilePicture: "assets/images/profile.png",
-                            coverPicture:
-                                "assets/images/default-cover-picture.png",
-                            firstName: "Amanda",
-                            lastName: "Williams",
-                            title:
-                                "Teaching Assistant @ Cairo University Faculty of Biomedical and Healthcare Data Engineering",
-                            firstMutualConnectionProfilePicture:
-                                "assets/images/profile.png",
-                            firstMutualConnectionFirstName: "Sarah",
-                            secondMutualConnectionProfilePicture: null,
-                            secondMutualConnectionFirstName: null,
-                            mutualConnectionsNumber: 64),
+                        data: GrowTabPeopleCardsModel.initial(),
                         isDarkMode: isDarkMode,
                       ),
                       PeopleCard(
-                        data: const GrowTabPeopleCardsModel(
-                            profilePicture: "assets/images/profile.png",
-                            coverPicture:
-                                "assets/images/default-cover-picture.png",
-                            firstName: "Amanda",
-                            lastName: "Williams",
-                            title:
-                                "Teaching Assistant @ Cairo University Faculty of Biomedical and Healthcare Data Engineering",
-                            firstMutualConnectionProfilePicture:
-                                "assets/images/profile.png",
-                            firstMutualConnectionFirstName: "Sarah",
-                            secondMutualConnectionProfilePicture: null,
-                            secondMutualConnectionFirstName: null,
-                            mutualConnectionsNumber: 64),
+                        data: GrowTabPeopleCardsModel.initial(),
                         isDarkMode: isDarkMode,
                       ),
                       PeopleCard(
-                        data: const GrowTabPeopleCardsModel(
-                            profilePicture: "assets/images/profile.png",
-                            coverPicture:
-                                "assets/images/default-cover-picture.png",
-                            firstName: "Amanda",
-                            lastName: "Williams",
-                            title:
-                                "Teaching Assistant @ Cairo University Faculty of Biomedical and Healthcare Data Engineering",
-                            firstMutualConnectionProfilePicture:
-                                "assets/images/profile.png",
-                            firstMutualConnectionFirstName: "Sarah",
-                            secondMutualConnectionProfilePicture: null,
-                            secondMutualConnectionFirstName: null,
-                            mutualConnectionsNumber: 64),
+                        data: GrowTabPeopleCardsModel.initial(),
                         isDarkMode: isDarkMode,
                       ),
                       PeopleCard(
-                        data: const GrowTabPeopleCardsModel(
-                            profilePicture: "assets/images/profile.png",
-                            coverPicture:
-                                "assets/images/default-cover-picture.png",
-                            firstName: "Amanda",
-                            lastName: "Williams",
-                            title:
-                                "Teaching Assistant @ Cairo University Faculty of Biomedical and Healthcare Data Engineering",
-                            firstMutualConnectionProfilePicture:
-                                "assets/images/profile.png",
-                            firstMutualConnectionFirstName: "Sarah",
-                            secondMutualConnectionProfilePicture: null,
-                            secondMutualConnectionFirstName: null,
-                            mutualConnectionsNumber: 64),
+                        data: GrowTabPeopleCardsModel.initial(),
                         isDarkMode: isDarkMode,
                       ),
                     ],
@@ -142,71 +90,19 @@ class MyNetworkPage extends ConsumerWidget {
                     title: "People you may know from Cairo University",
                     cards: [
                       PeopleCard(
-                        data: const GrowTabPeopleCardsModel(
-                            profilePicture: "assets/images/profile.png",
-                            coverPicture:
-                                "assets/images/default-cover-picture.png",
-                            firstName: "Amanda",
-                            lastName: "Williams",
-                            title:
-                                "Teaching Assistant @ Cairo University Faculty of Biomedical and Healthcare Data Engineering",
-                            firstMutualConnectionProfilePicture:
-                                "assets/images/profile.png",
-                            firstMutualConnectionFirstName: "Sarah",
-                            secondMutualConnectionProfilePicture: null,
-                            secondMutualConnectionFirstName: null,
-                            mutualConnectionsNumber: 64),
+                        data: GrowTabPeopleCardsModel.initial(),
                         isDarkMode: isDarkMode,
                       ),
                       PeopleCard(
-                        data: const GrowTabPeopleCardsModel(
-                            profilePicture: "assets/images/profile.png",
-                            coverPicture:
-                                "assets/images/default-cover-picture.png",
-                            firstName: "Amanda",
-                            lastName: "Williams",
-                            title:
-                                "Teaching Assistant @ Cairo University Faculty of Biomedical and Healthcare Data Engineering",
-                            firstMutualConnectionProfilePicture:
-                                "assets/images/profile.png",
-                            firstMutualConnectionFirstName: "Sarah",
-                            secondMutualConnectionProfilePicture: null,
-                            secondMutualConnectionFirstName: null,
-                            mutualConnectionsNumber: 64),
+                        data: GrowTabPeopleCardsModel.initial(),
                         isDarkMode: isDarkMode,
                       ),
                       PeopleCard(
-                        data: const GrowTabPeopleCardsModel(
-                            profilePicture: "assets/images/profile.png",
-                            coverPicture:
-                                "assets/images/default-cover-picture.png",
-                            firstName: "Amanda",
-                            lastName: "Williams",
-                            title:
-                                "Teaching Assistant @ Cairo University Faculty of Biomedical and Healthcare Data Engineering",
-                            firstMutualConnectionProfilePicture:
-                                "assets/images/profile.png",
-                            firstMutualConnectionFirstName: "Sarah",
-                            secondMutualConnectionProfilePicture: null,
-                            secondMutualConnectionFirstName: null,
-                            mutualConnectionsNumber: 64),
+                        data: GrowTabPeopleCardsModel.initial(),
                         isDarkMode: isDarkMode,
                       ),
                       PeopleCard(
-                        data: const GrowTabPeopleCardsModel(
-                            profilePicture: "assets/images/profile.png",
-                            coverPicture:
-                                "assets/images/default-cover-picture.png",
-                            firstName: "Amanda",
-                            lastName: "Williams",
-                            title:
-                                "Teaching Assistant @ Cairo University Faculty of Biomedical and Healthcare Data Engineering",
-                            firstMutualConnectionProfilePicture:
-                                "assets/images/profile.png",
-                            firstMutualConnectionFirstName: "Sarah",
-                            secondMutualConnectionProfilePicture: null,
-                            secondMutualConnectionFirstName: null,
-                            mutualConnectionsNumber: 64),
+                        data: GrowTabPeopleCardsModel.initial(),
                         isDarkMode: isDarkMode,
                       ),
                     ],

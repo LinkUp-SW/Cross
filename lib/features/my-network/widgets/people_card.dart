@@ -17,124 +17,118 @@ class PeopleCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ConstrainedBox(
-      constraints: BoxConstraints(
-        maxWidth: 170.w,
-        maxHeight: 240.h,
+    return Card(
+      shadowColor: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+      elevation: 3.0.r,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(6.r),
+        side: BorderSide(
+          color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
+          width: 0.5.w,
+        ),
       ),
-      child: Card(
-        shadowColor: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
-        elevation: 3.0.r,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(6.r),
-          side: BorderSide(
-            color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
-            width: 0.5.w,
-          ),
-        ),
-        child: Column(
-          spacing: 15.h,
-          children: [
-            Stack(
-              clipBehavior: Clip.none, // Important to allow overflow
-              alignment:
-                  Alignment.bottomCenter, // Align profile pic to bottom center
-              children: [
-                // Cover image
-                ClipRRect(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(6.r),
-                    topRight: Radius.circular(6.r),
-                  ),
-                  child: Image(
-                    image: AssetImage(data.coverPicture),
-                    width: double.infinity,
-                    height: 60.h,
-                    fit: BoxFit.cover,
-                  ),
+      child: Column(
+        spacing: 15.h,
+        children: [
+          Stack(
+            clipBehavior: Clip.none, // Important to allow overflow
+            alignment:
+                Alignment.bottomCenter, // Align profile pic to bottom center
+            children: [
+              // Cover image
+              ClipRRect(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(6.r),
+                  topRight: Radius.circular(6.r),
                 ),
+                child: Image(
+                  image: AssetImage(data.coverPicture),
+                  width: double.infinity,
+                  height: 60.h,
+                  fit: BoxFit.cover,
+                ),
+              ),
 
-                // Profile image - positioned to overlap
-                Positioned(
-                  bottom: -25.h,
-                  right: 32.w,
-                  child: CircleAvatar(
-                    radius: 45.r,
-                    backgroundImage: AssetImage(data.profilePicture),
-                  ),
+              // Profile image - positioned to overlap
+              Positioned(
+                bottom: -25.h,
+                right: 32.w,
+                child: CircleAvatar(
+                  radius: 45.r,
+                  backgroundImage: AssetImage(data.profilePicture),
                 ),
-              ],
-            ),
-            const SizedBox(),
-            Column(
-              children: [
-                Text(
-                  "${data.firstName} ${data.lastName}",
-                  style: TextStyles.font15_700Weight,
+              ),
+            ],
+          ),
+          const SizedBox(),
+          Column(
+            children: [
+              Text(
+                "${data.firstName} ${data.lastName}",
+                style: TextStyles.font15_700Weight,
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 6.0.w,
                 ),
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 6.0.w,
+                child: Text(
+                  data.title,
+                  style: TextStyles.font15_500Weight.copyWith(
+                    color: isDarkMode
+                        ? AppColors.darkGrey
+                        : AppColors.lightSecondaryText,
                   ),
-                  child: Text(
-                    data.title,
-                    style: TextStyles.font15_500Weight.copyWith(
-                      color: isDarkMode
-                          ? AppColors.darkGrey
-                          : AppColors.lightSecondaryText,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+                ),
+              )
+            ],
+          ),
+          Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 6.w,
+                ),
+                child: Row(
+                  spacing: 5.w,
+                  children: [
+                    CircleAvatar(
+                      radius: 10.r,
+                      backgroundImage:
+                          AssetImage(data.firstMutualConnectionProfilePicture),
                     ),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 2,
-                  ),
-                )
-              ],
-            ),
-            Column(
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 6.w,
-                  ),
-                  child: Row(
-                    spacing: 5.w,
-                    children: [
-                      CircleAvatar(
-                        radius: 10.r,
-                        backgroundImage: AssetImage(
-                            data.firstMutualConnectionProfilePicture),
-                      ),
-                      Flexible(
-                        // Add Flexible to allow text to shrink
-                        child: Text(
-                          "${data.firstMutualConnectionFirstName} and ${data.mutualConnectionsNumber} other mutual connections",
-                          style: TextStyles.font13_500Weight.copyWith(
-                            color: isDarkMode
-                                ? AppColors.darkGrey
-                                : AppColors.lightSecondaryText,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 2,
+                    Flexible(
+                      // Add Flexible to allow text to shrink
+                      child: Text(
+                        "${data.firstMutualConnectionFirstName} and ${data.mutualConnectionsNumber} other mutual connections",
+                        style: TextStyles.font13_500Weight.copyWith(
+                          color: isDarkMode
+                              ? AppColors.darkGrey
+                              : AppColors.lightSecondaryText,
                         ),
-                      )
-                    ],
-                  ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                      ),
+                    )
+                  ],
                 ),
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 6.w,
-                  ),
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    style: isDarkMode
-                        ? LinkUpButtonStyles().myNetworkScreenConnectDark()
-                        : LinkUpButtonStyles().myNetworkScreenConnectLight(),
-                    child: const Text("Connect"),
-                  ),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 6.w,
                 ),
-              ],
-            ),
-          ],
-        ),
+                child: ElevatedButton(
+                  onPressed: () {},
+                  style: isDarkMode
+                      ? LinkUpButtonStyles().myNetworkScreenConnectDark()
+                      : LinkUpButtonStyles().myNetworkScreenConnectLight(),
+                  child: const Text("Connect"),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

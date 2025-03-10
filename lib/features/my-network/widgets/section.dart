@@ -28,7 +28,9 @@ class Section extends ConsumerWidget {
       rowCards.add(Expanded(child: cards[i]));
 
       // Second card
-      rowCards.add(Expanded(child: cards[i + 1]));
+      if (i + 1 < cards.length) {
+        rowCards.add(Expanded(child: cards[i + 1]));
+      }
 
       // Add the row
       cardRows.add(

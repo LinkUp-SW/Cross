@@ -12,26 +12,26 @@ class GrowTabState {
   final bool error;
 
   const GrowTabState({
-    required this.fromUniversity,
-    required this.recentActivity,
-    required this.followThesePeople,
-    required this.topEmergingCreators,
-    required this.yourCommunityFollow,
-    required this.becauseYouFollow,
-    required this.moreSuggestions,
+    this.fromUniversity,
+    this.recentActivity,
+    this.followThesePeople,
+    this.topEmergingCreators,
+    this.yourCommunityFollow,
+    this.becauseYouFollow,
+    this.moreSuggestions,
     required this.isLoading,
     required this.error,
   });
 
   factory GrowTabState.initial() {
     return const GrowTabState(
-      fromUniversity: [],
-      recentActivity: [],
-      followThesePeople: [],
-      topEmergingCreators: [],
-      yourCommunityFollow: [],
-      becauseYouFollow: [],
-      moreSuggestions: [],
+      fromUniversity: null,
+      recentActivity: null,
+      followThesePeople: null,
+      topEmergingCreators: null,
+      yourCommunityFollow: null,
+      becauseYouFollow: null,
+      moreSuggestions: null,
       isLoading: true,
       error: false,
     );

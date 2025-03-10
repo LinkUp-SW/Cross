@@ -18,8 +18,8 @@ class GrowTabPeopleCardsModel {
     required this.title,
     required this.firstMutualConnectionProfilePicture,
     required this.firstMutualConnectionFirstName,
-    required this.secondMutualConnectionProfilePicture,
-    required this.secondMutualConnectionFirstName,
+    this.secondMutualConnectionProfilePicture,
+    this.secondMutualConnectionFirstName,
     required this.mutualConnectionsNumber,
   });
 
@@ -37,6 +37,22 @@ class GrowTabPeopleCardsModel {
           json['secondMutualConnectionProfilePicture'],
       secondMutualConnectionFirstName: json['secondMutualConnectionFirstName'],
       mutualConnectionsNumber: json['mutualConnectionsNumber'],
+    );
+  }
+
+  factory GrowTabPeopleCardsModel.initial() {
+    return const GrowTabPeopleCardsModel(
+      profilePicture: "assets/images/profile.png",
+      coverPicture: "assets/images/default-cover-picture.png",
+      firstName: "Amanda",
+      lastName: "Williams",
+      title:
+          "Teaching Assistant @ Cairo University Faculty of Biomedical and Healthcare Data Engineering",
+      firstMutualConnectionProfilePicture: "assets/images/profile.png",
+      firstMutualConnectionFirstName: "Sarah",
+      secondMutualConnectionFirstName: "Jean",
+      secondMutualConnectionProfilePicture: "assets/images/profile.png",
+      mutualConnectionsNumber: 64,
     );
   }
 }
