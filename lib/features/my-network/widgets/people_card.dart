@@ -58,6 +58,29 @@ class PeopleCard extends ConsumerWidget {
                   backgroundImage: AssetImage(data.profilePicture),
                 ),
               ),
+              // Cancel Button
+              Positioned(
+                top: 5.h,
+                right: 3.w,
+                child: InkWell(
+                  onTap: () {
+                    print(
+                        "Pressed on ${data.firstName} ${data.lastName} cancel");
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(2.r),
+                    decoration: const BoxDecoration(
+                      color: AppColors.grey,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.close,
+                      color: Colors.white,
+                      size: 20.h,
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
           const SizedBox(),
@@ -119,7 +142,10 @@ class PeopleCard extends ConsumerWidget {
                   horizontal: 6.w,
                 ),
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    print(
+                        "Pressed on ${data.firstName} ${data.lastName} connect");
+                  },
                   style: isDarkMode
                       ? LinkUpButtonStyles().myNetworkScreenConnectDark()
                       : LinkUpButtonStyles().myNetworkScreenConnectLight(),

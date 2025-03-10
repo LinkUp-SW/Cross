@@ -59,18 +59,18 @@ class GrowTabPeopleCardsModel {
 
 class GrowTabNewsletterCardsModel {
   final String newsletterProfilePicture;
-  final String newletterCoverPicture;
+  final String newsletterCoverPicture;
   final String newsletterName;
-  final String newletterDescription;
+  final String newsletterDescription;
   final String companyPicture;
   final String companyName;
   final int subscribersNumber;
 
   const GrowTabNewsletterCardsModel({
     required this.newsletterProfilePicture,
-    required this.newletterCoverPicture,
+    required this.newsletterCoverPicture,
     required this.newsletterName,
-    required this.newletterDescription,
+    required this.newsletterDescription,
     required this.companyPicture,
     required this.companyName,
     required this.subscribersNumber,
@@ -79,12 +79,25 @@ class GrowTabNewsletterCardsModel {
   factory GrowTabNewsletterCardsModel.fromJson(Map<String, dynamic> json) {
     return GrowTabNewsletterCardsModel(
       newsletterProfilePicture: json['newsletterProfilePicture'],
-      newletterCoverPicture: json['newletterCoverPicture'],
+      newsletterCoverPicture: json['newsletterCoverPicture'],
       newsletterName: json['newsletterName'],
-      newletterDescription: json['newletterDescription'],
+      newsletterDescription: json['newsletterDescription'],
       companyPicture: json['companyPicture'],
       companyName: json['companyName'],
       subscribersNumber: json['subscribersNumber'],
+    );
+  }
+
+  factory GrowTabNewsletterCardsModel.initial() {
+    return const GrowTabNewsletterCardsModel(
+      newsletterProfilePicture: "assets/images/default-company-picture.png",
+      newsletterCoverPicture: "assets/images/default-cover-picture.png",
+      newsletterName: "LinkUp Jobs Market",
+      newsletterDescription:
+          "Welcome to LinkUp Job Market Data, your weekly dose of jobs market news",
+      companyPicture: "assets/images/Logo_mini.png",
+      companyName: "LinkUp",
+      subscribersNumber: 23253680,
     );
   }
 }

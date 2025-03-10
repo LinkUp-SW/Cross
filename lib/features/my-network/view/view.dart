@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/my-network/model/model.dart';
 import 'package:link_up/features/my-network/widgets/navigation_row.dart';
+import 'package:link_up/features/my-network/widgets/newsletter_card.dart';
 import 'package:link_up/features/my-network/widgets/people_card.dart';
 import 'package:link_up/features/my-network/widgets/section.dart';
 import 'package:link_up/shared/themes/colors.dart';
@@ -108,6 +109,9 @@ class MyNetworkPage extends ConsumerWidget {
                     ],
                     isDarkMode: isDarkMode,
                   ),
+                  NewsletterCard(
+                      data: GrowTabNewsletterCardsModel.initial(),
+                      isDarkMode: isDarkMode)
                 ],
               ),
             ),
