@@ -7,8 +7,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/shared/themes/colors.dart';
 
-class HomeDrawer extends StatelessWidget {
-  const HomeDrawer({
+class MainDrawer extends StatelessWidget {
+  const MainDrawer({
     super.key,
   });
 
@@ -25,7 +25,8 @@ class HomeDrawer extends StatelessWidget {
               children: [
                 GestureDetector(
                   onTap: () {
-                    log('profile');
+                    context.push('/profile');
+                    log('Profile tapped');
                   },
                   child: Align(
                     alignment: Alignment.centerLeft,
@@ -49,7 +50,7 @@ class HomeDrawer extends StatelessWidget {
                           SizedBox(
                             height: 5.h,
                           ),
-                          Text('view profile', style: TextStyle(fontSize: 12.r)),
+                          Text('view profile', style: TextStyle(fontSize: 12.r, color: AppColors.grey)),
                         ],
                       ),
                     ),
@@ -57,34 +58,34 @@ class HomeDrawer extends StatelessWidget {
                 ),
                 const Divider(color: AppColors.grey, thickness: 0),
                 ListTile(
-                  title: const Text('Home'),
+                  title: const Text('X profile viewers'),
                   onTap: () {
-                    context.push('/');
+                    context.push('/profileViews');
                   },
                 ),
                 ListTile(
-                  title: const Text('Profile'),
+                  title: const Text('View all analytics'),
                   onTap: () {
-                    context.push('/profile');
+                    context.push('/analytics');
                   },
                 ),
                 const Divider(color: AppColors.grey, thickness: 0),
+                // ListTile(
+                //   title: const Text('Puzzle games'),
+                //   onTap: () {
+                //     context.push('/puzzles');
+                //   },
+                // ),
                 ListTile(
-                  title: const Text('Settings'),
+                  title: const Text('Saved posts'),
                   onTap: () {
-                    context.push('/settings');
+                    context.push('/savedPosts');
                   },
                 ),
                 ListTile(
-                  title: const Text('Logout'),
+                  title: const Text('Groups'),
                   onTap: () {
-                    context.push('/login');
-                  },
-                ),
-                ListTile(
-                  title: const Text('Logout'),
-                  onTap: () {
-                    context.push('/login');
+                    context.push('/groups');
                   },
                 ),
               ],
@@ -93,15 +94,15 @@ class HomeDrawer extends StatelessWidget {
               children: [
                 const Divider(color: AppColors.grey, thickness: 0),
                 ListTile(
-                  title: const Text('About'),
+                  title: const Text('Try Premium for EGP0'),
                   onTap: () {
-                    context.push('/about');
+                    context.push('/premium');
                   },
                 ),
                 ListTile(
-                  title: const Text('Help'),
+                  title: const Text('Settings'),
                   onTap: () {
-                    context.push('/help');
+                    context.push('/settings');
                   },
                 ),
               ],

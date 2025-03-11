@@ -40,7 +40,7 @@ class _PostsState extends State<Posts> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        context.push('/post_page');
+        context.push('/postPage');
       },
       child: Column(
         children: [
@@ -165,7 +165,7 @@ class _PostsState extends State<Posts> {
                     child: GestureDetector(
                       onTap: () {
                         if (!widget.inMessage) {
-                          context.push("/post_page");
+                          context.push("/postPage");
                         }
                       },
                       child: Text(comments),
@@ -197,7 +197,7 @@ class _PostsState extends State<Posts> {
               GestureDetector(
                 onTap: () {
                   if (!widget.inMessage) {
-                    context.push("/post_page/focused");
+                    context.push("/postPage/focused");
                   }
                 },
                 child: const Column(

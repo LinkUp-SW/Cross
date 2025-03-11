@@ -8,16 +8,23 @@ import 'package:link_up/features/Home/view/home_page.dart';
 import 'package:link_up/features/Home/view/post_page.dart';
 import 'package:link_up/features/Home/view/reactions_page.dart';
 import 'package:link_up/features/Home/view/reposts_page.dart';
+import 'package:link_up/features/Home/view/write_post.dart';
 import 'package:link_up/shared/dummy_page.dart';
 import 'package:link_up/shared/widgets/bottom_navigation_bar.dart';
+import 'package:link_up/shared/widgets/main_drawer.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) {
+
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
   return GoRouter(initialLocation: '/', routes: <RouteBase>[
     GoRoute(path: "/profile", builder: (context, state) => Container()),
     GoRoute(path: "/login", builder: (context, state) => Container()),
     GoRoute(path: "/signup", builder: (context, state) => Container()),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) => Scaffold(
+        key: scaffoldKey,
+        drawer: const MainDrawer(),
         body: navigationShell, // The body displays the current screen
         bottomNavigationBar: CustomBottomNavigationBar(
           navigationShell: navigationShell,
@@ -27,7 +34,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         // The route branch for the first tab of the bottom navigation bar.
         StatefulShellBranch(
           routes: <GoRoute>[
-            GoRoute(path: "/", builder: (context, state) => const HomePage()),
+            GoRoute(path: "/", builder: (context, state) => HomePage(scaffoldKey: scaffoldKey,)),
           ],
         ),
         StatefulShellBranch(
@@ -63,7 +70,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         StatefulShellBranch(
           routes: <GoRoute>[
             GoRoute(
-                path: "/post_page",
+                path: "/postPage",
                 builder: (context, state) => const PostPage(),
                 routes: [
                   GoRoute(
@@ -94,9 +101,21 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) => const ReactionsPage()),
           ],
         ),
+        
       ],
     ),
     GoRoute(path: "/company", builder: (context, state) => Container()),
+    GoRoute(path: "/writePost", pageBuilder: (context, state) => 
+    CustomTransitionPage(child: const WritePost(), transitionsBuilder: 
+    (context, animation, secondaryAnimation, child) {
+      return SlideTransition(
+        position: Tween<Offset>(
+          begin: const Offset(0, 1.0),
+          end: Offset.zero,
+        ).animate(animation),
+        child: child,
+      );
+    })),
     GoRoute(
         path: "/messages",
         builder: (context, state) => const DummyPage(title: "messages")),

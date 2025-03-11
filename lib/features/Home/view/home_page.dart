@@ -1,12 +1,13 @@
 
 import 'package:flutter/material.dart';
-import 'package:link_up/features/Home/widgets/home_drawer.dart';
+import 'package:go_router/go_router.dart';
 import 'package:link_up/features/Home/widgets/posts.dart';
 import 'package:link_up/shared/widgets/custom_app_bar.dart';
 import 'package:link_up/shared/widgets/custom_search_bar.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  const HomePage({super.key,required this.scaffoldKey});
+  final GlobalKey<ScaffoldState> scaffoldKey;
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -54,7 +55,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const HomeDrawer(),
       body: NestedScrollView(
         controller: scrollController2,
         floatHeaderSlivers: true,
@@ -63,12 +63,14 @@ class _HomePageState extends State<HomePage> {
             child: CustomAppBar(
               searchBar: const CustomSearchBar(),
               leadingAction: () {
-                Scaffold.of(context).openDrawer();
+                widget.scaffoldKey.currentState!.openDrawer();
               },
               actions: [
                 IconButton(
                   //TODO: add the action to write a post
-                  onPressed: () {},
+                  onPressed: () {
+                    context.push('/writePost');
+                  },
                   icon: const Icon(Icons.edit),
                 ),
               ],
