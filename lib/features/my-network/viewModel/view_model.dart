@@ -10,7 +10,7 @@ class MyNetworkScreenViewModel extends StateNotifier<MyNetworkScreenState> {
       : super(MyNetworkScreenState.initial());
 
   // Initializer method - called when the screen is first loaded
-  Future<void> initializeGrowTab() async {
+  Future<void> fetchGrowTabData() async {
     try {
       // Set loading state
       state = state.copyWith(
@@ -147,11 +147,6 @@ class MyNetworkScreenViewModel extends StateNotifier<MyNetworkScreenState> {
     } catch (e) {
       print('Error loading more suggestions: $e');
     }
-  }
-
-  // Public methods for user interactions
-  Future<void> refreshGrowTab() async {
-    await initializeGrowTab();
   }
 }
 

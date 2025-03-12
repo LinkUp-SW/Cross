@@ -1,19 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:link_up/features/my-network/model/model.dart';
-import 'package:link_up/features/my-network/widgets/navigation_row.dart';
-import 'package:link_up/features/my-network/widgets/newsletter_card.dart';
-import 'package:link_up/features/my-network/widgets/people_card.dart';
-import 'package:link_up/features/my-network/widgets/section.dart';
-import 'package:link_up/features/my-network/widgets/wide_people_card.dart';
-import 'package:link_up/features/my-network/widgets/wide_section.dart';
+import 'package:link_up/features/my-network/view/grow_tab.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/widgets/custom_app_bar.dart';
 import 'package:link_up/shared/widgets/custom_search_bar.dart';
 
-class MyNetworkPage extends ConsumerWidget {
-  const MyNetworkPage({super.key});
+class MyNetworkScreen extends ConsumerWidget {
+  const MyNetworkScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -54,95 +48,7 @@ class MyNetworkPage extends ConsumerWidget {
         ),
         body: TabBarView(
           children: [
-            SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 10.h,
-                children: [
-                  NavigationRow(
-                    title: 'Invitations',
-                    isDarkMode: isDarkMode,
-                  ),
-                  NavigationRow(
-                    title: 'Manage my network',
-                    isDarkMode: isDarkMode,
-                  ),
-                  Section(
-                    title: "People you may know based on your recent activity",
-                    cards: [
-                      PeopleCard(
-                        data: GrowTabPeopleCardsModel.initial(),
-                        isDarkMode: isDarkMode,
-                      ),
-                      PeopleCard(
-                        data: GrowTabPeopleCardsModel.initial(),
-                        isDarkMode: isDarkMode,
-                      ),
-                      PeopleCard(
-                        data: GrowTabPeopleCardsModel.initial(),
-                        isDarkMode: isDarkMode,
-                      ),
-                      PeopleCard(
-                        data: GrowTabPeopleCardsModel.initial(),
-                        isDarkMode: isDarkMode,
-                      ),
-                    ],
-                    isDarkMode: isDarkMode,
-                  ),
-                  Section(
-                    title: "People you may know from Cairo University",
-                    cards: [
-                      PeopleCard(
-                        data: GrowTabPeopleCardsModel.initial(),
-                        isDarkMode: isDarkMode,
-                      ),
-                      PeopleCard(
-                        data: GrowTabPeopleCardsModel.initial(),
-                        isDarkMode: isDarkMode,
-                      ),
-                      PeopleCard(
-                        data: GrowTabPeopleCardsModel.initial(),
-                        isDarkMode: isDarkMode,
-                      ),
-                      PeopleCard(
-                        data: GrowTabPeopleCardsModel.initial(),
-                        isDarkMode: isDarkMode,
-                      ),
-                    ],
-                    isDarkMode: isDarkMode,
-                  ),
-                  WideSection(
-                      title:
-                          "People who are in the Software Development industry also follow these people",
-                      cards: [
-                        WidePeopleCard(
-                          data: GrowTabPeopleCardsModel.initial(),
-                          isDarkMode: isDarkMode,
-                        ),
-                        WidePeopleCard(
-                          data: GrowTabPeopleCardsModel.initial(),
-                          isDarkMode: isDarkMode,
-                        ),
-                      ],
-                      isDarkMode: isDarkMode),
-                  WideSection(
-                    title:
-                        "People who are in the Software Development industry also subscribe to these newsletters",
-                    cards: [
-                      NewsletterCard(
-                        data: GrowTabNewsletterCardsModel.initial(),
-                        isDarkMode: isDarkMode,
-                      ),
-                      NewsletterCard(
-                        data: GrowTabNewsletterCardsModel.initial(),
-                        isDarkMode: isDarkMode,
-                      ),
-                    ],
-                    isDarkMode: isDarkMode,
-                  ),
-                ],
-              ),
-            ),
+            GrowTab(isDarkMode: isDarkMode),
             const Center(child: Text("Catch Tab")),
           ],
         ),

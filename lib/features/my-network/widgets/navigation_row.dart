@@ -21,9 +21,7 @@ class NavigationRow extends ConsumerWidget {
     return Material(
       color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
       child: InkWell(
-        onTap: () {
-          print("Pressed on $title tab");
-        },
+        onTap: onTap,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
