@@ -3,11 +3,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 
-
 // Need to be revised but for the outlined and text buttons
 
 class LinkUpButtonStyles {
-
   ElevatedButtonThemeData lightElevatedButtonTheme() {
     return ElevatedButtonThemeData(
       style: profileOpenToLight(),
@@ -34,16 +32,51 @@ class LinkUpButtonStyles {
 
   TextButtonThemeData lightTextButtonTheme() {
     return TextButtonThemeData(
-      style: profileOpenToLight(),
+      style: lightTextButtonStyle(),
     );
   }
 
   TextButtonThemeData darkTextButtonTheme() {
     return TextButtonThemeData(
-      style: profileOpenToDark(),
+      style: darkTextButtonStyle(),
     );
   }
 
+  ButtonStyle lightTextButtonStyle({
+    double elevation = 0.0,
+    EdgeInsets? padding,
+    BorderRadius? borderRadius,
+    TextStyle? textStyle,
+  }) {
+    padding ??= EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h);
+    borderRadius ??= BorderRadius.all(Radius.circular(20.r));
+    textStyle ??= TextStyles.font13_700Weight;
+
+    return ButtonStyle(
+      elevation: WidgetStateProperty.all(elevation),
+      padding: WidgetStateProperty.all(padding),
+      textStyle: WidgetStateProperty.all(textStyle),
+      foregroundColor: WidgetStateProperty.all(AppColors.lightBlue),
+    );
+  }
+
+  ButtonStyle darkTextButtonStyle({
+    double elevation = 0.0,
+    EdgeInsets? padding,
+    BorderRadius? borderRadius,
+    TextStyle? textStyle,
+  }) {
+    padding ??= EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h);
+    borderRadius ??= BorderRadius.all(Radius.circular(20.r));
+    textStyle ??= TextStyles.font13_700Weight;
+
+    return ButtonStyle(
+      elevation: WidgetStateProperty.all(elevation),
+      padding: WidgetStateProperty.all(padding),
+      textStyle: WidgetStateProperty.all(textStyle),
+      foregroundColor: WidgetStateProperty.all(AppColors.darkBlue),
+    );
+  }
 
   ButtonStyle profileOpenToLight({
     double elevation = 0.0,
