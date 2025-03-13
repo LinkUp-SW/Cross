@@ -3,22 +3,26 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/logIn/widgets/widgets.dart';
+import 'package:link_up/features/logIn/viewModel/view_model.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  ConsumerState<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
-  @override
+class _LoginPageState extends ConsumerState<LoginPage> {
   bool _rememberMe = false;
-  var _emailController = TextEditingController();
-  var _passwordController = TextEditingController();
-  var _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   bool _obsureText = true;
+
+  @override
   Widget build(BuildContext context) {
+    final loginViewModel = ref.watch(loginViewModelProvider);
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(10.0),
@@ -130,14 +134,7 @@ class _LoginPageState extends State<LoginPage> {
                       keyboardType: TextInputType.emailAddress,
                       decoration: const InputDecoration(
                           hintText: 'Email or Phone Number'),
-                      validator: (value) {
-                        if (value!.isEmpty ||
-                            value.length < 10 ||
-                            !value.contains("@")) {
-                          return 'Please enter your email or phone number';
-                        }
-                        return null;
-                      },
+                      validator: loginViewModel.validateEmail,
                     ),
                     const SizedBox(
                       height: 10,
@@ -156,12 +153,7 @@ class _LoginPageState extends State<LoginPage> {
                               icon: Icon(_obsureText
                                   ? Icons.visibility
                                   : Icons.visibility_off))),
-                      validator: (value) {
-                        if (value!.isEmpty || value.length < 6) {
-                          return 'Please enter a valid password';
-                        }
-                        return null;
-                      },
+                      validator: loginViewModel.validatePassword,
                     ),
                     SizedBox(
                       height: 10.h,
@@ -196,6 +188,7 @@ class _LoginPageState extends State<LoginPage> {
                       children: [
                         ElevatedButton(
                             onPressed: () {
+                              _formKey.currentState!.reset();
                               if (_formKey.currentState!.validate()) {
                                 context.pushReplacement('/');
                               }
