@@ -53,7 +53,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     width: 2.w,
                   ),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      context.push('/signup');
+                    },
                     child: const Text('Join LinkUp'),
                   )
                 ],
@@ -64,12 +66,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
-                    child: OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            backgroundColor: Colors.transparent),
+                    child: ElevatedButton(
                         onPressed: () {},
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -85,20 +82,16 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             const Text(
                               'Sign in with Google',
                               style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20,
-                                  color: Colors.black),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                              ),
                             )
                           ],
                         )),
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
-                    child: OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20)),
-                            backgroundColor: Colors.transparent),
+                    child: ElevatedButton(
                         onPressed: () {},
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -116,7 +109,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 20,
-                                color: Colors.black,
                               ),
                             )
                           ],
