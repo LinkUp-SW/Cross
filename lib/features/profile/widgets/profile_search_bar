@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class CustomSearchBar extends StatelessWidget {
+class CustomSearchBar extends ConsumerWidget {
   final String userName;
 
   const CustomSearchBar({
@@ -10,7 +11,7 @@ class CustomSearchBar extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return SizedBox(
       height: 50.h, // Increased height
       child: SearchAnchor.bar(
@@ -30,7 +31,8 @@ class CustomSearchBar extends StatelessWidget {
                 },
               ),
             ),
-            Expanded(
+            SizedBox(
+              height: 200.h, // Wrapped to avoid `Expanded` inside ListView
               child: ListView.builder(
                 shrinkWrap: true,
                 itemCount: 10,
