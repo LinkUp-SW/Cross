@@ -31,23 +31,26 @@ class PostModel {
 
   PostModel.fromJson(Map<String, dynamic> json)
       : id = json['id'],
-        header = HeaderModel(
-          profileImage: json['profileImage'],
-          name: json['name'],
-          connectionDegree: json['connectionDegree'],
-          about: json['about'],
-          timeAgo: DateTime.parse(json['timeAgo']),
-          visibility: Visibilities.getVisibility(json['visibility']),
-        ),
+        header = HeaderModel.fromJson(json['header']),
         text = json['text'],
-        media = Media(
-          type: MediaType.getMediaType(json['media']['type']),
-          urls: List<String>.from(json['media']['urls']),
-        ),
+        media = Media.fromJson(json['media']),
         reactions = json['reactions'],
         comments = json['comments'],
         reposts = json['reposts'],
         reaction = Reaction.getReaction(json['reaction']);
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'header': header.toJson(),
+        'text': text,
+        'media': media.toJson(),
+        'reactions': reactions,
+        'comments': comments,
+        'reposts': reposts,
+        'reaction': reaction.toString(),
+      };
+
+  
 }
 
 class Media {
@@ -60,7 +63,12 @@ class Media {
       : type = MediaType.getMediaType(json['type']),
         urls = List<String>.from(json['urls']);
 
-  // Should be moved to viewModel
+  Map<String, dynamic> toJson() => {
+        'type': type.toString(),
+        'urls': urls,
+      };
+
+  //TODO: Should be moved to viewModel
   Widget getMedia() {
     switch (type) {
       case MediaType.image:

@@ -1,7 +1,10 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/Home/home_enums.dart';
+import 'package:link_up/features/Home/model/reaction_tile_model.dart';
+import 'package:link_up/shared/themes/colors.dart';
 
 class ReactionsPage extends StatefulWidget {
   const ReactionsPage({super.key});
@@ -11,27 +14,38 @@ class ReactionsPage extends StatefulWidget {
 }
 
 class _ReactionsPageState extends State<ReactionsPage> {
-  final Map<String, int> allReactions = {
-    'like': 100,
-    'celebrate': 50,
-    'support': 30,
-    'love': 20,
-    'insightful': 10,
-    'funny': 5,
-  };
+  List<ReactionTileModel> reactions = List.generate(100, (index) {
+    return ReactionTileModel.fromJson(jsonDecode('''
+      {
+        "header": {
+          "profileImage": "https://i.pravatar.cc/150?img=$index",
+          "name": "User $index",
+          "connectionDegree": "1st",
+          "about": "About user $index",
+          "timeAgo": "${DateTime.now()}"
+        },
+        "reaction": "${Reaction.getReactionString(Reaction.values[index % Reaction.values.length])}"
+      }
+    '''));
+  });
 
-  late final int allReactionsCount;
+  late final Map<String, int> reactionsCount;
 
   @override
   void initState() {
     super.initState();
-    allReactionsCount = allReactions.values.fold(0, (a, b) => a + b);
+    reactionsCount = {
+      for (var reaction in Reaction.values)
+        if (reaction != Reaction.none)
+          Reaction.getReactionString(reaction):
+            reactions.where((element) => element.reaction == reaction).length
+    };
   }
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: allReactions.length + 1,
+      length: reactionsCount.length + 1,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Reactions'),
@@ -43,50 +57,115 @@ class _ReactionsPageState extends State<ReactionsPage> {
             icon: const Icon(Icons.arrow_back),
           ),
           bottom: TabBar(
-            labelColor: Theme.of(context).colorScheme.tertiary,
-            indicatorColor: Theme.of(context).colorScheme.tertiary,
-            tabs: [
-            Tab(
-              child: Text('All\n$allReactionsCount',
-                  textAlign: TextAlign.center),
-            ),
-            for (var reaction in allReactions.keys)
-              
-              Tab(
-                icon: Reaction.getIcon(Reaction.getReaction(reaction)),
-                text: allReactions[reaction].toString(),
-              )
-          ]),
+              tabAlignment: TabAlignment.start,
+              isScrollable: true,
+              labelColor: Theme.of(context).colorScheme.tertiary,
+              indicatorColor: Theme.of(context).colorScheme.tertiary,
+              dividerColor: AppColors.grey,
+              tabs: [
+                Tab(
+                  child: Text('All  ${reactions.length}',
+                      textAlign: TextAlign.center),
+                ),
+                for (var reaction in reactionsCount.keys)
+                  Tab(
+                    icon: Row(
+                      children: [
+                        Reaction.getIcon(Reaction.getReaction(reaction)),
+                        Text(
+                          '  ${reactionsCount[reaction].toString()}',
+                        ),
+                      ],
+                    ),
+                  ),
+              ]),
         ),
         body: TabBarView(
           children: [
             ListView.builder(
-              itemCount: allReactionsCount,
+              itemCount: reactions.length,
               itemBuilder: (context, index) {
-                return ListTile(
-                  leading: CircleAvatar(
-                    radius: 20.r,
-                  ),
-                  title: Text('Item $index'),
-                  subtitle: Text('Item $index'),
+                return ReactionTile(
+                  reactionTile: reactions[index],
                 );
               },
             ),
-            for (var reaction in allReactions.keys)
-              ListView.builder(
-                itemCount: allReactions[reaction],
+            ...reactionsCount.keys
+                .map((reaction) => reactions.where((element) =>
+                    element.reaction == Reaction.getReaction(reaction)))
+                .map((entry) {
+              return ListView.builder(
+                itemCount: entry.length,
                 itemBuilder: (context, index) {
-                  return ListTile(
-                    leading: CircleAvatar(
-                      radius: 20.r,
-                    ),
-                    title: Text('Item $index'),
-                    subtitle: Text('Item $index'),
+                  return ReactionTile(
+                    reactionTile: entry.toList()[index],
                   );
                 },
-              ),
+              );
+            }),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class ReactionTile extends StatelessWidget {
+  const ReactionTile({super.key, required this.reactionTile});
+
+  final ReactionTileModel reactionTile;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      tileColor: Theme.of(context).colorScheme.primary,
+      leading: Stack(
+        children: [
+          CircleAvatar(
+            radius: 25.r,
+            backgroundImage: NetworkImage(reactionTile.header.profileImage),
+          ),
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: CircleAvatar(
+              radius: 11.r,
+              backgroundColor: Reaction.getColor(reactionTile.reaction),
+              child: Icon(
+                Reaction.getIconData(
+                  reactionTile.reaction,
+                ),
+                color: AppColors.lightBackground,
+                size: 15.r,
+              ),
+            ),
+          ),
+        ],
+      ),
+      title: Text.rich(
+        TextSpan(
+          children: [
+            TextSpan(
+              text: reactionTile.header.name,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            TextSpan(
+              text: ' • ${reactionTile.header.connectionDegree}',
+              style: TextStyle(color: AppColors.grey, fontSize: 10.r),
+            ),
+          ],
+        ),
+      ),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(reactionTile.header.about,
+              style: const TextStyle(color: AppColors.grey)),
+          const Divider(
+            color: AppColors.grey,
+            thickness: 0,
+          ),
+        ],
       ),
     );
   }

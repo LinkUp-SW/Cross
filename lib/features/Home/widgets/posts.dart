@@ -1,9 +1,11 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/Home/home_enums.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
+import 'package:link_up/features/Home/viewModel/post_vm.dart';
 import 'package:link_up/features/Home/widgets/bottom_sheets.dart';
 import 'package:link_up/features/Home/widgets/post_header.dart';
 import 'package:link_up/features/Home/widgets/reactions.dart';
@@ -11,7 +13,7 @@ import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/widgets/bottom_sheet.dart';
 import 'package:readmore/readmore.dart';
 
-class Posts extends StatefulWidget {
+class Posts extends ConsumerStatefulWidget {
   final bool showTop;
   final bool inMessage;
   final PostModel post;
@@ -22,19 +24,22 @@ class Posts extends StatefulWidget {
       required this.post});
 
   @override
-  State<Posts> createState() => _PostsState();
+  ConsumerState<Posts> createState() => _PostsState();
 }
 
-class _PostsState extends State<Posts> {
+class _PostsState extends ConsumerState<Posts> {
   final bool reacted = true;
 
   bool _following = false;
   final bool _isAd = true;
 
+
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        ref.read(postProvider.notifier).setPost(widget.post);
         context.push('/postPage');
       },
       child: Column(
@@ -177,6 +182,7 @@ class _PostsState extends State<Posts> {
                       child: GestureDetector(
                         onTap: () {
                           if (!widget.inMessage) {
+                            ref.read(postProvider.notifier).setPost(widget.post);
                             context.push("/postPage");
                           }
                         },
@@ -236,6 +242,7 @@ class _PostsState extends State<Posts> {
               GestureDetector(
                 onTap: () {
                   if (!widget.inMessage) {
+                    ref.read(postProvider.notifier).setPost(widget.post);
                     context.push("/postPage/focused");
                   }
                 },

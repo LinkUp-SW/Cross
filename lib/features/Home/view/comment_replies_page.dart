@@ -49,19 +49,22 @@ class CommentRepliesPage extends StatelessWidget {
       body: Scrollbar(
         child: SingleChildScrollView(
           child: Card(
-            child: CommentBubble(
-              comment: CommentModel(
-                  header: HeaderModel(
-                    profileImage: 'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
-                    name: 'John Doe',
-                    connectionDegree: '2nd',
-                    about: 'Description',
-                    timeAgo: DateTime.now(),
-                  ),
-                  replies: 5,
-                  likes: 0,
-                  text: 'This is a comment'),
-              allRelies: true,
+            child: Padding(
+              padding: EdgeInsets.all(5.r),
+              child: CommentBubble(
+                comment: CommentModel(
+                    header: HeaderModel(
+                      profileImage: 'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
+                      name: 'John Doe',
+                      connectionDegree: '2nd',
+                      about: 'Description',
+                      timeAgo: DateTime.now(),
+                    ),
+                    replies: 5,
+                    likes: 0,
+                    text: 'This is a comment'),
+                allRelies: true,
+              ),
             ),
           ),
         ),

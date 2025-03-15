@@ -1,5 +1,3 @@
-
-
 import 'package:link_up/features/Home/home_enums.dart';
 
 class HeaderModel {
@@ -28,7 +26,17 @@ class HeaderModel {
         about = json['about'],
         timeAgo = DateTime.parse(json['timeAgo']),
         edited = json['edited'] ?? false,
-        visibility = Visibilities.getVisibility(json['visibility'] ?? Visibilities.anyone);
+        visibility = Visibilities.getVisibility(json['visibility'] ?? 'anyone');
+
+  Map<String, dynamic> toJson() => {
+        'profileImage': profileImage,
+        'name': name,
+        'connectionDegree': connectionDegree,
+        'about': about,
+        'timeAgo': timeAgo.toString(),
+        'edited': edited,
+        'visibility': visibility.toString(),
+      };
 
   String getTime() {
     final now = DateTime.now();
@@ -45,6 +53,8 @@ class HeaderModel {
       return '${difference.inHours}h';
     } else if (difference.inMinutes > 0) {
       return '${difference.inMinutes}m';
-    } else {return 'now';}
+    } else {
+      return 'now';
+    }
   }
 }

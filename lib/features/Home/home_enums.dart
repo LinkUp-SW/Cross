@@ -63,17 +63,17 @@ enum Reaction {
 
   static Reaction getReaction(String reaction) {
     switch (reaction) {
-      case 'like':
+      case 'Like':
         return Reaction.like;
-      case 'celebrate':
+      case 'Celebrate':
         return Reaction.celebrate;
-      case 'support':
+      case 'Support':
         return Reaction.support;
-      case 'love':
+      case 'Love':
         return Reaction.love;
-      case 'insightful':
+      case 'Insightful':
         return Reaction.insightful;
-      case 'funny':
+      case 'Funny':
         return Reaction.funny;
       default:
         return Reaction.none;
@@ -116,6 +116,25 @@ enum Reaction {
         return const Icon(
           Icons.thumb_up_alt_outlined,
         );
+    }
+  }
+
+  static IconData getIconData(Reaction reaction) {
+    switch (reaction) {
+      case Reaction.like:
+        return Icons.thumb_up_alt;
+      case Reaction.celebrate:
+        return Icons.celebration;
+      case Reaction.support:
+        return Icons.support;
+      case Reaction.love:
+        return Icons.favorite;
+      case Reaction.insightful:
+        return Icons.lightbulb;
+      case Reaction.funny:
+        return Icons.emoji_emotions;
+      case Reaction.none:
+        return Icons.thumb_up_alt_outlined;
     }
   }
 
