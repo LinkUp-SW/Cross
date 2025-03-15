@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:link_up/features/Home/home_enums.dart';
 import 'package:link_up/shared/themes/colors.dart';
 
 class Reactions extends StatefulWidget {
@@ -9,50 +10,9 @@ class Reactions extends StatefulWidget {
   State<Reactions> createState() => _ReactionsState();
 }
 
-enum Reaction { like, celebrate, support, love, insightful, funny, none }
-
 class _ReactionsState extends State<Reactions> {
   Offset? _tapPosition;
   Reaction _reaction = Reaction.none;
-
-  Icon getIcon(Reaction reaction) {
-    switch (reaction) {
-      case Reaction.like:
-        return const Icon(
-          Icons.thumb_up_alt,
-          color: AppColors.darkBlue,
-        );
-      case Reaction.celebrate:
-        return const Icon(
-          Icons.celebration,
-          color: Colors.green,
-        );
-      case Reaction.support:
-        return Icon(
-          Icons.support,
-          color: Colors.purple[300],
-        );
-      case Reaction.love:
-        return const Icon(
-          Icons.favorite,
-          color: AppColors.red,
-        );
-      case Reaction.insightful:
-        return const Icon(
-          Icons.lightbulb,
-          color: AppColors.amber,
-        );
-      case Reaction.funny:
-        return const Icon(
-          Icons.emoji_emotions,
-          color: AppColors.lightBlue,
-        );
-      case Reaction.none:
-        return const Icon(
-          Icons.thumb_up_alt_outlined,
-        );
-    }
-  }
 
   Future<void> _showCustomMenu() async {
     if (_tapPosition == null) {
@@ -93,7 +53,7 @@ class _ReactionsState extends State<Reactions> {
                         _reaction = Reaction.values[i];
                       });
                     },
-                    icon: getIcon(Reaction.values[i])),
+                    icon: Reaction.getIcon(Reaction.values[i])),
               ],
             ],
           ),
@@ -127,7 +87,7 @@ class _ReactionsState extends State<Reactions> {
 
       child: Column(
         children: [
-          getIcon(_reaction),
+          Reaction.getIcon(_reaction),
           Text(
             switch (_reaction) {
               Reaction.like => 'Like',

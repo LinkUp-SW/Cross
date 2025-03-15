@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:link_up/features/Home/home_enums.dart';
 
 class ReactionsPage extends StatefulWidget {
   const ReactionsPage({super.key});
@@ -11,7 +12,7 @@ class ReactionsPage extends StatefulWidget {
 
 class _ReactionsPageState extends State<ReactionsPage> {
   final Map<String, int> allReactions = {
-    'likes': 100,
+    'like': 100,
     'celebrate': 50,
     'support': 30,
     'love': 20,
@@ -46,11 +47,13 @@ class _ReactionsPageState extends State<ReactionsPage> {
             indicatorColor: Theme.of(context).colorScheme.tertiary,
             tabs: [
             Tab(
-              text: 'All\n$allReactionsCount',
+              child: Text('All\n$allReactionsCount',
+                  textAlign: TextAlign.center),
             ),
             for (var reaction in allReactions.keys)
+              
               Tab(
-                icon: const Icon(Icons.thumb_up_alt_outlined),
+                icon: Reaction.getIcon(Reaction.getReaction(reaction)),
                 text: allReactions[reaction].toString(),
               )
           ]),
