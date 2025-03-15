@@ -1,44 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 
-class SectionWidget extends StatelessWidget {
+class SectionWidget extends ConsumerWidget {
   final String title;
   final Widget child;
-  final Widget? action;
 
   const SectionWidget({
-    Key? key,
+    super.key,
     required this.title,
     required this.child,
-    this.action,
-  }) : super(key: key);
+  });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Card(
+      color: AppColors.lightMain,
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(12),
       ),
-      elevation: 2,
-      color: Theme.of(context).cardTheme.color, // Adapts to theme
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  title,
-                  style: TextStyles.font18_700Weight,
-                ),
-                if (action != null) action!,
-              ],
+            Text(
+              title,
+              style: TextStyles.font18_700Weight,
             ),
             const SizedBox(height: 8),
-            child,
+            child, // Content inside the section
           ],
         ),
       ),
