@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:link_up/features/Home/model/comment_model.dart';
+import 'package:link_up/features/Home/model/header_model.dart';
+import 'package:link_up/features/Home/model/post_model.dart';
 import 'package:link_up/features/Home/widgets/bottom_sheets.dart';
 import 'package:link_up/features/Home/widgets/comment_bubble.dart';
 import 'package:link_up/features/Home/widgets/posts.dart';
@@ -172,9 +175,29 @@ class _PostPageState extends State<PostPage> {
             padding: const EdgeInsets.all(10),
             child: ListView(
               children: [
-                const Posts(
+                Posts(
                   showTop: false,
                   inMessage: true,
+                  post: PostModel.fromJson({
+                    "id": '1',
+                    "profileImage":
+                        'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
+                    "name": "John Doe",
+                    "connectionDegree": "johndoe",
+                    "about": "About John Doe",
+                    "timeAgo": DateTime.now().toIso8601String(),
+                    "visibility": "anyone",
+                    "text": "This is a post",
+                    "media":{"type": "image",
+                    "urls": [
+                      'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg'
+                    ],
+                    },
+                    "reactions": 10,
+                    "comments": 50,
+                    "reposts": 0,
+                    "reaction": "celebrate"
+                  }),
                 ),
                 const Text("Reactions"),
                 Padding(
@@ -256,7 +279,19 @@ class _PostPageState extends State<PostPage> {
                     height: 10.h,
                   ),
                   itemBuilder: (context, index) {
-                    return const CommentBubble(replies: 5);
+                    return CommentBubble(
+                      comment: CommentModel(
+                          header: HeaderModel(
+                            profileImage: 'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
+                            name: 'John Doe',
+                            connectionDegree: '2nd',
+                            about: 'Description',
+                            timeAgo: DateTime.now(),
+                          ),
+                          replies: 5,
+                          likes: 2,
+                          text: 'This is a comment'),
+                    );
                   },
                 ),
               ],

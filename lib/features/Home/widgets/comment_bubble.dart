@@ -1,24 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:link_up/features/Home/home_enums.dart';
+import 'package:link_up/features/Home/model/comment_model.dart';
+import 'package:link_up/features/Home/widgets/reactions.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/widgets/bottom_sheet.dart';
 
-class CommentBubble extends StatelessWidget {
+class CommentBubble extends StatefulWidget {
   const CommentBubble({
     super.key,
     this.isReply = false,
-    this.replies = 0,
-    this.likes = 0,
+    required this.comment,
     this.allRelies = false,
   });
 
-  final int replies;
-  final int likes;
+  final CommentModel comment;
 
   final bool isReply;
   final bool allRelies;
 
+  @override
+  State<CommentBubble> createState() => _CommentBubbleState();
+}
+
+class _CommentBubbleState extends State<CommentBubble> {
+
+  Reaction _reaction = Reaction.none;
   @override
   Widget build(BuildContext context) {
     return Flex(
@@ -29,15 +37,14 @@ class CommentBubble extends StatelessWidget {
           flex: 1,
           child: CircleAvatar(
             radius: 20.r,
-            backgroundImage: const NetworkImage(
-                'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg'),
+            backgroundImage: NetworkImage(widget.comment.header.profileImage),
           ),
         ),
         SizedBox(
           width: 10.w,
         ),
         Flexible(
-          flex: isReply ? 9 : 10,
+          flex: widget.isReply ? 9 : 10,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -51,122 +58,151 @@ class CommentBubble extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           SizedBox(
-                            width: 200.w,
-                            child: const Column(
+                            width: 150.w,
+                            child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text.rich(
                                   TextSpan(
                                     children: [
                                       TextSpan(
-                                        text: 'John Doe',
-                                        style: TextStyle(
+                                        text: widget.comment.header.name,
+                                        style: const TextStyle(
                                             fontWeight: FontWeight.bold),
                                       ),
                                       TextSpan(
-                                        text: ' • johndoe',
-                                        style: TextStyle(color: AppColors.grey),
+                                        text:
+                                            ' • ${widget.comment.header.connectionDegree}',
+                                        style: TextStyle(
+                                            color: AppColors.grey,
+                                            fontSize: 10.r),
                                       ),
                                     ],
                                   ),
                                 ),
                                 Text(
-                                  'Discrption mckfdm d lfdfdm lfdkf dldf lkfmkf lfk ndbk',
+                                  widget.comment.header.about,
                                   overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(fontSize: 10),
-                                ),
-                                Text(
-                                  '2 hours ago',
-                                  style: TextStyle(fontSize: 10),
+                                  style: TextStyle(fontSize: 10.r),
                                 ),
                               ],
                             ),
                           ),
-                          IconButton(
-                            onPressed: () {
-                              showModalBottomSheet(
-                                  context: context,
-                                  useRootNavigator: true,
-                                  builder: (context) => CustomModalBottomSheet(
-                                        content: Column(
-                                          children: [
-                                            ListTile(
-                                              onTap: () {},
-                                              leading:
-                                                  const Icon(Icons.ios_share),
-                                              title: const Text("Share via"),
+                          Row(
+                            children: [
+                              Text(
+                                widget.comment.header.getTime(),
+                                style: TextStyle(fontSize: 10.r),
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  showModalBottomSheet(
+                                      context: context,
+                                      useRootNavigator: true,
+                                      builder: (context) =>
+                                          CustomModalBottomSheet(
+                                            content: Column(
+                                              children: [
+                                                ListTile(
+                                                  onTap: () {},
+                                                  leading: const Icon(
+                                                      Icons.ios_share),
+                                                  title:
+                                                      const Text("Share via"),
+                                                ),
+                                                ListTile(
+                                                  onTap: () {},
+                                                  leading:
+                                                      const Icon(Icons.report),
+                                                  title: const Text("Report"),
+                                                ),
+                                              ],
                                             ),
-                                            ListTile(
-                                              onTap: () {},
-                                              leading: const Icon(Icons.report),
-                                              title: const Text("Report"),
-                                            ),
-                                          ],
-                                        ),
-                                      ));
-                            },
-                            icon: const Icon(Icons.more_horiz),
+                                          ));
+                                },
+                                icon: const Icon(Icons.more_horiz),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                      const Text.rich(TextSpan(
-                        text:
-                            "Comment this is the comment section fmkmkf flm ff fl flfm flf  flf lfm f flf lsk",
-                      )),
+                      Text.rich(
+                        TextSpan(
+                          text: widget.comment.text,
+                          style: TextStyle(fontSize: 12.r),
+                        ),
+                      ),
                     ],
                   ),
                 ),
+              ),
+              SizedBox(
+                height: 5.h,
               ),
               Row(
                 children: [
                   SizedBox(
                     width: 10.w,
                   ),
-                  const Text("Like"),
-                  if (likes > 0) Text(" • $likes"),
-                  const Text(" | "),
-                  const Text("Reply"),
-                  if (replies > 0)
+                  Reactions(
+                    offset: 80.h,
+                    reaction: _reaction,
+                    setReaction: (reaction) {
+                      setState(() {
+                        _reaction = reaction;
+                      });
+                    },
+                    child: Text("Likes ", style: TextStyle(color: _reaction == Reaction.none ? AppColors.grey : Reaction.getColor(_reaction))),
+                  ),
+                  if (widget.comment.likes > 0) Text("  •  ${widget.comment.likes} likes", style: const TextStyle(color: AppColors.grey)),
+                  const Text("  |  ", style: TextStyle(color: AppColors.grey)),
+                  const Text("Reply ", style: TextStyle(color: AppColors.grey)),
+                  if (widget.comment.replies > 0)
                     GestureDetector(
                         onTap: () {
                           context.push("/commentReplies");
                         },
-                        child: Text(" • $replies  ${replies > 1 ? "replies" : "reply"}")),
+                        child: Text(
+                            " •  ${widget.comment.replies}  ${widget.comment.replies > 1 ? "replies" : "reply"}",style: const TextStyle(color: AppColors.grey),)),
                 ],
               ),
               SizedBox(
                 height: 10.h,
               ),
-              if (!allRelies) ...[
-                if (replies > 1)
-                  TextButton(
-                      onPressed: () {
-                        context.push("/commentReplies");
-                      },
-                      child: Text(
-                        "Show ${replies - 1} more ${replies > 2 ? "replies" : "reply"}",
-                      )),
-                if (replies > 0 && !isReply)
-                  const CommentBubble(
-                    isReply: true,
-                  ),
-              ],
-              if (allRelies)
-                Column(
-                  children: List.generate(
-                    replies,
-                    (index) => Column(
-                      children: [
-                        const CommentBubble(
-                          isReply: true,
-                        ),
-                        SizedBox(
-                          height: 10.h,
-                        ),
-                      ],
+              if (!widget.isReply) ...[
+                if (!widget.allRelies) ...[
+                  if (widget.comment.replies > 1)
+                    TextButton(
+                        onPressed: () {
+                          context.push("/commentReplies");
+                        },
+                        child: Text(
+                          "Show ${widget.comment.replies - 1} more ${widget.comment.replies > 2 ? "replies" : "reply"}",
+                        )),
+                  if (widget.comment.replies > 0 && !widget.isReply)
+                    CommentBubble(
+                      isReply: true,
+                      comment: widget.comment,
+                    ),
+                ],
+                if (widget.allRelies)
+                  Column(
+                    children: List.generate(
+                      widget.comment.replies,
+                      (index) => Column(
+                        children: [
+                          CommentBubble(
+                            isReply: true,
+                            comment: widget.comment,
+                          ),
+                          SizedBox(
+                            height: 10.h,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
+              ],
             ],
           ),
         ),

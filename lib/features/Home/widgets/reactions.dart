@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/Home/home_enums.dart';
-import 'package:link_up/shared/themes/colors.dart';
 
 class Reactions extends StatefulWidget {
-  const Reactions({super.key});
+  final Reaction reaction;
+  final Function setReaction;
+  final Widget child;
+  final double offset;
+  const Reactions(
+      {super.key,
+      required this.reaction,
+      required this.setReaction,
+      required this.child,
+      required this.offset});
 
   @override
   State<Reactions> createState() => _ReactionsState();
@@ -12,7 +20,13 @@ class Reactions extends StatefulWidget {
 
 class _ReactionsState extends State<Reactions> {
   Offset? _tapPosition;
-  Reaction _reaction = Reaction.none;
+  late Reaction _reaction;
+
+  @override
+  void initState() {
+    super.initState();
+    _reaction = widget.reaction;
+  }
 
   Future<void> _showCustomMenu() async {
     if (_tapPosition == null) {
@@ -35,7 +49,7 @@ class _ReactionsState extends State<Reactions> {
       color: Theme.of(context).colorScheme.primary,
       position: RelativeRect.fromRect(
           _tapPosition! & Size(40.r, 40.r), // smaller rect, the touch area
-          Offset(0, 100.h) &
+          Offset(0, widget.offset) &
               overlay.semanticBounds.size // Bigger rect, the entire screen
           ),
       items: [
@@ -52,6 +66,7 @@ class _ReactionsState extends State<Reactions> {
                       setState(() {
                         _reaction = Reaction.values[i];
                       });
+                      widget.setReaction(_reaction);
                     },
                     icon: Reaction.getIcon(Reaction.values[i])),
               ],
@@ -83,35 +98,10 @@ class _ReactionsState extends State<Reactions> {
           _reaction =
               _reaction == Reaction.none ? Reaction.like : Reaction.none;
         });
+        widget.setReaction(_reaction);
       },
 
-      child: Column(
-        children: [
-          Reaction.getIcon(_reaction),
-          Text(
-            switch (_reaction) {
-              Reaction.like => 'Like',
-              Reaction.love => 'Love',
-              Reaction.insightful => 'Insightful',
-              Reaction.funny => 'Funny',
-              Reaction.celebrate => 'Celebrate',
-              Reaction.support => 'Support',
-              Reaction.none => 'Like',
-            },
-            style: TextStyle(
-              color: switch (_reaction) {
-                Reaction.like => AppColors.darkBlue,
-                Reaction.love => AppColors.red,
-                Reaction.insightful => AppColors.amber,
-                Reaction.funny => AppColors.lightBlue,
-                Reaction.celebrate => Colors.green,
-                Reaction.support => Colors.purple[300],
-                Reaction.none => null,
-              },
-            ),
-          )
-        ],
-      ),
+      child: widget.child,
     );
   }
 }

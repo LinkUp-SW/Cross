@@ -2,12 +2,11 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:link_up/features/Home/home_enums.dart';
+import 'package:link_up/features/Home/model/post_model.dart';
 import 'package:link_up/features/Home/widgets/bottom_sheets.dart';
-import 'package:link_up/features/Home/widgets/carousel_images.dart';
-import 'package:link_up/features/Home/widgets/pdf_viewer.dart';
 import 'package:link_up/features/Home/widgets/post_header.dart';
 import 'package:link_up/features/Home/widgets/reactions.dart';
-import 'package:link_up/features/Home/widgets/video_player_home.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/widgets/bottom_sheet.dart';
 import 'package:readmore/readmore.dart';
@@ -15,12 +14,12 @@ import 'package:readmore/readmore.dart';
 class Posts extends StatefulWidget {
   final bool showTop;
   final bool inMessage;
-  final String contentType;
+  final PostModel post;
   const Posts(
       {super.key,
       this.showTop = true,
       this.inMessage = false,
-      this.contentType = 'none'});
+      required this.post});
 
   @override
   State<Posts> createState() => _PostsState();
@@ -28,10 +27,6 @@ class Posts extends StatefulWidget {
 
 class _PostsState extends State<Posts> {
   final bool reacted = true;
-
-  final String comments = '100 comments';
-
-  final String reposts = '50 reposts';
 
   bool _following = false;
   final bool _isAd = true;
@@ -59,35 +54,55 @@ class _PostsState extends State<Posts> {
           ListTile(
             leading: CircleAvatar(
               radius: 20.r,
-              backgroundImage: const NetworkImage(
-                  'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg'),
+              backgroundImage: NetworkImage(widget.post.header.profileImage),
             ),
-            title: const Text.rich(
+            title: Text.rich(
               TextSpan(
                 children: [
                   TextSpan(
-                    text: 'John Doe',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    text: widget.post.header.name,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   TextSpan(
-                    text: ' • johndoe',
-                    style: TextStyle(color: AppColors.grey),
+                    text: ' • ${widget.post.header.connectionDegree}',
+                    style: TextStyle(color: AppColors.grey, fontSize: 10.r),
                   ),
                 ],
               ),
             ),
-            subtitle: const Column(
+            subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Discrption mckfdm d lfdfdm lfdkf dldf lkfmkf lfk',
+                  widget.post.header.about,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: 10),
+                  style: TextStyle(fontSize: 10.r, color: AppColors.grey),
                 ),
-                Text(
-                  '2 hours ago',
-                  style: TextStyle(fontSize: 10),
-                ),
+                Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: '${widget.post.header.getTime()} • ',
+                        style: TextStyle(color: AppColors.grey, fontSize: 10.r),
+                      ),
+                      if (widget.post.header.edited)
+                        TextSpan(
+                          text: 'Edited • ',
+                          style:
+                              TextStyle(color: AppColors.grey, fontSize: 10.r),
+                        ),
+                      WidgetSpan(
+                        child: Icon(
+                          widget.post.header.visibility == Visibilities.anyone
+                              ? Icons.public
+                              : Icons.people,
+                          size: 10.r,
+                          color: AppColors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
               ],
             ),
             trailing: TextButton(
@@ -113,29 +128,24 @@ class _PostsState extends State<Posts> {
                   ],
                 )),
           ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10.r),
-            child: const ReadMoreText(
-              trimExpandedText: '   less',
-              trimCollapsedText: 'more    ',
-              trimLines: 3,
-              trimMode: TrimMode.Line,
-              'Lorem ipsum dolor sit amet,sknf dkdf kdf ndkj fkjfdn kjfd dfj dfjkf dkdf',
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10.r),
+              child: ReadMoreText(
+                trimExpandedText: '   less',
+                trimCollapsedText: 'more    ',
+                trimLines: 3,
+                trimMode: TrimMode.Line,
+                widget.post.text,
+              ),
             ),
           ),
           SizedBox(height: 10.h),
-          if (widget.contentType == 'video')
-            const VideoPlayerHome(
-                videoUrl:
-                    'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4'),
-          if (widget.contentType == 'image')
-            Image.network(
-              'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
-              fit: BoxFit.cover,
-            ),
-          if (widget.contentType == 'images') const CarouselImages(),
-          if (widget.contentType == 'none') const PDFViewer(),
-          if (widget.contentType != 'none') SizedBox(height: 10.h),
+          if (widget.post.media.type != MediaType.none) ...[
+            widget.post.media.getMedia(),
+            SizedBox(height: 10.h),
+          ],
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 10.w),
             child: Row(
@@ -148,7 +158,8 @@ class _PostsState extends State<Posts> {
                   child: Row(
                     children: [
                       CircleAvatar(
-                        backgroundColor: Theme.of(context).colorScheme.secondary,
+                        backgroundColor:
+                            Theme.of(context).colorScheme.secondary,
                         radius: 10.r,
                         child: const Icon(
                           Icons.thumb_up_alt,
@@ -156,29 +167,35 @@ class _PostsState extends State<Posts> {
                         ),
                       ),
                       SizedBox(width: 5.w),
-                      const Text("400")
+                      Text(widget.post.reactions.toString()),
                     ],
                   ),
                 ),
                 Text.rich(TextSpan(children: [
-                  WidgetSpan(
-                    child: GestureDetector(
-                      onTap: () {
-                        if (!widget.inMessage) {
-                          context.push("/postPage");
-                        }
-                      },
-                      child: Text(comments),
+                  if (widget.post.comments > 0)
+                    WidgetSpan(
+                      child: GestureDetector(
+                        onTap: () {
+                          if (!widget.inMessage) {
+                            context.push("/postPage");
+                          }
+                        },
+                        child: Text(
+                            '${widget.post.comments} comment${widget.post.comments > 1 ? 's' : ''}'),
+                      ),
                     ),
-                  ),
-                  WidgetSpan(
-                    child: GestureDetector(
-                      onTap: () {
-                        context.push("/reposts");
-                      },
-                      child: Text(' • $reposts'),
+                  if (widget.post.comments > 0 && widget.post.reposts > 0)
+                    const TextSpan(text: ' • '),
+                  if (widget.post.reposts > 0)
+                    WidgetSpan(
+                      child: GestureDetector(
+                        onTap: () {
+                          context.push("/reposts");
+                        },
+                        child: Text(
+                            '${widget.post.reposts} repost${widget.post.reposts > 1 ? 's' : ''}'),
+                      ),
                     ),
-                  ),
                 ]))
               ],
             ),
@@ -193,7 +210,29 @@ class _PostsState extends State<Posts> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              const Reactions(),
+              Reactions(
+                offset: 100.h,
+                reaction: widget.post.reaction,
+                setReaction: (reaction) {
+                  setState(() {
+                    widget.post.reaction = reaction;
+                  });
+                },
+                child: SizedBox(
+                  width: 55.w,
+                  child: Column(
+                    children: [
+                      Reaction.getIcon(widget.post.reaction),
+                      Text(
+                        Reaction.getReactionString(widget.post.reaction),
+                        style: TextStyle(
+                          color: Reaction.getColor(widget.post.reaction),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
               GestureDetector(
                 onTap: () {
                   if (!widget.inMessage) {

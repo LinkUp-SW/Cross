@@ -7,7 +7,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/shared/themes/colors.dart';
 
 class PDFViewer extends StatefulWidget {
-  const PDFViewer({super.key});
+  final String url;
+  const PDFViewer({super.key, required this.url});
 
   @override
   State<PDFViewer> createState() => _PDFViewerState();
@@ -54,7 +55,8 @@ class _PDFViewerState extends State<PDFViewer> {
                 pages = total;
               });
             },
-          ).cachedFromUrl('https://www.sldttc.org/allpdf/21583473018.pdf'),
+          ).cachedFromUrl(widget.url),
+          //'https://www.sldttc.org/allpdf/21583473018.pdf'
         ),
         Positioned(
           left: 5.w,

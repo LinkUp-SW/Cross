@@ -3,8 +3,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/shared/themes/colors.dart';
 
 class CarouselImages extends StatefulWidget {
+  final List<String> images;
   const CarouselImages({
     super.key,
+    required this.images,
   });
 
   @override
@@ -25,7 +27,7 @@ class _CarouselImagesState extends State<CarouselImages> {
         setState(() {
           if (_carouselController.positions.isNotEmpty) {
             _positionNotifier.value = _carouselController.position.pixels *
-                10 /
+                widget.images.length /
                 _carouselController.position.maxScrollExtent;
           } else {
             _positionNotifier.value = 0.0;
@@ -48,10 +50,10 @@ class _CarouselImagesState extends State<CarouselImages> {
               itemSnapping: true,
               itemExtent: 400.r,
               children: List<Widget>.generate(
-                10,
+                widget.images.length,
                 (int index) {
                   return Image.network(
-                    'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
+                    widget.images[index],
                     fit: BoxFit.cover,
                   );
                 },
@@ -68,7 +70,7 @@ class _CarouselImagesState extends State<CarouselImages> {
                 child: Padding(
                   padding: EdgeInsets.all(4.r),
                   child: Text(
-                    '${_positionNotifier.value.round()} / 10',
+                    '${_positionNotifier.value.ceil() == 0 ? '1': _positionNotifier.value.ceil()} / ${widget.images.length}',
                     style: const TextStyle(color: AppColors.lightMain),
                   ),
                 ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:link_up/features/Home/model/comment_model.dart';
+import 'package:link_up/features/Home/model/header_model.dart';
 import 'package:link_up/features/Home/widgets/comment_bubble.dart';
 import 'package:link_up/shared/themes/colors.dart';
 
@@ -35,7 +37,8 @@ class CommentRepliesPage extends StatelessWidget {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     'Replies on x comment on this post',
-                    style: TextStyle(fontSize: 15.r, fontWeight: FontWeight.bold),
+                    style:
+                        TextStyle(fontSize: 15.r, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -43,7 +46,26 @@ class CommentRepliesPage extends StatelessWidget {
           ),
         ),
       ),
-      body: const  Scrollbar( child: SingleChildScrollView(child: Card(child: CommentBubble(replies: 5,allRelies: true,)))),
+      body: Scrollbar(
+        child: SingleChildScrollView(
+          child: Card(
+            child: CommentBubble(
+              comment: CommentModel(
+                  header: HeaderModel(
+                    profileImage: 'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
+                    name: 'John Doe',
+                    connectionDegree: '2nd',
+                    about: 'Description',
+                    timeAgo: DateTime.now(),
+                  ),
+                  replies: 5,
+                  likes: 0,
+                  text: 'This is a comment'),
+              allRelies: true,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

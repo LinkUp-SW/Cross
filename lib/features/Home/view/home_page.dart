@@ -1,12 +1,14 @@
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:link_up/features/Home/home_enums.dart';
+import 'package:link_up/features/Home/model/header_model.dart';
+import 'package:link_up/features/Home/model/post_model.dart';
 import 'package:link_up/features/Home/widgets/posts.dart';
 import 'package:link_up/shared/widgets/custom_app_bar.dart';
 import 'package:link_up/shared/widgets/custom_search_bar.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key,required this.scaffoldKey});
+  const HomePage({super.key, required this.scaffoldKey});
   final GlobalKey<ScaffoldState> scaffoldKey;
 
   @override
@@ -18,7 +20,31 @@ class _HomePageState extends State<HomePage> {
   late ScrollController scrollController2;
   int scrollpostion = 0;
 
-  List<String> posts = List.generate(5, (index) => 'Item $index');
+  List<PostModel> posts = List.generate(
+      5,
+      (index) => PostModel(
+            id: '1',
+            header: HeaderModel(
+              profileImage:
+                  'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
+              name: 'John Doe',
+              connectionDegree: 'johndoe',
+              about: 'About John Doe',
+              timeAgo: DateTime.now(),
+              visibility: Visibilities.anyone,
+            ),
+            text: 'This is a post',
+            media: Media(
+              type: MediaType.image,
+              urls: [
+                'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg'
+              ],
+            ),
+            reactions: 10,
+            comments: 0,
+            reposts: 1,
+            reaction: Reaction.celebrate,
+          ));
 
   @override
   void initState() {
@@ -30,7 +56,60 @@ class _HomePageState extends State<HomePage> {
   void _scrollListener() {
     if (scrollController.position.extentAfter < 500) {
       setState(() {
-        posts.addAll(List.generate(5, (index) => 'Inserted $index'));
+        posts.addAll(
+          List.generate(
+            5,
+            (index) => PostModel(
+              id: '1',
+              header: HeaderModel(
+                profileImage:
+                    'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
+                name: 'John Doe',
+                connectionDegree: 'johndoe',
+                about: 'About John Doe',
+                timeAgo: DateTime.now(),
+                visibility: Visibilities.anyone,
+              ),
+              text: 'This is a post',
+              media: Media(
+                type: index % 5 == 1
+                    ? MediaType.video
+                    : index % 5 == 2
+                        ? MediaType.image
+                        : index % 5 == 3
+                            ? MediaType.images
+                            : index % 5 == 4
+                                ? MediaType.pdf
+                                : MediaType.none,
+                urls: index % 5 == 1
+                    ? [
+                        'https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4'
+                      ]
+                    : index % 5 == 2
+                        ? [
+                            'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg'
+                          ]
+                        : index % 5 == 3
+                            ? [
+                                'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
+                                'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
+                                'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
+                                'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
+                                'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg'
+                              ]
+                            : index % 5 == 4
+                                ? [
+                                    'https://www.sldttc.org/allpdf/21583473018.pdf'
+                                  ]
+                                : [],
+              ),
+              reactions: 10,
+              comments: 50,
+              reposts: 0,
+              reaction: Reaction.none,
+            ),
+          ),
+        );
       });
     }
     if (scrollpostion > scrollController.position.pixels.toInt()) {
@@ -67,11 +146,10 @@ class _HomePageState extends State<HomePage> {
               },
               actions: [
                 IconButton(
-                  //TODO: add the action to write a post
                   onPressed: () {
                     context.push('/writePost');
                   },
-                  icon: const Icon(Icons.edit),
+                  icon: const Icon(Icons.edit_square),
                 ),
               ],
             ),
@@ -87,11 +165,7 @@ class _HomePageState extends State<HomePage> {
               itemBuilder: (context, index) {
                 return Card(
                     child: Posts(
-                  contentType: index % 4 == 1
-                      ? 'video'
-                      : (index % 4 == 2
-                          ? 'image'
-                          : (index % 4 == 3 ? 'images' : 'none')),
+                  post: posts[index],
                 ));
               }),
         ),
