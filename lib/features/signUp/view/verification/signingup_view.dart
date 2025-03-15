@@ -105,7 +105,7 @@ class _SigningupViewState extends ConsumerState<SigningupView> {
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
                               // Clear the form fields
-                              _formKey.currentState!.save();
+                              context.push('/signup/usersname');
                             }
                             _formKey.currentState!.reset();
                           },
