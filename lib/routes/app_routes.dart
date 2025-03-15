@@ -4,16 +4,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/logIn/view/view.dart';
-import 'package:link_up/features/signUp/view/signingup_view.dart';
+import 'package:link_up/features/signUp/view/userInfo/names_view.dart';
+import 'package:link_up/features/signUp/view/verification/signingup_view.dart';
 import 'package:link_up/shared/dummy_page.dart';
 import 'package:link_up/shared/myhomepage.dart';
 import 'package:link_up/shared/widgets/bottom_navigation_bar.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) {
-  return GoRouter(initialLocation: '/signup', routes: <RouteBase>[
+  return GoRouter(initialLocation: '/login', routes: <RouteBase>[
     GoRoute(path: "/profile", builder: (context, state) => Container()),
     GoRoute(path: "/login", builder: (context, state) => const LoginPage()),
-    GoRoute(path: "/signup", builder: (context, state) => const SigningupView()),
+    GoRoute(
+        path: "/signup",
+        builder: (context, state) => const SigningupView(),
+        routes: [
+          GoRoute(
+              path: "/usersname",
+              builder: (context, state) => const NamingPage()),
+        ]),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) => Scaffold(
         body: navigationShell, // The body displays the current screen
