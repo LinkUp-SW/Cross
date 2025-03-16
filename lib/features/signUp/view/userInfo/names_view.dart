@@ -105,7 +105,7 @@ class _NamingPageState extends ConsumerState<NamingPage> {
                       ElevatedButton(
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            context.push('/signup');
+                            context.push('/signup/getphone');
                           }
                         },
                         child: const Text('Next'),
