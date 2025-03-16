@@ -107,7 +107,8 @@ class _SigningupViewState extends ConsumerState<SigningupView> {
                               // Clear the form fields
                               context.push('/signup/usersname');
                             }
-                            _formKey.currentState!.reset();
+                            _emailController.clear();
+                            _passwordController.clear();
                           },
                           child: const Text(
                             "Join",
