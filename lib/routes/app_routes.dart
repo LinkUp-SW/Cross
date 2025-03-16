@@ -5,7 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/logIn/view/view.dart';
 import 'package:link_up/features/signUp/view/userInfo/names_view.dart';
+import 'package:link_up/features/signUp/view/verification/get_phone_number.dart';
 import 'package:link_up/features/signUp/view/verification/signingup_view.dart';
+import 'package:link_up/features/signUp/view/verification/verification.dart';
 import 'package:link_up/shared/dummy_page.dart';
 import 'package:link_up/shared/myhomepage.dart';
 import 'package:link_up/shared/widgets/bottom_navigation_bar.dart';
@@ -21,6 +23,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
               path: "/usersname",
               builder: (context, state) => const NamingPage()),
+          GoRoute(
+              path: "/getphone",
+              builder: (context, state) => const GetPhoneNumber()),
+          GoRoute(
+              path: "/verification",
+              builder: (context, state) => const Verification()),
         ]),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) => Scaffold(
