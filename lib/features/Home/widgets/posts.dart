@@ -15,11 +15,13 @@ import 'package:readmore/readmore.dart';
 
 class Posts extends ConsumerStatefulWidget {
   final bool showTop;
+  final bool showBottom;
   final bool inMessage;
   final PostModel post;
   const Posts(
       {super.key,
       this.showTop = true,
+      this.showBottom = true,
       this.inMessage = false,
       required this.post});
 
@@ -31,9 +33,6 @@ class _PostsState extends ConsumerState<Posts> {
   final bool reacted = true;
 
   bool _following = false;
-  final bool _isAd = true;
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +46,7 @@ class _PostsState extends ConsumerState<Posts> {
           if (reacted && widget.showTop)
             Column(
               children: [
-                PostHeader(isAd: _isAd),
+                PostHeader(isAd: widget.post.isAd),
                 Divider(
                   indent: 10.w,
                   endIndent: 10.w,
@@ -148,162 +147,166 @@ class _PostsState extends ConsumerState<Posts> {
           ),
           SizedBox(height: 10.h),
           if (widget.post.media.type != MediaType.none) ...[
-            widget.post.media.getMedia(),
+            widget.post.media.getMedia(post: widget.post.repost),
             SizedBox(height: 10.h),
           ],
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10.w),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          if (widget.showBottom) ...[
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10.w),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      context.push("/reactions");
+                    },
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.secondary,
+                          radius: 10.r,
+                          child: const Icon(
+                            Icons.thumb_up_alt,
+                            size: 15,
+                          ),
+                        ),
+                        SizedBox(width: 5.w),
+                        Text(widget.post.reactions.toString()),
+                      ],
+                    ),
+                  ),
+                  Text.rich(TextSpan(children: [
+                    if (widget.post.comments > 0)
+                      WidgetSpan(
+                        child: GestureDetector(
+                          onTap: () {
+                            if (!widget.inMessage) {
+                              ref
+                                  .read(postProvider.notifier)
+                                  .setPost(widget.post);
+                              context.push("/postPage");
+                            }
+                          },
+                          child: Text(
+                              '${widget.post.comments} comment${widget.post.comments > 1 ? 's' : ''}'),
+                        ),
+                      ),
+                    if (widget.post.comments > 0 && widget.post.reposts > 0)
+                      const TextSpan(text: ' • '),
+                    if (widget.post.reposts > 0)
+                      WidgetSpan(
+                        child: GestureDetector(
+                          onTap: () {
+                            context.push("/reposts");
+                          },
+                          child: Text(
+                              '${widget.post.reposts} repost${widget.post.reposts > 1 ? 's' : ''}'),
+                        ),
+                      ),
+                  ]))
+                ],
+              ),
+            ),
+            SizedBox(height: 10.h),
+            Divider(
+              indent: 10.w,
+              endIndent: 10.w,
+              thickness: 0,
+              color: AppColors.grey,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
+                Reactions(
+                  offset: 100.h,
+                  reaction: widget.post.reaction,
+                  setReaction: (reaction) {
+                    setState(() {
+                      widget.post.reaction = reaction;
+                    });
+                  },
+                  child: SizedBox(
+                    width: 55.w,
+                    child: Column(
+                      children: [
+                        Reaction.getIcon(widget.post.reaction),
+                        Text(
+                          Reaction.getReactionString(widget.post.reaction),
+                          style: TextStyle(
+                            color: Reaction.getColor(widget.post.reaction),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
                 GestureDetector(
                   onTap: () {
-                    context.push("/reactions");
+                    if (!widget.inMessage) {
+                      ref.read(postProvider.notifier).setPost(widget.post);
+                      context.push("/postPage/focused");
+                    }
                   },
-                  child: Row(
+                  child: const Column(
                     children: [
-                      CircleAvatar(
-                        backgroundColor:
-                            Theme.of(context).colorScheme.secondary,
-                        radius: 10.r,
-                        child: const Icon(
-                          Icons.thumb_up_alt,
-                          size: 15,
-                        ),
-                      ),
-                      SizedBox(width: 5.w),
-                      Text(widget.post.reactions.toString()),
+                      Icon(Icons.comment_outlined),
+                      Text('Comment'),
                     ],
                   ),
                 ),
-                Text.rich(TextSpan(children: [
-                  if (widget.post.comments > 0)
-                    WidgetSpan(
-                      child: GestureDetector(
-                        onTap: () {
-                          if (!widget.inMessage) {
-                            ref.read(postProvider.notifier).setPost(widget.post);
-                            context.push("/postPage");
-                          }
-                        },
-                        child: Text(
-                            '${widget.post.comments} comment${widget.post.comments > 1 ? 's' : ''}'),
+                GestureDetector(
+                  onTap: () {
+                    showModalBottomSheet(
+                      context: context,
+                      useRootNavigator: true,
+                      builder: (context) => CustomModalBottomSheet(
+                        content: Column(
+                          children: [
+                            ListTile(
+                              onTap: () {},
+                              leading: const Icon(Icons.edit),
+                              title: const Text("Repost with your thoughts"),
+                              subtitle: const Text(
+                                  "Create new post with 'name' post attached"),
+                            ),
+                            ListTile(
+                              onTap: () {},
+                              leading: const Icon(Icons.loop),
+                              title: const Text("Repost"),
+                              subtitle: const Text(
+                                  "Instantly bring 'name' post to others' feeds"),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  if (widget.post.comments > 0 && widget.post.reposts > 0)
-                    const TextSpan(text: ' • '),
-                  if (widget.post.reposts > 0)
-                    WidgetSpan(
-                      child: GestureDetector(
-                        onTap: () {
-                          context.push("/reposts");
-                        },
-                        child: Text(
-                            '${widget.post.reposts} repost${widget.post.reposts > 1 ? 's' : ''}'),
-                      ),
-                    ),
-                ]))
-              ],
-            ),
-          ),
-          SizedBox(height: 10.h),
-          Divider(
-            indent: 10.w,
-            endIndent: 10.w,
-            thickness: 0,
-            color: AppColors.grey,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Reactions(
-                offset: 100.h,
-                reaction: widget.post.reaction,
-                setReaction: (reaction) {
-                  setState(() {
-                    widget.post.reaction = reaction;
-                  });
-                },
-                child: SizedBox(
-                  width: 55.w,
+                    );
+                  },
+                  child: const Column(
+                    children: [
+                      Icon(Icons.loop_outlined),
+                      Text('Repost'),
+                    ],
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    shareBottomSheet(context);
+                  },
                   child: Column(
                     children: [
-                      Reaction.getIcon(widget.post.reaction),
-                      Text(
-                        Reaction.getReactionString(widget.post.reaction),
-                        style: TextStyle(
-                          color: Reaction.getColor(widget.post.reaction),
-                        ),
-                      )
+                      Transform.rotate(
+                        angle: -math.pi / 5,
+                        child: const Icon(Icons.send_rounded),
+                      ),
+                      const Text('Share'),
                     ],
                   ),
                 ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  if (!widget.inMessage) {
-                    ref.read(postProvider.notifier).setPost(widget.post);
-                    context.push("/postPage/focused");
-                  }
-                },
-                child: const Column(
-                  children: [
-                    Icon(Icons.comment_outlined),
-                    Text('Comment'),
-                  ],
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  showModalBottomSheet(
-                    context: context,
-                    useRootNavigator: true,
-                    builder: (context) => CustomModalBottomSheet(
-                      content: Column(
-                        children: [
-                          ListTile(
-                            onTap: () {},
-                            leading: const Icon(Icons.edit),
-                            title: const Text("Repost with your thoughts"),
-                            subtitle: const Text(
-                                "Create new post with 'name' post attached"),
-                          ),
-                          ListTile(
-                            onTap: () {},
-                            leading: const Icon(Icons.loop),
-                            title: const Text("Repost"),
-                            subtitle: const Text(
-                                "Instantly bring 'name' post to others' feeds"),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-                child: const Column(
-                  children: [
-                    Icon(Icons.loop_outlined),
-                    Text('Repost'),
-                  ],
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  shareBottomSheet(context);
-                },
-                child: Column(
-                  children: [
-                    Transform.rotate(
-                      angle: -math.pi / 5,
-                      child: const Icon(Icons.send_rounded),
-                    ),
-                    const Text('Share'),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 10.h),
+              ],
+            ),
+            SizedBox(height: 10.h),
+          ],
         ],
       ),
     );

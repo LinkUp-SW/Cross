@@ -1,9 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:link_up/features/Home/home_enums.dart';
 import 'package:link_up/features/Home/model/header_model.dart';
-import 'package:link_up/features/Home/widgets/carousel_images.dart';
-import 'package:link_up/features/Home/widgets/pdf_viewer.dart';
-import 'package:link_up/features/Home/widgets/video_player_home.dart';
+import 'package:link_up/features/Home/model/media_model.dart';
 
 class PostModel {
   String id;
@@ -11,10 +8,12 @@ class PostModel {
   HeaderModel header;
   String text;
   Media media;
+  bool isAd = false;
 
   int reactions;
   int comments;
   int reposts;
+  PostModel? repost;
 
   Reaction reaction;
 
@@ -27,6 +26,8 @@ class PostModel {
     required this.comments,
     required this.reposts,
     required this.reaction,
+    this.isAd = false,
+    this.repost,
   });
 
   PostModel.fromJson(Map<String, dynamic> json)
@@ -37,7 +38,10 @@ class PostModel {
         reactions = json['reactions'],
         comments = json['comments'],
         reposts = json['reposts'],
-        reaction = Reaction.getReaction(json['reaction']);
+        reaction = Reaction.getReaction(json['reaction']),
+        isAd = json['isAd'] ?? false,
+        repost =
+            json['repost'] != null ? PostModel.fromJson(json['repost']) : null;
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -48,39 +52,45 @@ class PostModel {
         'comments': comments,
         'reposts': reposts,
         'reaction': reaction.toString(),
+        'isAd': isAd,
+        'repost': repost?.toJson(),
       };
 
-  
-}
-
-class Media {
-  MediaType type;
-  List<String> urls;
-
-  Media({required this.type, required this.urls});
-
-  Media.fromJson(Map<String, dynamic> json)
-      : type = MediaType.getMediaType(json['type']),
-        urls = List<String>.from(json['urls']);
-
-  Map<String, dynamic> toJson() => {
-        'type': type.toString(),
-        'urls': urls,
-      };
-
-  //TODO: Should be moved to viewModel
-  Widget getMedia() {
-    switch (type) {
-      case MediaType.image:
-        return Image.network(urls[0]);
-      case MediaType.images:
-        return CarouselImages(images: urls);
-      case MediaType.video:
-        return VideoPlayerHome(videoUrl: urls[0]);
-      case MediaType.pdf:
-        return PDFViewer(url: urls[0]);
-      default:
-        return const SizedBox();
-    }
+  PostModel copyWith({
+    String? id,
+    HeaderModel? header,
+    String? text,
+    Media? media,
+    int? reactions,
+    int? comments,
+    int? reposts,
+    Reaction? reaction,
+    bool? isAd,
+    PostModel? repost,
+  }) {
+    return PostModel(
+      id: id ?? this.id,
+      header: header ?? this.header,
+      text: text ?? this.text,
+      media: media ?? this.media,
+      reactions: reactions ?? this.reactions,
+      comments: comments ?? this.comments,
+      reposts: reposts ?? this.reposts,
+      reaction: reaction ?? this.reaction,
+      isAd: isAd ?? this.isAd,
+      repost: repost ?? this.repost,
+    );
   }
+
+  PostModel.initial()
+      : id = '5',
+        header = HeaderModel.initial(),
+        text = 'This is dummy text to try to fill the space',
+        media = Media.initial(),
+        reactions = 50,
+        comments = 5,
+        reposts = 5,
+        reaction = Reaction.insightful,
+        isAd = false,
+        repost = null;
 }

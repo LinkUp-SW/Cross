@@ -34,6 +34,7 @@ enum MediaType {
   images,
   video,
   pdf,
+  post,
   none;
 
   static MediaType getMediaType(String mediaType) {
@@ -46,6 +47,8 @@ enum MediaType {
         return MediaType.video;
       case 'pdf':
         return MediaType.pdf;
+      case 'post':
+        return MediaType.post;
       default:
         return MediaType.none;
     }
