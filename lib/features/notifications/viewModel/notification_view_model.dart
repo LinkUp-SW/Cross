@@ -1,16 +1,40 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../state/notification_state.dart';
+import '../services/notification_service.dart';
+import '../state/notification_state.dart' ;
+import '../model/notification_model.dart' ;
+import 'package:link_up/features/notifications/services/mock_notification_service.dart';
 
-class NotificationViewModel extends StateNotifier<NotificationState> {
-  NotificationViewModel() : super(NotificationState());
+final notificationServiceProvider = Provider<NotificationService>((ref) {
+    const bool useMock = true; // it will be for selecting the service to use
+  return MockNotificationService();
+});
 
-  /// **Set the selected filter (All, Jobs, Mentions, Posts)**
-  void setFilter(NotificationFilter filter) {
-    state = state.copyWith(selectedFilter: filter);
+final notificationsViewModelProvider = StateNotifierProvider.autoDispose<NotificationsViewModel, NotificationState>(
+  (ref) => NotificationsViewModel(ref.watch(notificationServiceProvider)),
+);
+
+class NotificationsViewModel extends StateNotifier<NotificationState> {
+  final NotificationService service;
+
+  NotificationsViewModel(this.service) : super(NotificationState(notifications: [])) {
+    fetchNotifications();
   }
+
+  Future<void> fetchNotifications() async {
+    state = state.copyWith(isLoading: true);
+    try {
+      final notifications = await service.fetchNotifications();
+      state = state.copyWith(notifications: notifications, isLoading: false);
+    } catch (e) {
+      state = state.copyWith(errorMessage: e.toString(), isLoading: false);
+    }
+  }
+ 
+ void setFilter(NotificationFilter filter) {
+  state = state.copyWith(selectedFilter: filter); // Ensure selectedFilter can accept non-null values
 }
 
-/// Define the provider globally (not inside the widget)**
-final notificationViewModelProvider = StateNotifierProvider<NotificationViewModel, NotificationState>(
-  (ref) => NotificationViewModel(),
-);
+
+  
+
+}
