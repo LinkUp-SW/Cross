@@ -32,17 +32,17 @@ class CustomBottomNavigationBar extends ConsumerWidget {
               context,
               currentIndex: currentIndex,
               index: 1,
-              asset: Icons.video_library,
+              asset: Icons.people,
             ),
-            label: 'Video'),
+            label: 'My Network'),
         BottomNavigationBarItem(
             icon: _buildNavItem(
               context,
               currentIndex: currentIndex,
               index: 2,
-              asset: Icons.people,
+              asset: Icons.add_box,
             ),
-            label: 'My Network'),
+            label: 'Post'),
         BottomNavigationBarItem(
             icon: Consumer(
              builder: (context, ref, child) {

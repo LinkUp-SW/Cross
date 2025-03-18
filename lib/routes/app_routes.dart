@@ -34,16 +34,16 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         StatefulShellBranch(
           routes: <GoRoute>[
             GoRoute(
-                path: "/video",
-                builder: (context, state) => const DummyPage(title: 'Video')),
+                path: "/network",
+                builder: (context, state) =>
+                    const DummyPage(title: 'My Network')),
           ],
         ),
         StatefulShellBranch(
           routes: <GoRoute>[
             GoRoute(
-                path: "/network",
-                builder: (context, state) =>
-                    const DummyPage(title: 'My Network')),
+                path: "/post",
+                builder: (context, state) => const DummyPage(title: 'Post')),
           ],
         ),
         StatefulShellBranch(
