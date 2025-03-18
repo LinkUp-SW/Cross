@@ -1,53 +1,53 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/Home/home_enums.dart';
 import 'package:link_up/features/Home/model/reaction_tile_model.dart';
+import 'package:link_up/features/Home/viewModel/post_vm.dart';
 import 'package:link_up/shared/themes/colors.dart';
 
-class ReactionsPage extends StatefulWidget {
+class ReactionsPage extends ConsumerStatefulWidget {
   const ReactionsPage({super.key});
 
   @override
-  State<ReactionsPage> createState() => _ReactionsPageState();
+  ConsumerState<ReactionsPage> createState() => _ReactionsPageState();
 }
 
-class _ReactionsPageState extends State<ReactionsPage> {
-  List<ReactionTileModel> reactions = List.generate(100, (index) {
-    return ReactionTileModel.fromJson(jsonDecode('''
-      {
-        "header": {
-          "profileImage": "https://i.pravatar.cc/150?img=$index",
-          "name": "User $index",
-          "connectionDegree": "1st",
-          "about": "About user $index",
-          "timeAgo": "${DateTime.now()}"
-        },
-        "reaction": "${Reaction.getReactionString(Reaction.values[index % Reaction.values.length])}"
-      }
-    '''));
-  });
-
-  late final Map<String, int> reactionsCount;
+class _ReactionsPageState extends ConsumerState<ReactionsPage> {
+  late Map<String, int> reactionsCount = {};
+  late Map<String, List<ReactionTileModel>> reactions = {};
 
   @override
   void initState() {
     super.initState();
-    reactionsCount = {
-      for (var reaction in Reaction.values)
-        if (reaction != Reaction.none)
-          Reaction.getReactionString(reaction):
-            reactions.where((element) => element.reaction == reaction).length
-    };
+    intialLoad();
+  }
+
+  Future<void> intialLoad() async {
+    reactions = await ref.read(postProvider.notifier).fetchReactions();
+    setState(() {
+      reactionsCount = {
+        for (var reaction in reactions.keys)
+          reaction: reactions[reaction]!.length
+      };
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    if (reactions.isEmpty) {
+      return const Center(
+        child: CircularProgressIndicator(
+          color: AppColors.darkBlue,
+        ),
+      );
+    }
     return DefaultTabController(
-      length: reactionsCount.length + 1,
+      length: reactionsCount.length,
       child: Scaffold(
         appBar: AppBar(
+          centerTitle: true,
           title: const Text('Reactions'),
           backgroundColor: Theme.of(context).colorScheme.primary,
           leading: IconButton(
@@ -64,45 +64,33 @@ class _ReactionsPageState extends State<ReactionsPage> {
               dividerColor: AppColors.grey,
               tabs: [
                 Tab(
-                  child: Text('All  ${reactions.length}',
+                  child: Text('All  ${reactionsCount['All'].toString()}',
                       textAlign: TextAlign.center),
                 ),
                 for (var reaction in reactionsCount.keys)
-                  Tab(
-                    icon: Row(
-                      children: [
-                        Reaction.getIcon(Reaction.getReaction(reaction)),
-                        Text(
-                          '  ${reactionsCount[reaction].toString()}',
-                        ),
-                      ],
+                  if (reaction != 'All')
+                    Tab(
+                      icon: Row(
+                        children: [
+                          Reaction.getIcon(Reaction.getReaction(reaction)),
+                          Text(
+                            '  ${reactionsCount[reaction].toString()}',
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
               ]),
         ),
         body: TabBarView(
           children: [
-            ListView.builder(
-              itemCount: reactions.length,
-              itemBuilder: (context, index) {
-                return ReactionTile(
-                  reactionTile: reactions[index],
-                );
-              },
-            ),
-            ...reactionsCount.keys
-                .map((reaction) => reactions.where((element) =>
-                    element.reaction == Reaction.getReaction(reaction)))
-                .map((entry) {
-              return ListView.builder(
-                itemCount: entry.length,
-                itemBuilder: (context, index) {
-                  return ReactionTile(
-                    reactionTile: entry.toList()[index],
-                  );
-                },
-              );
-            }),
+            ...reactions.keys.map((reaction) => ListView.builder(
+                  itemCount: reactions[reaction]!.length,
+                  itemBuilder: (context, index) {
+                    return ReactionTile(
+                      reactionTile: reactions[reaction]!.elementAt(index),
+                    );
+                  },
+                ))
           ],
         ),
       ),
