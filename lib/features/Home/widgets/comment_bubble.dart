@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/Home/home_enums.dart';
 import 'package:link_up/features/Home/model/comment_model.dart';
+import 'package:link_up/features/Home/viewModel/comment_vm.dart';
 import 'package:link_up/features/Home/widgets/reactions.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/widgets/bottom_sheet.dart';
-
-class CommentBubble extends StatefulWidget {
+//TODO: handle child comment replay calling
+class CommentBubble extends ConsumerStatefulWidget {
   const CommentBubble({
     super.key,
     this.isReply = false,
@@ -21,10 +23,10 @@ class CommentBubble extends StatefulWidget {
   final bool allRelies;
 
   @override
-  State<CommentBubble> createState() => _CommentBubbleState();
+  ConsumerState<CommentBubble> createState() => _CommentBubbleState();
 }
 
-class _CommentBubbleState extends State<CommentBubble> {
+class _CommentBubbleState extends ConsumerState<CommentBubble> {
 
   Reaction _reaction = Reaction.none;
   @override
@@ -48,91 +50,97 @@ class _CommentBubbleState extends State<CommentBubble> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Card(
-                child: Padding(
-                  padding: EdgeInsets.all(5.r),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          SizedBox(
-                            width: 150.w,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text.rich(
-                                  TextSpan(
-                                    children: [
-                                      TextSpan(
-                                        text: widget.comment.header.name,
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      TextSpan(
-                                        text:
-                                            ' • ${widget.comment.header.connectionDegree}',
-                                        style: TextStyle(
-                                            color: AppColors.grey,
-                                            fontSize: 10.r),
-                                      ),
-                                    ],
+              GestureDetector(
+                onTap: () {
+                  ref.read(commentProvider.notifier).setComment(widget.comment);
+                  context.push("/commentReplies/unfocused");
+                },
+                child: Card(
+                  child: Padding(
+                    padding: EdgeInsets.all(5.r),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SizedBox(
+                              width: 150.w,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text.rich(
+                                    TextSpan(
+                                      children: [
+                                        TextSpan(
+                                          text: widget.comment.header.name,
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        TextSpan(
+                                          text:
+                                              ' • ${widget.comment.header.connectionDegree}',
+                                          style: TextStyle(
+                                              color: AppColors.grey,
+                                              fontSize: 10.r),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
+                                  Text(
+                                    widget.comment.header.about,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(fontSize: 10.r),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Row(
+                              children: [
                                 Text(
-                                  widget.comment.header.about,
-                                  overflow: TextOverflow.ellipsis,
+                                  widget.comment.header.getTime(),
                                   style: TextStyle(fontSize: 10.r),
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    showModalBottomSheet(
+                                        context: context,
+                                        useRootNavigator: true,
+                                        builder: (context) =>
+                                            CustomModalBottomSheet(
+                                              content: Column(
+                                                children: [
+                                                  ListTile(
+                                                    onTap: () {},
+                                                    leading: const Icon(
+                                                        Icons.ios_share),
+                                                    title:
+                                                        const Text("Share via"),
+                                                  ),
+                                                  ListTile(
+                                                    onTap: () {},
+                                                    leading:
+                                                        const Icon(Icons.report),
+                                                    title: const Text("Report"),
+                                                  ),
+                                                ],
+                                              ),
+                                            ));
+                                  },
+                                  icon: const Icon(Icons.more_horiz),
                                 ),
                               ],
                             ),
-                          ),
-                          Row(
-                            children: [
-                              Text(
-                                widget.comment.header.getTime(),
-                                style: TextStyle(fontSize: 10.r),
-                              ),
-                              IconButton(
-                                onPressed: () {
-                                  showModalBottomSheet(
-                                      context: context,
-                                      useRootNavigator: true,
-                                      builder: (context) =>
-                                          CustomModalBottomSheet(
-                                            content: Column(
-                                              children: [
-                                                ListTile(
-                                                  onTap: () {},
-                                                  leading: const Icon(
-                                                      Icons.ios_share),
-                                                  title:
-                                                      const Text("Share via"),
-                                                ),
-                                                ListTile(
-                                                  onTap: () {},
-                                                  leading:
-                                                      const Icon(Icons.report),
-                                                  title: const Text("Report"),
-                                                ),
-                                              ],
-                                            ),
-                                          ));
-                                },
-                                icon: const Icon(Icons.more_horiz),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      Text.rich(
-                        TextSpan(
-                          text: widget.comment.text,
-                          style: TextStyle(fontSize: 12.r),
+                          ],
                         ),
-                      ),
-                    ],
+                        Text.rich(
+                          TextSpan(
+                            text: widget.comment.text,
+                            style: TextStyle(fontSize: 12.r),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -152,14 +160,20 @@ class _CommentBubbleState extends State<CommentBubble> {
                         _reaction = reaction;
                       });
                     },
-                    child: Text("Likes ", style: TextStyle(color: _reaction == Reaction.none ? AppColors.grey : Reaction.getColor(_reaction))),
+                    child: Text(Reaction.getReactionString(_reaction), style: TextStyle(color: _reaction == Reaction.none ? AppColors.grey : Reaction.getColor(_reaction))),
                   ),
                   if (widget.comment.likes > 0) Text("  •  ${widget.comment.likes} likes", style: const TextStyle(color: AppColors.grey)),
                   const Text("  |  ", style: TextStyle(color: AppColors.grey)),
-                  const Text("Reply ", style: TextStyle(color: AppColors.grey)),
+                  GestureDetector(
+                      onTap: () {
+                        ref.read(commentProvider.notifier).setComment(widget.comment);
+                        context.push("/commentReplies");
+                      }
+                    ,child: const Text("Reply ", style: TextStyle(color: AppColors.grey))),
                   if (widget.comment.replies > 0)
                     GestureDetector(
                         onTap: () {
+                          ref.read(commentProvider.notifier).setComment(widget.comment);
                           context.push("/commentReplies");
                         },
                         child: Text(
@@ -174,6 +188,7 @@ class _CommentBubbleState extends State<CommentBubble> {
                   if (widget.comment.replies > 1)
                     TextButton(
                         onPressed: () {
+                          ref.read(commentProvider.notifier).setComment(widget.comment);
                           context.push("/commentReplies");
                         },
                         child: Text(
