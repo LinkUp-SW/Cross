@@ -1,115 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:link_up/features/Home/home_enums.dart';
-import 'package:link_up/features/Home/model/header_model.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
+import 'package:link_up/features/Home/viewModel/posts_vm.dart';
 import 'package:link_up/features/Home/widgets/posts.dart';
+import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/widgets/custom_app_bar.dart';
 import 'package:link_up/shared/widgets/custom_search_bar.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key, required this.scaffoldKey});
   final GlobalKey<ScaffoldState> scaffoldKey;
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  ConsumerState<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends ConsumerState<HomePage> {
   late ScrollController scrollController;
   late ScrollController scrollController2;
   int scrollpostion = 0;
-
-  List<PostModel> posts = List.generate(
-      5,
-      (index) => PostModel(
-            id: '1',
-            header: HeaderModel(
-              profileImage:
-                  'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
-              name: 'John Doe',
-              connectionDegree: 'johndoe',
-              about: 'About John Doe',
-              timeAgo: DateTime.now(),
-              visibility: Visibilities.anyone,
-            ),
-            text: 'This is a post',
-            media: Media(
-              type: MediaType.image,
-              urls: [
-                'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg'
-              ],
-            ),
-            reactions: 10,
-            comments: 0,
-            reposts: 1,
-            reaction: Reaction.celebrate,
-          ));
 
   @override
   void initState() {
     super.initState();
     scrollController = ScrollController()..addListener(_scrollListener);
     scrollController2 = ScrollController();
+    ref.read(postsProvider.notifier).fetchPosts().then((value) {
+      ref.read(postsProvider.notifier).addPosts(value);
+    });
   }
 
   void _scrollListener() {
-    if (scrollController.position.extentAfter < 500) {
-      setState(() {
-        posts.addAll(
-          List.generate(
-            5,
-            (index) => PostModel(
-              id: '1',
-              header: HeaderModel(
-                profileImage:
-                    'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
-                name: 'John Doe',
-                connectionDegree: 'johndoe',
-                about: 'About John Doe',
-                timeAgo: DateTime.now(),
-                visibility: Visibilities.anyone,
-              ),
-              text: 'This is a post',
-              media: Media(
-                type: index % 5 == 1
-                    ? MediaType.video
-                    : index % 5 == 2
-                        ? MediaType.image
-                        : index % 5 == 3
-                            ? MediaType.images
-                            : index % 5 == 4
-                                ? MediaType.pdf
-                                : MediaType.none,
-                urls: index % 5 == 1
-                    ? [
-                        'https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4'
-                      ]
-                    : index % 5 == 2
-                        ? [
-                            'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg'
-                          ]
-                        : index % 5 == 3
-                            ? [
-                                'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
-                                'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
-                                'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
-                                'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
-                                'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg'
-                              ]
-                            : index % 5 == 4
-                                ? [
-                                    'https://www.sldttc.org/allpdf/21583473018.pdf'
-                                  ]
-                                : [],
-              ),
-              reactions: 10,
-              comments: 50,
-              reposts: 0,
-              reaction: Reaction.none,
-            ),
-          ),
-        );
+    if (scrollController.position.pixels ==
+        scrollController.position.maxScrollExtent) {
+      ref.read(postsProvider.notifier).fetchPosts().then((value) {
+        ref.read(postsProvider.notifier).addPosts(value);
       });
     }
     if (scrollpostion > scrollController.position.pixels.toInt()) {
@@ -133,6 +60,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final List<PostModel> posts = ref.watch(postsProvider);
     return Scaffold(
       body: NestedScrollView(
         controller: scrollController2,
@@ -157,17 +85,50 @@ class _HomePageState extends State<HomePage> {
         ],
         body: Scrollbar(
           controller: scrollController,
-          child: ListView.separated(
-              controller: scrollController,
-              shrinkWrap: true,
-              itemCount: posts.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 10),
-              itemBuilder: (context, index) {
-                return Card(
-                    child: Posts(
-                  post: posts[index],
-                ));
-              }),
+          child: RefreshIndicator(
+            color: AppColors.darkBlue,
+            onRefresh: () async {
+              await ref.read(postsProvider.notifier).refreshPosts();
+            },
+            child: Builder(builder: (context) {
+              if (posts.isEmpty) {
+                return Skeletonizer(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        for (int i = 0; i < 5; i++)
+                          Card(
+                            child: Posts(
+                              post: PostModel.initial(),
+                              showTop: false,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+              return ListView.separated(
+                  controller: scrollController,
+                  shrinkWrap: true,
+                  itemCount: posts.length,
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 10),
+                  itemBuilder: (context, index) {
+                    if (index == posts.length - 1) {
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          color: AppColors.darkBlue,
+                        ),
+                      );
+                    }
+                    return Card(
+                        child: Posts(
+                      post: posts[index],
+                    ));
+                  });
+            }),
+          ),
         ),
       ),
     );
