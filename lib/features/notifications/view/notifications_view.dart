@@ -33,7 +33,7 @@ class NotificationsView extends ConsumerWidget {
                           return NotificationTile(
                             notification: notification,
                             onTap: () {
-                            
+                            notificationViewModel.markAsRead(notification.id); // Mark notification as read
                             },
                           );
                         },
