@@ -38,6 +38,37 @@ class HeaderModel {
         'visibility': visibility.toString(),
       };
 
+
+  HeaderModel.initial()
+      : profileImage = 'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
+        name = 'John Doe',
+        connectionDegree = '3rd',
+        about = 'Hello this is john doe a special person',
+        timeAgo = DateTime.now(),
+        edited = false,
+        visibility = Visibilities.anyone;
+
+    
+    HeaderModel copyWith({
+    String? profileImage,
+    String? name,
+    String? connectionDegree,
+    String? about,
+    DateTime? timeAgo,
+    bool? edited,
+    Visibilities? visibility,
+  }) {
+    return HeaderModel(
+      profileImage: profileImage ?? this.profileImage,
+      name: name ?? this.name,
+      connectionDegree: connectionDegree ?? this.connectionDegree,
+      about: about ?? this.about,
+      timeAgo: timeAgo ?? this.timeAgo,
+      edited: edited ?? this.edited,
+      visibility: visibility ?? this.visibility,
+    );
+  }
+
   String getTime() {
     final now = DateTime.now();
     final difference = now.difference(timeAgo);
