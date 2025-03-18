@@ -84,7 +84,14 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           routes: <GoRoute>[
             GoRoute(
                 path: "/commentReplies",
-                builder: (context, state) => const CommentRepliesPage()),
+                builder: (context, state) => const CommentRepliesPage(),
+                routes: [
+                  GoRoute(
+                    path: '/unfocused',
+                    builder: (context, state) => const CommentRepliesPage(focused: false),
+                  )]
+                  ),
+                
           ],
         ),
         StatefulShellBranch(
