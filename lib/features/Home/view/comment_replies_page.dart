@@ -1,19 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/Home/model/comment_model.dart';
-import 'package:link_up/features/Home/model/header_model.dart';
+import 'package:link_up/features/Home/viewModel/comment_vm.dart';
 import 'package:link_up/features/Home/widgets/comment_bubble.dart';
+import 'package:link_up/features/Home/widgets/comments_text_field.dart';
 import 'package:link_up/shared/themes/colors.dart';
 
-class CommentRepliesPage extends StatelessWidget {
-  const CommentRepliesPage({super.key});
+class CommentRepliesPage extends ConsumerStatefulWidget {
+  final bool focused;
+  const CommentRepliesPage({super.key, this.focused = true});
+
+  @override
+  ConsumerState<CommentRepliesPage> createState() => _CommentRepliesPageState();
+}
+
+class _CommentRepliesPageState extends ConsumerState<CommentRepliesPage> {
+
+  final TextEditingController _textController = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
+
 
   @override
   Widget build(BuildContext context) {
+    final CommentModel comment = ref.watch(commentProvider);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Reposts'),
+        centerTitle: true,
+        title: const Text('Comment Replies'),
         backgroundColor: Theme.of(context).colorScheme.primary,
         leading: IconButton(
           onPressed: () {
@@ -36,7 +51,7 @@ class CommentRepliesPage extends StatelessWidget {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'Replies on x comment on this post',
+                    'Replies on ${comment.header.name}\'s comment on this post',
                     style:
                         TextStyle(fontSize: 15.r, fontWeight: FontWeight.bold),
                   ),
@@ -52,22 +67,19 @@ class CommentRepliesPage extends StatelessWidget {
             child: Padding(
               padding: EdgeInsets.all(5.r),
               child: CommentBubble(
-                comment: CommentModel(
-                    header: HeaderModel(
-                      profileImage: 'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
-                      name: 'John Doe',
-                      connectionDegree: '2nd',
-                      about: 'Description',
-                      timeAgo: DateTime.now(),
-                    ),
-                    replies: 5,
-                    likes: 0,
-                    text: 'This is a comment'),
+                comment: comment,
                 allRelies: true,
               ),
             ),
           ),
         ),
+      ),
+      bottomNavigationBar: CommentsTextField(
+        focusNode: _focusNode,
+        textController: _textController,
+        focused: widget.focused,
+        showSuggestions: false,
+        buttonName: 'Reply',
       ),
     );
   }

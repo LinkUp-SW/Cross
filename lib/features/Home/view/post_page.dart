@@ -4,11 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/Home/model/comment_model.dart';
-import 'package:link_up/features/Home/model/header_model.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
+import 'package:link_up/features/Home/viewModel/comments_vm.dart';
 import 'package:link_up/features/Home/viewModel/post_vm.dart';
 import 'package:link_up/features/Home/widgets/bottom_sheets.dart';
 import 'package:link_up/features/Home/widgets/comment_bubble.dart';
+import 'package:link_up/features/Home/widgets/comments_text_field.dart';
 import 'package:link_up/features/Home/widgets/posts.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/widgets/bottom_sheet.dart';
@@ -26,15 +27,45 @@ class PostPage extends ConsumerStatefulWidget {
 class _PostPageState extends ConsumerState<PostPage> {
   final TextEditingController _textController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
+  late ScrollController _scrollController;
+  late String postId;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController()..addListener(scrollListener);
+    postId = ref.read(postProvider.notifier).getPostId();
+    ref.read(commentsProvider.notifier).fetchComments(postId).then((value) {
+      ref.read(commentsProvider.notifier).addComments(value);
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(scrollListener);
+    super.dispose();
+  }
+
+  void scrollListener() {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
+      ref.read(commentsProvider.notifier).fetchComments(postId).then((value) {
+        ref.read(commentsProvider.notifier).addComments(value);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    PostModel post = ref.watch(postProvider);
+    final PostModel post = ref.watch(postProvider);
+    final List<CommentModel> comments = ref.watch(commentsProvider);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
         leading: IconButton(
           onPressed: () {
+            ref.read(commentsProvider.notifier).clearComments();
             context.pop();
           },
           icon: const Icon(Icons.arrow_back),
@@ -48,128 +79,13 @@ class _PostPageState extends ConsumerState<PostPage> {
           )
         ],
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary,
-          border: const BorderDirectional(
-              top: BorderSide(color: AppColors.lightGrey, width: 0)),
-        ),
-        height: _focusNode.hasFocus ? 150.h : 100.h,
-        child: Padding(
-          padding: EdgeInsets.all(10.r),
-          child: Focus(
-            onFocusChange: (hasFocus) {
-              setState(() {});
-            },
-            child: Column(
-              children: [
-                Expanded(
-                  child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: 10,
-                      shrinkWrap: true,
-                      separatorBuilder: (context, index) =>
-                          SizedBox(width: 5.w),
-                      itemBuilder: (context, index) {
-                        return Chip(label: Text("label $index"));
-                      }),
-                ),
-                SizedBox(
-                  height: 10.h,
-                ),
-                Flex(
-                  direction: Axis.horizontal,
-                  children: [
-                    Flexible(
-                      flex: 1,
-                      child: CircleAvatar(
-                        radius: 15.r,
-                        backgroundImage: const NetworkImage(
-                            'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg'),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 10.w,
-                    ),
-                    Flexible(
-                      flex: 8,
-                      child: TextField(
-                        autofocus: widget.focused,
-                        focusNode: _focusNode,
-                        decoration: InputDecoration(
-                          contentPadding: EdgeInsets.all(10.r),
-                          hintText: "leave your thoughts here...",
-                          border: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                                color: AppColors.lightGrey, width: 0),
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(30.r),
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                                color: AppColors.lightGrey, width: 0),
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(20.r),
-                            ),
-                          ),
-                        ),
-                        controller: _textController,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 10.h,
-                    ),
-                    if (!_focusNode.hasFocus)
-                      GestureDetector(
-                          onTap: () {},
-                          child: const Icon(Icons.alternate_email))
-                  ],
-                ),
-                if (_focusNode.hasFocus)
-                  SizedBox(
-                    height: 40.h,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            GestureDetector(
-                                onTap: () {}, child: const Icon(Icons.image)),
-                            SizedBox(
-                              width: 10.w,
-                            ),
-                            GestureDetector(
-                                onTap: () {},
-                                child: const Icon(Icons.alternate_email))
-                          ],
-                        ),
-                        Wrap(
-                          children: [
-                            TextButton(
-                              onPressed: () {
-                                _focusNode.unfocus();
-                              },
-                              child: const Text("Cancel"),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                _focusNode.unfocus();
-                              },
-                              child: const Text("Post"),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  )
-              ],
-            ),
-          ),
-        ),
-      ),
+      bottomNavigationBar: CommentsTextField(
+          focusNode: _focusNode,
+          textController: _textController,
+          focused: widget.focused,
+          buttonName: 'Comment',),
       body: Padding(
-        padding: const EdgeInsets.only(top: 8.0),
+        padding: EdgeInsets.only(top: 8.h),
         child: Container(
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.primary,
@@ -177,6 +93,7 @@ class _PostPageState extends ConsumerState<PostPage> {
           child: Padding(
             padding: const EdgeInsets.all(10),
             child: ListView(
+              controller: _scrollController,
               children: [
                 Posts(showTop: false, inMessage: true, post: post),
                 const Text("Reactions"),
@@ -251,30 +168,31 @@ class _PostPageState extends ConsumerState<PostPage> {
                     )
                   ],
                 ),
-                ListView.separated(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: 30,
-                  separatorBuilder: (context, index) => SizedBox(
-                    height: 10.h,
-                  ),
-                  itemBuilder: (context, index) {
-                    return CommentBubble(
-                      comment: CommentModel(
-                          header: HeaderModel(
-                            profileImage:
-                                'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
-                            name: 'John Doe',
-                            connectionDegree: '2nd',
-                            about: 'Description',
-                            timeAgo: DateTime.now(),
+                if (comments.isEmpty)
+                  const Center(
+                    child: CircularProgressIndicator(),
+                  )
+                else
+                  ListView.separated(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: comments.length,
+                    separatorBuilder: (context, index) => SizedBox(
+                      height: 10.h,
+                    ),
+                    itemBuilder: (context, index) {
+                      if (index == comments.length - 1) {
+                        return const Center(
+                          child: CircularProgressIndicator(
+                            color: AppColors.darkBlue,
                           ),
-                          replies: 5,
-                          likes: 2,
-                          text: 'This is a comment'),
-                    );
-                  },
-                ),
+                        );
+                      }
+                      return CommentBubble(
+                        comment: comments[index],
+                      );
+                    },
+                  )
               ],
             ),
           ),
