@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:link_up/features/logIn/services/service.dart';
 import 'package:link_up/features/logIn/widgets/widgets.dart';
 import 'package:link_up/features/logIn/viewModel/view_model.dart';
+import 'package:link_up/features/logIn/state/state.dart';
+import 'package:link_up/shared/functions.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -21,7 +24,20 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final loginViewModel = ref.watch(loginViewModelProvider);
+    final logInState = ref.watch(logInProvider);
+    final logInNotifier = ref.read(logInProvider.notifier);
+
+    ref.listen<LogInState>(logInProvider, (previous, next) {
+      if (next is LogInSuccessState) {
+        context.pushReplacement('/');
+      } else if (next is LogInErrorState) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(next.message)),
+        );
+        _emailController.clear();
+        _passwordController.clear();
+      }
+    });
 
     return Scaffold(
       body: Padding(
@@ -126,7 +142,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       keyboardType: TextInputType.emailAddress,
                       decoration: const InputDecoration(
                           hintText: 'Email or Phone Number'),
-                      validator: loginViewModel.validateEmail,
+                      validator: validateEmail,
                     ),
                     const SizedBox(
                       height: 10,
@@ -142,10 +158,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                   _obsureText = !_obsureText;
                                 });
                               },
-                              icon: Icon(_obsureText
+                              icon: Icon(!_obsureText
                                   ? Icons.visibility
                                   : Icons.visibility_off))),
-                      validator: loginViewModel.validatePassword,
+                      validator: validatePassword,
                     ),
                     SizedBox(
                       height: 10.h,
@@ -159,9 +175,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             Checkbox(
                                 checkColor: Colors.blue,
                                 value: _rememberMe,
-                                onChanged: (ref) {
+                                onChanged: (value) {
                                   setState(() {
-                                    _rememberMe = !_rememberMe;
+                                    _rememberMe = value!;
                                   });
                                 }),
                             const Text(
@@ -180,15 +196,21 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       children: [
                         ElevatedButton(
                             onPressed: () {
-                              _formKey.currentState!.reset();
                               if (_formKey.currentState!.validate()) {
-                                context.pushReplacement('/');
+                                logInNotifier.logIn(
+                                  _emailController.text,
+                                  _passwordController.text,
+                                );
                               }
                             },
-                            child: const Text(
-                              'Continue',
-                              style: TextStyle(fontSize: 15),
-                            )),
+                            child: logInState is LogInLoadingState
+                                ? const CircularProgressIndicator(
+                                    color: Colors.white,
+                                  )
+                                : const Text(
+                                    'Continue',
+                                    style: TextStyle(fontSize: 15),
+                                  )),
                       ],
                     ),
                   ],
