@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/logIn/view/view.dart';
 import 'package:link_up/features/signUp/view/userInfo/names_view.dart';
+import 'package:link_up/features/signUp/view/userInfo/past_job_details.dart';
+import 'package:link_up/features/signUp/view/userInfo/take_photo.dart';
 import 'package:link_up/features/signUp/view/verification/get_phone_number.dart';
 import 'package:link_up/features/signUp/view/verification/signingup_view.dart';
 import 'package:link_up/features/signUp/view/verification/verification.dart';
@@ -13,7 +15,7 @@ import 'package:link_up/shared/myhomepage.dart';
 import 'package:link_up/shared/widgets/bottom_navigation_bar.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) {
-  return GoRouter(initialLocation: '/login', routes: <RouteBase>[
+  return GoRouter(initialLocation: '/signup/usersname', routes: <RouteBase>[
     GoRoute(path: "/profile", builder: (context, state) => Container()),
     GoRoute(path: "/login", builder: (context, state) => const LoginPage()),
     GoRoute(
@@ -29,6 +31,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
               path: "/verification",
               builder: (context, state) => const Verification()),
+          GoRoute(
+              path: "/pastjobs",
+              builder: (context, state) => const PastJobDetails()),
+          GoRoute(
+              path: "/takephoto",
+              builder: (context, state) => const TakePhoto()),
         ]),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) => Scaffold(
