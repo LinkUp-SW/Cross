@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:link_up/features/signUp/viewModel/phone_number_provider.dart';
+import 'package:link_up/features/signUp/state/phone_number_state.dart';
 
 class GetPhoneNumber extends ConsumerStatefulWidget {
   const GetPhoneNumber({super.key});
@@ -13,8 +14,27 @@ class GetPhoneNumber extends ConsumerStatefulWidget {
 }
 
 class _GetPhoneNumberState extends ConsumerState<GetPhoneNumber> {
+  final _formKey = GlobalKey<FormState>();
+  String? _countryCode;
+  String? _phoneNumber;
+
   @override
   Widget build(BuildContext context) {
+    final phoneNumberState = ref.watch(phoneNumberProvider);
+    final phoneNumberNotifier = ref.read(phoneNumberProvider.notifier);
+
+    // Listen for state changes and handle navigation or error messages
+    ref.listen<PhoneNumberState>(phoneNumberProvider, (previous, next) {
+      if (next is PhoneNumberValid) {
+        context.push('/signup/verification'); // Navigate to the next page
+      } else if (next is PhoneNumberInvalid) {
+        // Show an error message if the phone number is invalid
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(next.errorMessage)),
+        );
+      }
+    });
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(10),
@@ -42,33 +62,53 @@ class _GetPhoneNumberState extends ConsumerState<GetPhoneNumber> {
                 height: 10,
               ),
               Form(
+                key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const IntlPhoneField(
-                      decoration: InputDecoration(
+                    IntlPhoneField(
+                      decoration: const InputDecoration(
                         labelText: 'Phone Number',
                         border: OutlineInputBorder(
                           borderSide: BorderSide(),
                         ),
                       ),
                       initialCountryCode: 'EG',
+                      onChanged: (phone) {
+                        _countryCode = phone.countryCode;
+                        _phoneNumber = phone.number;
+                      },
+                      validator: (value) {
+                        if (value == null || value.number.isEmpty) {
+                          return "Please enter a valid phone number";
+                        }
+                        return null;
+                      },
                     ),
                     SizedBox(
                       height: 30.h,
                     ),
                     ElevatedButton(
-                      onPressed: () {
-                        context.push('/signup/verification');
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          if (_countryCode != null && _phoneNumber != null) {
+                            await phoneNumberNotifier.setPhoneNumber(
+                              _countryCode!,
+                              _phoneNumber!,
+                            );
+                          }
+                        }
                       },
-                      child: const Text(
-                        'Submit',
-                        style: TextStyle(
-                          fontSize: 20,
-                        ),
-                      ),
-                    )
+                      child: phoneNumberState is LoadingPhoneNumber
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text(
+                              'Submit',
+                              style: TextStyle(
+                                fontSize: 20,
+                              ),
+                            ),
+                    ),
                   ],
                 ),
               )
