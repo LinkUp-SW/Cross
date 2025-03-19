@@ -1,21 +1,32 @@
-//riverpod setup and page business logic
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:link_up/features/logIn/model/model.dart';
+import 'package:link_up/features/logIn/services/service.dart';
+import 'package:link_up/features/logIn/state/state.dart';
 
-class LoginViewModel extends ChangeNotifier {
-  String? validateEmail(String? value) {
-    if (value == null || value.isEmpty || value.length < 10 || !value.contains("@")) {
-      return 'Please enter your email or phone number';
-    }
-    return null;
-  }
+final logInServiceProvider = Provider((ref) => LogInService());
 
-  String? validatePassword(String? value) {
-    if (value == null || value.isEmpty || value.length < 6) {
-      return 'Please enter a valid password';
+final logInProvider = StateNotifierProvider<LogInNotifier, LogInState>((ref) {
+  final service = ref.watch(logInServiceProvider);
+  return LogInNotifier(service);
+});
+
+class LogInNotifier extends StateNotifier<LogInState> {
+  final LogInService _logInService;
+
+  LogInNotifier(this._logInService) : super(LogInInitialState());
+
+  Future<void> logIn(String email, String password) async {
+    state = LogInLoadingState(); // Show loading indicator
+    try {
+      final success = await _logInService
+          .logIn(LogInModel(email: email, password: password));
+      if (success) {
+        state = LogInSuccessState();
+      } else {
+        state = LogInErrorState("Invalid credentials");
+      }
+    } catch (e) {
+      state = LogInErrorState("Failed to log in");
     }
-    return null;
   }
 }
-
-final loginViewModelProvider = ChangeNotifierProvider((ref) => LoginViewModel());
