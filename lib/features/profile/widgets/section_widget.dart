@@ -1,39 +1,46 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:link_up/shared/themes/colors.dart';
-import 'package:link_up/shared/themes/text_styles.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class SectionWidget extends ConsumerWidget {
+class SectionWidget extends StatelessWidget {
   final String title;
   final Widget child;
 
   const SectionWidget({
-    super.key,
+    Key? key,
     required this.title,
     required this.child,
-  });
+  }) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Card(
-      color: AppColors.lightMain,
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
+      margin: EdgeInsets.only(bottom: 10.h),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 4.r,
+            offset: Offset(0, 2),
+          ),
+        ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: TextStyles.font18_700Weight,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 16.sp,
+              fontWeight: FontWeight.bold,
             ),
-            const SizedBox(height: 8),
-            child, // Content inside the section
-          ],
-        ),
+          ),
+          SizedBox(height: 8.h),
+          child, // Dynamic content inside the section
+        ],
       ),
     );
   }
