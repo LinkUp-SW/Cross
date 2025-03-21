@@ -3,11 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 
-
-// Need to be revised but for the outlined and text buttons
-
 class LinkUpButtonStyles {
-
   ElevatedButtonThemeData lightElevatedButtonTheme() {
     return ElevatedButtonThemeData(
       style: profileOpenToLight(),
@@ -43,7 +39,6 @@ class LinkUpButtonStyles {
       style: profileOpenToDark(),
     );
   }
-
 
   ButtonStyle profileOpenToLight({
     double elevation = 0.0,
@@ -100,7 +95,27 @@ class LinkUpButtonStyles {
       textStyle: WidgetStateProperty.all(textStyle),
     );
   }
+
+  ButtonStyle wideBlueElevatedButton() {
+    return ElevatedButton.styleFrom(
+      backgroundColor: AppColors.lightBlue,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24.r),
+      ),
+      padding: EdgeInsets.symmetric(vertical: 5.h),
+    );
+  }
+
+
+
+  ButtonStyle blueOutlinedButton() {
+    return OutlinedButton.styleFrom(
+      backgroundColor: AppColors.lightMain,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24.r),
+      ),
+      side: BorderSide(color: AppColors.lightBlue, width: 2.r),
+      padding: EdgeInsets.symmetric(vertical: 5.h),
+    );
+  }
 }
-
-
-// The rest of buttons styles should be exist here
