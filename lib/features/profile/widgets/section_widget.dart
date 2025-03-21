@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:link_up/shared/themes/colors.dart';
+import 'package:link_up/shared/themes/text_styles.dart';
 
-class SectionWidget extends StatelessWidget {
+class SectionWidget extends ConsumerWidget {
   final String title;
   final Widget child;
 
@@ -12,19 +15,21 @@ class SectionWidget extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
-      margin: EdgeInsets.only(bottom: 10.h),
+      margin: EdgeInsets.only(top: 10.h),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
         borderRadius: BorderRadius.circular(8.r),
         boxShadow: [
           BoxShadow(
             color: Colors.black12,
             blurRadius: 4.r,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -33,9 +38,8 @@ class SectionWidget extends StatelessWidget {
         children: [
           Text(
             title,
-            style: TextStyle(
-              fontSize: 16.sp,
-              fontWeight: FontWeight.bold,
+            style: TextStyles.font16_600Weight.copyWith(
+              color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
             ),
           ),
           SizedBox(height: 8.h),
