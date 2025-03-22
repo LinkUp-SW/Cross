@@ -25,12 +25,6 @@ class MyNetworkScreen extends ConsumerWidget {
               CustomAppBar(
                 searchBar: const CustomSearchBar(),
                 leadingAction: () {},
-                actions: [
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.add_box_rounded),
-                  ),
-                ],
               ),
               DecoratedBox(
                 decoration: BoxDecoration(

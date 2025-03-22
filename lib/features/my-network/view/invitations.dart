@@ -76,6 +76,56 @@ class InvitationsScreen extends ConsumerWidget {
             )
           ],
         ),
+        body: TabBarView(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(
+                  10.h,
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  spacing: 10.w,
+                  children: const [
+                    ChoiceChip(
+                      label: Text("All"),
+                      selected: true,
+                    ),
+                    ChoiceChip(
+                      label: Text("People"),
+                      selected: false,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(
+                  10.h,
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  spacing: 10.w,
+                  children: const [
+                    ChoiceChip(
+                      label: Text("People"),
+                      selected: false,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
