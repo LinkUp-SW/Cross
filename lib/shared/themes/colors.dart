@@ -10,6 +10,7 @@ class AppColors {
   static const Color salmon = Color(0xfff5987e);
   static const Color brown = Color(0xff915907);
   static const Color red = Color(0xffcb112d);
+
   static const Color grey = Color(0xff3f3f3f);
 
   // Accent colors

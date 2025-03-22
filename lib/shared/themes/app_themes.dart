@@ -19,9 +19,10 @@ class AppThemes {
       surface: AppColors.lightBackground,
       primary: AppColors.lightMain,
       secondary: AppColors.lightBlue,
+      tertiary: AppColors.lightGreen,
     ),
     chipTheme: ChipStyle.lightChip,
-    cardTheme: const CardTheme(color: AppColors.lightMain),
+    cardTheme: const CardTheme(color: AppColors.lightMain, elevation: 10),
     iconButtonTheme: IconButtonThemeData(
       style: ButtonStyle(
           iconColor: WidgetStateProperty.all(AppColors.lightSecondaryText)),
@@ -69,6 +70,14 @@ class AppThemes {
       showDragHandle: true,
       dragHandleColor: AppColors.lightTextColor,
     ),
+    tooltipTheme: TooltipThemeData(
+      textStyle: TextStyles.font11_400Weight,
+      decoration: BoxDecoration(
+        color: AppColors.lightBackground,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      ),
+    ),
     tabBarTheme: TabBarThemeData(
       dividerColor: AppColors.lightGrey,
       dividerHeight: 0.2.h,
@@ -92,12 +101,12 @@ class AppThemes {
     useMaterial3: true,
     scaffoldBackgroundColor: AppColors.darkBackground,
     colorScheme: const ColorScheme.dark(
-      surface: AppColors.darkBackground,
-      primary: AppColors.darkMain,
-      secondary: AppColors.darkBlue,
-    ),
+        surface: AppColors.darkBackground,
+        primary: AppColors.darkMain,
+        secondary: AppColors.darkBlue,
+        tertiary: AppColors.darkGreen),
     chipTheme: ChipStyle.darkChip,
-    cardTheme: const CardTheme(color: AppColors.darkMain),
+    cardTheme: const CardTheme(color: AppColors.darkMain, elevation: 10),
     iconButtonTheme: IconButtonThemeData(
       style: ButtonStyle(
           iconColor: WidgetStateProperty.all(AppColors.darkTextColor)),
@@ -145,6 +154,12 @@ class AppThemes {
       showDragHandle: true,
       dragHandleColor: AppColors.darkSecondaryText,
     ),
+    tooltipTheme: TooltipThemeData(
+      textStyle: TextStyles.font11_400Weight,
+      decoration: BoxDecoration(
+        color: AppColors.darkBackground,
+        borderRadius: BorderRadius.circular(10),
+      ),
     tabBarTheme: TabBarThemeData(
       dividerColor: AppColors.darkGrey,
       dividerHeight: 0.2.h,
