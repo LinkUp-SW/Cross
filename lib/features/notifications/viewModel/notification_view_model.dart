@@ -5,7 +5,7 @@ import '../model/notification_model.dart';
 import 'package:link_up/features/notifications/services/mock_notification_service.dart';
 
 final notificationServiceProvider = Provider<NotificationService>((ref) {
-  const bool useMock = true; // it will be for selecting the service to use
+  /* const bool useMock = true; */ // it will be for selecting the service to use
   return MockNotificationService();
 });
 

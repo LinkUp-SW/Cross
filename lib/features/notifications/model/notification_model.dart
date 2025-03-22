@@ -1,4 +1,4 @@
-enum NotificationFilter { all, jobs, mentions, posts } // Define enum
+enum NotificationFilter { All, Jobs, Mentions, Posts } // Define enum
 
 class NotificationModel {
   final String id;
