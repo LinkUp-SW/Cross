@@ -9,6 +9,9 @@ import 'package:link_up/features/Home/view/post_page.dart';
 import 'package:link_up/features/Home/view/reactions_page.dart';
 import 'package:link_up/features/Home/view/reposts_page.dart';
 import 'package:link_up/features/Home/view/write_post.dart';
+import 'package:link_up/features/notifications/view/notifications_view.dart';
+import 'package:link_up/features/my-network/view/invitations.dart';
+import 'package:link_up/features/my-network/view/view.dart';
 import 'package:link_up/shared/dummy_page.dart';
 import 'package:link_up/shared/widgets/bottom_navigation_bar.dart';
 import 'package:link_up/shared/widgets/main_drawer.dart';
@@ -21,6 +24,18 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     GoRoute(path: "/profile", builder: (context, state) => Container()),
     GoRoute(path: "/login", builder: (context, state) => Container()),
     GoRoute(path: "/signup", builder: (context, state) => Container()),
+    GoRoute(
+      path: "/invitations",
+      builder: (context, state) => InvitationsScreen(
+        isDarkMode: Theme.of(context).brightness == Brightness.dark,
+      ),
+    ),
+    GoRoute(
+      path: "/manage-network",
+      builder: (context, state) => const DummyPage(
+        title: "Manage My Network Screen",
+      ),
+    ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) => Scaffold(
         key: scaffoldKey,
@@ -40,25 +55,25 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         StatefulShellBranch(
           routes: <GoRoute>[
             GoRoute(
-                path: "/video",
-                builder: (context, state) => const DummyPage(title: 'Video')),
+              path: "/network",
+              builder: (context, state) => const MyNetworkScreen(),
+            ),
           ],
         ),
         StatefulShellBranch(
           routes: <GoRoute>[
             GoRoute(
-                path: "/network",
-                builder: (context, state) =>
-                    const DummyPage(title: 'My Network')),
+                path: "/post",
+                builder: (context, state) => const DummyPage(title: 'Post')),
           ],
         ),
         StatefulShellBranch(
           routes: <GoRoute>[
             GoRoute(
                 path: "/notifications",
-                builder: (context, state) =>
-                    const DummyPage(title: 'Notifications')),
-          ],
+                builder: 
+                    (context, state) =>NotificationsView(),
+        )],
         ),
         StatefulShellBranch(
           routes: <GoRoute>[

@@ -1,6 +1,7 @@
 // The font and colors for each of the themes of the app
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/shared/themes/button_styles.dart';
 import 'package:link_up/shared/themes/chip_styles.dart';
 import 'package:link_up/shared/themes/colors.dart';
@@ -75,6 +76,23 @@ class AppThemes {
         color: AppColors.lightBackground,
         borderRadius: BorderRadius.circular(10),
       ),
+      ),
+    ),
+    tabBarTheme: TabBarThemeData(
+      dividerColor: AppColors.lightGrey,
+      dividerHeight: 0.2.h,
+      indicator: const UnderlineTabIndicator(
+        borderSide: BorderSide(
+          color: AppColors.lightGreen,
+          width: 2.0,
+        ),
+      ),
+      indicatorColor: AppColors.lightGreen,
+      indicatorSize: TabBarIndicatorSize.tab,
+      unselectedLabelColor: AppColors.lightTextColor,
+      unselectedLabelStyle: TextStyles.font15_700Weight,
+      labelColor: AppColors.lightGreen,
+      labelStyle: TextStyles.font15_700Weight,
     ),
   );
 
@@ -142,6 +160,21 @@ class AppThemes {
         color: AppColors.darkBackground,
         borderRadius: BorderRadius.circular(10),
       ),
+    tabBarTheme: TabBarThemeData(
+      dividerColor: AppColors.darkGrey,
+      dividerHeight: 0.2.h,
+      indicator: UnderlineTabIndicator(
+        borderSide: BorderSide(
+          color: AppColors.darkGreen,
+          width: 2.0.w,
+        ),
+      ),
+      indicatorColor: AppColors.darkGreen,
+      indicatorSize: TabBarIndicatorSize.tab,
+      unselectedLabelColor: AppColors.darkTextColor,
+      unselectedLabelStyle: TextStyles.font15_700Weight,
+      labelColor: AppColors.darkGreen,
+      labelStyle: TextStyles.font15_700Weight,
     ),
   );
 }

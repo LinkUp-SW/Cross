@@ -8,7 +8,6 @@ import 'package:http/http.dart';
 import 'package:link_up/core/services/storage.dart';
 import 'package:link_up/core/constants/endpoints.dart';
 
-
 // Add put/patch and delete methods
 class BaseService {
   Future<Response> post(String endpoint, Map<String, dynamic> body) async {
@@ -43,9 +42,12 @@ class BaseService {
     return response;
   }
 
-  Future<Response> get(String endpoint) async {
+  Future<Response> get(
+      String endpoint, Map<String, String>? queryParameters) async {
     final token = await getToken();
-    final uri = Uri.parse('${ExternalEndPoints.baseUrl}$endpoint');
+    final uri = Uri.parse('${ExternalEndPoints.baseUrl}$endpoint').replace(
+      queryParameters: queryParameters,
+    );
     final response = await http.get(
       uri,
       headers: {
@@ -55,7 +57,7 @@ class BaseService {
     ).timeout(const Duration(seconds: 10));
     return response;
   }
-  
+
   Future<Response> delete(String endpoint) async {
     final token = await getToken();
     final uri = Uri.parse('${ExternalEndPoints.baseUrl}$endpoint');

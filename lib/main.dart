@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/routes/app_routes.dart';
 import 'package:link_up/shared/themes/app_themes.dart';
-
 import 'shared/themes/theme_provider.dart';
 
 void main() {

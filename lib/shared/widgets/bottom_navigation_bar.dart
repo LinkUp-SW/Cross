@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:link_up/features/notifications/viewModel/notification_view_model.dart';
 import 'package:link_up/shared/themes/colors.dart';
 
 class CustomBottomNavigationBar extends ConsumerWidget {
@@ -31,32 +32,34 @@ class CustomBottomNavigationBar extends ConsumerWidget {
               context,
               currentIndex: currentIndex,
               index: 1,
-              asset: Icons.video_library,
+              asset: Icons.people,
             ),
-            label: 'Video'),
+            label: 'My Network'),
         BottomNavigationBarItem(
             icon: _buildNavItem(
               context,
               currentIndex: currentIndex,
               index: 2,
-              asset: Icons.people,
+              asset: Icons.add_box,
             ),
-            label: 'My Network'),
+            label: 'Post'),
         BottomNavigationBarItem(
-            icon: Badge(
-              backgroundColor: AppColors.red,
-              textColor: AppColors.lightMain,
-              //TODO: Need to be changed to the real number of notifications
-              label: const Text("3"),
-              offset: const Offset(-10, 0),
-              child: _buildNavItem(
-                context,
-                currentIndex: currentIndex,
-                index: 3,
-                asset: Icons.notifications,
-              ),
-            ),
-            label: 'Notifications'),
+            icon: Consumer(
+             builder: (context, ref, child) {
+               final notificationState = ref.watch(notificationsViewModelProvider);
+               final unreadCount = notificationState.notifications.where((n) => !n.isRead).length;
+
+                return Badge(
+                   backgroundColor: AppColors.red,textColor: AppColors.lightMain,
+                   label: Text(unreadCount.toString()), //  Show dynamic unread count
+                   offset: Offset(-10, 0),
+                  child: _buildNavItem(context,currentIndex: currentIndex,index: 3,asset: Icons.notifications,
+                   ),
+                );
+              },
+           ),
+           label: 'Notifications',),
+
         BottomNavigationBarItem(
             icon: _buildNavItem(
               context,
