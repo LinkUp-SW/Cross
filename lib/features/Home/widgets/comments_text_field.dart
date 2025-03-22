@@ -62,7 +62,7 @@ class _CommentsTextFieldState extends State<CommentsTextField> {
                     flex: 1,
                     child: CircleAvatar(
                       radius: 15.r,
-                      //TODO: Replac with user profile image
+                      //TODO: Replace with user profile image
                       backgroundImage: const NetworkImage(
                           'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg'),
                     ),

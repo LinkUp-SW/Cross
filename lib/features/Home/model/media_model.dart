@@ -1,4 +1,5 @@
 
+import 'package:any_link_preview/any_link_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:link_up/features/Home/home_enums.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
@@ -47,6 +48,8 @@ class Media {
         return VideoPlayerHome(videoUrl: urls[0]);
       case MediaType.pdf:
         return PDFViewer(url: urls[0]);
+      case MediaType.link:
+        return AnyLinkPreview(link: urls[0]);
       case MediaType.post:
         return Card(
           shape: const RoundedRectangleBorder(

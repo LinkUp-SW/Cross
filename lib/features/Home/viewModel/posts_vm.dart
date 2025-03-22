@@ -60,7 +60,7 @@ class PostsNotifier extends StateNotifier<List<PostModel>> {
                               ? MediaType.pdf
                               : index % 6 == 5
                                   ? MediaType.post
-                                  : MediaType.none,
+                                  : MediaType.link,
               urls: index % 6 == 1
                   ? [
                       'https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4'
@@ -81,7 +81,7 @@ class PostsNotifier extends StateNotifier<List<PostModel>> {
                               ? [
                                   'https://www.sldttc.org/allpdf/21583473018.pdf'
                                 ]
-                              : [],  
+                              : ['https://pub.dev/packages/any_link_preview'],  
             ),
             reactions: 10,
             comments: 50,
