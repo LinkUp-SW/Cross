@@ -185,7 +185,8 @@ class InvitationsCardModel {
       title:
           "AI Engineer @ Open AI | Ex-Backend Engineer @ Amazon | Ex-Database Engineer @ Oracle",
       profilePicture: "assets/images/profile.png",
-      daysCount: "2025-03-22T13:17:25.1392",
+      mutualsCount: 64,
+      daysCount: "2025-03-10T13:17:25.1392",
     );
   }
 }

@@ -5,7 +5,6 @@ import 'package:link_up/features/my-network/model/model.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/shared/utils/my_network_utils.dart';
-import 'package:link_up/shared/utils/my_network_utils.dart';
 
 class SentInvitationsCard extends ConsumerWidget {
   final InvitationsCardModel data;
@@ -33,6 +32,7 @@ class SentInvitationsCard extends ConsumerWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
+          spacing: 10.w,
           children: [
             Expanded(
               child: Row(
@@ -57,7 +57,7 @@ class SentInvitationsCard extends ConsumerWidget {
                       children: [
                         Text(
                           "${data.firstName} ${data.lastName}",
-                          style: TextStyles.font14_400Weight,
+                          style: TextStyles.font14_500Weight,
                         ),
                         Text(
                           data.title,
@@ -71,7 +71,7 @@ class SentInvitationsCard extends ConsumerWidget {
                         ),
                         Text(
                           "Sent ${getDaysDifference(data.daysCount)}",
-                          style: TextStyles.font12_400Weight,
+                          style: TextStyles.font12_500Weight,
                         ),
                       ],
                     ),
@@ -79,16 +79,20 @@ class SentInvitationsCard extends ConsumerWidget {
                 ],
               ),
             ),
-            InkWell(
-              onTap: () {
-                print("Pressed on ${data.firstName} ${data.lastName} withdraw");
-              },
-              child: Text(
-                "Withdraw",
-                style: TextStyles.font15_500Weight.copyWith(
-                  color: isDarkMode
-                      ? AppColors.darkTextColor
-                      : AppColors.lightSecondaryText,
+            Material(
+              color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+              child: InkWell(
+                onTap: () {
+                  print(
+                      "Pressed on ${data.firstName} ${data.lastName} withdraw");
+                },
+                child: Text(
+                  "Withdraw",
+                  style: TextStyles.font15_500Weight.copyWith(
+                    color: isDarkMode
+                        ? AppColors.darkTextColor
+                        : AppColors.lightSecondaryText,
+                  ),
                 ),
               ),
             ),
