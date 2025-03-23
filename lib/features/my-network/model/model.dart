@@ -155,13 +155,15 @@ class InvitationsCardModel {
   final String lastName;
   final String title;
   final String profilePicture;
-  final int daysCount;
+  final int? mutualsCount;
+  final String daysCount;
 
   const InvitationsCardModel({
     required this.firstName,
     required this.lastName,
     required this.title,
     required this.profilePicture,
+    this.mutualsCount,
     required this.daysCount,
   });
 
@@ -171,6 +173,7 @@ class InvitationsCardModel {
       lastName: json['lastName'],
       title: json['title'],
       profilePicture: json['profilePicture'],
+      mutualsCount: json['mutualsCount'],
       daysCount: json['daysCount'],
     );
   }
@@ -179,9 +182,10 @@ class InvitationsCardModel {
     return const InvitationsCardModel(
       firstName: "Amanda",
       lastName: "Williams",
-      title: "Ai Engineer at Amazon",
+      title:
+          "AI Engineer @ Open AI | Ex-Backend Engineer @ Amazon | Ex-Database Engineer @ Oracle",
       profilePicture: "assets/images/profile.png",
-      daysCount: 1,
+      daysCount: "2025-03-22T13:17:25.1392",
     );
   }
 }

@@ -1,7 +1,7 @@
 import 'package:link_up/features/my-network/model/model.dart';
 
 class GrowTabState {
-  final List<GrowTabPeopleCardsModel>? fromUniversity;
+  final List<GrowTabPeopleCardsModel>? fromCurrentPosition;
   final List<GrowTabPeopleCardsModel>? recentActivity;
   final List<GrowTabPeopleCardsModel>? followThesePeople;
   final List<GrowTabPeopleCardsModel>? topEmergingCreators;
@@ -12,7 +12,7 @@ class GrowTabState {
   final bool error;
 
   const GrowTabState({
-    this.fromUniversity,
+    this.fromCurrentPosition,
     this.recentActivity,
     this.followThesePeople,
     this.topEmergingCreators,
@@ -25,7 +25,7 @@ class GrowTabState {
 
   factory GrowTabState.initial() {
     return const GrowTabState(
-      fromUniversity: null,
+      fromCurrentPosition: null,
       recentActivity: null,
       followThesePeople: null,
       topEmergingCreators: null,
@@ -38,7 +38,7 @@ class GrowTabState {
   }
 
   GrowTabState copyWith({
-    List<GrowTabPeopleCardsModel>? fromUniversity,
+    List<GrowTabPeopleCardsModel>? fromCurrentPosition,
     List<GrowTabPeopleCardsModel>? recentActivity,
     List<GrowTabPeopleCardsModel>? followThesePeople,
     List<GrowTabPeopleCardsModel>? topEmergingCreators,
@@ -49,7 +49,7 @@ class GrowTabState {
     bool? error,
   }) {
     return GrowTabState(
-      fromUniversity: fromUniversity ?? this.fromUniversity,
+      fromCurrentPosition: fromCurrentPosition ?? this.fromCurrentPosition,
       recentActivity: recentActivity ?? this.recentActivity,
       followThesePeople: followThesePeople ?? this.followThesePeople,
       topEmergingCreators: topEmergingCreators ?? this.topEmergingCreators,
@@ -62,21 +62,39 @@ class GrowTabState {
   }
 }
 
-class MyNetworkScreenState {
-  final GrowTabState growTabState;
+class InvitationsScreenState {
+  final List<InvitationsCardModel>? received;
+  final List<InvitationsCardModel>? sent;
+  final bool isLoading;
+  final bool error;
 
-  const MyNetworkScreenState({
-    required this.growTabState,
+  const InvitationsScreenState({
+    this.received,
+    this.sent,
+    required this.isLoading,
+    required this.error,
   });
 
-  factory MyNetworkScreenState.initial() {
-    return MyNetworkScreenState(growTabState: GrowTabState.initial());
+  factory InvitationsScreenState.initial() {
+    return const InvitationsScreenState(
+      received: null,
+      sent: null,
+      isLoading: true,
+      error: false,
+    );
   }
 
-  MyNetworkScreenState copyWith({
-    GrowTabState? growTabState,
+  InvitationsScreenState copyWith({
+    final List<InvitationsCardModel>? received,
+    final List<InvitationsCardModel>? sent,
+    bool? isLoading,
+    bool? error,
   }) {
-    return MyNetworkScreenState(
-        growTabState: growTabState ?? this.growTabState);
+    return InvitationsScreenState(
+      received: received ?? this.received,
+      sent: sent ?? this.sent,
+      isLoading: isLoading ?? this.isLoading,
+      error: error ?? this.error,
+    );
   }
 }

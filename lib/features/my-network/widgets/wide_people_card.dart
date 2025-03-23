@@ -5,7 +5,6 @@ import 'package:link_up/features/my-network/model/model.dart';
 import 'package:link_up/shared/themes/button_styles.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
-import 'package:link_up/shared/utils/my_network_utils.dart';
 
 class WidePeopleCard extends ConsumerWidget {
   final GrowTabPeopleCardsModel data;
@@ -63,7 +62,7 @@ class WidePeopleCard extends ConsumerWidget {
                     image: AssetImage(
                       data.profilePicture,
                     ),
-                    fit: BoxFit.cover,
+                    fit: BoxFit.fitWidth,
                   ),
                 ),
               ),

@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/core/services/base_service.dart';
 
-class MyNetworkScreenServices {
+class GrowTabServices {
   final BaseService _baseService;
 
-  const MyNetworkScreenServices(this._baseService);
+  const GrowTabServices(this._baseService);
 
   Future<Map<String, dynamic>> _getMyNetworkGrowTabData(String endpoint,
       {int limit = 4, int offset = 0}) async {
@@ -21,7 +21,7 @@ class MyNetworkScreenServices {
     }
   }
 
-  Future<Map<String, dynamic>> getFromUniversity() =>
+  Future<Map<String, dynamic>> getFromCurrentPosition() =>
       _getMyNetworkGrowTabData('');
   Future<Map<String, dynamic>> getRecentActivity() =>
       _getMyNetworkGrowTabData('');
@@ -37,7 +37,6 @@ class MyNetworkScreenServices {
       _getMyNetworkGrowTabData('');
 }
 
-final myNetworkScreenServicesProvider =
-    Provider<MyNetworkScreenServices>((ref) {
-  return MyNetworkScreenServices(ref.read(baseServiceProvider));
+final growTabServicesProvider = Provider<GrowTabServices>((ref) {
+  return GrowTabServices(ref.read(baseServiceProvider));
 });

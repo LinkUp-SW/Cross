@@ -104,7 +104,7 @@ class PeopleCard extends ConsumerWidget {
                   overflow: TextOverflow.ellipsis,
                   maxLines: 2,
                 ),
-              )
+              ),
             ],
           ),
           Column(
