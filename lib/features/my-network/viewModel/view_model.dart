@@ -3,19 +3,18 @@ import 'package:link_up/features/my-network/model/model.dart';
 import 'package:link_up/features/my-network/services/service.dart';
 import 'package:link_up/features/my-network/state/state.dart';
 
-class MyNetworkScreenViewModel extends StateNotifier<MyNetworkScreenState> {
-  final MyNetworkScreenServices _myNetworkScreenServices;
+class GrowTabViewModel extends StateNotifier<GrowTabState> {
+  final GrowTabServices _growTabServices;
 
-  MyNetworkScreenViewModel(this._myNetworkScreenServices)
-      : super(MyNetworkScreenState.initial());
+  GrowTabViewModel(this._growTabServices) : super(GrowTabState.initial());
 
   // Initializer method - called when the screen is first loaded
   Future<void> fetchGrowTabData() async {
     try {
       // Set loading state
       state = state.copyWith(
-        growTabState:
-            state.growTabState.copyWith(isLoading: true, error: false),
+        isLoading: true,
+        error: false,
       );
 
       // Load all data concurrently for better performance
@@ -31,13 +30,13 @@ class MyNetworkScreenViewModel extends StateNotifier<MyNetworkScreenState> {
 
       // Mark loading as complete
       state = state.copyWith(
-        growTabState: state.growTabState.copyWith(isLoading: false),
+        isLoading: false,
       );
     } catch (e) {
       // Handle errors
       state = state.copyWith(
-        growTabState:
-            state.growTabState.copyWith(isLoading: false, error: true),
+        isLoading: false,
+        error: true,
       );
     }
   }
@@ -45,13 +44,13 @@ class MyNetworkScreenViewModel extends StateNotifier<MyNetworkScreenState> {
   // Individual data loaders
   Future<void> _loadFromUniversity() async {
     try {
-      final response = await _myNetworkScreenServices.getFromUniversity();
+      final response = await _growTabServices.getFromCurrentPosition();
       final data = (response['data'] as List)
           .map((item) => GrowTabPeopleCardsModel.fromJson(item))
           .toList();
 
       state = state.copyWith(
-        growTabState: state.growTabState.copyWith(fromUniversity: data),
+        fromCurrentPosition: data,
       );
     } catch (e) {
       // Handle errors for this specific section
@@ -61,13 +60,13 @@ class MyNetworkScreenViewModel extends StateNotifier<MyNetworkScreenState> {
 
   Future<void> _loadRecentActivity() async {
     try {
-      final response = await _myNetworkScreenServices.getRecentActivity();
+      final response = await _growTabServices.getRecentActivity();
       final data = (response['data'] as List)
           .map((item) => GrowTabPeopleCardsModel.fromJson(item))
           .toList();
 
       state = state.copyWith(
-        growTabState: state.growTabState.copyWith(recentActivity: data),
+        recentActivity: data,
       );
     } catch (e) {
       print('Error loading recent activity: $e');
@@ -76,13 +75,13 @@ class MyNetworkScreenViewModel extends StateNotifier<MyNetworkScreenState> {
 
   Future<void> _loadFollowThesePeople() async {
     try {
-      final response = await _myNetworkScreenServices.getFollowThesePeople();
+      final response = await _growTabServices.getFollowThesePeople();
       final data = (response['data'] as List)
           .map((item) => GrowTabPeopleCardsModel.fromJson(item))
           .toList();
 
       state = state.copyWith(
-        growTabState: state.growTabState.copyWith(followThesePeople: data),
+        followThesePeople: data,
       );
     } catch (e) {
       print('Error loading follow suggestions: $e');
@@ -91,13 +90,13 @@ class MyNetworkScreenViewModel extends StateNotifier<MyNetworkScreenState> {
 
   Future<void> _loadTopEmergingCreators() async {
     try {
-      final response = await _myNetworkScreenServices.getTopEmergingCreators();
+      final response = await _growTabServices.getTopEmergingCreators();
       final data = (response['data'] as List)
           .map((item) => GrowTabPeopleCardsModel.fromJson(item))
           .toList();
 
       state = state.copyWith(
-        growTabState: state.growTabState.copyWith(topEmergingCreators: data),
+        topEmergingCreators: data,
       );
     } catch (e) {
       print('Error loading emerging creators: $e');
@@ -106,13 +105,13 @@ class MyNetworkScreenViewModel extends StateNotifier<MyNetworkScreenState> {
 
   Future<void> _loadYourCommunityFollow() async {
     try {
-      final response = await _myNetworkScreenServices.getYourCommunityFollow();
+      final response = await _growTabServices.getYourCommunityFollow();
       final data = (response['data'] as List)
           .map((item) => GrowTabNewsletterCardsModel.fromJson(item))
           .toList();
 
       state = state.copyWith(
-        growTabState: state.growTabState.copyWith(yourCommunityFollow: data),
+        yourCommunityFollow: data,
       );
     } catch (e) {
       print('Error loading community: $e');
@@ -121,13 +120,13 @@ class MyNetworkScreenViewModel extends StateNotifier<MyNetworkScreenState> {
 
   Future<void> _loadBecauseYouFollow() async {
     try {
-      final response = await _myNetworkScreenServices.getBecauseYouFollow();
+      final response = await _growTabServices.getBecauseYouFollow();
       final data = (response['data'] as List)
           .map((item) => GrowTabPeopleCardsModel.fromJson(item))
           .toList();
 
       state = state.copyWith(
-        growTabState: state.growTabState.copyWith(becauseYouFollow: data),
+        becauseYouFollow: data,
       );
     } catch (e) {
       print('Error loading because you follow: $e');
@@ -136,13 +135,13 @@ class MyNetworkScreenViewModel extends StateNotifier<MyNetworkScreenState> {
 
   Future<void> _loadMoreSuggestions() async {
     try {
-      final response = await _myNetworkScreenServices.getMoreSuggestions();
+      final response = await _growTabServices.getMoreSuggestions();
       final data = (response['data'] as List)
           .map((item) => GrowTabPeopleCardsModel.fromJson(item))
           .toList();
 
       state = state.copyWith(
-        growTabState: state.growTabState.copyWith(moreSuggestions: data),
+        moreSuggestions: data,
       );
     } catch (e) {
       print('Error loading more suggestions: $e');
@@ -152,7 +151,6 @@ class MyNetworkScreenViewModel extends StateNotifier<MyNetworkScreenState> {
 
 // Provider for the view model
 final myNetworkScreenViewModelProvider =
-    StateNotifierProvider<MyNetworkScreenViewModel, MyNetworkScreenState>(
-        (ref) {
-  return MyNetworkScreenViewModel(ref.read(myNetworkScreenServicesProvider));
+    StateNotifierProvider<GrowTabViewModel, GrowTabState>((ref) {
+  return GrowTabViewModel(ref.read(growTabServicesProvider));
 });

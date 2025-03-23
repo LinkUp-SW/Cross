@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:link_up/features/my-network/model/model.dart';
+import 'package:link_up/features/my-network/widgets/received_Invitations_card.dart';
+import 'package:link_up/features/my-network/widgets/sent_invitations_card.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
-import 'package:link_up/shared/widgets/bottom_sheet.dart';
 
 class InvitationsScreen extends ConsumerWidget {
   final bool isDarkMode;
@@ -78,51 +80,93 @@ class InvitationsScreen extends ConsumerWidget {
         ),
         body: TabBarView(
           children: [
-            Container(
-              decoration: BoxDecoration(
-                color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
-              ),
-              child: Padding(
-                padding: EdgeInsets.all(
-                  10.h,
+            ListView(
+              children: [
+                ReceivedInvitationsCard(
+                  data: InvitationsCardModel.initial(),
+                  isDarkMode: isDarkMode,
                 ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  spacing: 10.w,
-                  children: const [
-                    ChoiceChip(
-                      label: Text("All"),
-                      selected: true,
-                    ),
-                    ChoiceChip(
-                      label: Text("People"),
-                      selected: false,
-                    ),
-                  ],
+                ReceivedInvitationsCard(
+                  data: InvitationsCardModel.initial(),
+                  isDarkMode: isDarkMode,
                 ),
-              ),
+                ReceivedInvitationsCard(
+                  data: InvitationsCardModel.initial(),
+                  isDarkMode: isDarkMode,
+                ),
+                ReceivedInvitationsCard(
+                  data: InvitationsCardModel.initial(),
+                  isDarkMode: isDarkMode,
+                ),
+                ReceivedInvitationsCard(
+                  data: InvitationsCardModel.initial(),
+                  isDarkMode: isDarkMode,
+                ),
+                ReceivedInvitationsCard(
+                  data: InvitationsCardModel.initial(),
+                  isDarkMode: isDarkMode,
+                ),
+                ReceivedInvitationsCard(
+                  data: InvitationsCardModel.initial(),
+                  isDarkMode: isDarkMode,
+                ),
+                ReceivedInvitationsCard(
+                  data: InvitationsCardModel.initial(),
+                  isDarkMode: isDarkMode,
+                ),
+              ],
             ),
-            Container(
-              decoration: BoxDecoration(
-                color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
-              ),
-              child: Padding(
-                padding: EdgeInsets.all(
-                  10.h,
+            ListView(
+              children: [
+                SentInvitationsCard(
+                  data: InvitationsCardModel.initial(),
+                  isDarkMode: isDarkMode,
                 ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  spacing: 10.w,
-                  children: const [
-                    ChoiceChip(
-                      label: Text("People"),
-                      selected: false,
-                    ),
-                  ],
+                SentInvitationsCard(
+                  data: InvitationsCardModel.initial(),
+                  isDarkMode: isDarkMode,
                 ),
-              ),
+                SentInvitationsCard(
+                  data: InvitationsCardModel.initial(),
+                  isDarkMode: isDarkMode,
+                ),
+                SentInvitationsCard(
+                  data: InvitationsCardModel.initial(),
+                  isDarkMode: isDarkMode,
+                ),
+                SentInvitationsCard(
+                  data: InvitationsCardModel.initial(),
+                  isDarkMode: isDarkMode,
+                ),
+                SentInvitationsCard(
+                  data: InvitationsCardModel.initial(),
+                  isDarkMode: isDarkMode,
+                ),
+                SentInvitationsCard(
+                  data: InvitationsCardModel.initial(),
+                  isDarkMode: isDarkMode,
+                ),
+                SentInvitationsCard(
+                  data: InvitationsCardModel.initial(),
+                  isDarkMode: isDarkMode,
+                ),
+                SentInvitationsCard(
+                  data: InvitationsCardModel.initial(),
+                  isDarkMode: isDarkMode,
+                ),
+                SentInvitationsCard(
+                  data: InvitationsCardModel.initial(),
+                  isDarkMode: isDarkMode,
+                ),
+                SentInvitationsCard(
+                  data: InvitationsCardModel.initial(),
+                  isDarkMode: isDarkMode,
+                ),
+                SentInvitationsCard(
+                  data: InvitationsCardModel.initial(),
+                  isDarkMode: isDarkMode,
+                ),
+              ],
             ),
           ],
         ),
