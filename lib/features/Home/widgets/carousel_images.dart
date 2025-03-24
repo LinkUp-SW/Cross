@@ -64,7 +64,7 @@ class _CarouselImagesState extends State<CarouselImages> {
               right: 15.w,
               child: Container(
                 decoration: BoxDecoration(
-                  color: AppColors.darkBackground.withOpacity(0.5),
+                  color: AppColors.darkBackground.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(10.r),
                 ),
                 child: Padding(

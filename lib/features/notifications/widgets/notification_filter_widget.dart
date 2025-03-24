@@ -8,10 +8,10 @@ class NotificationFilterWidget extends ConsumerWidget {
   final Function(NotificationFilter) onFilterSelected;
 
   const NotificationFilterWidget({
-    Key? key,
+    super.key,
     required this.selectedFilter,
     required this.onFilterSelected,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -70,7 +70,7 @@ class PeopleCard extends ConsumerWidget {
                   child: Container(
                     padding: EdgeInsets.all(2.r),
                     decoration: const BoxDecoration(
-                      color: AppColors.grey,
+                      color: AppColors.fineLinesGrey,
                       shape: BoxShape.circle,
                     ),
                     child: Icon(

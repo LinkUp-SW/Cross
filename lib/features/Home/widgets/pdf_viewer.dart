@@ -27,7 +27,7 @@ class _PDFViewerState extends State<PDFViewer> {
         SizedBox(
           height: 420.h,
           child: PDF(
-            backgroundColor: Theme.of(context).colorScheme.secondary.withOpacity(0.2),
+            backgroundColor: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.2),
             swipeHorizontal: true,
             pageSnap: true,
             autoSpacing: true,
@@ -73,7 +73,7 @@ class _PDFViewerState extends State<PDFViewer> {
             },
             child: CircleAvatar(
               radius: 25.r,
-              backgroundColor: AppColors.darkBackground.withOpacity(0.5),
+              backgroundColor: AppColors.darkBackground.withValues(alpha: 0.5),
               child: Icon(
                 Icons.keyboard_arrow_left_rounded,
                 color: AppColors.lightMain,
@@ -97,7 +97,7 @@ class _PDFViewerState extends State<PDFViewer> {
             },
             child: CircleAvatar(
               radius: 25.r,
-              backgroundColor: AppColors.darkBackground.withOpacity(0.5),
+              backgroundColor: AppColors.darkBackground.withValues(alpha: 0.5),
               child: Icon(
                 Icons.keyboard_arrow_right_rounded,
                 color: AppColors.lightMain,
@@ -111,7 +111,7 @@ class _PDFViewerState extends State<PDFViewer> {
               right: 15.w,
               child: Container(
                 decoration: BoxDecoration(
-                  color: AppColors.darkBackground.withOpacity(0.5),
+                  color: AppColors.darkBackground.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(10.r),
                 ),
                 child: Padding(

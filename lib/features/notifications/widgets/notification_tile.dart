@@ -6,17 +6,17 @@ class NotificationTile extends StatelessWidget {
   final VoidCallback onTap;
 
   const NotificationTile({
-    Key? key,
+    super.key,
     required this.notification,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       color: notification.isRead ? Colors.white : const Color.fromARGB(100, 166, 222, 243), // Unread = blue, Read = white
       child: ListTile(
-        leading: CircleAvatar(
+        leading: const CircleAvatar(
           backgroundImage: AssetImage("assets/images/profile.png"),
         ),
         title: RichText(

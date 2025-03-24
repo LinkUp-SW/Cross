@@ -58,7 +58,7 @@ class _VideoPlayerHomeState extends State<VideoPlayerHome> {
           if (!_videoController.value.isPlaying)
             CircleAvatar(
               radius: 25.r,
-              backgroundColor: AppColors.darkBackground.withOpacity(0.5),
+              backgroundColor: AppColors.darkBackground.withValues(alpha: 0.5),
               child: Icon(
                 Icons.play_arrow,
                 color: AppColors.lightMain,
@@ -73,7 +73,7 @@ class _VideoPlayerHomeState extends State<VideoPlayerHome> {
               {
               return CircleAvatar(
                 radius: 25.r,
-                backgroundColor: AppColors.darkBackground.withOpacity(0.5),
+                backgroundColor: AppColors.darkBackground.withValues(alpha: 0.5),
                 child: Icon(
                   Icons.replay,
                   color: AppColors.lightMain,
@@ -92,7 +92,7 @@ class _VideoPlayerHomeState extends State<VideoPlayerHome> {
                 right: 5.w,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: AppColors.darkBackground.withOpacity(0.5),
+                    color: AppColors.darkBackground.withValues(alpha: 0.5),
                     borderRadius: BorderRadius.circular(10.r),
                   ),
                   child: Padding(
@@ -117,7 +117,7 @@ class _VideoPlayerHomeState extends State<VideoPlayerHome> {
                 });
               },
               icon: CircleAvatar(
-                backgroundColor: AppColors.darkBackground.withOpacity(0.5),
+                backgroundColor: AppColors.darkBackground.withValues(alpha: 0.5),
                 radius: 10.r,
                 child: Icon(
                   _videoController.value.volume == 0
