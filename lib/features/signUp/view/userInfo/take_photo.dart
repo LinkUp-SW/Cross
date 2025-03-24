@@ -41,8 +41,8 @@ class TakePhoto extends ConsumerWidget {
                 ),
                 SizedBox(height: 30.h),
                 GestureDetector(
-                  onTap: () =>
-                      _showImageSourceDialog(context, imagePickerNotifier),
+                  onTap: () => imagePickerNotifier.showImageSourceDialog(
+                      context, imagePickerNotifier),
                   child: Container(
                     height: 200.h,
                     width: 200.w,
@@ -92,35 +92,6 @@ class TakePhoto extends ConsumerWidget {
           ],
         ),
       ),
-    );
-  }
-
-  void _showImageSourceDialog(
-      BuildContext context, ImagePickerNotifier notifier) {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return Wrap(
-          children: [
-            ListTile(
-              leading: Icon(Icons.camera_alt),
-              title: Text('Take a Photo'),
-              onTap: () {
-                Navigator.pop(context);
-                notifier.pickImage(ImageSource.camera);
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.photo_library),
-              title: Text('Choose from Gallery'),
-              onTap: () {
-                Navigator.pop(context);
-                notifier.pickImage(ImageSource.gallery);
-              },
-            ),
-          ],
-        );
-      },
     );
   }
 }
