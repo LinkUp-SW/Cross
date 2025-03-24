@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
 import 'package:link_up/features/Home/viewModel/posts_vm.dart';
 import 'package:link_up/features/Home/widgets/posts.dart';
 import 'package:link_up/shared/themes/colors.dart';
+import 'package:link_up/shared/widgets/tab_provider.dart';
 import 'package:link_up/shared/widgets/custom_app_bar.dart';
 import 'package:link_up/shared/widgets/custom_search_bar.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -52,6 +52,11 @@ class _HomePageState extends ConsumerState<HomePage> {
     scrollpostion = scrollController.position.pixels.toInt();
   }
 
+  void scrollTop() {
+    scrollController.animateTo(scrollController.position.minScrollExtent,
+        duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+  }
+
   @override
   void dispose() {
     scrollController.removeListener(_scrollListener);
@@ -61,6 +66,14 @@ class _HomePageState extends ConsumerState<HomePage> {
   @override
   Widget build(BuildContext context) {
     final List<PostModel> posts = ref.watch(postsProvider);
+    ref.listen(currentTabProvider, (previous, current) {
+      if (current) {
+        scrollTop();
+      }
+      Future.microtask(() {
+        ref.read(currentTabProvider.notifier).state = false;
+      });
+    });
     return Scaffold(
       body: NestedScrollView(
         controller: scrollController2,
@@ -72,14 +85,6 @@ class _HomePageState extends ConsumerState<HomePage> {
               leadingAction: () {
                 widget.scaffoldKey.currentState!.openDrawer();
               },
-              actions: [
-                IconButton(
-                  onPressed: () {
-                    context.push('/writePost');
-                  },
-                  icon: const Icon(Icons.edit_square),
-                ),
-              ],
             ),
           )
         ],

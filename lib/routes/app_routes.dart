@@ -8,7 +8,7 @@ import 'package:link_up/features/Home/view/home_page.dart';
 import 'package:link_up/features/Home/view/post_page.dart';
 import 'package:link_up/features/Home/view/reactions_page.dart';
 import 'package:link_up/features/Home/view/reposts_page.dart';
-import 'package:link_up/features/Home/view/write_post.dart';
+import 'package:link_up/features/Post/view/write_post.dart';
 import 'package:link_up/features/notifications/view/notifications_view.dart';
 import 'package:link_up/features/my-network/view/invitations.dart';
 import 'package:link_up/features/my-network/view/view.dart';
@@ -64,7 +64,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           routes: <GoRoute>[
             GoRoute(
                 path: "/post",
-                builder: (context, state) => const DummyPage(title: 'Post')),
+                redirect: (context, state) => "/writePost",),
           ],
         ),
         StatefulShellBranch(
@@ -72,7 +72,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             GoRoute(
                 path: "/notifications",
                 builder: 
-                    (context, state) =>NotificationsView(),
+                    (context, state) => const NotificationsView(),
         )],
         ),
         StatefulShellBranch(

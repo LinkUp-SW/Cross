@@ -4,6 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/notifications/viewModel/notification_view_model.dart';
 import 'package:link_up/shared/themes/colors.dart';
+import 'package:link_up/shared/widgets/tab_provider.dart';
+
+
 
 class CustomBottomNavigationBar extends ConsumerWidget {
   const CustomBottomNavigationBar({required this.navigationShell, super.key});
@@ -16,7 +19,11 @@ class CustomBottomNavigationBar extends ConsumerWidget {
 
     return BottomNavigationBar(
       currentIndex: currentIndex,
-      onTap: (int index) => navigationShell.goBranch(index),
+      onTap: (int index) {
+        index == currentIndex
+            ? ref.read(currentTabProvider.notifier).state = true
+            : navigationShell.goBranch(index);
+      },
       showUnselectedLabels: true,
       items: [
         BottomNavigationBarItem(
@@ -36,30 +43,43 @@ class CustomBottomNavigationBar extends ConsumerWidget {
             ),
             label: 'My Network'),
         BottomNavigationBarItem(
-            icon: _buildNavItem(
-              context,
-              currentIndex: currentIndex,
-              index: 2,
-              asset: Icons.add_box,
+            icon: GestureDetector(
+              onTap: () {
+                context.push('/writePost');
+              },
+              child: _buildNavItem(
+                context,
+                currentIndex: currentIndex,
+                index: 2,
+                asset: Icons.add_box,
+              ),
             ),
             label: 'Post'),
         BottomNavigationBarItem(
-            icon: Consumer(
-             builder: (context, ref, child) {
-               final notificationState = ref.watch(notificationsViewModelProvider);
-               final unreadCount = notificationState.notifications.where((n) => !n.isRead).length;
+          icon: Consumer(
+            builder: (context, ref, child) {
+              final notificationState =
+                  ref.watch(notificationsViewModelProvider);
+              final unreadCount = notificationState.notifications
+                  .where((n) => !n.isRead)
+                  .length;
 
-                return Badge(
-                   backgroundColor: AppColors.red,textColor: AppColors.lightMain,
-                   label: Text(unreadCount.toString()), //  Show dynamic unread count
-                   offset: Offset(-10, 0),
-                  child: _buildNavItem(context,currentIndex: currentIndex,index: 3,asset: Icons.notifications,
-                   ),
-                );
-              },
-           ),
-           label: 'Notifications',),
-
+              return Badge(
+                backgroundColor: AppColors.red, textColor: AppColors.lightMain,
+                label:
+                    Text(unreadCount.toString()), //  Show dynamic unread count
+                offset: const Offset(-10, 0),
+                child: _buildNavItem(
+                  context,
+                  currentIndex: currentIndex,
+                  index: 3,
+                  asset: Icons.notifications,
+                ),
+              );
+            },
+          ),
+          label: 'Notifications',
+        ),
         BottomNavigationBarItem(
             icon: _buildNavItem(
               context,
