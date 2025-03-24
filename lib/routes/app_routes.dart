@@ -3,24 +3,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:link_up/features/logIn/view/view.dart';
+import 'package:link_up/features/logIn/view/forgot_pasword_view.dart';
+import 'package:link_up/features/logIn/view/login_view.dart';
 import 'package:link_up/features/signUp/view/userInfo/names_view.dart';
 import 'package:link_up/features/signUp/view/userInfo/past_job_details.dart';
 import 'package:link_up/features/signUp/view/userInfo/take_photo.dart';
 import 'package:link_up/features/signUp/view/verification/get_phone_number.dart';
-import 'package:link_up/features/signUp/view/verification/signingup_view.dart';
+import 'package:link_up/features/signUp/view/verification/email_password_view.dart';
+import 'package:link_up/features/signUp/view/verification/otp_view.dart';
 import 'package:link_up/features/signUp/view/verification/verification.dart';
 import 'package:link_up/shared/dummy_page.dart';
 import 'package:link_up/shared/myhomepage.dart';
 import 'package:link_up/shared/widgets/bottom_navigation_bar.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) {
-  return GoRouter(initialLocation: '/signup/usersname', routes: <RouteBase>[
+  return GoRouter(initialLocation: '/login', routes: <RouteBase>[
     GoRoute(path: "/profile", builder: (context, state) => Container()),
-    GoRoute(path: "/login", builder: (context, state) => const LoginPage()),
+    GoRoute(
+        path: "/login",
+        builder: (context, state) => const LoginPage(),
+        routes: [
+          GoRoute(
+              path: "/forgotpassword",
+              builder: (context, state) => const ForgotPasswordView()),
+        ]),
     GoRoute(
         path: "/signup",
-        builder: (context, state) => const SigningupView(),
+        builder: (context, state) => const EmailPasswordView(),
         routes: [
           GoRoute(
               path: "/usersname",
@@ -37,6 +46,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
               path: "/takephoto",
               builder: (context, state) => const TakePhoto()),
+          GoRoute(path: "/otp", builder: (context, state) => const OtpView()),
         ]),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) => Scaffold(
