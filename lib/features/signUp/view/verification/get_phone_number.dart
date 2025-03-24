@@ -17,6 +17,7 @@ class _GetPhoneNumberState extends ConsumerState<GetPhoneNumber> {
   final _formKey = GlobalKey<FormState>();
   String? _countryCode;
   String? _phoneNumber;
+  String? _countryName;
 
   @override
   Widget build(BuildContext context) {
@@ -90,16 +91,19 @@ class _GetPhoneNumberState extends ConsumerState<GetPhoneNumber> {
                       height: 30.h,
                     ),
                     ElevatedButton(
-                      onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          if (_countryCode != null && _phoneNumber != null) {
-                            await phoneNumberNotifier.setPhoneNumber(
-                              _countryCode!,
-                              _phoneNumber!,
-                            );
-                          }
-                        }
-                      },
+                      onPressed: phoneNumberState is LoadingPhoneNumber
+                          ? null
+                          : () async {
+                              if (_formKey.currentState!.validate()) {
+                                if (_countryCode != null &&
+                                    _phoneNumber != null) {
+                                  await phoneNumberNotifier.setPhoneNumber(
+                                    _countryCode!,
+                                    _phoneNumber!,
+                                  );
+                                }
+                              }
+                            },
                       child: phoneNumberState is LoadingPhoneNumber
                           ? const CircularProgressIndicator(color: Colors.white)
                           : const Text(
