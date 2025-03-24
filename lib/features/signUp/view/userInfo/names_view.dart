@@ -22,16 +22,6 @@ class _NamingPageState extends ConsumerState<NamingPage> {
     final nameNotifier = ref.read(nameProvider.notifier);
 
     // Move ref.listen to the build method
-    ref.listen<NameState>(nameProvider, (previous, next) {
-      if (next is NameValid) {
-        context.push('/signup/getphone'); // Navigate to the next page
-      } else if (next is NameInvalid) {
-        // Show an error message if the name is invalid
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(next.errorMessage)),
-        );
-      }
-    });
 
     return Scaffold(
       body: Padding(
@@ -76,14 +66,17 @@ class _NamingPageState extends ConsumerState<NamingPage> {
                     ),
                     const SizedBox(height: 20),
                     ElevatedButton(
-                      onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          await nameNotifier.setName(
-                            _firstNameController.text,
-                            _lastNameController.text,
-                          );
-                        }
-                      },
+                      onPressed: nameState is NameLoading
+                          ? null
+                          : () async {
+                              if (_formKey.currentState!.validate()) {
+                                nameNotifier.setName(
+                                  _firstNameController.text,
+                                  _lastNameController.text,
+                                );
+                                context.push('/signup/getphone');
+                              }
+                            },
                       child: nameState is NameLoading
                           ? const CircularProgressIndicator(color: Colors.white)
                           : const Text('Next'),
