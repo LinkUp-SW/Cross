@@ -93,13 +93,15 @@ class _VerificationState extends ConsumerState<Verification> {
                       height: 10,
                     ),
                     ElevatedButton(
-                      onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          await verificationNotifier.verifyCode(
-                            _codeController.text,
-                          );
-                        }
-                      },
+                      onPressed: verificationState is VerificationLoading
+                          ? null
+                          : () async {
+                              if (_formKey.currentState!.validate()) {
+                                await verificationNotifier.verifyCode(
+                                  _codeController.text,
+                                );
+                              }
+                            },
                       child: verificationState is VerificationLoading
                           ? const CircularProgressIndicator(
                               color: Colors.white,
