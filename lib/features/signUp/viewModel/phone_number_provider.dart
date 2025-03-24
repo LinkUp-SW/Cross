@@ -33,9 +33,12 @@ class PhoneNumberNotifier extends StateNotifier<PhoneNumberState> {
         state = PhoneNumberValid();
 
         _signUpNotifier.updateUserData(
-            phoneNumber: "$countryCode+$phoneNumber");
+            phoneNumber: phoneNumber,
+            countryCode: countryCode,
+            country: (countryCode));
+        print('${_signUpNotifier.state.email}');
         print(
-            "name: $_signUpNotifier.state.fisrtName $_signUpNotifier.state.lastName");
+            "name: ${_signUpNotifier.state.firstName} ${_signUpNotifier.state.lastName}");
         print("Phone Number: ${_signUpNotifier.state.phoneNumber}");
       } else if (success == false) {
         state = PhoneNumberInvalid("Failed to set phone number");
@@ -48,16 +51,5 @@ class PhoneNumberNotifier extends StateNotifier<PhoneNumberState> {
     } catch (e) {
       state = PhoneNumberInvalid("Failed to set phone number");
     }
-  }
-
-  String? validatePhoneNumber(String? phoneNumber) {
-    if (phoneNumber == null ||
-        phoneNumber.isEmpty ||
-        phoneNumber.length < 10 ||
-        phoneNumber.length > 15 ||
-        containsLetter(phoneNumber)) {
-      return "Please choose a correct phone number ";
-    }
-    return null;
   }
 }
