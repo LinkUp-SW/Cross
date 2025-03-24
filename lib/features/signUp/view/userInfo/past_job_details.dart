@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:link_up/features/signUp/viewModel/view_model.dart';
+import 'package:link_up/features/signUp/viewModel/past_job_details_provider.dart';
+
 import 'package:link_up/features/signUp/state/past_job_details_state.dart';
 
 class PastJobDetails extends ConsumerWidget {
@@ -11,10 +12,24 @@ class PastJobDetails extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final _locationController = TextEditingController();
+    final _schoolController = TextEditingController();
+    final _startDateController = TextEditingController();
+    final _pastJobTitleController = TextEditingController();
+    final _pastJobTitleFocusNode = FocusNode();
+    final _pastJobCompanyController = TextEditingController();
     final _formKey = GlobalKey<FormState>();
-    final pastJobDetailsState = ref.watch(pastJobDetailsProvider);
-    final pastJobDetailsNotifier = ref.read(pastJobDetailsProvider.notifier);
-    final pastjobsprovider = ref.watch(pastJobDetailsViewModelProvider);
+    final pastJobDetailsState = ref.watch(pastJobDetailProvider);
+    final pastJobDetailsNotifier = ref.read(pastJobDetailProvider.notifier);
+    bool amStudent = pastJobDetailsState is Student;
+
+    ref.listen<PastJobDetailsState>(pastJobDetailProvider, (previous, next) {
+      if (next is Job) {
+        amStudent = false;
+      } else if (next is Student) {
+        amStudent = true;
+      }
+    });
 
     return Scaffold(
       body: Padding(
@@ -47,17 +62,25 @@ class PastJobDetails extends ConsumerWidget {
                   SizedBox(
                     width: 10.w,
                   ),
-                  if (pastJobDetailsState.amStudent)
-                    const Text('Yes')
-                  else
-                    const Text('No'),
-                  Checkbox(
-                    value: pastJobDetailsState.amStudent,
-                    onChanged: (value) {
-                      pastJobDetailsNotifier.toggleStudentStatus();
-                    },
-                    checkColor: Colors.blue,
-                  )
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        if (amStudent) const Text('Yes') else const Text('No'),
+                        SizedBox(
+                          width: 10.w,
+                        ),
+                        Switch(
+                          value: pastJobDetailsState is Student,
+                          onChanged: (value) {
+                            pastJobDetailsNotifier.toggleStudentStatus();
+                          },
+                          activeColor: Colors.blue,
+                          activeTrackColor: Colors.blue,
+                          inactiveThumbColor: Colors.white,
+                          inactiveTrackColor: Colors.white,
+                        ),
+                      ])
                 ],
               ),
               SizedBox(
@@ -70,7 +93,7 @@ class PastJobDetails extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     TextFormField(
-                      controller: pastJobDetailsState.locationController,
+                      controller: _locationController,
                       decoration: const InputDecoration(
                         labelText: 'Location',
                         border: OutlineInputBorder(
@@ -78,12 +101,12 @@ class PastJobDetails extends ConsumerWidget {
                         ),
                       ),
                     ),
-                    if (pastJobDetailsState.amStudent) ...[
+                    if (amStudent) ...[
                       SizedBox(
                         height: 20.h,
                       ),
                       TextFormField(
-                        controller: pastJobDetailsState.schoolController,
+                        controller: _schoolController,
                         decoration: const InputDecoration(
                           labelText: 'School/University',
                           border: OutlineInputBorder(
@@ -95,7 +118,7 @@ class PastJobDetails extends ConsumerWidget {
                         height: 20.h,
                       ),
                       TextFormField(
-                        controller: pastJobDetailsState.startDateController,
+                        controller: _startDateController,
                         decoration: const InputDecoration(
                           labelText: 'Start Date',
                           suffixIcon: Icon(Icons.calendar_today),
@@ -105,10 +128,10 @@ class PastJobDetails extends ConsumerWidget {
                         ),
                         readOnly: true,
                         onTap: () async {
-                          await pastjobsprovider.pickDate(context);
-                          if (pastjobsprovider.selectedDate != null) {
-                            pastJobDetailsNotifier.updateStartDate(
-                                "${pastjobsprovider.selectedDate!.day}/${pastjobsprovider.selectedDate!.month}/${pastjobsprovider.selectedDate!.year}");
+                          await pastJobDetailsNotifier.pickDate(context);
+                          if (pastJobDetailsNotifier.selectedDate != null) {
+                            _startDateController.text =
+                                "${pastJobDetailsNotifier.selectedDate!.day}/${pastJobDetailsNotifier.selectedDate!.month}/${pastJobDetailsNotifier.selectedDate!.year}";
                           }
                         },
                       ),
@@ -117,8 +140,8 @@ class PastJobDetails extends ConsumerWidget {
                         height: 20.h,
                       ),
                       TextFormField(
-                        controller: pastJobDetailsState.pastJobTitleController,
-                        focusNode: pastJobDetailsState.pastJobTitleFocusNode,
+                        controller: _pastJobTitleController,
+                        focusNode: _pastJobTitleFocusNode,
                         decoration: const InputDecoration(
                           labelText: 'Past Job Title',
                           border: OutlineInputBorder(
@@ -129,34 +152,32 @@ class PastJobDetails extends ConsumerWidget {
                       SizedBox(
                         height: 20.h,
                       ),
-                      AnimatedOpacity(
-                        duration: const Duration(milliseconds: 400),
-                        opacity:
-                            pastJobDetailsState.showJobLocationField ? 1 : 0,
-                        child: Visibility(
-                          visible: pastJobDetailsState.showJobLocationField,
-                          child: TextFormField(
-                            controller:
-                                pastJobDetailsState.pastJobLocationController,
-                            decoration: const InputDecoration(
-                              labelText: 'Past Job Company',
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide(),
-                              ),
-                            ),
+                      TextFormField(
+                        controller: _pastJobCompanyController,
+                        decoration: const InputDecoration(
+                          labelText: 'Past Job Company',
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(),
                           ),
                         ),
                       ),
                     ],
                     SizedBox(
-                      height: 240.h,
+                      height: 190.h,
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        context.push('/signup/verification');
+                        pastJobDetailsNotifier.setData(
+                          _locationController.text,
+                          _pastJobTitleController.text,
+                          _pastJobCompanyController.text,
+                          _schoolController.text,
+                          _startDateController.text,
+                        );
+                        context.push('/signup/otp');
                       },
                       child: const Text(
-                        'Submit',
+                        'Next',
                         style: TextStyle(
                           fontSize: 20,
                         ),
