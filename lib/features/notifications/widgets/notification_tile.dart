@@ -22,9 +22,9 @@ class NotificationTile extends StatelessWidget {
           ? theme.colorScheme.surface // White (light mode) / Dark (dark mode)
           : theme.colorScheme.secondary.withOpacity(0.3), // Light blue (light mode) / Dark blue (dark 
       child: ListTile(
-        leading: CircleAvatar(
+        leading: const CircleAvatar(
           backgroundImage: 
-              AssetImage("assets/images/profile.png") ,
+               AssetImage("assets/images/profile.png") ,
         ),
         title: RichText(
           text: TextSpan(
