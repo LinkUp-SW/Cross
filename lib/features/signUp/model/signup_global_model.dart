@@ -8,31 +8,33 @@ class SignUpModel {
   String? country;
   String? city;
   String? jobTitle;
-  String? companyName;
+  String? recentCompany;
   String? school;
   String? startDate;
   String? location;
   String? address;
   String? dateOfBirth;
   String? gender;
+  bool? isStudent;
 
   SignUpModel({
-    this.firstName,
-    this.lastName,
-    this.email,
-    this.password,
-    this.phoneNumber,
-    this.countryCode,
-    this.country,
-    this.city,
-    this.jobTitle,
-    this.companyName,
-    this.school,
-    this.startDate,
-    this.location,
-    this.address,
-    this.dateOfBirth,
-    this.gender,
+    this.firstName = '',
+    this.lastName = '',
+    this.email = '',
+    this.password = '',
+    this.phoneNumber = '',
+    this.countryCode = '',
+    this.country = '',
+    this.city = '',
+    this.jobTitle = '',
+    this.recentCompany = '',
+    this.school = '',
+    this.startDate = '',
+    this.location = '',
+    this.address = '',
+    this.dateOfBirth = '',
+    this.gender = '',
+    this.isStudent = false,
   });
 
   // Convert to JSON for API submission
@@ -47,13 +49,12 @@ class SignUpModel {
       "country": country,
       "city": city,
       "jobTitle": jobTitle,
-      "companyName": companyName,
+      "recentCompany": recentCompany,
       "school": school,
       "startDate": startDate,
       "location": location,
       "address": address,
-      "dateOfBirth": dateOfBirth,
-      "gender": gender,
+      "isStudent": isStudent
     };
   }
 
@@ -68,11 +69,11 @@ class SignUpModel {
         country: json['country'],
         city: json['city'],
         jobTitle: json['jobTitle'],
-        companyName: json['companyName'],
+        recentCompany: json['recentCompany'],
         school: json['school'],
         startDate: json['startDate'],
         location: json['location'],
         address: json['address'],
-        dateOfBirth: json['dateOfBirth']);
+        isStudent: json['isStudent']);
   }
 }
