@@ -8,7 +8,7 @@ class MockNotificationService extends NotificationService {
 
     return [
       NotificationModel(
-        type: NotificationFilter.Posts,
+        type: NotificationFilter.posts,
         id: '1',
         profilePic: 'https://via.placeholder.com/150',
         name: 'John Doe',
@@ -17,7 +17,7 @@ class MockNotificationService extends NotificationService {
         isRead: false,
       ),
       NotificationModel(
-        type: NotificationFilter.Posts,
+        type: NotificationFilter.posts,
         id: '2',
         profilePic: 'https://via.placeholder.com/150',
         name: 'Jane Smith',
@@ -26,7 +26,7 @@ class MockNotificationService extends NotificationService {
         isRead: true,
       ),
       NotificationModel(
-        type: NotificationFilter.All,
+        type: NotificationFilter.all,
         id: '3',
         profilePic: 'https://via.placeholder.com/150',
         name: 'Alice Brown',
@@ -35,7 +35,7 @@ class MockNotificationService extends NotificationService {
         isRead: false,
       ),
       NotificationModel(
-        type: NotificationFilter.Jobs,
+        type: NotificationFilter.jobs,
         id: '4',
         profilePic: 'https://via.placeholder.com/150',
         name: 'Bob Johnson',
@@ -44,7 +44,7 @@ class MockNotificationService extends NotificationService {
         isRead: true,
       ),
       NotificationModel(
-        type: NotificationFilter.All,
+        type: NotificationFilter.all,
         id: '5',
         profilePic: 'https://via.placeholder.com/150',
         name: 'Charlie White',
@@ -53,7 +53,7 @@ class MockNotificationService extends NotificationService {
         isRead: false,
       ),
       NotificationModel(
-        type: NotificationFilter.Mentions,
+        type: NotificationFilter.mentions,
         id: '6',
         profilePic: 'https://via.placeholder.com/150',
         name: 'David Green',
@@ -62,7 +62,7 @@ class MockNotificationService extends NotificationService {
         isRead: false,
       ),
       NotificationModel(
-        type: NotificationFilter.Jobs,
+        type: NotificationFilter.jobs,
         id: '7',
         profilePic: 'https://via.placeholder.com/150',
         name: 'Emma Wilson',
@@ -71,7 +71,7 @@ class MockNotificationService extends NotificationService {
         isRead: true,
       ),
       NotificationModel(
-        type: NotificationFilter.All,
+        type: NotificationFilter.all,
         id: '8',
         profilePic: 'https://via.placeholder.com/150',
         name: 'Frank Taylor',
@@ -80,7 +80,7 @@ class MockNotificationService extends NotificationService {
         isRead: true,
       ),
       NotificationModel(
-        type: NotificationFilter.All,
+        type: NotificationFilter.all,
         id: '9',
         profilePic: 'https://via.placeholder.com/150',
         name: 'Grace Miller',
@@ -89,7 +89,7 @@ class MockNotificationService extends NotificationService {
         isRead: false,
       ),
       NotificationModel(
-        type: NotificationFilter.Mentions,
+        type: NotificationFilter.mentions,
         id: '10',
         profilePic: 'https://via.placeholder.com/150',
         name: 'Henry Brown',

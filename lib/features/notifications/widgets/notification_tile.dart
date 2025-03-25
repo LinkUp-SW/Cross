@@ -7,10 +7,10 @@ class NotificationTile extends StatelessWidget {
   final VoidCallback onTap;
 
   const NotificationTile({
-    Key? key,
+    super.key,
     required this.notification,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,9 +22,10 @@ class NotificationTile extends StatelessWidget {
           ? theme.colorScheme.surface // White (light mode) / Dark (dark mode)
           : theme.colorScheme.secondary.withOpacity(0.3), // Light blue (light mode) / Dark blue (dark 
       child: ListTile(
-        leading: CircleAvatar(
-          backgroundImage: 
-              AssetImage("assets/images/profile.png") ,
+
+        leading: const CircleAvatar(
+          backgroundImage: AssetImage("assets/images/profile.png"),
+
         ),
         title: RichText(
           text: TextSpan(

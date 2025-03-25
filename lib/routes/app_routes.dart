@@ -3,18 +3,63 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:link_up/features/logIn/view/forgot_pasword_view.dart';
+import 'package:link_up/features/logIn/view/login_view.dart';
+import 'package:link_up/features/signUp/view/userInfo/names_view.dart';
+import 'package:link_up/features/signUp/view/userInfo/past_job_details.dart';
+import 'package:link_up/features/signUp/view/userInfo/take_photo.dart';
+import 'package:link_up/features/signUp/view/verification/get_phone_number.dart';
+import 'package:link_up/features/signUp/view/verification/email_password_view.dart';
+import 'package:link_up/features/signUp/view/verification/otp_view.dart';
+import 'package:link_up/features/signUp/view/verification/verification.dart';
+import 'package:link_up/features/Home/view/comment_replies_page.dart';
+import 'package:link_up/features/Home/view/home_page.dart';
+import 'package:link_up/features/Home/view/post_page.dart';
+import 'package:link_up/features/Home/view/reactions_page.dart';
+import 'package:link_up/features/Home/view/reposts_page.dart';
+import 'package:link_up/features/Post/view/write_post.dart';
 import 'package:link_up/features/notifications/view/notifications_view.dart';
 import 'package:link_up/features/my-network/view/invitations.dart';
 import 'package:link_up/features/my-network/view/view.dart';
 import 'package:link_up/shared/dummy_page.dart';
-import 'package:link_up/shared/myhomepage.dart';
 import 'package:link_up/shared/widgets/bottom_navigation_bar.dart';
+import 'package:link_up/shared/widgets/main_drawer.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) {
-  return GoRouter(initialLocation: '/', routes: <RouteBase>[
+
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
+  return GoRouter(initialLocation: '/login', routes: <RouteBase>[
     GoRoute(path: "/profile", builder: (context, state) => Container()),
-    GoRoute(path: "/login", builder: (context, state) => Container()),
-    GoRoute(path: "/signup", builder: (context, state) => Container()),
+    GoRoute(
+        path: "/login",
+        builder: (context, state) => const LoginPage(),
+        routes: [
+          GoRoute(
+              path: "/forgotpassword",
+              builder: (context, state) => const ForgotPasswordView()),
+        ]),
+    GoRoute(
+        path: "/signup",
+        builder: (context, state) => const EmailPasswordView(),
+        routes: [
+          GoRoute(
+              path: "/usersname",
+              builder: (context, state) => const NamingPage()),
+          GoRoute(
+              path: "/getphone",
+              builder: (context, state) => const GetPhoneNumber()),
+          GoRoute(
+              path: "/verification",
+              builder: (context, state) => const Verification()),
+          GoRoute(
+              path: "/pastjobs",
+              builder: (context, state) => const PastJobDetails()),
+          GoRoute(
+              path: "/takephoto",
+              builder: (context, state) => const TakePhoto()),
+          GoRoute(path: "/otp", builder: (context, state) => const OtpView()),
+        ]),
     GoRoute(
       path: "/invitations",
       builder: (context, state) => InvitationsScreen(
@@ -29,6 +74,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) => Scaffold(
+        key: scaffoldKey,
+        drawer: const MainDrawer(),
         body: navigationShell, // The body displays the current screen
         bottomNavigationBar: CustomBottomNavigationBar(
           navigationShell: navigationShell,
@@ -38,11 +85,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         // The route branch for the first tab of the bottom navigation bar.
         StatefulShellBranch(
           routes: <GoRoute>[
-            GoRoute(
-                path: "/",
-                builder: (context, state) => const MyHomePage(
-                      title: "Home",
-                    )),
+            GoRoute(path: "/", builder: (context, state) => HomePage(scaffoldKey: scaffoldKey,)),
           ],
         ),
         StatefulShellBranch(
@@ -57,7 +100,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           routes: <GoRoute>[
             GoRoute(
                 path: "/post",
-                builder: (context, state) => const DummyPage(title: 'Post')),
+                redirect: (context, state) => "/writePost",),
           ],
         ),
         StatefulShellBranch(
@@ -65,7 +108,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             GoRoute(
                 path: "/notifications",
                 builder: 
-                    (context, state) =>NotificationsView(),
+                    (context, state) => const NotificationsView(),
         )],
         ),
         StatefulShellBranch(
@@ -75,10 +118,65 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) => const DummyPage(title: 'Jobs')),
           ],
         ),
+        StatefulShellBranch(
+          routes: <GoRoute>[
+            GoRoute(
+                path: "/postPage",
+                builder: (context, state) => const PostPage(),
+                routes: [
+                  GoRoute(
+                    path: '/focused',
+                    builder: (context, state) => const PostPage(focused: true),
+                  ),
+                ]),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: <GoRoute>[
+            GoRoute(
+                path: "/commentReplies",
+                builder: (context, state) => const CommentRepliesPage(),
+                routes: [
+                  GoRoute(
+                    path: '/unfocused',
+                    builder: (context, state) => const CommentRepliesPage(focused: false),
+                  )]
+                  ),
+                
+          ],
+        ),
+        StatefulShellBranch(
+          routes: <GoRoute>[
+            GoRoute(
+                path: "/reposts",
+                builder: (context, state) => const RepostsPage()),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: <GoRoute>[
+            GoRoute(
+                path: "/reactions",
+                builder: (context, state) => const ReactionsPage()),
+          ],
+        ),
+        
       ],
     ),
     GoRoute(path: "/company", builder: (context, state) => Container()),
-    GoRoute(path: "/messages", builder: (context, state) => Container()),
+    GoRoute(path: "/writePost", pageBuilder: (context, state) => 
+    CustomTransitionPage(child: const WritePost(), transitionsBuilder: 
+    (context, animation, secondaryAnimation, child) {
+      return SlideTransition(
+        position: Tween<Offset>(
+          begin: const Offset(0, 1.0),
+          end: Offset.zero,
+        ).animate(animation),
+        child: child,
+      );
+    })),
+    GoRoute(
+        path: "/messages",
+        builder: (context, state) => const DummyPage(title: "messages")),
     GoRoute(path: "/chatpage", builder: (context, state) => Container()),
     GoRoute(path: "/settings", builder: (context, state) => Container()),
   ]);

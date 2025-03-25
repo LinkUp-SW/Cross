@@ -5,6 +5,8 @@ import '../../../shared/widgets/custom_search_bar.dart';
 import '../../../shared/themes/theme_provider.dart';
 
 class NotificationAppBar extends ConsumerWidget implements PreferredSizeWidget {
+  const NotificationAppBar({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return CustomAppBar(

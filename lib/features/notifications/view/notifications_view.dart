@@ -6,13 +6,15 @@ import '../widgets/notification_app_bar.dart';
 import '../widgets/notification_filter_widget.dart';
 
 class NotificationsView extends ConsumerWidget {
+  const NotificationsView({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final notificationState = ref.watch(notificationsViewModelProvider);
     final notificationViewModel = ref.read(notificationsViewModelProvider.notifier);
 
     return Scaffold(
-      appBar: NotificationAppBar(),
+      appBar: const NotificationAppBar(),
       body: Column(
         children: [
           // Pass filter data
