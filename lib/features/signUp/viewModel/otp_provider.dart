@@ -20,6 +20,7 @@ class OtpNotifier extends StateNotifier<OtpState> {
   Future<void> sendOtp() async {
     state = OtpLoading();
     try {
+      
       final success = await _otpService.sendOtp(_signUpNotifier.state.email);
       if (success) {
         state = OtpSent();
@@ -40,7 +41,6 @@ class OtpNotifier extends StateNotifier<OtpState> {
           await _otpService.verifyOtp(otp, _signUpNotifier.state.email);
       if (success) {
         state = OtpSuccess();
-        _signUpNotifier.submitSignUp();
       } else {
         state = OtpError("Invalid OTP");
       }

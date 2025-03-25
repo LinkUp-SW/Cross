@@ -59,18 +59,35 @@ class PastJobDetailsNotifier extends StateNotifier<PastJobDetailsState> {
   }
 
   void setData(String location, String jobTitle, String companyName,
-      String school, String startDate) {
+      String school, String startDate) async {
     if (state is Job) {
       _signUpNotifier.updateUserData(
         city: location,
         jobTitle: jobTitle,
-        companyName: companyName,
+        recentCompany: companyName,
+        isStudent: false,
       );
       print(
           "${_signUpNotifier.state.firstName} ${_signUpNotifier.state.lastName}");
     } else {
       _signUpNotifier.updateUserData(
-          location: location, school: school, startDate: startDate);
+          location: location,
+          school: school,
+          startDate: startDate,
+          isStudent: true);
+    }
+
+    try {
+      state = PastJobDetailsLoading();
+      final success = await _signUpNotifier.submitSignUp();
+
+      if (success) {
+        state = PastJobDetailsSuccess();
+      } else {
+        state = PastJobDetailsError("Failed to submit data");
+      }
+    } catch (e) {
+      state = PastJobDetailsError("Failed to submit data");
     }
   }
 }
