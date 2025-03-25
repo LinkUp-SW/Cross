@@ -8,15 +8,13 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final Function leadingAction;
   final bool leadingArrow;
   final bool viewMessages;
-  final PreferredSizeWidget? bottom;
   const CustomAppBar(
       {super.key,
       required this.searchBar,
       this.actions = const [],
       this.leadingArrow = false,
       this.viewMessages = true,
-      required this.leadingAction,
-      this.bottom});
+      required this.leadingAction});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -55,7 +53,6 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
               )
             : const SizedBox.shrink(),
       ],
-      bottom: bottom,
     );
   }
 
