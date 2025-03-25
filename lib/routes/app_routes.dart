@@ -3,6 +3,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:link_up/features/logIn/view/forgot_pasword_view.dart';
+import 'package:link_up/features/logIn/view/login_view.dart';
+import 'package:link_up/features/signUp/view/userInfo/names_view.dart';
+import 'package:link_up/features/signUp/view/userInfo/past_job_details.dart';
+import 'package:link_up/features/signUp/view/userInfo/take_photo.dart';
+import 'package:link_up/features/signUp/view/verification/get_phone_number.dart';
+import 'package:link_up/features/signUp/view/verification/email_password_view.dart';
+import 'package:link_up/features/signUp/view/verification/otp_view.dart';
+import 'package:link_up/features/signUp/view/verification/verification.dart';
 import 'package:link_up/features/Home/view/comment_replies_page.dart';
 import 'package:link_up/features/Home/view/home_page.dart';
 import 'package:link_up/features/Home/view/post_page.dart';
@@ -20,10 +29,37 @@ final goRouterProvider = Provider<GoRouter>((ref) {
 
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
-  return GoRouter(initialLocation: '/', routes: <RouteBase>[
+  return GoRouter(initialLocation: '/login', routes: <RouteBase>[
     GoRoute(path: "/profile", builder: (context, state) => Container()),
-    GoRoute(path: "/login", builder: (context, state) => Container()),
-    GoRoute(path: "/signup", builder: (context, state) => Container()),
+    GoRoute(
+        path: "/login",
+        builder: (context, state) => const LoginPage(),
+        routes: [
+          GoRoute(
+              path: "/forgotpassword",
+              builder: (context, state) => const ForgotPasswordView()),
+        ]),
+    GoRoute(
+        path: "/signup",
+        builder: (context, state) => const EmailPasswordView(),
+        routes: [
+          GoRoute(
+              path: "/usersname",
+              builder: (context, state) => const NamingPage()),
+          GoRoute(
+              path: "/getphone",
+              builder: (context, state) => const GetPhoneNumber()),
+          GoRoute(
+              path: "/verification",
+              builder: (context, state) => const Verification()),
+          GoRoute(
+              path: "/pastjobs",
+              builder: (context, state) => const PastJobDetails()),
+          GoRoute(
+              path: "/takephoto",
+              builder: (context, state) => const TakePhoto()),
+          GoRoute(path: "/otp", builder: (context, state) => const OtpView()),
+        ]),
     GoRoute(
       path: "/invitations",
       builder: (context, state) => InvitationsScreen(

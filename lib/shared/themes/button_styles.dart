@@ -77,6 +77,7 @@ class LinkUpButtonStyles {
       foregroundColor: WidgetStateProperty.all(AppColors.darkBlue),
     );
   }
+
   ButtonStyle profileOpenToLight({
     double elevation = 0.0,
     EdgeInsets? padding,
