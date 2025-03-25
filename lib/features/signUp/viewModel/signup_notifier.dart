@@ -21,13 +21,12 @@ class SignUpNotifier extends StateNotifier<SignUpModel> {
       String? country,
       String? city,
       String? jobTitle,
-      String? companyName,
+      String? recentCompany,
       String? school,
       String? startDate,
       String? address,
       String? location,
-      String? dateOfBirth,
-      String? gender}) {
+      bool? isStudent}) {
     state = SignUpModel(
       firstName: firstName ?? state.firstName,
       lastName: lastName ?? state.lastName,
@@ -38,13 +37,12 @@ class SignUpNotifier extends StateNotifier<SignUpModel> {
       country: country ?? state.country,
       city: city ?? state.city,
       jobTitle: jobTitle ?? state.jobTitle,
-      companyName: companyName ?? state.companyName,
+      recentCompany: recentCompany ?? state.recentCompany,
       school: school ?? state.school,
       startDate: startDate ?? state.startDate,
       location: location ?? state.location,
       address: address ?? state.address,
-      dateOfBirth: dateOfBirth ?? state.dateOfBirth,
-      gender: gender ?? state.gender,
+      isStudent: isStudent ?? state.isStudent,
     );
   }
 
