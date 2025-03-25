@@ -23,10 +23,10 @@ class _EmailPasswordViewState extends ConsumerState<EmailPasswordView> {
 
   @override
   Widget build(BuildContext context) {
-    final emailPasswordState = ref.watch(EmailPasswordProvider);
-    final emailPasswordNotifier = ref.read(EmailPasswordProvider.notifier);
+    final emailPasswordState = ref.watch(emailPasswordProvider);
+    final emailPasswordNotifier = ref.read(emailPasswordProvider.notifier);
 
-    ref.listen<EmailPasswordState>(EmailPasswordProvider, (previous, next) {
+    ref.listen<EmailPasswordState>(emailPasswordProvider, (previous, next) {
       if (next is EmailPasswordValid) {
         context.push('/signup/usersname');
       } else if (next is EmailPasswordInvalid) {

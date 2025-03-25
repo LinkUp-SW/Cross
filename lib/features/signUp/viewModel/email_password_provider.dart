@@ -6,7 +6,7 @@ import 'package:link_up/features/signUp/viewModel/signup_notifier.dart';
 
 final emailPasswordServiceProvider = Provider((ref) => EmailPasswordService());
 
-final EmailPasswordProvider =
+final emailPasswordProvider =
     StateNotifierProvider<EmailPasswordNotifier, EmailPasswordState>((ref) {
   final service = ref.watch(emailPasswordServiceProvider);
   final signUpNotifier = ref.read(signUpProvider.notifier);
@@ -20,19 +20,20 @@ class EmailPasswordNotifier extends StateNotifier<EmailPasswordState> {
   EmailPasswordNotifier(this._emailPasswordService, this._signUpNotifier)
       : super(EmailPasswordIntial());
 
-  Future<void> verifyEmail(String email, String Password) async {
+  Future<void> verifyEmail(String email, String password) async {
     try {
       state = LoadingEmailPassword();
       final sucess = await _emailPasswordService
-          .verifyEmail(EmailPasswordModel(email: email, password: Password));
+          .verifyEmail(EmailPasswordModel(email: email, password: password));
       if (sucess) {
         state = EmailPasswordValid();
-        _signUpNotifier.updateUserData(email: email, password: Password);
+        _signUpNotifier.updateUserData(email: email, password: password);
         print('${_signUpNotifier.state.email}');
       } else {
         state = EmailPasswordInvalid("Email could not be verified");
       }
     } catch (e) {
+      print(e.toString());
       state = EmailPasswordInvalid("There was an error with the application");
     }
   }
