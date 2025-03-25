@@ -20,8 +20,13 @@ class ForgotPasswordNotifier extends StateNotifier<ForgotPasswordState> {
   Future<void> forgotPassword(String email) async {
     state = ForgotPasswordLoading();
     try {
-      await _forgotPasswordService.sendPasswordResetEmail(email);
-      state = ForgotPasswordSuccess();
+      final success =
+          await _forgotPasswordService.sendPasswordResetEmail(email);
+      if (success) {
+        state = ForgotPasswordSuccess();
+      } else {
+        state = ForgotPasswordFailure("Failed to send password reset email");
+      }
     } catch (e) {
       state = ForgotPasswordFailure("Failed to send password reset email");
     }

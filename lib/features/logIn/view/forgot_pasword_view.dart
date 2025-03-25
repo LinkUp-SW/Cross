@@ -92,7 +92,10 @@ class _ForgotPasswordViewState extends ConsumerState<ForgotPasswordView> {
                         },
                         child: forgotPasswordState is ForgotPasswordLoading
                             ? const CircularProgressIndicator()
-                            : const Text('Send Email'),
+                            : const Text(
+                                'Send Email',
+                                style: TextStyle(fontSize: 20),
+                              ),
                       ),
                     ],
                   )),
