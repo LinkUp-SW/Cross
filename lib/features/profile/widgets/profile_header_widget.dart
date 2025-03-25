@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/shared/themes/button_styles.dart';
+import 'package:go_router/go_router.dart';
 
 class ProfileHeaderWidget extends ConsumerWidget {
   const ProfileHeaderWidget({Key? key}) : super(key: key);
@@ -71,12 +72,19 @@ class ProfileHeaderWidget extends ConsumerWidget {
                   ],
                 ),
               ),
-              Positioned(
-                top: 70.h,
-                right: 16.w,
+            ],
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: 10.h, right: 16.w),
+            child: Align(
+              alignment: Alignment.topRight,
+              child: GestureDetector(
+                onTap: () {
+                  GoRouter.of(context).push('/edit_intro');
+                },
                 child: CircleAvatar(
                   radius: 16.r,
-                  backgroundColor: Colors.white,
+                  backgroundColor: AppColors.lightMain  ,
                   child: Icon(
                     Icons.edit,
                     color: AppColors.lightSecondaryText,
@@ -84,11 +92,9 @@ class ProfileHeaderWidget extends ConsumerWidget {
                   ),
                 ),
               ),
-            ],
+            ),
           ),
-
-          SizedBox(height: 60.h),
-
+          SizedBox(height: 50.h),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w),
             child: Column(
@@ -107,7 +113,6 @@ class ProfileHeaderWidget extends ConsumerWidget {
                   ),
                 ),
                 SizedBox(height: 5.h),
-
                 Text(
                   "Cairo University",
                   style: TextStyles.font14_400Weight.copyWith(color: AppColors.lightGrey),
@@ -125,7 +130,6 @@ class ProfileHeaderWidget extends ConsumerWidget {
               ],
             ),
           ),
-
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w),
             child: Column(
@@ -136,8 +140,10 @@ class ProfileHeaderWidget extends ConsumerWidget {
                     Expanded(
                       flex: 4,
                       child: ElevatedButton(
-                        onPressed: () {},
-                        style: isDarkMode 
+                        onPressed: () {
+                          GoRouter.of(context).push('/edit_intro');
+                        },
+                        style: isDarkMode
                             ? buttonStyles.wideBlueElevatedButtonDark()
                             : buttonStyles.wideBlueElevatedButton(),
                         child: Text(
@@ -153,7 +159,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
                       flex: 4,
                       child: OutlinedButton(
                         onPressed: () {},
-                        style: isDarkMode 
+                        style: isDarkMode
                             ? buttonStyles.blueOutlinedButtonDark()
                             : buttonStyles.blueOutlinedButton(),
                         child: Text(
@@ -170,7 +176,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
                       height: 35.r,
                       child: OutlinedButton(
                         onPressed: () {},
-                        style: isDarkMode 
+                        style: isDarkMode
                             ? buttonStyles.circularButtonDark()
                             : buttonStyles.circularButton(),
                         child: Icon(
@@ -186,7 +192,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
                   width: double.infinity,
                   child: OutlinedButton(
                     onPressed: () {},
-                    style: isDarkMode 
+                    style: isDarkMode
                         ? buttonStyles.blueOutlinedButtonDark()
                         : buttonStyles.blueOutlinedButton(),
                     child: Text(
