@@ -39,7 +39,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
                   child: Align(
                     alignment: Alignment.topRight,
                     child: IconButton(
-                      icon: Icon(Icons.camera_alt, color: Colors.white),
+                      icon: Icon(Icons.camera_alt_rounded, color: Colors.white),
                       onPressed: () {},
                     ),
                   ),
@@ -47,30 +47,40 @@ class ProfileHeaderWidget extends ConsumerWidget {
               ),
               Positioned(
                 top: 30.h,
-                left: 0,
-                right: 270,
-                child: Center(
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      CircleAvatar(
-                        radius: 50.r,
-                        backgroundColor: Colors.white,
-                        child: CircleAvatar(
-                          radius: 48.r,
-                          backgroundImage: AssetImage('assets/images/uploadProfilePic.png'),
-                        ),
+                left: 16.w,
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    CircleAvatar(
+                      radius: 50.r,
+                      backgroundColor: Colors.white,
+                      child: CircleAvatar(
+                        radius: 48.r,
+                        backgroundImage: AssetImage('assets/images/uploadProfilePic.png'),
                       ),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: CircleAvatar(
-                          radius: 10.r,
-                          backgroundColor: AppColors.lightBlue,
-                          child: Icon(Icons.add, size: 14.sp, color: AppColors.lightMain),
-                        ),
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: CircleAvatar(
+                        radius: 10.r,
+                        backgroundColor: AppColors.lightBlue,
+                        child: Icon(Icons.add, size: 14.sp, color: AppColors.lightMain),
                       ),
-                    ],
+                    ),
+                  ],
+                ),
+              ),
+              Positioned(
+                top: 70.h,
+                right: 16.w,
+                child: CircleAvatar(
+                  radius: 16.r,
+                  backgroundColor: Colors.white,
+                  child: Icon(
+                    Icons.edit,
+                    color: AppColors.lightSecondaryText,
+                    size: 20.sp,
                   ),
                 ),
               ),
@@ -93,18 +103,25 @@ class ProfileHeaderWidget extends ConsumerWidget {
                 Text(
                   "Student at Cairo University",
                   style: TextStyles.font18_500Weight.copyWith(
-                    color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
+                    color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightTextColor,
                   ),
                 ),
+                SizedBox(height: 5.h),
+
                 Text(
-                  "Cairo University, Giza, Al Jizah, Egypt",
+                  "Cairo University",
                   style: TextStyles.font14_400Weight.copyWith(color: AppColors.lightGrey),
                 ),
+                Text(
+                  "Giza, Al Jizah, Egypt",
+                  style: TextStyles.font13_400Weight.copyWith(color: AppColors.lightGrey),
+                ),
+                SizedBox(height: 10.h),
                 Text(
                   "0 connections",
                   style: TextStyles.font14_400Weight.copyWith(color: AppColors.lightGrey),
                 ),
-                SizedBox(height: 12.h),
+                SizedBox(height: 8.h),
               ],
             ),
           ),
@@ -120,8 +137,15 @@ class ProfileHeaderWidget extends ConsumerWidget {
                       flex: 4,
                       child: ElevatedButton(
                         onPressed: () {},
-                        style: buttonStyles.wideBlueElevatedButton(),
-                        child: const Text("Open to"),
+                        style: isDarkMode 
+                            ? buttonStyles.wideBlueElevatedButtonDark()
+                            : buttonStyles.wideBlueElevatedButton(),
+                        child: Text(
+                          "Open to",
+                          style: TextStyles.font15_500Weight.copyWith(
+                            color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+                          ),
+                        ),
                       ),
                     ),
                     SizedBox(width: 6.w),
@@ -129,37 +153,51 @@ class ProfileHeaderWidget extends ConsumerWidget {
                       flex: 4,
                       child: OutlinedButton(
                         onPressed: () {},
-                        style: buttonStyles.blueOutlinedButton(),
-                        child: Text("Add section", style: TextStyle(color: AppColors.lightBlue)),
+                        style: isDarkMode 
+                            ? buttonStyles.blueOutlinedButtonDark()
+                            : buttonStyles.blueOutlinedButton(),
+                        child: Text(
+                          "Add section",
+                          style: TextStyles.font15_500Weight.copyWith(
+                            color: isDarkMode ? AppColors.darkBlue : AppColors.lightBlue,
+                          ),
+                        ),
                       ),
                     ),
                     SizedBox(width: 6.w),
-                    Container(
-                      width: 40.r,
-                      height: 40.r,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: AppColors.lightTextColor, width: 2.r),
-                        color: Colors.transparent,
-                      ),
-                      child: IconButton(
+                    SizedBox(
+                      width: 30.r,
+                      height: 35.r,
+                      child: OutlinedButton(
                         onPressed: () {},
-                        icon: Icon(Icons.more_horiz, color: AppColors.lightTextColor),
-                        padding: EdgeInsets.zero,
-                        constraints: BoxConstraints(),
+                        style: isDarkMode 
+                            ? buttonStyles.circularButtonDark()
+                            : buttonStyles.circularButton(),
+                        child: Icon(
+                          Icons.more_horiz,
+                          color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+                        ),
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: 12.h),
+                SizedBox(height: 5.h),
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton(
                     onPressed: () {},
-                    style: buttonStyles.blueOutlinedButton(),
-                    child: Text("Enhance profile", style: TextStyle(color: AppColors.lightBlue)),
+                    style: isDarkMode 
+                        ? buttonStyles.blueOutlinedButtonDark()
+                        : buttonStyles.blueOutlinedButton(),
+                    child: Text(
+                      "Enhance profile",
+                      style: TextStyles.font15_500Weight.copyWith(
+                        color: isDarkMode ? AppColors.darkBlue : AppColors.lightBlue,
+                      ),
+                    ),
                   ),
                 ),
+                SizedBox(height: 15.h),
               ],
             ),
           ),

@@ -96,6 +96,7 @@ class LinkUpButtonStyles {
     );
   }
 
+  // Light Theme Button Styles
   ButtonStyle wideBlueElevatedButton() {
     return ElevatedButton.styleFrom(
       backgroundColor: AppColors.lightBlue,
@@ -106,7 +107,14 @@ class LinkUpButtonStyles {
     );
   }
 
-
+  ButtonStyle circularButton() {
+    return OutlinedButton.styleFrom(
+      side: BorderSide(color: AppColors.lightTextColor, width: 1.2.r),
+      shape: const CircleBorder(),
+      padding: EdgeInsets.zero,
+      backgroundColor: Colors.transparent,
+    );
+  }
 
   ButtonStyle blueOutlinedButton() {
     return OutlinedButton.styleFrom(
@@ -114,7 +122,38 @@ class LinkUpButtonStyles {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24.r),
       ),
-      side: BorderSide(color: AppColors.lightBlue, width: 2.r),
+      side: BorderSide(color: AppColors.lightBlue, width: 1.2.r),
+      padding: EdgeInsets.symmetric(vertical: 5.h),
+    );
+  }
+
+  // Dark Theme Button Styles
+  ButtonStyle wideBlueElevatedButtonDark() {
+    return ElevatedButton.styleFrom(
+      backgroundColor: AppColors.darkBlue,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24.r),
+      ),
+      padding: EdgeInsets.symmetric(vertical: 5.h),
+    );
+  }
+
+  ButtonStyle circularButtonDark() {
+    return OutlinedButton.styleFrom(
+      side: BorderSide(color: AppColors.darkTextColor, width: 1.2.r),
+      shape: const CircleBorder(),
+      padding: EdgeInsets.zero,
+      backgroundColor: Colors.transparent,
+    );
+  }
+
+  ButtonStyle blueOutlinedButtonDark() {
+    return OutlinedButton.styleFrom(
+      backgroundColor: AppColors.darkMain,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24.r),
+      ),
+      side: BorderSide(color: AppColors.darkBlue, width: 1.2.r),
       padding: EdgeInsets.symmetric(vertical: 5.h),
     );
   }
