@@ -1,6 +1,7 @@
 // The font and colors for each of the themes of the app
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/shared/themes/button_styles.dart';
 import 'package:link_up/shared/themes/chip_styles.dart';
 import 'package:link_up/shared/themes/colors.dart';
@@ -18,9 +19,10 @@ class AppThemes {
         surface: AppColors.lightBackground,
         primary: AppColors.lightMain,
         secondary: AppColors.lightBlue,
+        tertiary: AppColors.lightGreen,
       ),
       chipTheme: ChipStyle.lightChip,
-      cardTheme: const CardTheme(color: AppColors.lightMain),
+      cardTheme: const CardTheme(color: AppColors.lightMain, elevation: 10),
       iconButtonTheme: IconButtonThemeData(
         style: ButtonStyle(
             iconColor: WidgetStateProperty.all(AppColors.lightSecondaryText)),
@@ -67,6 +69,29 @@ class AppThemes {
         modalBackgroundColor: AppColors.lightMain,
         showDragHandle: true,
         dragHandleColor: AppColors.lightTextColor,
+      ),
+      tooltipTheme: TooltipThemeData(
+        textStyle: TextStyles.font11_400Weight,
+        decoration: BoxDecoration(
+          color: AppColors.lightBackground,
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+      tabBarTheme: TabBarThemeData(
+        dividerColor: AppColors.lightGrey,
+        dividerHeight: 0.2.h,
+        indicator: const UnderlineTabIndicator(
+          borderSide: BorderSide(
+            color: AppColors.lightGreen,
+            width: 2.0,
+          ),
+        ),
+        indicatorColor: AppColors.lightGreen,
+        indicatorSize: TabBarIndicatorSize.tab,
+        unselectedLabelColor: AppColors.lightTextColor,
+        unselectedLabelStyle: TextStyles.font15_700Weight,
+        labelColor: AppColors.lightGreen,
+        labelStyle: TextStyles.font15_700Weight,
       ));
 
   static ThemeData darkTheme = ThemeData(
@@ -74,12 +99,12 @@ class AppThemes {
     useMaterial3: true,
     scaffoldBackgroundColor: AppColors.darkBackground,
     colorScheme: const ColorScheme.dark(
-      surface: AppColors.darkBackground,
-      primary: AppColors.darkMain,
-      secondary: AppColors.darkBlue,
-    ),
+        surface: AppColors.darkBackground,
+        primary: AppColors.darkMain,
+        secondary: AppColors.darkBlue,
+        tertiary: AppColors.darkGreen),
     chipTheme: ChipStyle.darkChip,
-    cardTheme: const CardTheme(color: AppColors.darkMain),
+    cardTheme: const CardTheme(color: AppColors.darkMain, elevation: 10),
     iconButtonTheme: IconButtonThemeData(
       style: ButtonStyle(
           iconColor: WidgetStateProperty.all(AppColors.darkTextColor)),
@@ -126,6 +151,28 @@ class AppThemes {
       modalBackgroundColor: AppColors.darkMain,
       showDragHandle: true,
       dragHandleColor: AppColors.darkSecondaryText,
+    ),
+    tooltipTheme: TooltipThemeData(
+      textStyle: TextStyles.font11_400Weight,
+      decoration: BoxDecoration(
+        color: AppColors.darkBackground,
+        borderRadius: BorderRadius.circular(10),
+      ),
+    ),
+    tabBarTheme: TabBarThemeData(
+      dividerHeight: 0.2.h,
+      indicator: UnderlineTabIndicator(
+        borderSide: BorderSide(
+          color: AppColors.darkGreen,
+          width: 2.0.w,
+        ),
+      ),
+      indicatorColor: AppColors.darkGreen,
+      indicatorSize: TabBarIndicatorSize.tab,
+      unselectedLabelColor: AppColors.darkTextColor,
+      unselectedLabelStyle: TextStyles.font15_700Weight,
+      labelColor: AppColors.darkGreen,
+      labelStyle: TextStyles.font15_700Weight,
     ),
   );
 }

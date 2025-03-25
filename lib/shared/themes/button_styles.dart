@@ -78,7 +78,15 @@ class LinkUpButtonStyles {
     );
   }
 
-  ButtonStyle profileOpenToLight({
+    return ButtonStyle(
+      elevation: WidgetStateProperty.all(elevation),
+      padding: WidgetStateProperty.all(padding),
+      textStyle: WidgetStateProperty.all(textStyle),
+      foregroundColor: WidgetStateProperty.all(AppColors.lightBlue),
+    );
+  }
+
+  ButtonStyle darkTextButtonStyle({
     double elevation = 0.0,
     EdgeInsets? padding,
     BorderRadius? borderRadius,
@@ -89,20 +97,35 @@ class LinkUpButtonStyles {
     textStyle ??= TextStyles.font13_700Weight;
 
     return ButtonStyle(
-      foregroundColor: WidgetStateProperty.all(AppColors.lightMain),
-      backgroundColor: WidgetStateProperty.all(AppColors.lightBlue),
       elevation: WidgetStateProperty.all(elevation),
       padding: WidgetStateProperty.all(padding),
-      shape: WidgetStateProperty.all(
-        RoundedRectangleBorder(
-          borderRadius: borderRadius,
-          side: BorderSide(
-            color: AppColors.lightBlue,
-            width: 1.w,
-          ),
+      textStyle: WidgetStateProperty.all(textStyle),
+      foregroundColor: WidgetStateProperty.all(AppColors.darkBlue),
+    );
+  }
+  ButtonStyle profileOpenToLight({
+    double elevation = 0.0,
+    EdgeInsets? padding,
+    BorderRadius? borderRadius,
+    TextStyle? textStyle,
+  }) {
+    padding ??= EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h);
+    borderRadius ??= BorderRadius.all(Radius.circular(20.r));
+    textStyle ??= TextStyles.font13_700Weight;
+
+    return ElevatedButton.styleFrom(
+      foregroundColor: AppColors.lightMain,
+      backgroundColor: AppColors.lightBlue,
+      elevation: elevation,
+      padding: padding,
+      shape: RoundedRectangleBorder(
+        borderRadius: borderRadius,
+        side: BorderSide(
+          color: AppColors.lightBlue,
+          width: 1.w,
         ),
       ),
-      textStyle: WidgetStateProperty.all(textStyle),
+      textStyle: textStyle,
     );
   }
 
@@ -116,24 +139,74 @@ class LinkUpButtonStyles {
     borderRadius ??= BorderRadius.all(Radius.circular(20.r));
     textStyle ??= TextStyles.font13_700Weight;
 
-    return ButtonStyle(
-      foregroundColor: WidgetStateProperty.all(AppColors.darkMain),
-      backgroundColor: WidgetStateProperty.all(AppColors.darkBlue),
-      elevation: WidgetStateProperty.all(elevation),
-      padding: WidgetStateProperty.all(padding),
-      shape: WidgetStateProperty.all(
-        RoundedRectangleBorder(
-          borderRadius: borderRadius,
-          side: BorderSide(
-            color: AppColors.darkBlue,
-            width: 1.w,
-          ),
+    return ElevatedButton.styleFrom(
+      foregroundColor: AppColors.darkMain,
+      backgroundColor: AppColors.darkBlue,
+      elevation: elevation,
+      padding: padding,
+      shape: RoundedRectangleBorder(
+        borderRadius: borderRadius,
+        side: BorderSide(
+          color: AppColors.darkBlue,
+          width: 1.w,
         ),
       ),
-      textStyle: WidgetStateProperty.all(textStyle),
+      textStyle: textStyle,
+    );
+  }
+
+  ButtonStyle myNetworkScreenConnectLight({
+    double elevation = 0.0,
+    EdgeInsets? padding,
+    BorderRadius? borderRadius,
+    TextStyle? textStyle,
+  }) {
+    padding ??= EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h);
+    borderRadius ??= BorderRadius.all(Radius.circular(20.r));
+    textStyle ??= TextStyles.font15_700Weight;
+
+    return ElevatedButton.styleFrom(
+      foregroundColor: AppColors.lightBlue,
+      backgroundColor: AppColors.lightMain,
+      elevation: elevation,
+      padding: padding,
+      minimumSize: Size(double.infinity, 5.h),
+      shape: RoundedRectangleBorder(
+        borderRadius: borderRadius,
+        side: BorderSide(
+          color: AppColors.lightBlue,
+          width: 1.0.w,
+        ),
+      ),
+      textStyle: textStyle,
+    );
+  }
+
+  ButtonStyle myNetworkScreenConnectDark({
+    double elevation = 0.0,
+    EdgeInsets? padding,
+    BorderRadius? borderRadius,
+    TextStyle? textStyle,
+  }) {
+    padding ??= EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h);
+    borderRadius ??= BorderRadius.all(Radius.circular(20.r));
+    textStyle ??= TextStyles.font15_700Weight;
+
+    return ElevatedButton.styleFrom(
+      foregroundColor: AppColors.darkBlue,
+      backgroundColor: AppColors.darkMain,
+      elevation: elevation,
+      padding: padding,
+      minimumSize: Size(double.infinity, 5.h),
+      shape: RoundedRectangleBorder(
+        borderRadius: borderRadius,
+        side: BorderSide(
+          color: AppColors.darkBlue,
+          width: 1.0.w,
+        ),
+      ),
+      textStyle: textStyle,
     );
   }
 }
-
-
 // The rest of buttons styles should be exist here
