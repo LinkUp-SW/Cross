@@ -24,6 +24,15 @@ class PastJobDetails extends ConsumerWidget {
     bool amStudent = pastJobDetailsState is Student;
 
     ref.listen<PastJobDetailsState>(pastJobDetailProvider, (previous, next) {
+      if (next is PastJobDetailsSuccess) {
+        context.go('/signup/otp');
+      } else if (next is PastJobDetailsError) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(next.error)));
+      }
+    });
+
+    ref.listen<PastJobDetailsState>(pastJobDetailProvider, (previous, next) {
       if (next is Job) {
         amStudent = false;
       } else if (next is Student) {
@@ -166,22 +175,21 @@ class PastJobDetails extends ConsumerWidget {
                       height: 190.h,
                     ),
                     ElevatedButton(
-                      onPressed: () {
-                        pastJobDetailsNotifier.setData(
-                          _locationController.text,
-                          _pastJobTitleController.text,
-                          _pastJobCompanyController.text,
-                          _schoolController.text,
-                          _startDateController.text,
-                        );
-                        context.push('/signup/otp');
-                      },
-                      child: const Text(
-                        'Next',
-                        style: TextStyle(
-                          fontSize: 20,
-                        ),
-                      ),
+                      onPressed: pastJobDetailsState is PastJobDetailsLoading
+                          ? null
+                          : () {
+                              pastJobDetailsNotifier.setData(
+                                _locationController.text,
+                                _pastJobTitleController.text,
+                                _pastJobCompanyController.text,
+                                _schoolController.text,
+                                _startDateController.text,
+                              );
+                            },
+                      child: pastJobDetailsState is PastJobDetailsLoading
+                          ? const CircularProgressIndicator()
+                          : const Text('Continue',
+                              style: TextStyle(fontSize: 20)),
                     )
                   ],
                 ),

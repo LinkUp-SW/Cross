@@ -1,5 +1,11 @@
 class PastJobDetailsState {}
 
+class PastJobDetailsInitial extends PastJobDetailsState {}
+
+class PastJobDetailsLoading extends PastJobDetailsState {}
+
+class PastJobDetailsSuccess extends PastJobDetailsState {}
+
 class PastJobDetailsError extends PastJobDetailsState {
   final String error;
 
