@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import '../model/notification_model.dart';
 
@@ -15,16 +14,15 @@ class NotificationTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context); // Get theme data
-  
 
     return Container(
       color: notification.isRead
           ? theme.colorScheme.surface // White (light mode) / Dark (dark mode)
-          : theme.colorScheme.secondary.withOpacity(0.3), // Light blue (light mode) / Dark blue (dark 
+          : theme.colorScheme.secondary
+              .withOpacity(0.3), // Light blue (light mode) / Dark blue (dark
       child: ListTile(
         leading: const CircleAvatar(
-          backgroundImage: 
-               AssetImage("assets/images/profile.png") ,
+          backgroundImage: AssetImage("assets/images/profile.png"),
         ),
         title: RichText(
           text: TextSpan(
@@ -39,7 +37,8 @@ class NotificationTile extends StatelessWidget {
           ),
         ),
         subtitle: Text(notification.time,
-            style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6))),
+            style:
+                TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6))),
         onTap: onTap, // Trigger read state change when tapped
       ),
     );
