@@ -162,14 +162,18 @@ class _PostsState extends ConsumerState<Posts> {
                     },
                     child: Row(
                       children: [
-                        CircleAvatar(
-                          backgroundColor:
-                              Theme.of(context).colorScheme.secondary,
-                          radius: 10.r,
-                          child: const Icon(
-                            Icons.thumb_up_alt,
-                            size: 15,
-                          ),
+                        //TODO: Need to change to Like or top reaction depending on the impelementation of the back team
+                        Wrap(
+                          children: [
+                            for (var i = 0; i < 3; i++) ...[
+                              Align(
+                                
+                                widthFactor: 0.7,
+                                child: Reaction.getIcon(
+                                    Reaction.values[i], 15.r),
+                              )
+                            ],
+                          ],
                         ),
                         SizedBox(width: 5.w),
                         Text(widget.post.reactions.toString()),
@@ -230,7 +234,7 @@ class _PostsState extends ConsumerState<Posts> {
                     width: 55.w,
                     child: Column(
                       children: [
-                        Reaction.getIcon(widget.post.reaction),
+                        Reaction.getIcon(widget.post.reaction, 20.r),
                         Text(
                           Reaction.getReactionString(widget.post.reaction),
                           style: TextStyle(
