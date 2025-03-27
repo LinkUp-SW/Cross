@@ -29,7 +29,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
 
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
-  return GoRouter(initialLocation: '/login', routes: <RouteBase>[
+  return GoRouter(initialLocation: '/', routes: <RouteBase>[
     GoRoute(path: "/profile", builder: (context, state) => Container()),
     GoRoute(
         path: "/login",
