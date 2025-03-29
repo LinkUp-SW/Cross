@@ -9,11 +9,12 @@ postVisibiltyBottomSheet(
     BuildContext context,
     Function setVisbilityPost,
     Function setVisibilityComment,
-    Function setBrandPartnerships,
+    //Function setBrandPartnerships,
     Visibilities post,
     Visibilities comment,
-    bool initBrandPartnerships) {
-  bool brandPartnerships = initBrandPartnerships;
+    //bool initBrandPartnerships
+    ) {
+  //bool brandPartnerships = initBrandPartnerships;
   Visibilities visbilityPost = post;
   Visibilities visibilityComment = comment;
   return showModalBottomSheet(
@@ -112,20 +113,20 @@ postVisibiltyBottomSheet(
                 color: AppColors.grey,
                 thickness: 0,
               ),
-              SwitchListTile(
-                title: const Text('Brand Partnerships'),
-                subtitle: Text(
-                  brandPartnerships ? 'On' : 'Off',
-                ),
-                value: brandPartnerships,
-                onChanged: (value) {
-                  setBrandPartnerships(value);
-                  setState(() {
-                    brandPartnerships = value;
-                  });
-                },
-                activeColor: Theme.of(context).colorScheme.tertiary,
-              )
+              // SwitchListTile(
+              //   title: const Text('Brand Partnerships'),
+              //   subtitle: Text(
+              //     brandPartnerships ? 'On' : 'Off',
+              //   ),
+              //   value: brandPartnerships,
+              //   onChanged: (value) {
+              //     setBrandPartnerships(value);
+              //     setState(() {
+              //       brandPartnerships = value;
+              //     });
+              //   },
+              //   activeColor: Theme.of(context).colorScheme.tertiary,
+              // )
             ],
           ),
         ),
