@@ -1,12 +1,20 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPlayerHome extends StatefulWidget {
-  final String videoUrl;
+  final String? videoUrl;
+  final XFile? file;
+  final bool network;
 
-  const VideoPlayerHome({super.key, required this.videoUrl});
+  const VideoPlayerHome(
+      {super.key, this.videoUrl, this.file, this.network = true})
+      : assert(videoUrl != null || file != null);
 
   @override
   State<VideoPlayerHome> createState() => _VideoPlayerHomeState();
@@ -28,12 +36,21 @@ class _VideoPlayerHomeState extends State<VideoPlayerHome> {
   @override
   void initState() {
     super.initState();
-    _videoController =
-        VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl))
-          ..initialize().then((_) {
-            // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
-            setState(() {});
-          });
+    if (widget.network) {
+      _videoController =
+          VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl!))
+            ..initialize().then((_) {
+              // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
+              setState(() {});
+            });
+    } else {
+      _videoController = VideoPlayerController.file(File(widget.file!.path))
+        ..initialize().then((_) {
+          // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
+          setState(() {});
+          log(_videoController.value.aspectRatio.toString());
+        });
+    }
   }
 
   @override
@@ -58,32 +75,33 @@ class _VideoPlayerHomeState extends State<VideoPlayerHome> {
           if (!_videoController.value.isPlaying)
             CircleAvatar(
               radius: 25.r,
-              backgroundColor: AppColors.darkBackground.withValues(alpha: 0.5),
+              backgroundColor:
+                  AppColors.darkBackground.withValues(alpha: 0.5),
               child: Icon(
                 Icons.play_arrow,
                 color: AppColors.lightMain,
                 size: 30.r,
               ),
             ),
-            
-            ValueListenableBuilder(
-              valueListenable: _videoController,
-             builder: (context, VideoPlayerValue value, child){
-              if (_videoController.value.position == _videoController.value.duration)
-              {
-              return CircleAvatar(
-                radius: 25.r,
-                backgroundColor: AppColors.darkBackground.withValues(alpha: 0.5),
-                child: Icon(
-                  Icons.replay,
-                  color: AppColors.lightMain,
-                  size: 30.r,
-                ),
-              );
+          ValueListenableBuilder(
+            valueListenable: _videoController,
+            builder: (context, VideoPlayerValue value, child) {
+              if (_videoController.value.position ==
+                  _videoController.value.duration) {
+                return CircleAvatar(
+                  radius: 25.r,
+                  backgroundColor:
+                      AppColors.darkBackground.withValues(alpha: 0.5),
+                  child: Icon(
+                    Icons.replay,
+                    color: AppColors.lightMain,
+                    size: 30.r,
+                  ),
+                );
               }
               return const SizedBox();
-             },
-            ),
+            },
+          ),
           ValueListenableBuilder(
             valueListenable: _videoController,
             builder: (context, VideoPlayerValue value, child) {
@@ -97,7 +115,10 @@ class _VideoPlayerHomeState extends State<VideoPlayerHome> {
                   ),
                   child: Padding(
                     padding: EdgeInsets.all(4.r),
-                    child: Text(getVideoPosition(),style: const TextStyle(color: AppColors.lightMain),),
+                    child: Text(
+                      getVideoPosition(),
+                      style: const TextStyle(color: AppColors.lightMain),
+                    ),
                   ),
                 ),
               );
@@ -117,7 +138,8 @@ class _VideoPlayerHomeState extends State<VideoPlayerHome> {
                 });
               },
               icon: CircleAvatar(
-                backgroundColor: AppColors.darkBackground.withValues(alpha: 0.5),
+                backgroundColor:
+                    AppColors.darkBackground.withValues(alpha: 0.5),
                 radius: 10.r,
                 child: Icon(
                   _videoController.value.volume == 0
