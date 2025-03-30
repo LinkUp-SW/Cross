@@ -14,7 +14,6 @@ class EditIntroPage extends ConsumerWidget {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final buttonStyles = LinkUpButtonStyles();
 
-    // Controllers for text fields
     final firstNameController = TextEditingController(text: "Amr");
     final lastNameController = TextEditingController(text: "Safwat");
     final additionalNameController = TextEditingController();
@@ -23,16 +22,13 @@ class EditIntroPage extends ConsumerWidget {
     final schoolController = TextEditingController(text: "Cairo University");
     final countryController = TextEditingController(text: "Egypt");
     final cityController = TextEditingController(text: "Giza, Al Jizah");
-    final websiteController = TextEditingController();
 
-    // State for checkbox
     bool showSchoolInIntro = true;
 
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
-            // Fixed header
             Container(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
               color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
@@ -59,7 +55,6 @@ class EditIntroPage extends ConsumerWidget {
                 ],
               ),
             ),
-            // Scrollable content
             Expanded(
               child: Container(
                 color: AppColors.lightMain,
@@ -76,7 +71,7 @@ class EditIntroPage extends ConsumerWidget {
                       ),
                       SizedBox(height: 10.h),
                       Text(
-                        "First name*",
+                        "First Name*",
                         style: TextStyles.font14_400Weight.copyWith(
                           color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
                         ),
@@ -87,6 +82,7 @@ class EditIntroPage extends ConsumerWidget {
                         style: TextStyles.font14_400Weight.copyWith(
                           color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
                         ),
+                        cursorColor: AppColors.darkBackground, // Set cursor color to black
                         decoration: InputDecoration(
                           border: UnderlineInputBorder(
                             borderSide: BorderSide(color: AppColors.lightGrey),
@@ -101,7 +97,7 @@ class EditIntroPage extends ConsumerWidget {
                       ),
                       SizedBox(height: 20.h),
                       Text(
-                        "Last name*",
+                        "Family Name*",
                         style: TextStyles.font14_400Weight.copyWith(
                           color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
                         ),
@@ -112,6 +108,7 @@ class EditIntroPage extends ConsumerWidget {
                         style: TextStyles.font14_400Weight.copyWith(
                           color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
                         ),
+                        cursorColor: AppColors.darkBackground,
                         decoration: InputDecoration(
                           border: UnderlineInputBorder(
                             borderSide: BorderSide(color: AppColors.lightGrey),
@@ -126,7 +123,7 @@ class EditIntroPage extends ConsumerWidget {
                       ),
                       SizedBox(height: 20.h),
                       Text(
-                        "Additional name",
+                        "Additional Name*",
                         style: TextStyles.font14_400Weight.copyWith(
                           color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
                         ),
@@ -137,6 +134,7 @@ class EditIntroPage extends ConsumerWidget {
                         style: TextStyles.font14_400Weight.copyWith(
                           color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
                         ),
+                        cursorColor: AppColors.darkBackground,
                         decoration: InputDecoration(
                           border: UnderlineInputBorder(
                             borderSide: BorderSide(color: AppColors.lightGrey),
@@ -150,7 +148,6 @@ class EditIntroPage extends ConsumerWidget {
                         ),
                       ),
                       SizedBox(height: 20.h),
-                      // Headline
                       Text(
                         "Headline*",
                         style: TextStyles.font14_400Weight.copyWith(
@@ -163,6 +160,7 @@ class EditIntroPage extends ConsumerWidget {
                         style: TextStyles.font14_400Weight.copyWith(
                           color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
                         ),
+                        cursorColor: AppColors.darkBackground,
                         decoration: InputDecoration(
                           border: UnderlineInputBorder(
                             borderSide: BorderSide(color: AppColors.lightGrey),
@@ -177,7 +175,8 @@ class EditIntroPage extends ConsumerWidget {
                       ),
                       SizedBox(height: 20.h),
                       GestureDetector(
-                        onTap: () {
+                        onTap: () {GoRouter.of(context).push('/add_new_position');
+
                         },
                         child: Text(
                           "+ Add new position",
@@ -199,6 +198,7 @@ class EditIntroPage extends ConsumerWidget {
                         style: TextStyles.font14_400Weight.copyWith(
                           color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
                         ),
+                        cursorColor: AppColors.darkBackground,
                         decoration: InputDecoration(
                           hintText: "Ex: Retail",
                           hintStyle: TextStyles.font14_400Weight.copyWith(
@@ -215,17 +215,7 @@ class EditIntroPage extends ConsumerWidget {
                           ),
                         ),
                       ),
-                      SizedBox(height: 10.h),
-                      GestureDetector(
-                        onTap: () {
-                        },
-                        child: Text(
-                          "Learn more about industry options",
-                          style: TextStyles.font14_400Weight.copyWith(
-                            color: AppColors.lightBlue,
-                          ),
-                        ),
-                      ),
+                  
                       SizedBox(height: 20.h),
                       Text(
                         "Education",
@@ -246,6 +236,7 @@ class EditIntroPage extends ConsumerWidget {
                         style: TextStyles.font14_400Weight.copyWith(
                           color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
                         ),
+                        cursorColor: AppColors.darkBackground,
                         decoration: InputDecoration(
                           suffixIcon: Icon(
                             Icons.arrow_drop_down,
@@ -264,7 +255,7 @@ class EditIntroPage extends ConsumerWidget {
                       ),
                       SizedBox(height: 10.h),
                       GestureDetector(
-                        onTap: () {
+                        onTap: () {GoRouter.of(context).push('/add_new_education');
                         },
                         child: Text(
                           "+ Add new education",
@@ -310,6 +301,7 @@ class EditIntroPage extends ConsumerWidget {
                         style: TextStyles.font14_400Weight.copyWith(
                           color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
                         ),
+                        cursorColor: AppColors.darkBackground,
                         decoration: InputDecoration(
                           suffixIcon: Icon(
                             Icons.close,
@@ -351,6 +343,7 @@ class EditIntroPage extends ConsumerWidget {
                         style: TextStyles.font14_400Weight.copyWith(
                           color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
                         ),
+                        cursorColor: AppColors.darkBackground,
                         decoration: InputDecoration(
                           suffixIcon: Icon(
                             Icons.close,
@@ -375,15 +368,8 @@ class EditIntroPage extends ConsumerWidget {
                           color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
                         ),
                       ),
-                      SizedBox(height: 10.h),
                       Container(
                         padding: EdgeInsets.symmetric(vertical: 10.h),
-                        decoration: BoxDecoration(
-                          border: Border(
-                            top: BorderSide(color: AppColors.lightGrey, width: 1),
-                            bottom: BorderSide(color: AppColors.lightGrey, width: 1),
-                          ),
-                        ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -396,7 +382,7 @@ class EditIntroPage extends ConsumerWidget {
                             SizedBox(height: 10.h),
                             GestureDetector(
                               onTap: () {
-                                // Handle edit contact info
+                              GoRouter.of(context).push('/edit_contact_info');
                               },
                               child: Text(
                                 "Edit contact info",
@@ -408,52 +394,12 @@ class EditIntroPage extends ConsumerWidget {
                           ],
                         ),
                       ),
-                      SizedBox(height: 20.h),
-                      Text(
-                        "Website",
-                        style: TextStyles.font18_700Weight.copyWith(
-                          color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
-                        ),
-                      ),
-                      SizedBox(height: 10.h),
-                      Text(
-                        "Add a link that will appear at the top of your profile",
-                        style: TextStyles.font14_400Weight.copyWith(
-                          color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
-                        ),
-                      ),
-                      SizedBox(height: 10.h),
-                      Text(
-                        "Link",
-                        style: TextStyles.font14_400Weight.copyWith(
-                          color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
-                        ),
-                      ),
-                      SizedBox(height: 2.h),
-                      TextField(
-                        controller: websiteController,
-                        style: TextStyles.font14_400Weight.copyWith(
-                          color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
-                        ),
-                        decoration: InputDecoration(
-                          border: UnderlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.lightGrey),
-                          ),
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.lightGrey),
-                          ),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.lightBlue),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 20.h),
+                     
                     ],
                   ),
                 ),
               ),
             ),
-            // Save button
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
               child: SizedBox(
