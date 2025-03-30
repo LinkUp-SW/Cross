@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:link_up/features/my-network/model/model.dart';
+import 'package:link_up/features/my-network/model/grow_tab_model.dart';
 import 'package:link_up/features/my-network/services/service.dart';
-import 'package:link_up/features/my-network/state/state.dart';
+import 'package:link_up/features/my-network/state/grow_tab_state.dart';
 
 class GrowTabViewModel extends StateNotifier<GrowTabState> {
   final GrowTabServices _growTabServices;
