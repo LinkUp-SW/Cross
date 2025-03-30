@@ -1,9 +1,14 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
 import 'package:link_up/features/Home/viewModel/posts_vm.dart';
 import 'package:link_up/features/Home/widgets/posts.dart';
 import 'package:link_up/shared/themes/colors.dart';
+import 'package:link_up/shared/widgets/custom_snackbar.dart';
 import 'package:link_up/shared/widgets/tab_provider.dart';
 import 'package:link_up/shared/widgets/custom_app_bar.dart';
 import 'package:link_up/shared/widgets/custom_search_bar.dart';
@@ -29,6 +34,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     scrollController2 = ScrollController();
     ref.read(postsProvider.notifier).fetchPosts().then((value) {
       ref.read(postsProvider.notifier).addPosts(value);
+      checkInternetConnection();
     });
   }
 
@@ -55,6 +61,37 @@ class _HomePageState extends ConsumerState<HomePage> {
   void scrollTop() {
     scrollController.animateTo(scrollController.position.minScrollExtent,
         duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+  }
+
+  void checkInternetConnection() {
+    InternetAddress.lookup('exmaple.com').then((result) {
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        log('connected');
+      }
+    }).catchError(
+      (_) {
+        log('Not Connected');
+        if (mounted) {
+          openSnackbar(
+            context,
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.dangerous,
+                  color: AppColors.red,
+                ),
+                SizedBox(
+                  width: 10.w,
+                ),
+                Text("No Internet Connection",
+                    style: TextStyle(
+                        color: Theme.of(context).textTheme.bodyLarge!.color))
+              ],
+            ),
+          );
+        }
+      },
+    );
   }
 
   @override

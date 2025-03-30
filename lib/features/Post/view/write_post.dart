@@ -10,6 +10,7 @@ import 'package:link_up/features/Home/model/media_model.dart';
 import 'package:link_up/features/Post/viewModel/write_post_vm.dart';
 import 'package:link_up/features/Post/widgets/bottom_sheet.dart';
 import 'package:link_up/shared/themes/colors.dart';
+import 'package:link_up/shared/widgets/custom_snackbar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class WritePost extends ConsumerStatefulWidget {
@@ -112,6 +113,18 @@ class _WritePostState extends ConsumerState<WritePost> {
                           _sending = false;
                           context.pop();
                           ref.read(writePostProvider.notifier).clearWritePost();
+                          openSnackbar(
+                            context,
+                            child: Row(children: [
+                              const Icon(Icons.check_circle_outline),
+                              SizedBox(
+                                width: 10.w,
+                              ),
+                              Text('Post created successfully',style: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color)),
+                            ]),
+                            onPressed: () {},
+                            label: 'View',
+                          );
                         });
                       }
                     });
