@@ -38,8 +38,10 @@ class _PostsState extends ConsumerState<Posts> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        if (!widget.inMessage) {
         ref.read(postProvider.notifier).setPost(widget.post);
         context.push('/postPage');
+        }
       },
       child: Column(
         children: [
