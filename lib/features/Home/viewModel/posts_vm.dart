@@ -50,6 +50,12 @@ class PostsNotifier extends StateNotifier<List<PostModel>> {
             ),
             text: 'This is a post',
             media: Media(
+              post: index % 6 == 5
+                  ? PostModel.initial().copyWith(
+                      media: Media(type: MediaType.pdf, urls: [
+                      'https://www.sldttc.org/allpdf/21583473018.pdf'
+                    ]))
+                  : null,
               type: index % 6 == 1
                   ? MediaType.video
                   : index % 6 == 2
@@ -81,13 +87,12 @@ class PostsNotifier extends StateNotifier<List<PostModel>> {
                               ? [
                                   'https://www.sldttc.org/allpdf/21583473018.pdf'
                                 ]
-                              : ['https://pub.dev/packages/any_link_preview'],  
+                              : ['https://pub.dev/packages/any_link_preview'],
             ),
             reactions: 10,
             comments: 50,
             reposts: 5,
             reaction: Reaction.none,
-            repost: PostModel.initial().copyWith(media: Media(type: MediaType.pdf, urls: ['https://www.sldttc.org/allpdf/21583473018.pdf']))
           ),
         );
       },

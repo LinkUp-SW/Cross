@@ -4,11 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/Home/home_enums.dart';
+import 'package:link_up/features/Home/model/media_model.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
 import 'package:link_up/features/Home/viewModel/post_vm.dart';
 import 'package:link_up/features/Home/widgets/bottom_sheets.dart';
 import 'package:link_up/features/Home/widgets/post_header.dart';
 import 'package:link_up/features/Home/widgets/reactions.dart';
+import 'package:link_up/features/Post/viewModel/write_post_vm.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/widgets/bottom_sheet.dart';
 import 'package:readmore/readmore.dart';
@@ -39,8 +41,8 @@ class _PostsState extends ConsumerState<Posts> {
     return GestureDetector(
       onTap: () {
         if (!widget.inMessage) {
-        ref.read(postProvider.notifier).setPost(widget.post);
-        context.push('/postPage');
+          ref.read(postProvider.notifier).setPost(widget.post);
+          context.push('/postPage');
         }
       },
       child: Column(
@@ -149,7 +151,7 @@ class _PostsState extends ConsumerState<Posts> {
           ),
           SizedBox(height: 10.h),
           if (widget.post.media.type != MediaType.none) ...[
-            widget.post.media.getMedia(post: widget.post.repost),
+            widget.post.media.getMedia(),
             SizedBox(height: 10.h),
           ],
           if (widget.showBottom) ...[
@@ -169,10 +171,9 @@ class _PostsState extends ConsumerState<Posts> {
                           children: [
                             for (var i = 0; i < 3; i++) ...[
                               Align(
-                                
                                 widthFactor: 0.7,
-                                child: Reaction.getIcon(
-                                    Reaction.values[i], 15.r),
+                                child:
+                                    Reaction.getIcon(Reaction.values[i], 15.r),
                               )
                             ],
                           ],
@@ -270,14 +271,37 @@ class _PostsState extends ConsumerState<Posts> {
                         content: Column(
                           children: [
                             ListTile(
-                              onTap: () {},
+                              onTap: () {
+                                if (widget.post.media.type == MediaType.post) {
+                                  ref.read(writePostProvider.notifier).setMedia(
+                                        Media(
+                                          type: MediaType.post,
+                                          urls: [],
+                                          post: widget.post.copyWith(
+                                            media: Media.initial(),
+                                          ),
+                                        ),
+                                      );
+                                } else {
+                                  ref.read(writePostProvider.notifier).setMedia(
+                                        Media(
+                                            type: MediaType.post,
+                                            urls: [],
+                                            post: widget.post),
+                                      );
+                                }
+                                context.pop();
+                                context.push('/post');
+                              },
                               leading: const Icon(Icons.edit),
                               title: const Text("Repost with your thoughts"),
                               subtitle: const Text(
                                   "Create new post with 'name' post attached"),
                             ),
                             ListTile(
-                              onTap: () {},
+                              onTap: () {
+                                //TODO: send repost request to backend
+                              },
                               leading: const Icon(Icons.loop),
                               title: const Text("Repost"),
                               subtitle: const Text(

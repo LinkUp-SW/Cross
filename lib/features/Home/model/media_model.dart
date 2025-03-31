@@ -15,8 +15,9 @@ class Media {
   MediaType type;
   List<String> urls;
   List<dynamic> file;
+  PostModel? post;
 
-  Media({required this.type, required this.urls,this.file = const []});
+  Media({required this.type, required this.urls,this.file = const [],this.post});
 
   Media.fromJson(Map<String, dynamic> json)
       : type = MediaType.getMediaType(json['type']),
@@ -32,20 +33,23 @@ class Media {
     MediaType? type,
     List<String>? urls,
     List<dynamic>? file,
+    PostModel? post
   }) {
     return Media(
       type: type ?? this.type,
       urls: urls ?? this.urls,
       file: file ?? this.file, 
+      post: post ?? this.post
     );
   }
 
   Media.initial()
       : type = MediaType.none,
         urls = [],
-        file = [];
+        file = [],
+        post = null;
         
-  Widget getMedia({PostModel? post}) {
+  Widget getMedia() {
     switch (type) {
       case MediaType.image:
         return Image.network(urls[0]);
@@ -69,7 +73,7 @@ class Media {
     }
   }
 
-  Widget getMediaLocal({PostModel? post}){
+  Widget getMediaLocal(){
     switch (type) {
       case MediaType.image:
         return Image.file(File(file[0].path));

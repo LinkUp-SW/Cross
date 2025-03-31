@@ -13,7 +13,6 @@ class PostModel {
   int reactions;
   int comments;
   int reposts;
-  PostModel? repost;
 
   Reaction reaction;
 
@@ -27,7 +26,6 @@ class PostModel {
     required this.reposts,
     required this.reaction,
     this.isAd = false,
-    this.repost,
   });
 
   PostModel.fromJson(Map<String, dynamic> json)
@@ -39,9 +37,7 @@ class PostModel {
         comments = json['comments'],
         reposts = json['reposts'],
         reaction = Reaction.getReaction(json['reaction']),
-        isAd = json['isAd'] ?? false,
-        repost =
-            json['repost'] != null ? PostModel.fromJson(json['repost']) : null;
+        isAd = json['isAd'] ?? false;
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -53,7 +49,6 @@ class PostModel {
         'reposts': reposts,
         'reaction': reaction.toString(),
         'isAd': isAd,
-        'repost': repost?.toJson(),
       };
 
   PostModel copyWith({
@@ -78,7 +73,6 @@ class PostModel {
       reposts: reposts ?? this.reposts,
       reaction: reaction ?? this.reaction,
       isAd: isAd ?? this.isAd,
-      repost: repost ?? this.repost,
     );
   }
 
@@ -91,6 +85,5 @@ class PostModel {
         comments = 5,
         reposts = 5,
         reaction = Reaction.none,
-        isAd = false,
-        repost = null;
+        isAd = false;
 }
