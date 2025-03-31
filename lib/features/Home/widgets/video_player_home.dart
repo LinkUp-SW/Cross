@@ -68,9 +68,11 @@ class _VideoPlayerHomeState extends State<VideoPlayerHome> {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          AspectRatio(
-            aspectRatio: _videoController.value.aspectRatio,
-            child: VideoPlayer(_videoController),
+        ClipRRect(
+            child: AspectRatio(
+              aspectRatio: _videoController.value.aspectRatio,
+              child: VideoPlayer(_videoController),
+            ),
           ),
           if (!_videoController.value.isPlaying)
             CircleAvatar(
