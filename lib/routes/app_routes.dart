@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:link_up/core/utils/global_keys.dart';
 import 'package:link_up/features/logIn/view/forgot_pasword_view.dart';
 import 'package:link_up/features/logIn/view/login_view.dart';
 import 'package:link_up/features/signUp/view/userInfo/names_view.dart';
@@ -29,7 +30,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
 
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
-  return GoRouter(initialLocation: '/', routes: <RouteBase>[
+  return GoRouter(
+    navigatorKey: navigatorKey,
+    initialLocation: '/',
+    routes: <RouteBase>[
     GoRoute(path: "/profile", builder: (context, state) => Container()),
     GoRoute(
         path: "/login",
