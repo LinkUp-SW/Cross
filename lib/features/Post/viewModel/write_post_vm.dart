@@ -58,8 +58,9 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
   void clearWritePost() {
     state = WritePostVm.initial();
   }
+  
 
-  Future<bool> createPost() async {
+  Future<String> createPost() async {
     //TODO: send tempPost to backend
     PostModel tempPost = PostModel(
         id: 'noId',
@@ -73,7 +74,7 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
     return await Future.delayed(const Duration(milliseconds: 2000), () {
       log(jsonEncode(tempPost.toJson()));
       return true;
-    }).then((value) => value);
+    }).then((value) => tempPost.id);
   }
 }
 

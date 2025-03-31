@@ -15,6 +15,12 @@ class PostNotifier extends StateNotifier<PostModel> {
     return state.id;
   }
 
+  void fetchPost(String id){
+    Future.delayed(const Duration(seconds: 2), () {
+      state = PostModel.initial();
+    });
+  }
+
   Future<Map<String, List<ReactionTileModel>>> fetchReactions() {
     return Future.delayed(const Duration(seconds: 5), () {
       return List.generate(100, (index) {
