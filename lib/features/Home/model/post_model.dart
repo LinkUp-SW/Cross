@@ -90,7 +90,7 @@ class PostModel {
         reactions = 50,
         comments = 5,
         reposts = 5,
-        reaction = Reaction.insightful,
+        reaction = Reaction.none,
         isAd = false,
         repost = null;
 }

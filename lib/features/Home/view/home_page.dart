@@ -73,7 +73,6 @@ class _HomePageState extends ConsumerState<HomePage> {
         log('Not Connected');
         if (mounted) {
           openSnackbar(
-            context,
             child: Row(
               children: [
                 const Icon(

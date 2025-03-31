@@ -5,8 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:link_up/core/utils/global_keys.dart';
 import 'package:link_up/features/Home/home_enums.dart';
 import 'package:link_up/features/Home/model/media_model.dart';
+import 'package:link_up/features/Home/viewModel/post_vm.dart';
 import 'package:link_up/features/Post/viewModel/write_post_vm.dart';
 import 'package:link_up/features/Post/widgets/bottom_sheet.dart';
 import 'package:link_up/shared/themes/colors.dart';
@@ -108,21 +110,24 @@ class _WritePostState extends ConsumerState<WritePost> {
                         .read(writePostProvider.notifier)
                         .createPost()
                         .then((value) {
-                      if (value) {
+                      if (value != '') {
                         setState(() {
                           _sending = false;
-                          context.pop();
                           ref.read(writePostProvider.notifier).clearWritePost();
+                          final tempRef = ref.read(postProvider.notifier);
+                          context.pop();
                           openSnackbar(
-                            context,
                             child: Row(children: [
-                              const Icon(Icons.check_circle_outline),
+                              Icon(Icons.check_circle,color: Theme.of(context).colorScheme.tertiary,),
                               SizedBox(
                                 width: 10.w,
                               ),
                               Text('Post created successfully',style: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color)),
                             ]),
-                            onPressed: () {},
+                            onPressed: () {
+                                tempRef.fetchPost(value);
+                                navigatorKey.currentContext!.push('/postPage');
+                            },
                             label: 'View',
                           );
                         });
