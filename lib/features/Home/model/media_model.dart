@@ -1,4 +1,3 @@
-
 import 'dart:io';
 
 import 'package:any_link_preview/any_link_preview.dart';
@@ -17,7 +16,11 @@ class Media {
   List<dynamic> file;
   PostModel? post;
 
-  Media({required this.type, required this.urls,this.file = const [],this.post});
+  Media(
+      {required this.type,
+      required this.urls,
+      this.file = const [],
+      this.post});
 
   Media.fromJson(Map<String, dynamic> json)
       : type = MediaType.getMediaType(json['type']),
@@ -29,18 +32,16 @@ class Media {
         'urls': urls,
       };
 
-  Media copyWith({
-    MediaType? type,
-    List<String>? urls,
-    List<dynamic>? file,
-    PostModel? post
-  }) {
+  Media copyWith(
+      {MediaType? type,
+      List<String>? urls,
+      List<dynamic>? file,
+      PostModel? post}) {
     return Media(
-      type: type ?? this.type,
-      urls: urls ?? this.urls,
-      file: file ?? this.file, 
-      post: post ?? this.post
-    );
+        type: type ?? this.type,
+        urls: urls ?? this.urls,
+        file: file ?? this.file,
+        post: post ?? this.post);
   }
 
   Media.initial()
@@ -48,7 +49,7 @@ class Media {
         urls = [],
         file = [],
         post = null;
-        
+
   Widget getMedia() {
     switch (type) {
       case MediaType.image:
@@ -63,35 +64,57 @@ class Media {
         return AnyLinkPreview(link: urls[0]);
       case MediaType.post:
         return Card(
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(20)),
-            side: BorderSide(color: AppColors.blueHue, width: 0),
-          ),
-          child: Posts(post: post!,showBottom: false,showTop: false,));
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(20)),
+              side: BorderSide(color: AppColors.blueHue, width: 0),
+            ),
+            child: Posts(
+              post: post!,
+              showBottom: false,
+              showTop: false,
+            ));
       default:
         return const SizedBox();
     }
   }
 
-  Widget getMediaLocal(){
+  Widget getMediaLocal() {
     switch (type) {
       case MediaType.image:
         return Image.file(File(file[0].path));
       case MediaType.images:
-        return CarouselImages(images: file,network: false,);
+        return CarouselImages(
+          images: file,
+          network: false,
+        );
       case MediaType.video:
-        return VideoPlayerHome(network: false,file: file[0],);
+        return VideoPlayerHome(
+          network: false,
+          file: file[0],
+        );
       case MediaType.pdf:
-        return PDFViewer(url: file[0],network: false,);
+        return PDFViewer(
+          url: file[0],
+          network: false,
+        );
       case MediaType.link:
-        return AnyLinkPreview(link: urls[0]);
+        return AnyLinkPreview(
+          link: urls[0],
+          displayDirection: UIDirection.uiDirectionHorizontal,
+          backgroundColor: AppColors.fineLinesGrey,
+          titleStyle: const TextStyle(color: AppColors.darkSecondaryText),
+        );
       case MediaType.post:
         return Card(
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(20)),
-            side: BorderSide(color: AppColors.blueHue, width: 0),
-          ),
-          child: Posts(post: post!,showBottom: false,showTop: false,));
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(20)),
+              side: BorderSide(color: AppColors.blueHue, width: 0),
+            ),
+            child: Posts(
+              post: post!,
+              showBottom: false,
+              showTop: false,
+            ));
       default:
         return const SizedBox();
     }

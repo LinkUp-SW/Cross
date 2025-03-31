@@ -1,5 +1,9 @@
+import 'dart:developer';
+import 'dart:async';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:linkify/linkify.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -24,6 +28,37 @@ class WritePost extends ConsumerStatefulWidget {
 
 class _WritePostState extends ConsumerState<WritePost> {
   bool _sending = false;
+  Timer? _debounce;
+
+  void checkForLinks(String text) {
+    final elements = linkify(text);
+
+    for (var element in elements) {
+      if (element is LinkableElement) {
+        // A link was found
+        log('Found link: ${element.url}');
+
+        // Validate the URL before setting it as media
+        try {
+          final uri = Uri.parse(element.url);
+          if (uri.hasScheme && uri.host.isNotEmpty) {
+            // Valid URL, set it as media
+            ref
+                .read(writePostProvider.notifier)
+                .setMedia(Media(type: MediaType.link, urls: [element.url]));
+
+            log('Valid link added: ${element.url}');
+            break; // If you only care about the first link
+          } else {
+            log('Invalid link format: ${element.url}');
+          }
+        } catch (e) {
+          log('Error parsing URL: ${e.toString()}');
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final postData = ref.watch(writePostProvider);
@@ -118,15 +153,23 @@ class _WritePostState extends ConsumerState<WritePost> {
                           context.pop();
                           openSnackbar(
                             child: Row(children: [
-                              Icon(Icons.check_circle,color: Theme.of(context).colorScheme.tertiary,),
+                              Icon(
+                                Icons.check_circle,
+                                color: Theme.of(context).colorScheme.tertiary,
+                              ),
                               SizedBox(
                                 width: 10.w,
                               ),
-                              Text('Post created successfully',style: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color)),
+                              Text('Post created successfully',
+                                  style: TextStyle(
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge!
+                                          .color)),
                             ]),
                             onPressed: () {
-                                tempRef.fetchPost(value);
-                                navigatorKey.currentContext!.push('/postPage');
+                              tempRef.fetchPost(value);
+                              navigatorKey.currentContext!.push('/postPage');
                             },
                             label: 'View',
                           );
@@ -153,22 +196,19 @@ class _WritePostState extends ConsumerState<WritePost> {
                   padding: EdgeInsets.all(10.r),
                   child: Stack(
                     children: [
-                      Linkify(
-                        text: postData.controller.text,
-                        style: TextStyle(
-                          fontSize: 15.r,
-                          letterSpacing: 0,
-                        ),
-                        options: const LinkifyOptions(humanize: false),
-                        onOpen: (link) async {
-                          if (!await launchUrl(Uri.parse(link.url))) {
-                            throw Exception('Could not open the link');
-                          }
-                        },
-                      ),
                       TextField(
                         controller: postData.controller,
                         onChanged: (value) {
+                          if (postData.media.type == MediaType.none) {
+                            if (_debounce?.isActive ?? false) {
+                              _debounce!.cancel();
+                            }
+                            _debounce = Timer(const Duration(seconds: 2), () {
+                              setState(() {
+                                checkForLinks(value);
+                              });
+                            });
+                          }
                           setState(() {});
                         },
                         cursorColor: AppColors.lightBlue,
@@ -187,45 +227,54 @@ class _WritePostState extends ConsumerState<WritePost> {
                           letterSpacing: 0,
                         ),
                       ),
+                      Linkify(
+                        text: postData.controller.text,
+                        style: TextStyle(
+                          fontSize: 15.r,
+                          letterSpacing: 0,
+                        ),
+                        options: const LinkifyOptions(humanize: false),
+                        onOpen: (link) async {
+                          if (!await launchUrl(Uri.parse(link.url))) {
+                            throw Exception('Could not open the link');
+                          }
+                        },
+                      ),
                     ],
                   ),
                 ),
                 if (postData.media.type != MediaType.none)
-                  Container(
-                    margin: EdgeInsets.all(5.r),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.r),
-                      border: Border.all(
-                        color: AppColors.lightGrey.withValues(alpha: 0.5),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  ref
+                                      .read(writePostProvider.notifier)
+                                      .setMedia(Media.initial());
+                                });
+                              },
+                              style: IconButton.styleFrom(
+                                backgroundColor: AppColors.darkBackground,
+                              ),
+                              icon: const Icon(Icons.close)),
+                        ],
                       ),
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    ref
-                                        .read(writePostProvider.notifier)
-                                        .setMedia(Media.initial());
-                                  });
-                                },
-                                icon: const Icon(Icons.close)),
-                          ],
-                        ),
-                        Padding(
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(20.r),
+                        child: Padding(
                           padding: EdgeInsets.all(5.r),
                           child: postData.media.getMediaLocal(),
                         ),
-                        SizedBox(
-                          height: 10.h,
-                        ),
-                      ],
-                    ),
+                      ),
+                      SizedBox(
+                        height: 10.h,
+                      ),
+                    ],
                   ),
               ],
             ),
