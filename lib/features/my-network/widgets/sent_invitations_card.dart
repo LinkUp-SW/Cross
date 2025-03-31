@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/my-network/model/invitations_screen_model.dart';
 import 'package:link_up/features/my-network/viewModel/invitations_screen_view_model.dart';
+import 'package:link_up/features/my-network/widgets/confirmation_pop_up.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/shared/utils/my_network_utils.dart';
@@ -84,9 +85,22 @@ class SentInvitationsCard extends ConsumerWidget {
               color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
               child: InkWell(
                 onTap: () {
-                  ref
-                      .read(invitationsScreenViewModelProvider.notifier)
-                      .withdrawInvitation(data.cardId);
+                  showDialog(
+                    context: context,
+                    builder: (context) => ConfirmationPopUp(
+                      title: 'Withdraw invitation',
+                      content:
+                          'Are you sure you want to withdraw your connection invitation to ${data.firstName} ${data.lastName}?',
+                      isDarkMode: isDarkMode,
+                      buttonText: 'Withdraw',
+                      buttonFunctionality: () {
+                        Navigator.of(context).pop();
+                        ref
+                            .read(invitationsScreenViewModelProvider.notifier)
+                            .withdrawInvitation(data.cardId);
+                      },
+                    ),
+                  );
                 },
                 child: Text(
                   "Withdraw",

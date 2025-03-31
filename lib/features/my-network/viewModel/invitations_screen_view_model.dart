@@ -21,7 +21,6 @@ class InvitationsScreenViewModel extends StateNotifier<InvitationsScreenState> {
           (response['receivedConnections'] as List)
               .map((invitation) => InvitationsCardModel.fromJson(invitation))
               .toList();
-      print(receivedInvitations);
       state = state.copyWith(isLoading: false, received: receivedInvitations);
     } catch (e) {
       state = state.copyWith(isLoading: false, error: true);
@@ -39,7 +38,6 @@ class InvitationsScreenViewModel extends StateNotifier<InvitationsScreenState> {
           (response['sentConnections'] as List)
               .map((invitation) => InvitationsCardModel.fromJson(invitation))
               .toList();
-      print(sentInvitations);
       state = state.copyWith(isLoading: false, sent: sentInvitations);
     } catch (e) {
       state = state.copyWith(isLoading: false, error: true);
@@ -88,8 +86,8 @@ class InvitationsScreenViewModel extends StateNotifier<InvitationsScreenState> {
   Future<void> withdrawInvitation(String userId) async {
     try {
       state = state.copyWith(isLoading: true, error: false);
-      await _invitationsScreenServices.withdrawInvitation(userId);
-
+      final withdrawResponse =
+          await _invitationsScreenServices.withdrawInvitation(userId);
       // Remove the withdrawn invitation from the sent list
       if (state.sent != null) {
         final updatedInvitations = state.sent!
