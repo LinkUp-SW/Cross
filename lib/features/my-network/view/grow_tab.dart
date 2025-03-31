@@ -10,7 +10,7 @@ import 'package:link_up/features/my-network/widgets/section.dart';
 import 'package:link_up/features/my-network/widgets/wide_people_card.dart';
 import 'package:link_up/features/my-network/widgets/wide_section.dart';
 
-class GrowTab extends ConsumerWidget {
+class GrowTab extends ConsumerStatefulWidget {
   final bool isDarkMode;
 
   const GrowTab({
@@ -19,127 +19,149 @@ class GrowTab extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 10.h,
-        children: [
-          NavigationRow(
-            title: 'Invitations',
-            isDarkMode: isDarkMode,
-            onTap: () => context.push('/invitations'),
-          ),
-          NavigationRow(
-            title: 'Manage my network',
-            isDarkMode: isDarkMode,
-            onTap: () => context.push('/manage-network'),
-          ),
-          Section(
-            title: "People you may know based on your recent activity",
-            cards: [
-              PeopleCard(
-                data: GrowTabPeopleCardsModel.initial(),
-                isDarkMode: isDarkMode,
-              ),
-              PeopleCard(
-                data: GrowTabPeopleCardsModel.initial(),
-                isDarkMode: isDarkMode,
-              ),
-              PeopleCard(
-                data: GrowTabPeopleCardsModel.initial(),
-                isDarkMode: isDarkMode,
-              ),
-              PeopleCard(
-                data: GrowTabPeopleCardsModel.initial(),
-                isDarkMode: isDarkMode,
-              ),
-            ],
-            isDarkMode: isDarkMode,
-          ),
-          Section(
-            title: "People you may know from Cairo University",
-            cards: [
-              PeopleCard(
-                data: GrowTabPeopleCardsModel.initial(),
-                isDarkMode: isDarkMode,
-              ),
-              PeopleCard(
-                data: GrowTabPeopleCardsModel.initial(),
-                isDarkMode: isDarkMode,
-              ),
-              PeopleCard(
-                data: GrowTabPeopleCardsModel.initial(),
-                isDarkMode: isDarkMode,
-              ),
-              PeopleCard(
-                data: GrowTabPeopleCardsModel.initial(),
-                isDarkMode: isDarkMode,
-              ),
-            ],
-            isDarkMode: isDarkMode,
-          ),
-          WideSection(
-              title:
-                  "People who are in the Software Development industry also follow these people",
-              cards: [
-                WidePeopleCard(
-                  data: GrowTabPeopleCardsModel.initial(),
-                  isDarkMode: isDarkMode,
-                ),
-                WidePeopleCard(
-                  data: GrowTabPeopleCardsModel.initial(),
-                  isDarkMode: isDarkMode,
-                ),
-              ],
-              isDarkMode: isDarkMode),
-          WideSection(
+  ConsumerState<GrowTab> createState() => _GrowTabState();
+}
+
+class _GrowTabState extends ConsumerState<GrowTab> {
+  @override
+  Widget build(BuildContext context) {
+    final isDarkMode = widget.isDarkMode;
+
+    return ListView(
+      children: [
+        NavigationRow(
+          title: 'Invitations',
+          isDarkMode: widget.isDarkMode,
+          onTap: () => context.push('/invitations'),
+        ),
+        SizedBox(
+          height: 10.h,
+        ),
+        NavigationRow(
+          // Removed duplicate NavigationRow
+          title: 'Manage my network',
+          isDarkMode: isDarkMode,
+          onTap: () => context.push('/manage-network'),
+        ),
+        SizedBox(
+          height: 10.h,
+        ),
+        Section(
+          title: "People you may know based on your recent activity",
+          cards: [
+            PeopleCard(
+              data: GrowTabPeopleCardsModel.initial(),
+              isDarkMode: isDarkMode,
+            ),
+            PeopleCard(
+              data: GrowTabPeopleCardsModel.initial(),
+              isDarkMode: isDarkMode,
+            ),
+            PeopleCard(
+              data: GrowTabPeopleCardsModel.initial(),
+              isDarkMode: isDarkMode,
+            ),
+            PeopleCard(
+              data: GrowTabPeopleCardsModel.initial(),
+              isDarkMode: isDarkMode,
+            ),
+          ],
+          isDarkMode: isDarkMode,
+        ),
+        SizedBox(
+          height: 10.h,
+        ),
+        Section(
+          title: "People you may know from Cairo University",
+          cards: [
+            PeopleCard(
+              data: GrowTabPeopleCardsModel.initial(),
+              isDarkMode: isDarkMode,
+            ),
+            PeopleCard(
+              data: GrowTabPeopleCardsModel.initial(),
+              isDarkMode: isDarkMode,
+            ),
+            PeopleCard(
+              data: GrowTabPeopleCardsModel.initial(),
+              isDarkMode: isDarkMode,
+            ),
+            PeopleCard(
+              data: GrowTabPeopleCardsModel.initial(),
+              isDarkMode: isDarkMode,
+            ),
+          ],
+          isDarkMode: isDarkMode,
+        ),
+        SizedBox(
+          height: 10.h,
+        ),
+        WideSection(
             title:
-                "People who are in the Software Development industry also subscribe to these newsletters",
+                "People who are in the Software Development industry also follow these people",
             cards: [
-              NewsletterCard(
-                data: GrowTabNewsletterCardsModel.initial(),
-                isDarkMode: isDarkMode,
-              ),
-              NewsletterCard(
-                data: GrowTabNewsletterCardsModel.initial(),
-                isDarkMode: isDarkMode,
-              ),
-            ],
-            isDarkMode: isDarkMode,
-          ),
-          Section(
-            title: "More suggestions for you",
-            cards: [
-              PeopleCard(
+              WidePeopleCard(
                 data: GrowTabPeopleCardsModel.initial(),
                 isDarkMode: isDarkMode,
               ),
-              PeopleCard(
-                data: GrowTabPeopleCardsModel.initial(),
-                isDarkMode: isDarkMode,
-              ),
-              PeopleCard(
-                data: GrowTabPeopleCardsModel.initial(),
-                isDarkMode: isDarkMode,
-              ),
-              PeopleCard(
-                data: GrowTabPeopleCardsModel.initial(),
-                isDarkMode: isDarkMode,
-              ),
-              PeopleCard(
-                data: GrowTabPeopleCardsModel.initial(),
-                isDarkMode: isDarkMode,
-              ),
-              PeopleCard(
+              WidePeopleCard(
                 data: GrowTabPeopleCardsModel.initial(),
                 isDarkMode: isDarkMode,
               ),
             ],
-            isDarkMode: isDarkMode,
-          ),
-        ],
-      ),
+            isDarkMode: isDarkMode),
+        SizedBox(
+          height: 10.h,
+        ),
+        WideSection(
+          title:
+              "People who are in the Software Development industry also subscribe to these newsletters",
+          cards: [
+            NewsletterCard(
+              data: GrowTabNewsletterCardsModel.initial(),
+              isDarkMode: isDarkMode,
+            ),
+            NewsletterCard(
+              data: GrowTabNewsletterCardsModel.initial(),
+              isDarkMode: isDarkMode,
+            ),
+          ],
+          isDarkMode: isDarkMode,
+        ),
+        SizedBox(
+          height: 10.h,
+        ),
+        Section(
+          title: "More suggestions for you",
+          cards: [
+            PeopleCard(
+              data: GrowTabPeopleCardsModel.initial(),
+              isDarkMode: isDarkMode,
+            ),
+            PeopleCard(
+              data: GrowTabPeopleCardsModel.initial(),
+              isDarkMode: isDarkMode,
+            ),
+            PeopleCard(
+              data: GrowTabPeopleCardsModel.initial(),
+              isDarkMode: isDarkMode,
+            ),
+            PeopleCard(
+              data: GrowTabPeopleCardsModel.initial(),
+              isDarkMode: isDarkMode,
+            ),
+            PeopleCard(
+              data: GrowTabPeopleCardsModel.initial(),
+              isDarkMode: isDarkMode,
+            ),
+            PeopleCard(
+              data: GrowTabPeopleCardsModel.initial(),
+              isDarkMode: isDarkMode,
+            ),
+          ],
+          isDarkMode: isDarkMode,
+        ),
+      ],
     );
   }
 }

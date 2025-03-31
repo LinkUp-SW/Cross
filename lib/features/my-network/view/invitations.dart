@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:link_up/features/my-network/model/invitations_screen_model.dart';
+import 'package:link_up/features/my-network/state/invitations_screen_state.dart';
+import 'package:link_up/features/my-network/viewModel/invitations_screen_view_model.dart';
 import 'package:link_up/features/my-network/widgets/received_invitations_card.dart';
 import 'package:link_up/features/my-network/widgets/sent_invitations_card.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 
-class InvitationsScreen extends ConsumerWidget {
+class InvitationsScreen extends ConsumerStatefulWidget {
   final bool isDarkMode;
   const InvitationsScreen({
     super.key,
@@ -15,7 +16,29 @@ class InvitationsScreen extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<InvitationsScreen> createState() => _InvitationsScreenState();
+}
+
+class _InvitationsScreenState extends ConsumerState<InvitationsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Fetch both received and sent invitations when the screen loads
+    Future.microtask(() {
+      ref
+          .read(invitationsScreenViewModelProvider.notifier)
+          .getReceivedInvitations();
+      ref
+          .read(invitationsScreenViewModelProvider.notifier)
+          .getSentInvitations();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Watch for changes in the invitations state
+    final invitationsState = ref.watch(invitationsScreenViewModelProvider);
+
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -24,14 +47,16 @@ class InvitationsScreen extends ConsumerWidget {
           title: Text(
             'Invitations',
             style: TextStyles.font20_700Weight.copyWith(
-              color: isDarkMode ? AppColors.darkGrey : AppColors.lightTextColor,
+              color: widget.isDarkMode
+                  ? AppColors.darkGrey
+                  : AppColors.lightTextColor,
             ),
           ),
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(kToolbarHeight),
             child: DecoratedBox(
               decoration: BoxDecoration(
-                color: isDarkMode
+                color: widget.isDarkMode
                     ? AppColors.darkBackground
                     : AppColors.lightBackground,
               ),
@@ -41,18 +66,15 @@ class InvitationsScreen extends ConsumerWidget {
                 labelPadding: EdgeInsets.symmetric(horizontal: 15.w),
                 labelStyle: TextStyles.font13_500Weight,
                 unselectedLabelStyle: TextStyles.font13_500Weight,
-                labelColor:
-                    isDarkMode ? AppColors.darkGreen : AppColors.lightGreen,
-                unselectedLabelColor: isDarkMode
+                labelColor: widget.isDarkMode
+                    ? AppColors.darkGreen
+                    : AppColors.lightGreen,
+                unselectedLabelColor: widget.isDarkMode
                     ? AppColors.darkSecondaryText
                     : AppColors.lightSecondaryText,
                 tabs: const [
-                  Tab(
-                    text: "Received",
-                  ),
-                  Tab(
-                    text: "Sent",
-                  ),
+                  Tab(text: "Received"),
+                  Tab(text: "Sent"),
                 ],
               ),
             ),
@@ -61,7 +83,7 @@ class InvitationsScreen extends ConsumerWidget {
             icon: Icon(
               Icons.arrow_back,
               size: 25.w,
-              color: isDarkMode
+              color: widget.isDarkMode
                   ? AppColors.darkSecondaryText
                   : AppColors.lightSecondaryText,
             ),
@@ -72,105 +94,107 @@ class InvitationsScreen extends ConsumerWidget {
               onPressed: () {},
               icon: Icon(
                 Icons.settings,
-                color:
-                    isDarkMode ? AppColors.darkGrey : AppColors.lightTextColor,
+                color: widget.isDarkMode
+                    ? AppColors.darkGrey
+                    : AppColors.lightTextColor,
               ),
             )
           ],
         ),
         body: TabBarView(
           children: [
-            ListView(
-              children: [
-                ReceivedInvitationsCard(
-                  data: InvitationsCardModel.initial(),
-                  isDarkMode: isDarkMode,
-                ),
-                ReceivedInvitationsCard(
-                  data: InvitationsCardModel.initial(),
-                  isDarkMode: isDarkMode,
-                ),
-                ReceivedInvitationsCard(
-                  data: InvitationsCardModel.initial(),
-                  isDarkMode: isDarkMode,
-                ),
-                ReceivedInvitationsCard(
-                  data: InvitationsCardModel.initial(),
-                  isDarkMode: isDarkMode,
-                ),
-                ReceivedInvitationsCard(
-                  data: InvitationsCardModel.initial(),
-                  isDarkMode: isDarkMode,
-                ),
-                ReceivedInvitationsCard(
-                  data: InvitationsCardModel.initial(),
-                  isDarkMode: isDarkMode,
-                ),
-                ReceivedInvitationsCard(
-                  data: InvitationsCardModel.initial(),
-                  isDarkMode: isDarkMode,
-                ),
-                ReceivedInvitationsCard(
-                  data: InvitationsCardModel.initial(),
-                  isDarkMode: isDarkMode,
-                ),
-              ],
-            ),
-            ListView(
-              children: [
-                SentInvitationsCard(
-                  data: InvitationsCardModel.initial(),
-                  isDarkMode: isDarkMode,
-                ),
-                SentInvitationsCard(
-                  data: InvitationsCardModel.initial(),
-                  isDarkMode: isDarkMode,
-                ),
-                SentInvitationsCard(
-                  data: InvitationsCardModel.initial(),
-                  isDarkMode: isDarkMode,
-                ),
-                SentInvitationsCard(
-                  data: InvitationsCardModel.initial(),
-                  isDarkMode: isDarkMode,
-                ),
-                SentInvitationsCard(
-                  data: InvitationsCardModel.initial(),
-                  isDarkMode: isDarkMode,
-                ),
-                SentInvitationsCard(
-                  data: InvitationsCardModel.initial(),
-                  isDarkMode: isDarkMode,
-                ),
-                SentInvitationsCard(
-                  data: InvitationsCardModel.initial(),
-                  isDarkMode: isDarkMode,
-                ),
-                SentInvitationsCard(
-                  data: InvitationsCardModel.initial(),
-                  isDarkMode: isDarkMode,
-                ),
-                SentInvitationsCard(
-                  data: InvitationsCardModel.initial(),
-                  isDarkMode: isDarkMode,
-                ),
-                SentInvitationsCard(
-                  data: InvitationsCardModel.initial(),
-                  isDarkMode: isDarkMode,
-                ),
-                SentInvitationsCard(
-                  data: InvitationsCardModel.initial(),
-                  isDarkMode: isDarkMode,
-                ),
-                SentInvitationsCard(
-                  data: InvitationsCardModel.initial(),
-                  isDarkMode: isDarkMode,
-                ),
-              ],
-            ),
+            // Received invitations tab
+            _buildReceivedInvitationsTab(invitationsState),
+
+            // Sent invitations tab
+            _buildSentInvitationsTab(invitationsState),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildReceivedInvitationsTab(InvitationsScreenState state) {
+    if (state.isLoading && state.received == null) {
+      return const Center(child: CircularProgressIndicator());
+    } else if (state.error) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text("Failed to load invitations"),
+            ElevatedButton(
+              onPressed: () {
+                ref
+                    .read(invitationsScreenViewModelProvider.notifier)
+                    .getReceivedInvitations();
+              },
+              child: const Text("Retry"),
+            ),
+          ],
+        ),
+      );
+    } else if (state.received == null || state.received!.isEmpty) {
+      return const Center(child: Text("No received invitations"));
+    } else {
+      return RefreshIndicator(
+        onRefresh: () async {
+          await ref
+              .read(invitationsScreenViewModelProvider.notifier)
+              .getReceivedInvitations();
+        },
+        child: ListView.builder(
+          itemCount: state.received!.length,
+          itemBuilder: (context, index) {
+            return ReceivedInvitationsCard(
+              data: state.received![index],
+              isDarkMode: widget.isDarkMode,
+            );
+          },
+        ),
+      );
+    }
+  }
+
+  Widget _buildSentInvitationsTab(InvitationsScreenState state) {
+    if (state.isLoading && state.sent == null) {
+      return const Center(child: CircularProgressIndicator());
+    } else if (state.error) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text("Failed to load invitations"),
+            ElevatedButton(
+              onPressed: () {
+                ref
+                    .read(invitationsScreenViewModelProvider.notifier)
+                    .getSentInvitations();
+              },
+              child: const Text("Retry"),
+            ),
+          ],
+        ),
+      );
+    } else if (state.sent == null || state.sent!.isEmpty) {
+      return const Center(child: Text("No sent invitations"));
+    } else {
+      return RefreshIndicator(
+        onRefresh: () async {
+          await ref
+              .read(invitationsScreenViewModelProvider.notifier)
+              .getSentInvitations();
+        },
+        child: ListView.builder(
+          itemCount: state.sent!.length,
+          itemBuilder: (context, index) {
+            return SentInvitationsCard(
+              data: state.sent![index],
+              isDarkMode: widget.isDarkMode,
+            );
+          },
+        ),
+      );
+    }
   }
 }

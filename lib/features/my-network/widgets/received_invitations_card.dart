@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/my-network/model/invitations_screen_model.dart';
+import 'package:link_up/features/my-network/viewModel/invitations_screen_view_model.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/shared/utils/my_network_utils.dart';
@@ -44,7 +45,7 @@ class ReceivedInvitationsCard extends ConsumerWidget {
                     child: Image(
                       width: 50.w,
                       height: 50.h,
-                      image: AssetImage(
+                      image: NetworkImage(
                         data.profilePicture,
                       ),
                       fit: BoxFit.fitWidth,
@@ -96,8 +97,9 @@ class ReceivedInvitationsCard extends ConsumerWidget {
                   child: InkWell(
                     borderRadius: BorderRadius.circular(8.r),
                     onTap: () {
-                      print(
-                          "Pressed on ${data.firstName} ${data.lastName} ignore");
+                      ref
+                          .read(invitationsScreenViewModelProvider.notifier)
+                          .acceptInvitation(data.cardId);
                     },
                     child: Container(
                       padding: EdgeInsets.all(2.r),
@@ -127,8 +129,9 @@ class ReceivedInvitationsCard extends ConsumerWidget {
                   child: InkWell(
                     borderRadius: BorderRadius.circular(8.r),
                     onTap: () {
-                      print(
-                          "Pressed on ${data.firstName} ${data.lastName} ignore");
+                      ref
+                          .read(invitationsScreenViewModelProvider.notifier)
+                          .ignoreInvitation(data.cardId);
                     },
                     child: Container(
                       padding: EdgeInsets.all(2.r),
