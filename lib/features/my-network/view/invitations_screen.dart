@@ -5,6 +5,7 @@ import 'package:link_up/features/my-network/state/invitations_screen_state.dart'
 import 'package:link_up/features/my-network/viewModel/invitations_screen_view_model.dart';
 import 'package:link_up/features/my-network/widgets/received_invitations_card.dart';
 import 'package:link_up/features/my-network/widgets/received_invitations_loading_skeleton.dart';
+import 'package:link_up/features/my-network/widgets/retry_error_message.dart';
 import 'package:link_up/features/my-network/widgets/sent_invitation_loading_skeleton.dart';
 import 'package:link_up/features/my-network/widgets/sent_invitations_card.dart';
 import 'package:link_up/shared/themes/colors.dart';
@@ -125,21 +126,14 @@ class _InvitationsScreenState extends ConsumerState<InvitationsScreen> {
         ),
       );
     } else if (state.error) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text("Failed to load invitations"),
-            ElevatedButton(
-              onPressed: () {
-                ref
-                    .read(invitationsScreenViewModelProvider.notifier)
-                    .getReceivedInvitations();
-              },
-              child: const Text("Retry"),
-            ),
-          ],
-        ),
+      return RetryErrorMessage(
+        isDarkMode: isDarkMode,
+        errorMessage: "Failed to load received connection invitations :(",
+        buttonFunctionality: () async {
+          await ref
+              .read(invitationsScreenViewModelProvider.notifier)
+              .getReceivedInvitations();
+        },
       );
     } else if (state.received == null || state.received!.isEmpty) {
       return const Center(child: Text("No received invitations"));
@@ -175,21 +169,14 @@ class _InvitationsScreenState extends ConsumerState<InvitationsScreen> {
         ),
       );
     } else if (state.error) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text("Failed to load invitations"),
-            ElevatedButton(
-              onPressed: () {
-                ref
-                    .read(invitationsScreenViewModelProvider.notifier)
-                    .getSentInvitations();
-              },
-              child: const Text("Retry"),
-            ),
-          ],
-        ),
+      return RetryErrorMessage(
+        isDarkMode: isDarkMode,
+        errorMessage: "Failed to load sent connection invitations :(",
+        buttonFunctionality: () async {
+          await ref
+              .read(invitationsScreenViewModelProvider.notifier)
+              .getSentInvitations();
+        },
       );
     } else if (state.sent == null || state.sent!.isEmpty) {
       return const Center(child: Text("No sent invitations"));
