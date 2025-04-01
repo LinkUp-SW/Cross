@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:link_up/features/chat/view/chat_list_page.dart';
 import 'package:link_up/shared/dummy_page.dart';
 import 'package:link_up/shared/myhomepage.dart';
 import 'package:link_up/shared/widgets/bottom_navigation_bar.dart';
@@ -63,8 +64,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       ],
     ),
     GoRoute(path: "/company", builder: (context, state) => Container()),
-    GoRoute(path: "/messages", builder: (context, state) => Container()),
-    GoRoute(path: "/chatpage", builder: (context, state) => Container()),
+    GoRoute(path: '/messages', builder: (context, state) => ChatListScreen()),
+    GoRoute(path: '/chatpage', builder: (context, state) => Container()), 
     GoRoute(path: "/settings", builder: (context, state) => Container()),
   ]);
 });
