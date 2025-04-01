@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:link_up/core/services/storage.dart';
 import 'package:link_up/features/logIn/services/login_service.dart';
 import 'package:link_up/features/logIn/viewModel/login_view_model.dart';
 import 'package:link_up/features/logIn/widgets/widgets.dart';
@@ -21,6 +22,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _obsureText = true;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final logInNotifier = ref.read(logInProvider.notifier);
+      await logInNotifier.checkStoredCredentials();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,9 +79,16 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     width: 2.w,
                   ),
                   TextButton(
+                    key: const Key('joinLinkUpButton'),
                     onPressed: () {
                       context.push('/signup');
                     },
+                    style: const ButtonStyle(
+                      overlayColor: WidgetStatePropertyAll(Colors.transparent),
+                      foregroundColor: WidgetStatePropertyAll(
+                        Colors.blue,
+                      ),
+                    ),
                     child: const Text('Join LinkUp'),
                   )
                 ],
@@ -83,6 +100,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   Padding(
                     padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
                     child: ElevatedButton(
+                        key: const Key('googleSignInButton'),
                         onPressed: () {},
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -108,6 +126,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   Padding(
                     padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
                     child: ElevatedButton(
+                        key: const Key('facebookSignInButton'),
                         onPressed: () {},
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -132,12 +151,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   )
                 ],
               ),
-              const DividerWithText(text: 'or'),
+              const DividerWithText(
+                text: 'or',
+              ),
               Form(
                 key: _formKey,
                 child: Column(
                   children: [
                     TextFormField(
+                      key: const Key('emailField'),
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: const InputDecoration(
@@ -148,11 +170,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       height: 10,
                     ),
                     TextFormField(
+                      key: const Key('passwordField'),
                       controller: _passwordController,
                       obscureText: _obsureText,
                       decoration: InputDecoration(
                           hintText: 'Password',
                           suffixIcon: IconButton(
+                              key: const Key('togglePasswordVisibilityButton'),
                               onPressed: () {
                                 setState(() {
                                   _obsureText = !_obsureText;
@@ -173,6 +197,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Checkbox(
+                                key: const Key('rememberMeCheckbox'),
                                 checkColor: Colors.blue,
                                 value: _rememberMe,
                                 onChanged: (value) {
@@ -187,18 +212,34 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           ],
                         ),
                         TextButton(
-                            onPressed: () {
-                              context.push('/login/forgotpassword');
-                            },
-                            child: const Text('Forgot Password?')),
+                          key: const Key('forgotPasswordButton'),
+                          onPressed: () {
+                            context.push('/login/forgotpassword');
+                          },
+                          child: const Text('Forgot Password?'),
+                          style: const ButtonStyle(
+                            overlayColor:
+                                WidgetStatePropertyAll(Colors.transparent),
+                            foregroundColor: WidgetStatePropertyAll(
+                              Colors.blue,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         ElevatedButton(
+                            key: const Key('continueButton'),
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {
+                                if (_rememberMe) {
+                                  rememberMe(
+                                    _emailController.text,
+                                    _passwordController.text,
+                                  );
+                                }
                                 logInNotifier.logIn(
                                   _emailController.text,
                                   _passwordController.text,

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/signUp/viewModel/past_job_details_provider.dart';
-
+import 'package:country_state_city_pro/country_state_city_pro.dart';
 import 'package:link_up/features/signUp/state/past_job_details_state.dart';
 
 class PastJobDetails extends ConsumerWidget {
@@ -19,6 +18,9 @@ class PastJobDetails extends ConsumerWidget {
     final _pastJobTitleFocusNode = FocusNode();
     final _pastJobCompanyController = TextEditingController();
     final _formKey = GlobalKey<FormState>();
+    final _countryController = TextEditingController();
+    final _stateController = TextEditingController();
+    final _cityController = TextEditingController();
     final pastJobDetailsState = ref.watch(pastJobDetailProvider);
     final pastJobDetailsNotifier = ref.read(pastJobDetailProvider.notifier);
     bool amStudent = pastJobDetailsState is Student;
@@ -80,6 +82,7 @@ class PastJobDetails extends ConsumerWidget {
                           width: 10.w,
                         ),
                         Switch(
+                          key: const Key('studentSwitch'),
                           value: pastJobDetailsState is Student,
                           onChanged: (value) {
                             pastJobDetailsNotifier.toggleStudentStatus();
@@ -101,20 +104,26 @@ class PastJobDetails extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    TextFormField(
-                      controller: _locationController,
-                      decoration: const InputDecoration(
-                        labelText: 'Location',
+                    CountryStateCityPicker(
+                      key: const Key('countryStateCityPicker'),
+                      city: _cityController,
+                      state: _stateController,
+                      country: _countryController,
+                      textFieldDecoration: const InputDecoration(
                         border: OutlineInputBorder(
                           borderSide: BorderSide(),
+                        ),
+                        labelStyle: TextStyle(
+                          fontSize: 15,
                         ),
                       ),
                     ),
                     if (amStudent) ...[
                       SizedBox(
-                        height: 20.h,
+                        height: 15.h,
                       ),
                       TextFormField(
+                        key: const Key('schoolTextField'),
                         controller: _schoolController,
                         decoration: const InputDecoration(
                           labelText: 'School/University',
@@ -127,6 +136,7 @@ class PastJobDetails extends ConsumerWidget {
                         height: 20.h,
                       ),
                       TextFormField(
+                        key: const Key('startDateTextField'),
                         controller: _startDateController,
                         decoration: const InputDecoration(
                           labelText: 'Start Date',
@@ -146,9 +156,10 @@ class PastJobDetails extends ConsumerWidget {
                       ),
                     ] else ...[
                       SizedBox(
-                        height: 20.h,
+                        height: 15.h,
                       ),
                       TextFormField(
+                        key: const Key('pastJobTitleTextField'),
                         controller: _pastJobTitleController,
                         focusNode: _pastJobTitleFocusNode,
                         decoration: const InputDecoration(
@@ -162,6 +173,7 @@ class PastJobDetails extends ConsumerWidget {
                         height: 20.h,
                       ),
                       TextFormField(
+                        key: const Key('pastJobCompanyTextField'),
                         controller: _pastJobCompanyController,
                         decoration: const InputDecoration(
                           labelText: 'Past Job Company',
@@ -175,11 +187,13 @@ class PastJobDetails extends ConsumerWidget {
                       height: 190.h,
                     ),
                     ElevatedButton(
+                      key: const Key('continueButton'),
                       onPressed: pastJobDetailsState is PastJobDetailsLoading
                           ? null
                           : () {
                               pastJobDetailsNotifier.setData(
-                                _locationController.text,
+                                _countryController.text,
+                                _cityController.text,
                                 _pastJobTitleController.text,
                                 _pastJobCompanyController.text,
                                 _schoolController.text,

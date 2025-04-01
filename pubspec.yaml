@@ -52,6 +52,8 @@ dependencies:
   url_launcher: ^6.3.1
   flutter_linkify: ^6.0.0
   any_link_preview: ^3.0.3
+  syncfusion_flutter_charts: ^29.1.35
+  country_state_city_pro: ^0.0.6
 
 dev_dependencies:
   flutter_test:

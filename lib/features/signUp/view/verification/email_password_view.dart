@@ -60,10 +60,17 @@ class _EmailPasswordViewState extends ConsumerState<EmailPasswordView> {
                     style: TextStyle(fontSize: 15),
                   ),
                   TextButton(
+                    key: const Key('signInButton'),
                     onPressed: () {
                       context.push('/login');
                     },
                     child: const Text('Sign In'),
+                    style: const ButtonStyle(
+                      overlayColor: WidgetStatePropertyAll(Colors.transparent),
+                      foregroundColor: WidgetStatePropertyAll(
+                        Colors.blue,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -77,6 +84,7 @@ class _EmailPasswordViewState extends ConsumerState<EmailPasswordView> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     TextFormField(
+                      key: const Key('emailTextField'),
                       keyboardType: TextInputType.emailAddress,
                       controller: _emailController,
                       decoration: const InputDecoration(
@@ -89,6 +97,7 @@ class _EmailPasswordViewState extends ConsumerState<EmailPasswordView> {
                       height: 10,
                     ),
                     TextFormField(
+                      key: const Key('passwordTextField'),
                       keyboardType: TextInputType.visiblePassword,
                       controller: _passwordController,
                       obscureText: _obsureText,
@@ -115,6 +124,7 @@ class _EmailPasswordViewState extends ConsumerState<EmailPasswordView> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         ElevatedButton(
+                          key: const Key('signUpButton'),
                           onPressed: emailPasswordState is LoadingEmailPassword
                               ? null
                               : () async {
@@ -139,6 +149,7 @@ class _EmailPasswordViewState extends ConsumerState<EmailPasswordView> {
                       height: 10,
                     ),
                     ElevatedButton(
+                      key: const Key('googleSignInButton'),
                       onPressed: () {},
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -165,6 +176,7 @@ class _EmailPasswordViewState extends ConsumerState<EmailPasswordView> {
                       height: 10,
                     ),
                     ElevatedButton(
+                      key: const Key('facebookSignInButton'),
                       onPressed: () {},
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,

@@ -1,10 +1,9 @@
-
-
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:link_up/core/services/storage.dart';
 import 'package:link_up/shared/themes/colors.dart';
 
 class MainDrawer extends StatelessWidget {
@@ -45,12 +44,14 @@ class MainDrawer extends StatelessWidget {
                             height: 5.h,
                           ),
                           Text('John Doe',
-                              style:
-                                  TextStyle(fontSize: 20.r, fontWeight: FontWeight.bold)),
+                              style: TextStyle(
+                                  fontSize: 20.r, fontWeight: FontWeight.bold)),
                           SizedBox(
                             height: 5.h,
                           ),
-                          Text('view profile', style: TextStyle(fontSize: 12.r, color: AppColors.grey)),
+                          Text('view profile',
+                              style: TextStyle(
+                                  fontSize: 12.r, color: AppColors.grey)),
                         ],
                       ),
                     ),
@@ -103,6 +104,12 @@ class MainDrawer extends StatelessWidget {
                   title: const Text('Settings'),
                   onTap: () {
                     context.push('/settings');
+                  },
+                ),
+                ListTile(
+                  title: const Text('Logout'),
+                  onTap: () {
+                    logout(context);
                   },
                 ),
               ],

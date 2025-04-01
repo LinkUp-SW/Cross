@@ -88,6 +88,13 @@ class _VerificationState extends ConsumerState<Verification> {
                       child: verificationState is ResendCodeLoading
                           ? const CircularProgressIndicator()
                           : const Text('Resend Code'),
+                      style: const ButtonStyle(
+                        overlayColor:
+                            WidgetStatePropertyAll(Colors.transparent),
+                        foregroundColor: WidgetStatePropertyAll(
+                          Colors.blue,
+                        ),
+                      ),
                     ),
                     const SizedBox(
                       height: 10,

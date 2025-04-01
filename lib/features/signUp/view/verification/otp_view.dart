@@ -77,6 +77,7 @@ class _OtpViewState extends ConsumerState<OtpView> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       PinCodeTextField(
+                        key: const Key('otp_text_field'),
                         appContext: context,
                         length: 6,
                         controller: _otpController,
@@ -98,12 +99,24 @@ class _OtpViewState extends ConsumerState<OtpView> {
                         height: 20.h,
                       ),
                       TextButton(
-                          onPressed: () {
-                            otpNotifier.sendOtp();
-                            _otpController.clear();
-                          },
-                          child: const Text('Resend OTP ?')),
+                        key: const Key('resend_otp_button'),
+                        onPressed: otpState is OtpLoading
+                            ? null
+                            : () {
+                                otpNotifier.sendOtp();
+                                _otpController.clear();
+                              },
+                        child: const Text('Resend OTP ?'),
+                        style: const ButtonStyle(
+                          overlayColor:
+                              WidgetStatePropertyAll(Colors.transparent),
+                          foregroundColor: WidgetStatePropertyAll(
+                            Colors.blue,
+                          ),
+                        ),
+                      ),
                       ElevatedButton(
+                        key: const Key('verify_otp_button'),
                         onPressed: otpState is OtpLoading
                             ? null
                             : () async {

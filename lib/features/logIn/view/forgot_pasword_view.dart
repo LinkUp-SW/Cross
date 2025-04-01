@@ -72,6 +72,7 @@ class _ForgotPasswordViewState extends ConsumerState<ForgotPasswordView> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       TextFormField(
+                        key: const Key('emailTextField'),
                         controller: _emailController,
                         decoration: const InputDecoration(
                           labelText: 'Email',
@@ -83,6 +84,7 @@ class _ForgotPasswordViewState extends ConsumerState<ForgotPasswordView> {
                         height: 30.h,
                       ),
                       ElevatedButton(
+                        key: const Key('sendEmailButton'),
                         onPressed: () {
                           if (_formKey.currentState?.validate() != false) {
                             forgotPasswordNotifier
