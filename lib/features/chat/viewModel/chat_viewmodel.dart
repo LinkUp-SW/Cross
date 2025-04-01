@@ -22,7 +22,18 @@ class ChatViewModel extends StateNotifier<List<Chat>> {
       else
         state[i],
   ];
-}
+ }
+
+ void markReadUnread(int index) {
+  state = [
+    for (int i = 0; i < state.length; i++)
+      if (i == index)
+        state[i].copyWith(isUnread: !state[i].isUnread) //  Toggle status
+      else
+        state[i],
+  ];
+ }
+
 }
 
 //Properly defined provider

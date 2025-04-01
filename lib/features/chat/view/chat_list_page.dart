@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import "../viewModel/chat_viewmodel.dart";
+import '../viewModel/chat_viewmodel.dart';
 import '../widgets/chat_tile.dart';
 
 class ChatListScreen extends ConsumerWidget {
@@ -10,7 +10,7 @@ class ChatListScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chats'),
+        title:const Text('Chats'),
         actions: [
           IconButton(
             icon: const Icon(Icons.search),
@@ -23,20 +23,41 @@ class ChatListScreen extends ConsumerWidget {
         ],
       ),
       body: chats.isEmpty
-          ? const Center(child: Text('No chats available.'))
+          ?const  Center(child: Text('No chats available.'))
           : ListView.builder(
               itemCount: chats.length,
               itemBuilder: (context, index) {
                 return ChatTile(
                   chat: chats[index],
                   onTap: () {
-                    ref
-                        .read(chatViewModelProvider.notifier)
-                        .toggleReadUnreadStatus(index);
+                    ref.read(chatViewModelProvider.notifier).toggleReadUnreadStatus(index);
+                  },
+                  onLongPress: () {
+                    _showReadUnreadOption(context, ref, index, chats[index].isUnread);
                   },
                 );
               },
             ),
+    );
+  }
+
+  void _showReadUnreadOption(BuildContext context, WidgetRef ref, int index, bool isUnread) {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) {
+        return Wrap(
+          children: [
+            ListTile(
+              leading: Icon(isUnread ? Icons.mark_chat_read : Icons.mark_chat_unread),
+              title: Text(isUnread ? "Mark as Read" : "Mark as Unread"),
+              onTap: () {
+                ref.read(chatViewModelProvider.notifier).markReadUnread(index);
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

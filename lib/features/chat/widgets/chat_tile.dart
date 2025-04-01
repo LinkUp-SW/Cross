@@ -4,8 +4,13 @@ import '../model/chat_model.dart';
 class ChatTile extends StatelessWidget {
   final Chat chat;
   final VoidCallback onTap;
+  final VoidCallback onLongPress; // Added onLongPress
 
-  ChatTile({required this.chat, required this.onTap});
+  ChatTile({
+    required this.chat,
+    required this.onTap,
+    required this.onLongPress, // Added onLongPress parameter
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -13,15 +18,20 @@ class ChatTile extends StatelessWidget {
       leading: CircleAvatar(
         backgroundImage: NetworkImage(chat.profilePictureUrl),
       ),
-      title: Text(chat.name),
-      subtitle: Text(chat.lastMessage),
-      trailing: Column(
+      title: Text(
+        chat.name,
+        style: TextStyle(
+          fontWeight: chat.isUnread ? FontWeight.bold : FontWeight.normal, // Apply bold style if unread
+        ),
+      ),
+        subtitle: Text(chat.lastMessage),
+        trailing: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(chat.timestamp),
           if (chat.isUnread)
             Container(
-              margin: EdgeInsets.only(top: 4),
+              margin: const EdgeInsets.only(top: 4),
               width: 8,
               height: 8,
               decoration: const BoxDecoration(
@@ -31,7 +41,8 @@ class ChatTile extends StatelessWidget {
             ),
         ],
       ),
-      onTap: onTap, // Call the function when tapped
+      onTap: onTap, // Marks as read when tapped
+      onLongPress: onLongPress, // Shows long-press menu to mark as read/unread
     );
   }
 }
