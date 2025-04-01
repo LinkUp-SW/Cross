@@ -59,82 +59,110 @@ class _PostsState extends ConsumerState<Posts> {
                 ),
               ],
             ),
-          ListTile(
-            leading: CircleAvatar(
-              radius: 20.r,
-              backgroundImage: NetworkImage(widget.post.header.profileImage),
-            ),
-            title: Text.rich(
-              TextSpan(
-                children: [
-                  TextSpan(
-                    text: widget.post.header.name,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  TextSpan(
-                    text: ' • ${widget.post.header.connectionDegree}',
-                    style: TextStyle(color: AppColors.grey, fontSize: 10.r),
-                  ),
-                ],
-              ),
-            ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.post.header.about,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: 10.r, color: AppColors.grey),
-                ),
-                Text.rich(
-                  TextSpan(
-                    children: [
-                      TextSpan(
-                        text: '${widget.post.header.getTime()} • ',
-                        style: TextStyle(color: AppColors.grey, fontSize: 10.r),
-                      ),
-                      if (widget.post.header.edited)
+          Flex(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            direction: Axis.horizontal,
+            children: [
+              Flexible(
+                flex: 2,
+                child: ListTile(
+                  leading: !widget.post.isCompany
+                      ? CircleAvatar(
+                          radius: 20.r,
+                          backgroundImage:
+                              NetworkImage(widget.post.header.profileImage),
+                        )
+                      : ClipRRect(
+                          borderRadius: BorderRadius.circular(5.r),
+                          child: Image.network(widget.post.header.profileImage,
+                              width: 40.h, height: 40.h, fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                            return const Icon(Icons.error);
+                          }),
+                        ),
+                  title: Text.rich(
+                    TextSpan(
+                      children: [
                         TextSpan(
-                          text: 'Edited • ',
-                          style:
-                              TextStyle(color: AppColors.grey, fontSize: 10.r),
+                          text: widget.post.header.name,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
-                      WidgetSpan(
-                        child: Icon(
-                          widget.post.header.visibility == Visibilities.anyone
-                              ? Icons.public
-                              : Icons.people,
-                          size: 10.r,
-                          color: AppColors.grey,
-                        ),
+                        if (!widget.post.isCompany)
+                          TextSpan(
+                            text: ' • ${widget.post.header.connectionDegree}',
+                            style:
+                                TextStyle(color: AppColors.grey, fontSize: 10.r),
+                          ),
+                      ],
+                    ),
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.post.header.about,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 10.r, color: AppColors.grey),
                       ),
+                      if (!widget.post.isCompany)
+                        Text.rich(
+                          TextSpan(
+                            children: [
+                              TextSpan(
+                                text: '${widget.post.header.getTime()} • ',
+                                style: TextStyle(
+                                    color: AppColors.grey, fontSize: 10.r),
+                              ),
+                              if (widget.post.header.edited)
+                                TextSpan(
+                                  text: 'Edited • ',
+                                  style: TextStyle(
+                                      color: AppColors.grey, fontSize: 10.r),
+                                ),
+                              WidgetSpan(
+                                child: Icon(
+                                  widget.post.header.visibility ==
+                                          Visibilities.anyone
+                                      ? Icons.public
+                                      : Icons.people,
+                                  size: 10.r,
+                                  color: AppColors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
                     ],
                   ),
-                )
-              ],
-            ),
-            trailing: TextButton(
-                onPressed: () {
-                  setState(() {
-                    _following = !_following;
-                  });
-                },
-                child: Wrap(
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    Icon(
-                      _following ? Icons.check : Icons.add,
-                      color: _following ? AppColors.grey : null,
-                    ),
-                    SizedBox(width: 5.w),
-                    Text(
-                      _following ? 'Following' : 'Follow',
-                      style: TextStyle(
-                        color: _following ? AppColors.grey : null,
-                      ),
-                    ),
-                  ],
-                )),
+                ),
+              ),
+              Flexible(
+                flex: 1,
+                child: TextButton(
+                    onPressed: () {
+                      setState(() {
+                        _following = !_following;
+                      });
+                    },
+                    child: Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        Icon(
+                          _following ? Icons.check : Icons.add,
+                          color: _following ? AppColors.grey : null,
+                        ),
+                        SizedBox(width: 5.w),
+                        Text(
+                          _following ? 'Following' : 'Follow',
+                          style: TextStyle(
+                            color: _following ? AppColors.grey : null,
+                          ),
+                        ),
+                      ],
+                    )),
+              ),
+            ],
           ),
           Align(
             alignment: Alignment.centerLeft,

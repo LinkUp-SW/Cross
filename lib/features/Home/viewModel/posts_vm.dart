@@ -93,6 +93,8 @@ class PostsNotifier extends StateNotifier<List<PostModel>> {
             comments: 50,
             reposts: 5,
             reaction: Reaction.none,
+            isCompany: index % 6 == 3,
+            isAd: index % 6 == 4
           ),
         );
       },
