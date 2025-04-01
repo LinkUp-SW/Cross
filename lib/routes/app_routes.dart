@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:link_up/features/my-network/view/invitations.dart';
+import 'package:link_up/features/my-network/view/invitations_screen.dart';
 import 'package:link_up/features/my-network/view/view.dart';
 import 'package:link_up/shared/dummy_page.dart';
 import 'package:link_up/shared/myhomepage.dart';
