@@ -86,8 +86,7 @@ class InvitationsScreenViewModel extends StateNotifier<InvitationsScreenState> {
   Future<void> withdrawInvitation(String userId) async {
     try {
       state = state.copyWith(isLoading: true, error: false);
-      final withdrawResponse =
-          await _invitationsScreenServices.withdrawInvitation(userId);
+      await _invitationsScreenServices.withdrawInvitation(userId);
       // Remove the withdrawn invitation from the sent list
       if (state.sent != null) {
         final updatedInvitations = state.sent!

@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/my-network/state/invitations_screen_state.dart';
 import 'package:link_up/features/my-network/viewModel/invitations_screen_view_model.dart';
 import 'package:link_up/features/my-network/widgets/received_invitations_card.dart';
+import 'package:link_up/features/my-network/widgets/sent_invitation_loading_skeleton.dart';
 import 'package:link_up/features/my-network/widgets/sent_invitations_card.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
@@ -107,7 +108,14 @@ class _InvitationsScreenState extends ConsumerState<InvitationsScreen> {
             _buildReceivedInvitationsTab(invitationsState),
 
             // Sent invitations tab
-            _buildSentInvitationsTab(invitationsState),
+            // Column(
+            //   spacing: 10.h,
+            //   crossAxisAlignment: CrossAxisAlignment.start,
+            //   children: [
+            //     SentInvitationsLoadingSkeleton(isDarkMode: widget.isDarkMode),
+            _buildSentInvitationsTab(invitationsState, widget.isDarkMode),
+            // ],
+            // )
           ],
         ),
       ),
@@ -156,9 +164,17 @@ class _InvitationsScreenState extends ConsumerState<InvitationsScreen> {
     }
   }
 
-  Widget _buildSentInvitationsTab(InvitationsScreenState state) {
+  Widget _buildSentInvitationsTab(
+      InvitationsScreenState state, bool isDarkMode) {
     if (state.isLoading && state.sent == null) {
-      return const Center(child: CircularProgressIndicator());
+      return Expanded(
+        child: ListView.builder(
+          shrinkWrap: true,
+          itemCount: 3,
+          itemBuilder: (context, index) =>
+              SentInvitationsLoadingSkeleton(isDarkMode: isDarkMode),
+        ),
+      );
     } else if (state.error) {
       return Center(
         child: Column(

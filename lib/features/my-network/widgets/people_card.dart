@@ -55,7 +55,7 @@ class PeopleCard extends ConsumerWidget {
                 right: 32.w,
                 child: CircleAvatar(
                   radius: 45.r,
-                  backgroundImage: AssetImage(data.profilePicture),
+                  foregroundImage: AssetImage(data.profilePicture),
                 ),
               ),
               // Cancel Button

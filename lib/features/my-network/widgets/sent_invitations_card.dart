@@ -42,15 +42,10 @@ class SentInvitationsCard extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 spacing: 8.w,
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8.r),
-                    child: Image(
-                      width: 50.w,
-                      height: 50.h,
-                      image: NetworkImage(
-                        data.profilePicture,
-                      ),
-                      fit: BoxFit.fitWidth,
+                  CircleAvatar(
+                    radius: 30.r,
+                    foregroundImage: NetworkImage(
+                      data.profilePicture,
                     ),
                   ),
                   Expanded(
