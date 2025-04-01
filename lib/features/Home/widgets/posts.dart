@@ -50,7 +50,7 @@ class _PostsState extends ConsumerState<Posts> {
           if (reacted && widget.showTop)
             Column(
               children: [
-                PostHeader(isAd: widget.post.isAd),
+                PostHeader(isAd: widget.post.isAd,id: widget.post.id,),
                 Divider(
                   indent: 10.w,
                   endIndent: 10.w,

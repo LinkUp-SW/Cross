@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
 import 'package:link_up/features/Home/viewModel/posts_vm.dart';
+import 'package:link_up/features/Home/widgets/deleted_post.dart';
 import 'package:link_up/features/Home/widgets/posts.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/widgets/custom_snackbar.dart';
@@ -101,7 +102,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final List<PostModel> posts = ref.watch(postsProvider);
+    final List<PostState> posts = ref.watch(postsProvider);
     ref.listen(currentTabProvider, (previous, current) {
       if (current) {
         scrollTop();
@@ -164,9 +165,14 @@ class _HomePageState extends ConsumerState<HomePage> {
                       );
                     }
                     return Card(
-                        child: Posts(
-                      post: posts[index],
-                    ));
+                        child: !posts[index].showUndo
+                            ? Posts(
+                                post: posts[index].post,
+                              )
+                            : DeletedPost(
+                                userName: posts[index].post.header.name,
+                                id: posts[index].post.id,
+                              ));
                   });
             }),
           ),

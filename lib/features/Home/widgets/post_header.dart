@@ -1,20 +1,24 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:link_up/features/Home/viewModel/posts_vm.dart';
 import 'package:link_up/features/Home/widgets/bottom_sheets.dart';
 import 'package:link_up/shared/themes/colors.dart';
 
-class PostHeader extends StatelessWidget {
+class PostHeader extends ConsumerWidget {
   const PostHeader({
     super.key,
     required bool isAd,
+    required this.id
   }) : _isAd = isAd;
 
   final bool _isAd;
+  final String id;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context,WidgetRef ref) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -65,7 +69,10 @@ class PostHeader extends StatelessWidget {
               icon: const Icon(Icons.more_horiz),
             ),
             IconButton(
-              onPressed: () {},
+              //TODO: delete post action
+              onPressed: () {
+                ref.read(postsProvider.notifier).showUndo(id);
+              },
               icon: const Icon(Icons.close),
             ),
           ],
