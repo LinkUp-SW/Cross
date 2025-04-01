@@ -2,7 +2,6 @@ import '../model/chat_model.dart';
 
 class ChatService {
   Future<List<Chat>> fetchChats() async {
-    // Mock data for now
     return [
       Chat(
         name: 'John Doe',
@@ -13,12 +12,11 @@ class ChatService {
       ),
       Chat(
         name: 'Jane Smith',
-        lastMessage: 'Lets meet up tomorrow.',
+        lastMessage: 'Let’s meet up tomorrow.',
         timestamp: '1:45 PM',
         isUnread: false,
         profilePictureUrl: 'https://example.com/jane.jpg',
       ),
-      // Add more mock chats here
     ];
   }
 }
