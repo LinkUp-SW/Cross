@@ -76,9 +76,21 @@ class BaseService {
   void updateCookie(http.Response response) {
     String? rawCookie = response.headers['set-cookie'];
     if (rawCookie != null) {
+      // Extract the session ID from the raw cookie string
       int index = rawCookie.indexOf(';');
       headers['cookie'] =
           (index == -1) ? rawCookie : rawCookie.substring(0, index);
+
+      // Extract the token from the raw cookie string
+      final tokenMatch =
+          RegExp(r'linkup_auth_token=([^;]+)').firstMatch(rawCookie);
+      if (tokenMatch != null) {
+        final token = tokenMatch.group(1);
+        if (token != null && token.isNotEmpty) {
+          // Store the extracted token in local storage
+          storeToken(token);
+        }
+      }
     }
   }
 }
