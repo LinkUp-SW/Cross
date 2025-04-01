@@ -125,6 +125,7 @@ class _WritePostState extends ConsumerState<WritePost> {
           ],
         ),
         actions: [
+          //TODO: add or remove the schedule post as backend implementation
           IconButton(onPressed: () {}, icon: const Icon(Icons.access_time)),
           ElevatedButton(
             style: ElevatedButton.styleFrom(

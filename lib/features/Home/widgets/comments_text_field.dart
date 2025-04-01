@@ -241,7 +241,9 @@ class _CommentsTextFieldState extends State<CommentsTextField> {
                                         child:
                                             const Icon(Icons.alternate_email))
                                     : IconButton.filled(
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          //TODO: send message to backend
+                                        },
                                         icon: Icon(
                                           Icons.arrow_upward,
                                           color: Theme.of(context)
@@ -296,6 +298,7 @@ class _CommentsTextFieldState extends State<CommentsTextField> {
                                 children: [
                                   TextButton(
                                     onPressed: () {
+                                      //TODO: send message to backend
                                       widget.focusNode.unfocus();
                                     },
                                     child: Text(widget.buttonName),

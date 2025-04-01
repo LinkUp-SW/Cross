@@ -12,28 +12,38 @@ aboutPostBottomSheet(BuildContext context, {bool isAd = false}) {
       content: Column(
         children: [
           ListTile(
-            onTap: () {},
+            onTap: () {
+              //TODO: save post
+            },
             leading: const Icon(Icons.save_alt),
             title: const Text("Save"),
           ),
           ListTile(
-            onTap: () {},
+            onTap: () {
+              //TODO: share post
+            },
             leading: const Icon(Icons.ios_share),
             title: const Text("Share via"),
           ),
           ListTile(
-            onTap: () {},
+            onTap: () {
+              //TODO:
+            },
             leading: const Icon(Icons.visibility_off),
             title: Text(isAd ? "Hide or report this add" : "Not interested"),
           ),
           isAd
               ? ListTile(
-                  onTap: () {},
+                  onTap: () {
+                    //TODO: 
+                  },
                   leading: const Icon(Icons.info),
                   title: const Text("Why am I seeing this ad?"),
                 )
               : ListTile(
-                  onTap: () {},
+                  onTap: () {
+                    //TODO: unfollow user
+                  },
                   leading: Transform.rotate(
                       angle: math.pi / 4,
                       child: const Icon(Icons.control_point_sharp)),
@@ -41,7 +51,9 @@ aboutPostBottomSheet(BuildContext context, {bool isAd = false}) {
                 ),
           if (!isAd)
             ListTile(
-              onTap: () {},
+              onTap: () {
+                //TODO: report post
+              },
               leading: const Icon(Icons.report),
               title: const Text("Report post"),
             ),

@@ -4,28 +4,39 @@ import 'package:link_up/features/Home/model/header_model.dart';
 import 'package:link_up/features/Home/model/media_model.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
 
-class PostsNotifier extends StateNotifier<List<PostModel>> {
+class PostState{
+  bool showUndo = false;
+  PostModel post;
+  PostState({this.showUndo = false,required this.post});
+}
+
+class PostsNotifier extends StateNotifier<List<PostState>> {
   PostsNotifier() : super([]);
 
   void addPosts(List<PostModel> posts) {
-    state = [...state, ...posts];
+    
+    state = [...state, ...posts.map((e) => PostState(post: e))];
   }
 
-  void removePost(PostModel post) {
-    state = state.where((element) => element.id != post.id).toList();
+  void removePost(String id) {
+    state = state.where((element) => element.post.id != id).toList();
+  }
+
+  void showUndo(String id) {
+    state = state.map((e) => e.post.id == id ? PostState(post: e.post, showUndo: !e.showUndo) : e).toList();
   }
 
   void updatePost(PostModel post) {
-    state = state.map((e) => e.id == post.id ? post : e).toList();
+    state = state.map((e) => e.post.id == post.id ? PostState(post: post,showUndo: e.showUndo) : e).toList();
   }
 
   void setPosts(List<PostModel> posts) {
-    state = posts;
+    state = posts.map((e) => PostState(post: e)).toList();
   }
 
   Future<void> refreshPosts() {
     return fetchPosts().then((value) {
-      state = value;
+      state = value.map((e) => PostState(post: e)).toList();
     });
   }
 
@@ -38,7 +49,7 @@ class PostsNotifier extends StateNotifier<List<PostModel>> {
         return List.generate(
           6,
           (index) => PostModel(
-            id: '1',
+            id: '${index + 1}',
             header: HeaderModel(
               profileImage:
                   'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
@@ -103,6 +114,6 @@ class PostsNotifier extends StateNotifier<List<PostModel>> {
 }
 
 final postsProvider =
-    StateNotifierProvider<PostsNotifier, List<PostModel>>((ref) {
+    StateNotifierProvider<PostsNotifier, List<PostState>>((ref) {
   return PostsNotifier();
 });
