@@ -58,11 +58,12 @@ class PastJobDetailsNotifier extends StateNotifier<PastJobDetailsState> {
     }
   }
 
-  void setData(String location, String jobTitle, String companyName,
+  void setData(String country, String city, String jobTitle, String companyName,
       String school, String startDate) async {
     if (state is Job) {
       _signUpNotifier.updateUserData(
-        city: location,
+        country: country,
+        city: city,
         jobTitle: jobTitle,
         recentCompany: companyName,
         isStudent: false,
@@ -71,7 +72,8 @@ class PastJobDetailsNotifier extends StateNotifier<PastJobDetailsState> {
           "${_signUpNotifier.state.firstName} ${_signUpNotifier.state.lastName}");
     } else {
       _signUpNotifier.updateUserData(
-          location: location,
+          country: country,
+          city: city,
           school: school,
           startDate: startDate,
           isStudent: true);
