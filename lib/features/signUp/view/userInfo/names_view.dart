@@ -21,8 +21,6 @@ class _NamingPageState extends ConsumerState<NamingPage> {
     final nameState = ref.watch(nameProvider);
     final nameNotifier = ref.read(nameProvider.notifier);
 
-    // Move ref.listen to the build method
-
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(10.0),
@@ -46,6 +44,7 @@ class _NamingPageState extends ConsumerState<NamingPage> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     TextFormField(
+                      key: const Key('firstNameField'),
                       controller: _firstNameController,
                       decoration: const InputDecoration(
                         labelText: 'First Name',
@@ -56,6 +55,7 @@ class _NamingPageState extends ConsumerState<NamingPage> {
                     ),
                     const SizedBox(height: 10),
                     TextFormField(
+                      key: const Key('lastNameField'),
                       controller: _lastNameController,
                       decoration: const InputDecoration(
                         labelText: 'Last Name',
@@ -66,6 +66,7 @@ class _NamingPageState extends ConsumerState<NamingPage> {
                     ),
                     const SizedBox(height: 20),
                     ElevatedButton(
+                      key: const Key('nextButton'),
                       onPressed: nameState is NameLoading
                           ? null
                           : () async {

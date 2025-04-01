@@ -27,7 +27,7 @@ class _GetPhoneNumberState extends ConsumerState<GetPhoneNumber> {
     // Listen for state changes and handle navigation or error messages
     ref.listen<PhoneNumberState>(phoneNumberProvider, (previous, next) {
       if (next is PhoneNumberValid) {
-        context.push('/signup/verification'); // Navigate to the next page
+        context.push('/signup/pastjobs'); // Navigate to the next page
       } else if (next is PhoneNumberInvalid) {
         // Show an error message if the phone number is invalid
         ScaffoldMessenger.of(context).showSnackBar(
@@ -69,6 +69,7 @@ class _GetPhoneNumberState extends ConsumerState<GetPhoneNumber> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     IntlPhoneField(
+                      key: const Key('phoneNumberField'),
                       decoration: const InputDecoration(
                         labelText: 'Phone Number',
                         border: OutlineInputBorder(
@@ -91,6 +92,7 @@ class _GetPhoneNumberState extends ConsumerState<GetPhoneNumber> {
                       height: 30.h,
                     ),
                     ElevatedButton(
+                      key: const Key('submitButton'),
                       onPressed: phoneNumberState is LoadingPhoneNumber
                           ? null
                           : () async {
@@ -105,7 +107,9 @@ class _GetPhoneNumberState extends ConsumerState<GetPhoneNumber> {
                               }
                             },
                       child: phoneNumberState is LoadingPhoneNumber
-                          ? const CircularProgressIndicator(color: Colors.white)
+                          ? const CircularProgressIndicator(
+                              color: Colors.white,
+                            )
                           : const Text(
                               'Submit',
                               style: TextStyle(
