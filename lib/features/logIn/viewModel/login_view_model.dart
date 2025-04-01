@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:link_up/core/services/storage.dart';
 import 'package:link_up/features/logIn/model/login_model.dart';
 import 'package:link_up/features/logIn/services/login_service.dart';
 import 'package:link_up/features/logIn/state/login_state.dart';
@@ -27,7 +30,19 @@ class LogInNotifier extends StateNotifier<LogInState> {
       }
     } catch (e) {
       print(e.toString());
-      state = LogInErrorState(e.toString());
+      state = const LogInErrorState(
+          'There was an error logging in. Please try again.');
+    }
+  }
+
+  Future<void> checkStoredCredentials() async {
+    // Check if email and password are stored in secure storage
+    if (await checkForRememberMe()) {
+      // Retrieve stored credentials
+      final credentials = await returncred();
+
+      // Automatically log in if credentials are found
+      logIn(credentials[0], credentials[1]);
     }
   }
 }
