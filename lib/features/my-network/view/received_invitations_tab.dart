@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:link_up/features/my-network/viewModel/invitations_screen_view_model.dart';
+import 'package:link_up/features/my-network/viewModel/received_invitations_tab_view_model.dart';
 import 'package:link_up/features/my-network/widgets/received_invitations_card.dart';
 import 'package:link_up/features/my-network/widgets/received_invitations_loading_skeleton.dart';
 import 'package:link_up/features/my-network/widgets/retry_error_message.dart';
@@ -27,14 +27,14 @@ class _ReceivedInvitationsTabState
     super.initState();
     Future.microtask(() {
       ref
-          .read(invitationsScreenViewModelProvider.notifier)
+          .read(receivedInvitationsTabViewModelProvider.notifier)
           .getReceivedInvitations();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(invitationsScreenViewModelProvider);
+    final state = ref.watch(receivedInvitationsTabViewModelProvider);
 
     if (state.isLoading && state.received == null) {
       return ListView.builder(
@@ -49,7 +49,7 @@ class _ReceivedInvitationsTabState
         errorMessage: "Failed to load received connection invitations :(",
         buttonFunctionality: () async {
           await ref
-              .read(invitationsScreenViewModelProvider.notifier)
+              .read(receivedInvitationsTabViewModelProvider.notifier)
               .getReceivedInvitations();
         },
       );
@@ -64,7 +64,7 @@ class _ReceivedInvitationsTabState
           widget.isDarkMode ? AppColors.darkBlue : AppColors.lightBlue,
       onRefresh: () async {
         await ref
-            .read(invitationsScreenViewModelProvider.notifier)
+            .read(receivedInvitationsTabViewModelProvider.notifier)
             .getReceivedInvitations();
       },
       child: ListView.builder(

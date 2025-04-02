@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:link_up/features/my-network/viewModel/invitations_screen_view_model.dart';
+import 'package:link_up/features/my-network/viewModel/sent_invitations_tab_view_model.dart';
 import 'package:link_up/features/my-network/widgets/retry_error_message.dart';
 import 'package:link_up/features/my-network/widgets/sent_invitation_loading_skeleton.dart';
 import 'package:link_up/features/my-network/widgets/sent_invitations_card.dart';
@@ -26,7 +26,7 @@ class _SentInvitationsTabState extends ConsumerState<SentInvitationsTab> {
     // Load data when the tab is created
     Future.microtask(() {
       ref
-          .read(invitationsScreenViewModelProvider.notifier)
+          .read(sentInvitationsTabViewModelProvider.notifier)
           .getSentInvitations();
     });
   }
@@ -34,9 +34,9 @@ class _SentInvitationsTabState extends ConsumerState<SentInvitationsTab> {
   @override
   Widget build(BuildContext context) {
     // Watch for state changes
-    final state = ref.watch(invitationsScreenViewModelProvider);
+    final state = ref.watch(sentInvitationsTabViewModelProvider);
 
-    if (state.isLoading && state.received == null) {
+    if (state.isLoading && state.sent == null) {
       return ListView.builder(
         shrinkWrap: true,
         itemCount: 3,
@@ -49,11 +49,11 @@ class _SentInvitationsTabState extends ConsumerState<SentInvitationsTab> {
         errorMessage: "Failed to load sent connection invitations :(",
         buttonFunctionality: () async {
           await ref
-              .read(invitationsScreenViewModelProvider.notifier)
+              .read(sentInvitationsTabViewModelProvider.notifier)
               .getSentInvitations();
         },
       );
-    } else if (state.received == null || state.received!.isEmpty) {
+    } else if (state.sent == null || state.sent!.isEmpty) {
       return StandardEmptyListMessage(
           isDarkMode: widget.isDarkMode,
           message: 'No sent connection invitations');
@@ -65,15 +65,15 @@ class _SentInvitationsTabState extends ConsumerState<SentInvitationsTab> {
           widget.isDarkMode ? AppColors.darkBlue : AppColors.lightBlue,
       onRefresh: () async {
         await ref
-            .read(invitationsScreenViewModelProvider.notifier)
-            .getReceivedInvitations();
+            .read(sentInvitationsTabViewModelProvider.notifier)
+            .getSentInvitations();
       },
       child: ListView.builder(
         physics: const AlwaysScrollableScrollPhysics(),
-        itemCount: state.received!.length,
+        itemCount: state.sent!.length,
         itemBuilder: (context, index) {
           return SentInvitationsCard(
-            data: state.received![index],
+            data: state.sent![index],
             isDarkMode: widget.isDarkMode,
           );
         },

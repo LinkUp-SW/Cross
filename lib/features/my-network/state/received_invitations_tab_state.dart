@@ -1,36 +1,31 @@
 import 'package:link_up/features/my-network/model/invitations_screen_model.dart';
 
-class InvitationsScreenState {
+class ReceivedInvitationsTabState {
   final List<InvitationsCardModel>? received;
-  final List<InvitationsCardModel>? sent;
   final bool isLoading;
   final bool error;
 
-  const InvitationsScreenState({
+  const ReceivedInvitationsTabState({
     this.received,
-    this.sent,
     required this.isLoading,
     required this.error,
   });
 
-  factory InvitationsScreenState.initial() {
-    return const InvitationsScreenState(
+  factory ReceivedInvitationsTabState.initial() {
+    return const ReceivedInvitationsTabState(
       received: null,
-      sent: null,
       isLoading: true,
       error: false,
     );
   }
 
-  InvitationsScreenState copyWith({
+  ReceivedInvitationsTabState copyWith({
     final List<InvitationsCardModel>? received,
-    final List<InvitationsCardModel>? sent,
     bool? isLoading,
     bool? error,
   }) {
-    return InvitationsScreenState(
+    return ReceivedInvitationsTabState(
       received: received ?? this.received,
-      sent: sent ?? this.sent,
       isLoading: isLoading ?? this.isLoading,
       error: error ?? this.error,
     );

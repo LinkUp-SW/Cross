@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/my-network/model/invitations_screen_model.dart';
-import 'package:link_up/features/my-network/viewModel/invitations_screen_view_model.dart';
+import 'package:link_up/features/my-network/viewModel/sent_invitations_tab_view_model.dart';
 import 'package:link_up/features/my-network/widgets/confirmation_pop_up.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
@@ -91,7 +91,7 @@ class SentInvitationsCard extends ConsumerWidget {
                       buttonFunctionality: () {
                         Navigator.of(context).pop();
                         ref
-                            .read(invitationsScreenViewModelProvider.notifier)
+                            .read(sentInvitationsTabViewModelProvider.notifier)
                             .withdrawInvitation(data.cardId);
                       },
                     ),

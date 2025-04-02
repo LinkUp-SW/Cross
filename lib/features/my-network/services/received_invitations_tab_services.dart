@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/core/services/base_service.dart';
 import 'package:link_up/core/constants/endpoints.dart';
 
-class InvitationsScreenServices {
+class ReceivedInvitationsTabServices {
   final BaseService _baseService;
 
-  const InvitationsScreenServices(this._baseService);
+  const ReceivedInvitationsTabServices(this._baseService);
 
   // Get all received invitations
   Future<Map<String, dynamic>> getReceivedInvitations() async {
@@ -19,23 +19,6 @@ class InvitationsScreenServices {
       throw Exception(
           'Failed to get received connection invitations: ${response.statusCode}');
     } catch (e) {
-      print("Error fetching received connection invitations: $e");
-      rethrow;
-    }
-  }
-
-  // Get all sent invitations
-  Future<Map<String, dynamic>> getSentInvitations() async {
-    try {
-      final response =
-          await _baseService.get(ExternalEndPoints.sentConnectionInvitations);
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      }
-      throw Exception(
-          'Failed to get sent connection invitations: ${response.statusCode}');
-    } catch (e) {
-      print("Error fetching sent connection invitations: $e");
       rethrow;
     }
   }
@@ -54,7 +37,6 @@ class InvitationsScreenServices {
       throw Exception(
           'Failed to accept received connection invitation: ${response.statusCode}');
     } catch (e) {
-      print("Error accept received connection invitations: $e");
       rethrow;
     }
   }
@@ -70,29 +52,12 @@ class InvitationsScreenServices {
       throw Exception(
           'Failed to ignore received connection invitation: ${response.statusCode}');
     } catch (e) {
-      print("Error ignore received connection invitations: $e");
-      rethrow;
-    }
-  }
-
-  // Withdraw an invitation
-  Future<Map<String, dynamic>> withdrawInvitation(String userId) async {
-    try {
-      final response = await _baseService.delete(
-          ExternalEndPoints.withdrawConnectionInvitation, {'user_id': userId});
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      }
-      throw Exception(
-          'Failed to withdraw sent connection invitation: ${response.statusCode}');
-    } catch (e) {
-      print("Error withdraw sent connection invitations: $e");
       rethrow;
     }
   }
 }
 
-final invitationsScreenServicesProvider =
-    Provider<InvitationsScreenServices>((ref) {
-  return InvitationsScreenServices(ref.read(baseServiceProvider));
+final receivedInvitationsTabServicesProvider =
+    Provider<ReceivedInvitationsTabServices>((ref) {
+  return ReceivedInvitationsTabServices(ref.read(baseServiceProvider));
 });

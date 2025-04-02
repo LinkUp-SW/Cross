@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/my-network/model/invitations_screen_model.dart';
-import 'package:link_up/features/my-network/viewModel/invitations_screen_view_model.dart';
+import 'package:link_up/features/my-network/viewModel/received_invitations_tab_view_model.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/shared/utils/my_network_utils.dart';
@@ -93,7 +93,8 @@ class ReceivedInvitationsCard extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(8.r),
                     onTap: () {
                       ref
-                          .read(invitationsScreenViewModelProvider.notifier)
+                          .read(
+                              receivedInvitationsTabViewModelProvider.notifier)
                           .acceptInvitation(data.cardId);
                     },
                     child: Container(
@@ -125,7 +126,8 @@ class ReceivedInvitationsCard extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(8.r),
                     onTap: () {
                       ref
-                          .read(invitationsScreenViewModelProvider.notifier)
+                          .read(
+                              receivedInvitationsTabViewModelProvider.notifier)
                           .ignoreInvitation(data.cardId);
                     },
                     child: Container(
