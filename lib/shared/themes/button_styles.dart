@@ -123,7 +123,7 @@ class LinkUpButtonStyles {
         borderRadius: BorderRadius.circular(24.r),
       ),
       side: BorderSide(color: AppColors.lightBlue, width: 1.2.r),
-      padding: EdgeInsets.symmetric(vertical: 5.h),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
     );
   }
 
@@ -154,7 +154,7 @@ class LinkUpButtonStyles {
         borderRadius: BorderRadius.circular(24.r),
       ),
       side: BorderSide(color: AppColors.darkBlue, width: 1.2.r),
-      padding: EdgeInsets.symmetric(vertical: 5.h),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
     );
   }
 }

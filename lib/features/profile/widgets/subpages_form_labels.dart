@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 
-class FormLabel extends StatelessWidget {
+class SubPagesFormLabel extends StatelessWidget {
   final String label;
   final bool isRequired;
 
-  const FormLabel({Key? key, required this.label, this.isRequired = false})
+  const SubPagesFormLabel({Key? key, required this.label, this.isRequired = false})
       : super(key: key);
 
   @override

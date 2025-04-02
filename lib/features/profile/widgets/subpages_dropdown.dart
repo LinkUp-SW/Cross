@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 
-class CustomDropdownFormField<T> extends StatelessWidget {
+class SubPagesCustomDropdownFormField<T> extends StatelessWidget {
   final T? value;
   final String hintText;
   final List<DropdownMenuItem<T>> items;
   final Function(T?)? onChanged;
   final String? labelText;
 
-  const CustomDropdownFormField({
+  const SubPagesCustomDropdownFormField({
     Key? key,
     this.value,
     required this.hintText,

@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 
-class CustomTextField extends StatelessWidget {
+class SubPagesCustomTextField extends StatelessWidget {
   final TextEditingController? controller;
   final String? hintText;
   final int? maxLines;
   final Widget? suffixIcon;
   final VoidCallback? onTap;
 
-  const CustomTextField({
+  const SubPagesCustomTextField({
     Key? key,
     this.controller,
     this.hintText,

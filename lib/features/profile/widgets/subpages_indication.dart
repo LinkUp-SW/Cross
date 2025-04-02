@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 
-class IndicatesRequiredLabel extends StatelessWidget {
-  const IndicatesRequiredLabel({Key? key}) : super(key: key);
+class SubPagesIndicatesRequiredLabel extends StatelessWidget {
+  const SubPagesIndicatesRequiredLabel({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
