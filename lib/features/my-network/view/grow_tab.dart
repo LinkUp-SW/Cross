@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/my-network/model/grow_tab_model.dart';
-import 'package:link_up/features/my-network/widgets/navigation_row.dart';
+import 'package:link_up/features/my-network/widgets/grow_tab_navigation_row.dart';
 import 'package:link_up/features/my-network/widgets/newsletter_card.dart';
 import 'package:link_up/features/my-network/widgets/people_card.dart';
 import 'package:link_up/features/my-network/widgets/section.dart';
@@ -22,7 +22,7 @@ class GrowTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return ListView(
       children: [
-        NavigationRow(
+        GrowTabNavigationRow(
           title: 'Invitations',
           isDarkMode: isDarkMode,
           onTap: () => context.push('/invitations'),
@@ -30,7 +30,7 @@ class GrowTab extends ConsumerWidget {
         SizedBox(
           height: 10.h,
         ),
-        NavigationRow(
+        GrowTabNavigationRow(
           title: 'Manage my network',
           isDarkMode: isDarkMode,
           onTap: () => context.push('/manage-network'),

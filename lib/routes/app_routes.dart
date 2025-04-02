@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/my-network/view/invitations_screen.dart';
+import 'package:link_up/features/my-network/view/manage_my_network_screen.dart';
 import 'package:link_up/features/my-network/view/view.dart';
 import 'package:link_up/shared/dummy_page.dart';
 import 'package:link_up/shared/myhomepage.dart';
@@ -22,8 +23,26 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     ),
     GoRoute(
       path: "/manage-network",
+      builder: (context, state) => ManageMyNetworkScreen(
+        isDarkMode: Theme.of(context).brightness == Brightness.dark,
+      ),
+    ),
+    GoRoute(
+      path: "/connections",
       builder: (context, state) => const DummyPage(
-        title: "Manage My Network Screen",
+        title: 'Connections Screen',
+      ),
+    ),
+    GoRoute(
+      path: "/following",
+      builder: (context, state) => const DummyPage(
+        title: 'Following Screen',
+      ),
+    ),
+    GoRoute(
+      path: "/pages",
+      builder: (context, state) => const DummyPage(
+        title: 'Pages Screen',
       ),
     ),
     StatefulShellRoute.indexedStack(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 
@@ -22,13 +23,12 @@ class StandardEmptyListMessage extends ConsumerWidget {
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        spacing: 10.w,
         children: [
-          Image(
-            image: const AssetImage('assets/images/man_on_chair.svg'),
-            width: 150.w,
+          SvgPicture.asset(
+            'assets/images/man_on_chair.svg',
+            width: 300.w,
             height: 200.h,
+            fit: BoxFit.cover,
           ),
           Text(
             message,
