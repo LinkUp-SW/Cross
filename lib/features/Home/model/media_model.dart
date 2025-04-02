@@ -61,7 +61,12 @@ class Media {
       case MediaType.pdf:
         return PDFViewer(url: urls[0]);
       case MediaType.link:
-        return AnyLinkPreview(link: urls[0]);
+        return AnyLinkPreview(
+          link: urls[0],
+          displayDirection: UIDirection.uiDirectionHorizontal,
+          backgroundColor: AppColors.fineLinesGrey,
+          titleStyle: const TextStyle(color: AppColors.darkSecondaryText),
+        );
       case MediaType.post:
         return Card(
             shape: const RoundedRectangleBorder(
