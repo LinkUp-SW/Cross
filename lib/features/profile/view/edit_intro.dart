@@ -5,6 +5,12 @@ import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/shared/themes/button_styles.dart';
 import 'package:go_router/go_router.dart';
+import 'package:link_up/features/profile/widgets/subpages_app_bar.dart';
+import 'package:link_up/features/profile/widgets/subpages_text_field.dart';
+import 'package:link_up/features/profile/widgets/subpages_section_headers.dart';
+import 'package:link_up/features/profile/widgets/subpages_form_labels.dart';
+import 'package:link_up/features/profile/widgets/subpages_indication.dart';
+
 
 class EditIntroPage extends ConsumerWidget {
   const EditIntroPage({Key? key}) : super(key: key);
@@ -17,43 +23,24 @@ class EditIntroPage extends ConsumerWidget {
     final firstNameController = TextEditingController(text: "Amr");
     final lastNameController = TextEditingController(text: "Safwat");
     final additionalNameController = TextEditingController();
-    final headlineController = TextEditingController(text: "Student at Cairo University");
+    final headlineController =
+        TextEditingController(text: "Student at Cairo University");
     final industryController = TextEditingController(text: "Retail");
     final schoolController = TextEditingController(text: "Cairo University");
     final countryController = TextEditingController(text: "Egypt");
     final cityController = TextEditingController(text: "Giza, Al Jizah");
 
-    bool showSchoolInIntro = true;
+    bool showSchoolInIntro = false;
 
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
-              color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    icon: Icon(
-                      Icons.close,
-                      color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
-                      size: 24.sp,
-                    ),
-                    onPressed: () {
-                      GoRouter.of(context).pop();
-                    },
-                  ),
-                  Text(
-                    "Edit intro",
-                    style: TextStyles.font18_700Weight.copyWith(
-                      color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
-                    ),
-                  ),
-                  SizedBox(width: 40.w),
-                ],
-              ),
+            SubPagesAppBar(
+              title: "Edit intro",
+              onClosePressed: () {
+                GoRouter.of(context).pop();
+              },
             ),
             Expanded(
               child: Container(
@@ -63,120 +50,35 @@ class EditIntroPage extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        "* Indicates required",
-                        style: TextStyles.font13_400Weight.copyWith(
-                          color: AppColors.lightGrey,
-                        ),
-                      ),
+                      SubPagesIndicatesRequiredLabel(),
                       SizedBox(height: 10.h),
-                      Text(
-                        "First Name*",
-                        style: TextStyles.font14_400Weight.copyWith(
-                          color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
-                        ),
-                      ),
+                      SubPagesFormLabel(label: "First Name*", isRequired: true),
                       SizedBox(height: 2.h),
-                      TextField(
+                      SubPagesCustomTextField(
                         controller: firstNameController,
-                        style: TextStyles.font14_400Weight.copyWith(
-                          color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
-                        ),
-                        cursorColor: AppColors.darkBackground, // Set cursor color to black
-                        decoration: InputDecoration(
-                          border: UnderlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.lightGrey),
-                          ),
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.lightGrey),
-                          ),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.lightBlue),
-                          ),
-                        ),
                       ),
                       SizedBox(height: 20.h),
-                      Text(
-                        "Family Name*",
-                        style: TextStyles.font14_400Weight.copyWith(
-                          color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
-                        ),
-                      ),
+                      SubPagesFormLabel(label: "Family Name*", isRequired: true),
                       SizedBox(height: 2.h),
-                      TextField(
+                      SubPagesCustomTextField(
                         controller: lastNameController,
-                        style: TextStyles.font14_400Weight.copyWith(
-                          color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
-                        ),
-                        cursorColor: AppColors.darkBackground,
-                        decoration: InputDecoration(
-                          border: UnderlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.lightGrey),
-                          ),
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.lightGrey),
-                          ),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.lightBlue),
-                          ),
-                        ),
                       ),
                       SizedBox(height: 20.h),
-                      Text(
-                        "Additional Name*",
-                        style: TextStyles.font14_400Weight.copyWith(
-                          color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
-                        ),
-                      ),
+                      SubPagesFormLabel(label: "Additional Name*"),
                       SizedBox(height: 2.h),
-                      TextField(
+                      SubPagesCustomTextField(
                         controller: additionalNameController,
-                        style: TextStyles.font14_400Weight.copyWith(
-                          color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
-                        ),
-                        cursorColor: AppColors.darkBackground,
-                        decoration: InputDecoration(
-                          border: UnderlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.lightGrey),
-                          ),
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.lightGrey),
-                          ),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.lightBlue),
-                          ),
-                        ),
                       ),
                       SizedBox(height: 20.h),
-                      Text(
-                        "Headline*",
-                        style: TextStyles.font14_400Weight.copyWith(
-                          color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
-                        ),
-                      ),
+                      SubPagesFormLabel(label: "Headline*", isRequired: true),
                       SizedBox(height: 2.h),
-                      TextField(
+                      SubPagesCustomTextField(
                         controller: headlineController,
-                        style: TextStyles.font14_400Weight.copyWith(
-                          color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
-                        ),
-                        cursorColor: AppColors.darkBackground,
-                        decoration: InputDecoration(
-                          border: UnderlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.lightGrey),
-                          ),
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.lightGrey),
-                          ),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.lightBlue),
-                          ),
-                        ),
                       ),
                       SizedBox(height: 20.h),
                       GestureDetector(
-                        onTap: () {GoRouter.of(context).push('/add_new_position');
-
+                        onTap: () {
+                          GoRouter.of(context).push('/add_new_position');
                         },
                         child: Text(
                           "+ Add new position",
@@ -186,76 +88,31 @@ class EditIntroPage extends ConsumerWidget {
                         ),
                       ),
                       SizedBox(height: 20.h),
-                      Text(
-                        "Industry*",
-                        style: TextStyles.font14_400Weight.copyWith(
-                          color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
-                        ),
-                      ),
+                      SubPagesFormLabel(label: "Industry*", isRequired: true),
                       SizedBox(height: 2.h),
-                      TextField(
+                      SubPagesCustomTextField(
                         controller: industryController,
-                        style: TextStyles.font14_400Weight.copyWith(
-                          color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
-                        ),
-                        cursorColor: AppColors.darkBackground,
-                        decoration: InputDecoration(
-                          hintText: "Ex: Retail",
-                          hintStyle: TextStyles.font14_400Weight.copyWith(
-                            color: AppColors.lightGrey,
-                          ),
-                          border: UnderlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.lightGrey),
-                          ),
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.lightGrey),
-                          ),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.lightBlue),
-                          ),
-                        ),
+                        hintText: "Ex: Retail",
                       ),
-                  
                       SizedBox(height: 20.h),
-                      Text(
-                        "Education",
-                        style: TextStyles.font18_700Weight.copyWith(
-                          color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
-                        ),
-                      ),
+                      SubPagesSectionHeader(title: "Education"),
                       SizedBox(height: 10.h),
-                      Text(
-                        "School*",
-                        style: TextStyles.font14_400Weight.copyWith(
-                          color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
-                        ),
-                      ),
+                      SubPagesFormLabel(label: "School*", isRequired: true),
                       SizedBox(height: 2.h),
-                      TextField(
+                      SubPagesCustomTextField(
                         controller: schoolController,
-                        style: TextStyles.font14_400Weight.copyWith(
-                          color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
-                        ),
-                        cursorColor: AppColors.darkBackground,
-                        decoration: InputDecoration(
-                          suffixIcon: Icon(
-                            Icons.arrow_drop_down,
-                            color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
-                          ),
-                          border: UnderlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.lightGrey),
-                          ),
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.lightGrey),
-                          ),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.lightBlue),
-                          ),
+                        suffixIcon: Icon(
+                          Icons.arrow_drop_down,
+                          color: isDarkMode
+                              ? AppColors.darkTextColor
+                              : AppColors.lightTextColor,
+                          size: 20.sp,
                         ),
                       ),
                       SizedBox(height: 10.h),
                       GestureDetector(
-                        onTap: () {GoRouter.of(context).push('/add_new_education');
+                        onTap: () {
+                          GoRouter.of(context).push('/add_new_education');
                         },
                         child: Text(
                           "+ Add new education",
@@ -269,60 +126,37 @@ class EditIntroPage extends ConsumerWidget {
                         children: [
                           Checkbox(
                             value: showSchoolInIntro,
-                            onChanged: (value) {
-                            },
-                            activeColor: Colors.green,
+                            onChanged: (value) {},
+                            activeColor: AppColors.lightGreen,
                           ),
                           Text(
                             "Show school in my intro",
                             style: TextStyles.font14_400Weight.copyWith(
-                              color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+                              color: isDarkMode
+                                  ? AppColors.darkTextColor
+                                  : AppColors.lightTextColor,
                             ),
                           ),
                         ],
                       ),
                       SizedBox(height: 20.h),
-                      Text(
-                        "Location",
-                        style: TextStyles.font18_700Weight.copyWith(
-                          color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
-                        ),
-                      ),
+                      SubPagesSectionHeader(title: "Location"),
                       SizedBox(height: 10.h),
-                      Text(
-                        "Country/Region*",
-                        style: TextStyles.font14_400Weight.copyWith(
-                          color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
-                        ),
-                      ),
+                      SubPagesFormLabel(label: "Country/Region*", isRequired: true),
                       SizedBox(height: 2.h),
-                      TextField(
+                      SubPagesCustomTextField(
                         controller: countryController,
-                        style: TextStyles.font14_400Weight.copyWith(
-                          color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
-                        ),
-                        cursorColor: AppColors.darkBackground,
-                        decoration: InputDecoration(
-                          suffixIcon: Icon(
-                            Icons.close,
-                            color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
-                            size: 20.sp,
-                          ),
-                          border: UnderlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.lightGrey),
-                          ),
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.lightGrey),
-                          ),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.lightBlue),
-                          ),
+                        suffixIcon: Icon(
+                          Icons.close,
+                          color: isDarkMode
+                              ? AppColors.darkTextColor
+                              : AppColors.lightTextColor,
+                          size: 20.sp,
                         ),
                       ),
                       SizedBox(height: 10.h),
                       GestureDetector(
-                        onTap: () {
-                        },
+                        onTap: () {},
                         child: Text(
                           "Use current location",
                           style: TextStyles.font14_400Weight.copyWith(
@@ -331,43 +165,20 @@ class EditIntroPage extends ConsumerWidget {
                         ),
                       ),
                       SizedBox(height: 20.h),
-                      Text(
-                        "City",
-                        style: TextStyles.font14_400Weight.copyWith(
-                          color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
-                        ),
-                      ),
+                      SubPagesFormLabel(label: "City"),
                       SizedBox(height: 2.h),
-                      TextField(
+                      SubPagesCustomTextField(
                         controller: cityController,
-                        style: TextStyles.font14_400Weight.copyWith(
-                          color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
-                        ),
-                        cursorColor: AppColors.darkBackground,
-                        decoration: InputDecoration(
-                          suffixIcon: Icon(
-                            Icons.close,
-                            color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
-                            size: 20.sp,
-                          ),
-                          border: UnderlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.lightGrey),
-                          ),
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.lightGrey),
-                          ),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.lightBlue),
-                          ),
+                        suffixIcon: Icon(
+                          Icons.close,
+                          color: isDarkMode
+                              ? AppColors.darkTextColor
+                              : AppColors.lightTextColor,
+                          size: 20.sp,
                         ),
                       ),
                       SizedBox(height: 20.h),
-                      Text(
-                        "Contact info",
-                        style: TextStyles.font18_700Weight.copyWith(
-                          color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
-                        ),
-                      ),
+                      SubPagesSectionHeader(title: "Contact info"),
                       Container(
                         padding: EdgeInsets.symmetric(vertical: 10.h),
                         child: Column(
@@ -376,13 +187,15 @@ class EditIntroPage extends ConsumerWidget {
                             Text(
                               "Add or edit your profile URL, email, and more",
                               style: TextStyles.font14_400Weight.copyWith(
-                                color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+                                color: isDarkMode
+                                  ? AppColors.darkTextColor
+                                  : AppColors.lightTextColor,
                               ),
                             ),
                             SizedBox(height: 10.h),
                             GestureDetector(
                               onTap: () {
-                              GoRouter.of(context).push('/edit_contact_info');
+                                GoRouter.of(context).push('/edit_contact_info');
                               },
                               child: Text(
                                 "Edit contact info",
@@ -394,7 +207,6 @@ class EditIntroPage extends ConsumerWidget {
                           ],
                         ),
                       ),
-                     
                     ],
                   ),
                 ),
