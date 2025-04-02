@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 
 final searchQueryProvider = StateProvider<String>((ref) => '');
@@ -11,7 +10,6 @@ class ProfileAppBar extends ConsumerWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final searchQuery = ref.watch(searchQueryProvider);
 
     return AppBar(
       backgroundColor: Colors.white,
