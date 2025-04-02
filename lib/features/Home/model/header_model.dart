@@ -1,71 +1,85 @@
 import 'package:link_up/features/Home/home_enums.dart';
 
 class HeaderModel {
+  String userId;
   String profileImage;
   String name;
   String connectionDegree;
   String about;
   DateTime timeAgo;
   bool edited;
-  Visibilities? visibility;
+  Visibilities visibilityPost;
+  Visibilities visibilityComments;
 
   HeaderModel({
+    required this.userId,
     required this.profileImage,
     required this.name,
     required this.connectionDegree,
     required this.about,
     required this.timeAgo,
-    this.visibility,
+    required this.visibilityPost,
+    required this.visibilityComments,
     this.edited = false,
   });
 
   HeaderModel.fromJson(Map<String, dynamic> json)
       : profileImage = json['profileImage'],
+        userId = json['userId'],
         name = json['name'],
         connectionDegree = json['connectionDegree'],
         about = json['about'],
         timeAgo = DateTime.parse(json['timeAgo']),
         edited = json['edited'] ?? false,
-        visibility = Visibilities.getVisibility(json['visibility'] ?? 'anyone');
+        visibilityComments = Visibilities.getVisibility(json['visibilityComment'] ?? 'anyone'),
+        visibilityPost = Visibilities.getVisibility(json['visibilityPost'] ?? 'anyone');
 
   Map<String, dynamic> toJson() => {
         'profileImage': profileImage,
+        'userId' : userId,
         'name': name,
         'connectionDegree': connectionDegree,
         'about': about,
         'timeAgo': timeAgo.toString(),
         'edited': edited,
-        'visibility': visibility.toString(),
+        'visibilityPost': visibilityPost.toString(),
+        'visibilityComment' : visibilityComments.toString(),
       };
 
 
   HeaderModel.initial()
       : profileImage = 'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
+        userId = '1',
         name = 'John Doe',
         connectionDegree = '3rd',
         about = 'Hello this is john doe a special person',
         timeAgo = DateTime.now(),
         edited = false,
-        visibility = Visibilities.anyone;
+        visibilityComments = Visibilities.anyone,
+        visibilityPost = Visibilities.anyone;
 
     
     HeaderModel copyWith({
     String? profileImage,
+    String? userId,
     String? name,
     String? connectionDegree,
     String? about,
     DateTime? timeAgo,
     bool? edited,
-    Visibilities? visibility,
+    Visibilities? visibilityPost,
+    Visibilities? visibilityComments,
   }) {
     return HeaderModel(
+      userId: userId ?? this.userId,
       profileImage: profileImage ?? this.profileImage,
       name: name ?? this.name,
       connectionDegree: connectionDegree ?? this.connectionDegree,
       about: about ?? this.about,
       timeAgo: timeAgo ?? this.timeAgo,
       edited: edited ?? this.edited,
-      visibility: visibility ?? this.visibility,
+      visibilityComments: visibilityComments ?? this.visibilityComments,
+      visibilityPost: visibilityPost ?? this.visibilityPost,
     );
   }
 

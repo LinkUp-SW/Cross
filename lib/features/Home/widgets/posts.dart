@@ -7,6 +7,7 @@ import 'package:link_up/features/Home/home_enums.dart';
 import 'package:link_up/features/Home/model/media_model.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
 import 'package:link_up/features/Home/viewModel/post_vm.dart';
+import 'package:link_up/features/Home/viewModel/posts_vm.dart';
 import 'package:link_up/features/Home/widgets/bottom_sheets.dart';
 import 'package:link_up/features/Home/widgets/post_header.dart';
 import 'package:link_up/features/Home/widgets/reactions.dart';
@@ -50,7 +51,10 @@ class _PostsState extends ConsumerState<Posts> {
           if (reacted && widget.showTop)
             Column(
               children: [
-                PostHeader(isAd: widget.post.isAd,id: widget.post.id,),
+                PostHeader(
+                  isAd: widget.post.isAd,
+                  postId: widget.post.id,
+                ),
                 Divider(
                   indent: 10.w,
                   endIndent: 10.w,
@@ -91,8 +95,8 @@ class _PostsState extends ConsumerState<Posts> {
                         if (!widget.post.isCompany)
                           TextSpan(
                             text: ' • ${widget.post.header.connectionDegree}',
-                            style:
-                                TextStyle(color: AppColors.grey, fontSize: 10.r),
+                            style: TextStyle(
+                                color: AppColors.grey, fontSize: 10.r),
                           ),
                       ],
                     ),
@@ -122,7 +126,7 @@ class _PostsState extends ConsumerState<Posts> {
                                 ),
                               WidgetSpan(
                                 child: Icon(
-                                  widget.post.header.visibility ==
+                                  widget.post.header.visibilityPost ==
                                           Visibilities.anyone
                                       ? Icons.public
                                       : Icons.people,
@@ -139,28 +143,50 @@ class _PostsState extends ConsumerState<Posts> {
               ),
               Flexible(
                 flex: 1,
-                child: TextButton(
-                    onPressed: () {
-                      setState(() {
-                        _following = !_following;
-                      });
-                    },
-                    child: Wrap(
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        Icon(
-                          _following ? Icons.check : Icons.add,
-                          color: _following ? AppColors.grey : null,
-                        ),
-                        SizedBox(width: 5.w),
-                        Text(
-                          _following ? 'Following' : 'Follow',
-                          style: TextStyle(
-                            color: _following ? AppColors.grey : null,
+                child: widget.post.header.userId == '1'
+                    ? TextButton(
+                        onPressed: () {
+                          setState(() {
+                            _following = !_following;
+                          });
+                        },
+                        child: Wrap(
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            Icon(
+                              _following ? Icons.check : Icons.add,
+                              color: _following ? AppColors.grey : null,
+                            ),
+                            SizedBox(width: 5.w),
+                            Text(
+                              _following ? 'Following' : 'Follow',
+                              style: TextStyle(
+                                color: _following ? AppColors.grey : null,
+                              ),
+                            ),
+                          ],
+                        ))
+                    : Wrap(
+                        alignment: WrapAlignment.end,
+                        runAlignment: WrapAlignment.end,
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              myPostBottomSheet(context,ref,post: widget.post);
+                            },
+                            icon: const Icon(Icons.more_horiz),
                           ),
-                        ),
-                      ],
-                    )),
+                          IconButton(
+                            //TODO: delete post action
+                            onPressed: () {
+                              ref
+                                  .read(postsProvider.notifier)
+                                  .showUndo(widget.post.id);
+                            },
+                            icon: const Icon(Icons.close),
+                          ),
+                        ],
+                      ),
               ),
             ],
           ),

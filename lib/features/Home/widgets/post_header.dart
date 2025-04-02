@@ -11,11 +11,11 @@ class PostHeader extends ConsumerWidget {
   const PostHeader({
     super.key,
     required bool isAd,
-    required this.id
+    required this.postId
   }) : _isAd = isAd;
 
   final bool _isAd;
-  final String id;
+  final String postId;
 
   @override
   Widget build(BuildContext context,WidgetRef ref) {
@@ -64,6 +64,7 @@ class PostHeader extends ConsumerWidget {
           children: [
             IconButton(
               onPressed: () {
+                
                 aboutPostBottomSheet(context,isAd: _isAd);
               },
               icon: const Icon(Icons.more_horiz),
@@ -71,7 +72,7 @@ class PostHeader extends ConsumerWidget {
             IconButton(
               //TODO: delete post action
               onPressed: () {
-                ref.read(postsProvider.notifier).showUndo(id);
+                ref.read(postsProvider.notifier).showUndo(postId);
               },
               icon: const Icon(Icons.close),
             ),
