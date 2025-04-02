@@ -14,28 +14,34 @@ class WritePostVm {
   //bool brandPartnerships = false;
   TextEditingController controller;
   Media media;
+  bool isEdited = false;
 
   WritePostVm(
       {required this.visbilityPost,
       required this.visibilityComment,
       required this.media,
-      required this.controller});
+      required this.controller,
+      this.isEdited = false,
+      });
   WritePostVm.initial()
       : visbilityPost = Visibilities.anyone,
         visibilityComment = Visibilities.anyone,
         controller = TextEditingController(),
+        isEdited = false,
         media = Media.initial();
 
   WritePostVm copyWith({
     Visibilities? visbilityPost,
     Visibilities? visibilityComment,
     Media? media,
+    bool? isEdited,
     TextEditingController? controller,
   }) {
     return WritePostVm(
         visbilityPost: visbilityPost ?? this.visbilityPost,
         visibilityComment: visibilityComment ?? this.visibilityComment,
         media: media ?? this.media,
+        isEdited: isEdited ?? this.isEdited,
         controller: controller ?? this.controller);
   }
 }
@@ -58,7 +64,16 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
   void clearWritePost() {
     state = WritePostVm.initial();
   }
-  
+
+  void setPost(PostModel post,bool isEdited) {
+    state = WritePostVm(
+      isEdited: isEdited,
+      visbilityPost: post.header.visibilityPost,
+      visibilityComment: post.header.visibilityComments,
+      media: post.media,
+      controller: TextEditingController(text: post.text),
+    );
+  }
 
   Future<String> createPost() async {
     //TODO: send tempPost to backend

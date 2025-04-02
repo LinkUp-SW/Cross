@@ -70,7 +70,56 @@ class _WritePostState extends ConsumerState<WritePost> {
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () {
-            context.pop();
+            if (postData.controller.text.isEmpty &&
+                postData.media.file.isEmpty) {
+              context.pop();
+            } else {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  elevation: 10,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Save this post for later?',
+                          style: TextStyle(fontSize: 18.r)),
+                      IconButton(
+                        onPressed: () {
+                          context.pop();
+                        },
+                        icon: Icon(
+                          Icons.close,
+                          size: 18.r,
+                        ),
+                      ),
+                    ],
+                  ),
+                  content: const Text(
+                      'This post you started will be here when you return'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        ref.read(writePostProvider.notifier).clearWritePost();
+                        context.pop();
+                        context.pop();
+                      },
+                      child: const Text(
+                        'Discard',
+                        style: TextStyle(color: AppColors.red),
+                      ),
+                    ),
+                    TextButton(
+                        onPressed: () {
+                          //TODO: add the save post functionality in the localstorage
+                          context.pop();
+                          context.pop();
+                        },
+                        child: const Text('Save')),
+                  ],
+                ),
+              );
+            }
           },
         ),
         title: Row(
