@@ -51,13 +51,15 @@ class PostsNotifier extends StateNotifier<List<PostState>> {
           (index) => PostModel(
             id: '${index + 1}',
             header: HeaderModel(
+              userId: index.toString(),
               profileImage:
                   'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
               name: 'John Doe',
               connectionDegree: 'johndoe',
               about: 'About John Doe',
               timeAgo: DateTime.now(),
-              visibility: Visibilities.anyone,
+              visibilityPost: Visibilities.anyone,
+              visibilityComments: Visibilities.anyone,
             ),
             text: 'This is a post',
             media: Media(
