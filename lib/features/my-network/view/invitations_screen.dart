@@ -8,6 +8,7 @@ import 'package:link_up/features/my-network/widgets/received_invitations_loading
 import 'package:link_up/features/my-network/widgets/retry_error_message.dart';
 import 'package:link_up/features/my-network/widgets/sent_invitation_loading_skeleton.dart';
 import 'package:link_up/features/my-network/widgets/sent_invitations_card.dart';
+import 'package:link_up/features/my-network/widgets/standard_empty_list_message.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 
@@ -117,13 +118,11 @@ class _InvitationsScreenState extends ConsumerState<InvitationsScreen> {
   Widget _buildReceivedInvitationsTab(
       InvitationsScreenState state, bool isDarkMode) {
     if (state.isLoading && state.received == null) {
-      return Expanded(
-        child: ListView.builder(
-          shrinkWrap: true,
-          itemCount: 3,
-          itemBuilder: (context, index) =>
-              ReceivedInvitationsLoadingSkeleton(isDarkMode: isDarkMode),
-        ),
+      return ListView.builder(
+        shrinkWrap: true,
+        itemCount: 3,
+        itemBuilder: (context, index) =>
+            ReceivedInvitationsLoadingSkeleton(isDarkMode: isDarkMode),
       );
     } else if (state.error) {
       return RetryErrorMessage(
@@ -136,7 +135,9 @@ class _InvitationsScreenState extends ConsumerState<InvitationsScreen> {
         },
       );
     } else if (state.received == null || state.received!.isEmpty) {
-      return const Center(child: Text("No received invitations"));
+      return StandardEmptyListMessage(
+          isDarkMode: isDarkMode,
+          message: 'No received connection invitations');
     } else {
       return RefreshIndicator(
         onRefresh: () async {
@@ -160,13 +161,11 @@ class _InvitationsScreenState extends ConsumerState<InvitationsScreen> {
   Widget _buildSentInvitationsTab(
       InvitationsScreenState state, bool isDarkMode) {
     if (state.isLoading && state.sent == null) {
-      return Expanded(
-        child: ListView.builder(
-          shrinkWrap: true,
-          itemCount: 3,
-          itemBuilder: (context, index) =>
-              SentInvitationsLoadingSkeleton(isDarkMode: isDarkMode),
-        ),
+      return ListView.builder(
+        shrinkWrap: true,
+        itemCount: 3,
+        itemBuilder: (context, index) =>
+            SentInvitationsLoadingSkeleton(isDarkMode: isDarkMode),
       );
     } else if (state.error) {
       return RetryErrorMessage(
@@ -179,7 +178,8 @@ class _InvitationsScreenState extends ConsumerState<InvitationsScreen> {
         },
       );
     } else if (state.sent == null || state.sent!.isEmpty) {
-      return const Center(child: Text("No sent invitations"));
+      return StandardEmptyListMessage(
+          isDarkMode: isDarkMode, message: 'No sent connection invitations');
     } else {
       return RefreshIndicator(
         onRefresh: () async {
