@@ -10,6 +10,7 @@ class ManageMyNetworkScreenNavigationRow extends ConsumerWidget {
   final String title;
   final int? count;
   final VoidCallback? onTap;
+  final bool isLoading;
 
   const ManageMyNetworkScreenNavigationRow({
     super.key,
@@ -18,6 +19,7 @@ class ManageMyNetworkScreenNavigationRow extends ConsumerWidget {
     required this.title,
     this.count = 0,
     this.onTap,
+    this.isLoading = false,
   });
 
   @override
@@ -60,14 +62,26 @@ class ManageMyNetworkScreenNavigationRow extends ConsumerWidget {
                     ),
                   ],
                 ),
-                Text(
-                  '$count',
-                  style: TextStyles.font16_500Weight.copyWith(
-                    color: isDarkMode
-                        ? AppColors.darkSecondaryText
-                        : AppColors.lightTextColor,
+                if (isLoading)
+                  SizedBox(
+                    width: 16.w,
+                    height: 16.w,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.w,
+                      color: isDarkMode
+                          ? AppColors.darkSecondaryText
+                          : AppColors.lightTextColor,
+                    ),
+                  )
+                else if (count != null)
+                  Text(
+                    '$count',
+                    style: TextStyles.font16_500Weight.copyWith(
+                      color: isDarkMode
+                          ? AppColors.darkSecondaryText
+                          : AppColors.lightTextColor,
+                    ),
                   ),
-                ),
               ],
             ),
           ),
