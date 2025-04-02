@@ -10,7 +10,7 @@ import 'package:link_up/features/my-network/widgets/section.dart';
 import 'package:link_up/features/my-network/widgets/wide_people_card.dart';
 import 'package:link_up/features/my-network/widgets/wide_section.dart';
 
-class GrowTab extends ConsumerStatefulWidget {
+class GrowTab extends ConsumerWidget {
   final bool isDarkMode;
 
   const GrowTab({
@@ -19,26 +19,18 @@ class GrowTab extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<GrowTab> createState() => _GrowTabState();
-}
-
-class _GrowTabState extends ConsumerState<GrowTab> {
-  @override
-  Widget build(BuildContext context) {
-    final isDarkMode = widget.isDarkMode;
-
+  Widget build(BuildContext context, WidgetRef ref) {
     return ListView(
       children: [
         NavigationRow(
           title: 'Invitations',
-          isDarkMode: widget.isDarkMode,
+          isDarkMode: isDarkMode,
           onTap: () => context.push('/invitations'),
         ),
         SizedBox(
           height: 10.h,
         ),
         NavigationRow(
-          // Removed duplicate NavigationRow
           title: 'Manage my network',
           isDarkMode: isDarkMode,
           onTap: () => context.push('/manage-network'),
