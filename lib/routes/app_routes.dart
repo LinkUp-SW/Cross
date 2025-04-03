@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:link_up/features/my-network/view/connections_screen.dart';
 import 'package:link_up/features/my-network/view/invitations_screen.dart';
 import 'package:link_up/features/my-network/view/manage_my_network_screen.dart';
+import 'package:link_up/features/my-network/view/people_i_follow_screen.dart';
 import 'package:link_up/features/my-network/view/view.dart';
 import 'package:link_up/shared/dummy_page.dart';
 import 'package:link_up/shared/myhomepage.dart';
@@ -36,8 +37,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     ),
     GoRoute(
       path: "/following",
-      builder: (context, state) => const DummyPage(
-        title: 'Following Screen',
+      builder: (context, state) => PeopleIFollowScreen(
+        isDarkMode: Theme.of(context).brightness == Brightness.dark,
       ),
     ),
     GoRoute(

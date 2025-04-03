@@ -49,17 +49,43 @@ class ReceivedInvitationsTabViewModel
         },
       );
 
-      final newReceivedInviations = (response['receivedConnections'] as List)
-          .map((c) => InvitationsCardModel.fromJson(c))
+      final List<dynamic> receivedData =
+          response['receivedConnections'] as List? ?? [];
+      // If server returns empty data, we've reached the end
+      if (receivedData.isEmpty) {
+        state = currentState.copyWith(
+          isLoadingMore: false,
+          nextCursor: null, // Set to null to prevent more requests
+        );
+        return;
+      }
+
+      final newReceivedInvitations =
+          receivedData.map((c) => InvitationsCardModel.fromJson(c)).toList();
+
+      // Check for duplicates using cardId
+      final existingIds =
+          currentState.received?.map((c) => c.cardId).toSet() ?? {};
+      final uniqueNewInvitations = newReceivedInvitations
+          .where((invitation) => !existingIds.contains(invitation.cardId))
           .toList();
 
-      final List<InvitationsCardModel> allReceivedInvitaions = [
+      // If we got no unique results despite getting data, we're at the end
+      if (uniqueNewInvitations.isEmpty) {
+        state = currentState.copyWith(
+          isLoadingMore: false,
+          nextCursor: null, // Set to null to prevent more requests
+        );
+        return;
+      }
+
+      final List<InvitationsCardModel> allReceivedInvitations = [
         ...currentState.received ?? [],
-        ...newReceivedInviations
+        ...uniqueNewInvitations
       ];
 
       state = currentState.copyWith(
-        received: allReceivedInvitaions,
+        received: allReceivedInvitations,
         nextCursor: response['nextCursor'],
         isLoadingMore: false,
       );

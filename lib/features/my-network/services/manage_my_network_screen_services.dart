@@ -11,8 +11,8 @@ class ManageMyNetworkScreenServices {
   // Get connections count
   Future<Map<String, dynamic>> getManageMyNetworkScreenCounts() async {
     try {
-      final response =
-          await _baseService.get(ExternalEndPoints.connectionsCount);
+      final response = await _baseService
+          .get(ExternalEndPoints.connectionsAndFollowingsCounts);
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       }

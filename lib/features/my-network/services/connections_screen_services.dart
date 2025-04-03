@@ -10,8 +10,8 @@ class ConnectionsScreenServices {
 
   Future<int> getConnectionsCount() async {
     try {
-      final response =
-          await _baseService.get(ExternalEndPoints.connectionsCount);
+      final response = await _baseService
+          .get(ExternalEndPoints.connectionsAndFollowingsCounts);
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
         return body['number_of_connections'];
@@ -38,7 +38,6 @@ class ConnectionsScreenServices {
       }
       throw Exception('Failed to get connections list: ${response.statusCode}');
     } catch (e) {
-      print(e);
       rethrow;
     }
   }
@@ -58,15 +57,14 @@ class ConnectionsScreenServices {
 
   Future<String> getUserId() async {
     try {
-      final response =
-          await _baseService.get(ExternalEndPoints.connectionsCount);
+      final response = await _baseService
+          .get(ExternalEndPoints.connectionsAndFollowingsCounts);
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
         return body['user_id'];
       }
       throw Exception('Failed to get  user id: ${response.statusCode}');
     } catch (e) {
-      print(e);
       rethrow;
     }
   }

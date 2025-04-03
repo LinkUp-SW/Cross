@@ -45,17 +45,41 @@ class SentInvitationsTabViewModel
         },
       );
 
-      final newSentInviations = (response['sentConnections'] as List)
-          .map((c) => InvitationsCardModel.fromJson(c))
+      final List<dynamic> sentData = response['sentConnections'] as List? ?? [];
+      // If server returns empty data, we've reached the end
+      if (sentData.isEmpty) {
+        state = currentState.copyWith(
+          isLoadingMore: false,
+          nextCursor: null, // Set to null to prevent more requests
+        );
+        return;
+      }
+
+      final newSentInvitations =
+          sentData.map((c) => InvitationsCardModel.fromJson(c)).toList();
+
+      // Check for duplicates using cardId
+      final existingIds = currentState.sent?.map((c) => c.cardId).toSet() ?? {};
+      final uniqueNewInvitations = newSentInvitations
+          .where((invitation) => !existingIds.contains(invitation.cardId))
           .toList();
 
-      final List<InvitationsCardModel> allSentInvitaions = [
+      // If we got no unique results despite getting data, we're at the end
+      if (uniqueNewInvitations.isEmpty) {
+        state = currentState.copyWith(
+          isLoadingMore: false,
+          nextCursor: null, // Set to null to prevent more requests
+        );
+        return;
+      }
+
+      final List<InvitationsCardModel> allSentInvitations = [
         ...currentState.sent ?? [],
-        ...newSentInviations
+        ...uniqueNewInvitations
       ];
 
       state = currentState.copyWith(
-        sent: allSentInvitaions,
+        sent: allSentInvitations,
         nextCursor: response['nextCursor'],
         isLoadingMore: false,
       );

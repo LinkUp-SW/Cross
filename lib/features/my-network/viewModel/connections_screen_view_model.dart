@@ -73,13 +73,39 @@ class ConnectionsScreenViewModel extends StateNotifier<ConnectionsScreenState> {
         routeParameters: {'user_id': userId},
       );
 
-      final newConnections = (response['connections'] as List)
-          .map((c) => ConnectionsCardModel.fromJson(c))
+      final List<dynamic> connectionsData =
+          response['connections'] as List? ?? [];
+      // If server returns empty data, we've reached the end
+      if (connectionsData.isEmpty) {
+        state = currentState.copyWith(
+          isLoadingMore: false,
+          nextCursor: null, // Set to null to prevent more requests
+        );
+        return;
+      }
+
+      final newConnections =
+          connectionsData.map((c) => ConnectionsCardModel.fromJson(c)).toList();
+
+      // Check for duplicates using cardId
+      final existingIds =
+          currentState.connections?.map((c) => c.cardId).toSet() ?? {};
+      final uniqueNewConnections = newConnections
+          .where((connection) => !existingIds.contains(connection.cardId))
           .toList();
+
+      // If we got no unique results despite getting data, we're at the end
+      if (uniqueNewConnections.isEmpty) {
+        state = currentState.copyWith(
+          isLoadingMore: false,
+          nextCursor: null, // Set to null to prevent more requests
+        );
+        return;
+      }
 
       final List<ConnectionsCardModel> allConnections = [
         ...currentState.connections ?? [],
-        ...newConnections
+        ...uniqueNewConnections
       ];
 
       state = currentState.copyWith(
