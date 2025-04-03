@@ -28,6 +28,43 @@ class ReceivedInvitationsTabViewModel
     }
   }
 
+  Future<void> loadMoreReceivedInvitations(
+      {required int paginationLimit}) async {
+    final currentState = state;
+
+    // Don't load if we're already loading or at the end
+    if (currentState.isLoadingMore || currentState.nextCursor == null) return;
+
+    state = currentState.copyWith(isLoadingMore: true);
+
+    try {
+      final response =
+          await _receivedInvitationsTabServices.getReceivedInvitations(
+        queryParameters: {
+          'limit': '$paginationLimit',
+          'cursor': currentState.nextCursor,
+        },
+      );
+
+      final newReceivedInviations = (response['receivedConnections'] as List)
+          .map((c) => InvitationsCardModel.fromJson(c))
+          .toList();
+
+      final List<InvitationsCardModel> allReceivedInvitaions = [
+        ...currentState.received ?? [],
+        ...newReceivedInviations
+      ];
+
+      state = currentState.copyWith(
+        received: allReceivedInvitaions,
+        nextCursor: response['nextCursor'],
+        isLoadingMore: false,
+      );
+    } catch (e) {
+      state = currentState.copyWith(isLoadingMore: false);
+    }
+  }
+
   // Accept an invitation
   Future<void> acceptInvitation(String userId) async {
     try {

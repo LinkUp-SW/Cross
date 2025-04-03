@@ -9,10 +9,14 @@ class ReceivedInvitationsTabServices {
   const ReceivedInvitationsTabServices(this._baseService);
 
   // Get all received invitations
-  Future<Map<String, dynamic>> getReceivedInvitations() async {
+  Future<Map<String, dynamic>> getReceivedInvitations({
+    Map<String, dynamic>? queryParameters,
+  }) async {
     try {
-      final response = await _baseService
-          .get(ExternalEndPoints.receivedConnectionInvitations);
+      final response = await _baseService.get(
+        ExternalEndPoints.receivedConnectionInvitations,
+        queryParameters: queryParameters,
+      );
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       }

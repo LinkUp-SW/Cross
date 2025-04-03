@@ -27,6 +27,41 @@ class SentInvitationsTabViewModel
     }
   }
 
+  Future<void> loadMoreSentInvitations({required int paginationLimit}) async {
+    final currentState = state;
+
+    // Don't load if we're already loading or at the end
+    if (currentState.isLoadingMore || currentState.nextCursor == null) return;
+
+    state = currentState.copyWith(isLoadingMore: true);
+
+    try {
+      final response = await _sentInvitationsTabServices.getSentInvitations(
+        queryParameters: {
+          'limit': '$paginationLimit',
+          'cursor': currentState.nextCursor,
+        },
+      );
+
+      final newSentInviations = (response['sentConnections'] as List)
+          .map((c) => InvitationsCardModel.fromJson(c))
+          .toList();
+
+      final List<InvitationsCardModel> allSentInvitaions = [
+        ...currentState.sent ?? [],
+        ...newSentInviations
+      ];
+
+      state = currentState.copyWith(
+        sent: allSentInvitaions,
+        nextCursor: response['nextCursor'],
+        isLoadingMore: false,
+      );
+    } catch (e) {
+      state = currentState.copyWith(isLoadingMore: false);
+    }
+  }
+
   // Withdraw an invitation
   Future<void> withdrawInvitation(String userId) async {
     try {

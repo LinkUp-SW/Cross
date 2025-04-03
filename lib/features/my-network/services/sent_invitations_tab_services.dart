@@ -9,10 +9,14 @@ class SentInvitationsTabServices {
   const SentInvitationsTabServices(this._baseService);
 
   // Get all sent invitations
-  Future<Map<String, dynamic>> getSentInvitations() async {
+  Future<Map<String, dynamic>> getSentInvitations({
+    Map<String, dynamic>? queryParameters,
+  }) async {
     try {
-      final response =
-          await _baseService.get(ExternalEndPoints.sentConnectionInvitations);
+      final response = await _baseService.get(
+        ExternalEndPoints.sentConnectionInvitations,
+        queryParameters: queryParameters,
+      );
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       }
