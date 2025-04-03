@@ -39,7 +39,10 @@ class SentInvitationsTabServices {
   }
 }
 
-final sentInvitationsTabServicesProvider =
-    Provider<SentInvitationsTabServices>((ref) {
-  return SentInvitationsTabServices(ref.read(baseServiceProvider));
-});
+final sentInvitationsTabServicesProvider = Provider<SentInvitationsTabServices>(
+  (ref) {
+    return SentInvitationsTabServices(
+      ref.read(baseServiceProvider),
+    );
+  },
+);

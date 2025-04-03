@@ -1,0 +1,199 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:link_up/features/my-network/services/connections_screen_services.dart';
+import 'package:link_up/features/my-network/viewModel/connections_screen_view_model.dart';
+import 'package:link_up/features/my-network/widgets/connections_card.dart';
+import 'package:link_up/features/my-network/widgets/connections_loading_skeleton.dart';
+import 'package:link_up/features/my-network/widgets/retry_error_message.dart';
+import 'package:link_up/features/my-network/widgets/standard_empty_list_message.dart';
+import 'package:link_up/shared/themes/colors.dart';
+import 'package:link_up/shared/themes/text_styles.dart';
+
+class ConnectionsScreen extends ConsumerStatefulWidget {
+  final bool isDarkMode;
+  final int paginationLimit;
+
+  const ConnectionsScreen({
+    super.key,
+    required this.isDarkMode,
+    this.paginationLimit = 10,
+  });
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _ConnectionsScreenState();
+}
+
+class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Load data when the tab is created
+    Future.microtask(
+      () {
+        ref
+            .read(connectionsScreenViewModelProvider.notifier)
+            .getConnectionsCount();
+      },
+    );
+
+    Future.microtask(
+      () {
+        ref
+            .read(connectionsScreenViewModelProvider.notifier)
+            .getConnectionsList(
+          {
+            'limit': '${widget.paginationLimit}',
+            'cursor': null,
+          },
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Watch for state changes
+    final state = ref.watch(connectionsScreenViewModelProvider);
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        title: Text(
+          'Connections',
+          style: TextStyles.font20_700Weight.copyWith(
+            color: widget.isDarkMode
+                ? AppColors.darkGrey
+                : AppColors.lightTextColor,
+          ),
+        ),
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            size: 25.w,
+            color: widget.isDarkMode
+                ? AppColors.darkSecondaryText
+                : AppColors.lightSecondaryText,
+          ),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color:
+                  widget.isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+              border: Border(
+                bottom: BorderSide(
+                  width: 0.3.w,
+                  color: widget.isDarkMode
+                      ? AppColors.darkGrey
+                      : AppColors.lightGrey,
+                ),
+              ),
+            ),
+            height: 40.h,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8.w),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '${state.connectionsCount} connections',
+                    style: TextStyles.font18_500Weight.copyWith(
+                      color: widget.isDarkMode
+                          ? AppColors.darkGrey
+                          : AppColors.lightGrey,
+                    ),
+                  ),
+                  Row(
+                    spacing: 8.w,
+                    children: [
+                      IconButton(
+                        onPressed: () => {},
+                        icon: Icon(
+                          Icons.search,
+                          size: 25.r,
+                          color: widget.isDarkMode
+                              ? AppColors.darkGrey
+                              : AppColors.lightGrey,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () => {},
+                        icon: Icon(
+                          Icons.tune,
+                          size: 25.r,
+                          color: widget.isDarkMode
+                              ? AppColors.darkGrey
+                              : AppColors.lightGrey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Expanded(
+            child: state.isLoading && state.connections == null
+                ? ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: 3,
+                    itemBuilder: (context, index) => ConnectionsLoadingSkeleton(
+                        isDarkMode: widget.isDarkMode),
+                  )
+                : state.isError
+                    ? RetryErrorMessage(
+                        isDarkMode: widget.isDarkMode,
+                        errorMessage: "Failed to load connections :(",
+                        buttonFunctionality: () async {
+                          await ref
+                              .read(connectionsScreenViewModelProvider.notifier)
+                              .getConnectionsList(
+                            {
+                              'limit': '${widget.paginationLimit}',
+                              'cursor': null,
+                            },
+                          );
+                        },
+                      )
+                    : state.connections == null || state.connections!.isEmpty
+                        ? StandardEmptyListMessage(
+                            isDarkMode: widget.isDarkMode,
+                            message: 'No connections')
+                        : RefreshIndicator(
+                            color: Colors.white,
+                            backgroundColor: widget.isDarkMode
+                                ? AppColors.darkBlue
+                                : AppColors.lightBlue,
+                            onRefresh: () async {
+                              await ref
+                                  .read(connectionsScreenViewModelProvider
+                                      .notifier)
+                                  .getConnectionsList(
+                                {
+                                  'limit': '${widget.paginationLimit}',
+                                  'cursor': null,
+                                },
+                              );
+                            },
+                            child: ListView.builder(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              itemCount: state.connections!.length,
+                              itemBuilder: (context, index) {
+                                return ConnectionsCard(
+                                  data: state.connections![index],
+                                  isDarkMode: widget.isDarkMode,
+                                );
+                              },
+                            ),
+                          ),
+          ),
+        ],
+      ),
+    );
+  }
+}

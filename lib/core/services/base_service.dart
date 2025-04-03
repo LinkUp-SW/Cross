@@ -50,19 +50,25 @@ class BaseService {
   }
 
   Future<Response> get(String endpoint,
-      {Map<String, String>? queryParameters,
+      {Map<String, dynamic>? queryParameters,
       Map<String, dynamic>? routeParameters}) async {
     final token = await getToken();
+    String finalEndpoint = endpoint;
 
     // Replace route parameters in the endpoint if provided
-    String finalEndpoint = endpoint;
     if (routeParameters != null) {
-      routeParameters.forEach((key, value) {
-        finalEndpoint = finalEndpoint.replaceAll(':$key', value.toString());
-      });
+      routeParameters.forEach(
+        (key, value) {
+          finalEndpoint = finalEndpoint.replaceAll(
+            ':$key',
+            value.toString(),
+          );
+        },
+      );
     }
 
     Uri uri = Uri.parse('${ExternalEndPoints.baseUrl}$finalEndpoint');
+
     if (queryParameters != null) {
       uri = uri.replace(
         queryParameters: queryParameters,
@@ -72,7 +78,11 @@ class BaseService {
     final response = await http.get(
       uri,
       headers: {'Authorization': 'Bearer $token'},
-    ).timeout(const Duration(seconds: 10));
+    ).timeout(
+      const Duration(
+        seconds: 10,
+      ),
+    );
 
     return response;
   }

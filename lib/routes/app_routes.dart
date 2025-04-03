@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:link_up/features/my-network/view/connections_screen.dart';
 import 'package:link_up/features/my-network/view/invitations_screen.dart';
 import 'package:link_up/features/my-network/view/manage_my_network_screen.dart';
 import 'package:link_up/features/my-network/view/view.dart';
@@ -29,8 +30,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     ),
     GoRoute(
       path: "/connections",
-      builder: (context, state) => const DummyPage(
-        title: 'Connections Screen',
+      builder: (context, state) => ConnectionsScreen(
+        isDarkMode: Theme.of(context).brightness == Brightness.dark,
       ),
     ),
     GoRoute(

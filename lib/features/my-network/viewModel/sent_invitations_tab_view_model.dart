@@ -49,7 +49,9 @@ class SentInvitationsTabViewModel
 // Provider for the view model
 final sentInvitationsTabViewModelProvider =
     StateNotifierProvider<SentInvitationsTabViewModel, SentInvitationsTabState>(
-        (ref) {
-  return SentInvitationsTabViewModel(
-      ref.read(sentInvitationsTabServicesProvider));
-});
+  (ref) {
+    return SentInvitationsTabViewModel(
+      ref.read(sentInvitationsTabServicesProvider),
+    );
+  },
+);
