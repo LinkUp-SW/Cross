@@ -177,7 +177,7 @@ class _PostsState extends ConsumerState<Posts> {
                             icon: const Icon(Icons.more_horiz),
                           ),
                           IconButton(
-                            //TODO: delete post action
+                            //TODO: Remove post from feed
                             onPressed: () {
                               ref
                                   .read(postsProvider.notifier)
