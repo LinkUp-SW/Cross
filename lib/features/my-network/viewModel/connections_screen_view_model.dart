@@ -93,8 +93,11 @@ class ConnectionsScreenViewModel extends StateNotifier<ConnectionsScreenState> {
             .where((connection) => connection.cardId != userId)
             .toList();
 
-        state =
-            state.copyWith(isLoading: false, connections: updatedConnections);
+        state = state.copyWith(
+          isLoading: false,
+          connections: updatedConnections,
+          connectionsCount: updatedConnections.length,
+        );
       }
     } catch (e) {
       state = state.copyWith(isLoading: false, isError: true);
