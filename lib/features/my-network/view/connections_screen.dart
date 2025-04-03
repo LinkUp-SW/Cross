@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:link_up/features/my-network/services/connections_screen_services.dart';
 import 'package:link_up/features/my-network/viewModel/connections_screen_view_model.dart';
 import 'package:link_up/features/my-network/widgets/connections_card.dart';
 import 'package:link_up/features/my-network/widgets/connections_loading_skeleton.dart';
@@ -9,6 +8,7 @@ import 'package:link_up/features/my-network/widgets/retry_error_message.dart';
 import 'package:link_up/features/my-network/widgets/standard_empty_list_message.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
+import 'package:link_up/shared/utils/my_network_utils.dart';
 
 class ConnectionsScreen extends ConsumerStatefulWidget {
   final bool isDarkMode;
@@ -63,7 +63,7 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
           'Connections',
           style: TextStyles.font20_700Weight.copyWith(
             color: widget.isDarkMode
-                ? AppColors.darkGrey
+                ? AppColors.darkTextColor
                 : AppColors.lightTextColor,
           ),
         ),
@@ -101,11 +101,11 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    '${state.connectionsCount} connections',
+                    '${parseIntegerToCommaSeparatedString(state.connectionsCount!)} connections',
                     style: TextStyles.font18_500Weight.copyWith(
                       color: widget.isDarkMode
                           ? AppColors.darkGrey
-                          : AppColors.lightGrey,
+                          : AppColors.lightSecondaryText,
                     ),
                   ),
                   Row(
@@ -117,8 +117,8 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                           Icons.search,
                           size: 25.r,
                           color: widget.isDarkMode
-                              ? AppColors.darkGrey
-                              : AppColors.lightGrey,
+                              ? AppColors.darkTextColor
+                              : AppColors.lightTextColor,
                         ),
                       ),
                       IconButton(
@@ -127,8 +127,8 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                           Icons.tune,
                           size: 25.r,
                           color: widget.isDarkMode
-                              ? AppColors.darkGrey
-                              : AppColors.lightGrey,
+                              ? AppColors.darkTextColor
+                              : AppColors.lightTextColor,
                         ),
                       ),
                     ],

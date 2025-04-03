@@ -46,6 +46,25 @@ class ConnectionsScreenViewModel extends StateNotifier<ConnectionsScreenState> {
       state = state.copyWith(isLoading: false, isError: true);
     }
   }
+
+  Future<void> removeConnection(String userId) async {
+    state = state.copyWith(isLoading: true, isError: false);
+    try {
+      await _connectionsScreenServices.removeConnection(userId);
+
+      // Remove the connection from the connections list
+      if (state.connections != null) {
+        final updatedConnections = state.connections!
+            .where((connection) => connection.cardId != userId)
+            .toList();
+
+        state =
+            state.copyWith(isLoading: false, connections: updatedConnections);
+      }
+    } catch (e) {
+      state = state.copyWith(isLoading: false, isError: true);
+    }
+  }
 }
 
 final connectionsScreenViewModelProvider =
