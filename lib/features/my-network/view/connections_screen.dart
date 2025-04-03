@@ -27,10 +27,12 @@ class ConnectionsScreen extends ConsumerStatefulWidget {
 }
 
 class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
+  int _selectedSortOption = 0;
+
   @override
   void initState() {
     super.initState();
-    // Load initial data
+
     Future.microtask(() {
       ref
           .read(connectionsScreenViewModelProvider.notifier)
@@ -60,11 +62,7 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
         backgroundColor: Theme.of(context).colorScheme.primary,
         title: Text(
           'Connections',
-          style: TextStyles.font20_700Weight.copyWith(
-            color: widget.isDarkMode
-                ? AppColors.darkTextColor
-                : AppColors.lightTextColor,
-          ),
+          style: TextStyles.font20_500Weight,
         ),
         leading: IconButton(
           icon: Icon(
@@ -85,6 +83,26 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color:
+                  widget.isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+              border: Border(
+                bottom: BorderSide(
+                  width: 0.3.w,
+                  color: widget.isDarkMode
+                      ? AppColors.darkGrey
+                      : AppColors.lightGrey,
+                ),
+              ),
+            ),
+            child: Padding(
+              padding: EdgeInsets.only(
+                top: 5.w,
+              ),
+            ),
+          ),
           Container(
             decoration: BoxDecoration(
               color:
@@ -125,7 +143,215 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                         ),
                       ),
                       IconButton(
-                        onPressed: () => {},
+                        onPressed: () {
+                          showModalBottomSheet(
+                            context: context,
+                            useRootNavigator: true,
+                            builder: (context) => Column(
+                              mainAxisSize: MainAxisSize.min,
+                              spacing: 5.h,
+                              children: [
+                                Container(
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    color: widget.isDarkMode
+                                        ? AppColors.darkMain
+                                        : AppColors.lightMain,
+                                    border: Border(
+                                      bottom: BorderSide(
+                                        width: 1.w,
+                                        color: widget.isDarkMode
+                                            ? AppColors.darkGrey
+                                            : AppColors.lightGrey,
+                                      ),
+                                    ),
+                                  ),
+                                  child: Padding(
+                                    padding: EdgeInsets.only(
+                                      bottom: 20.w,
+                                    ),
+                                    child: Text(
+                                      'Sort By',
+                                      style:
+                                          TextStyles.font18_500Weight.copyWith(
+                                        color: widget.isDarkMode
+                                            ? AppColors.darkSecondaryText
+                                            : AppColors.lightTextColor,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 16.w,
+                                    vertical: 8.h,
+                                  ),
+                                  child: Wrap(
+                                    spacing: 8.w,
+                                    runSpacing: 8.h,
+                                    children: [
+                                      // Newest First
+                                      FilterChip(
+                                        selected: _selectedSortOption == 0,
+                                        backgroundColor: widget.isDarkMode
+                                            ? AppColors.darkMain
+                                            : AppColors.lightMain,
+                                        selectedColor: widget.isDarkMode
+                                            ? AppColors.darkGreen
+                                            : AppColors.lightGreen,
+                                        label: Text(
+                                          'Recently added',
+                                          style: TextStyles.font14_500Weight
+                                              .copyWith(
+                                                  color: _selectedSortOption ==
+                                                          0
+                                                      ? widget.isDarkMode
+                                                          ? AppColors
+                                                              .darkBackground
+                                                          : AppColors
+                                                              .lightBackground
+                                                      : widget.isDarkMode
+                                                          ? AppColors
+                                                              .darkTextColor
+                                                          : AppColors
+                                                              .lightSecondaryText),
+                                        ),
+                                        onSelected: (bool selected) {
+                                          if (selected) {
+                                            setState(() {
+                                              _selectedSortOption = 0;
+                                            });
+                                            ref
+                                                .read(
+                                                    connectionsScreenViewModelProvider
+                                                        .notifier)
+                                                .sortConnections(0);
+                                            Navigator.pop(context);
+                                          }
+                                        },
+                                      ),
+
+                                      // Oldest First
+                                      FilterChip(
+                                        selected: _selectedSortOption == 1,
+                                        backgroundColor: widget.isDarkMode
+                                            ? AppColors.darkMain
+                                            : AppColors.lightMain,
+                                        selectedColor: widget.isDarkMode
+                                            ? AppColors.darkGreen
+                                            : AppColors.lightGreen,
+                                        label: Text(
+                                          'Firstly added',
+                                          style: TextStyles.font14_500Weight
+                                              .copyWith(
+                                            color: _selectedSortOption == 1
+                                                ? widget.isDarkMode
+                                                    ? AppColors.darkBackground
+                                                    : AppColors.lightBackground
+                                                : widget.isDarkMode
+                                                    ? AppColors.darkTextColor
+                                                    : AppColors
+                                                        .lightSecondaryText,
+                                          ),
+                                        ),
+                                        onSelected: (bool selected) {
+                                          if (selected) {
+                                            setState(() {
+                                              _selectedSortOption = 1;
+                                            });
+                                            ref
+                                                .read(
+                                                    connectionsScreenViewModelProvider
+                                                        .notifier)
+                                                .sortConnections(1);
+                                            Navigator.pop(context);
+                                          }
+                                        },
+                                      ),
+
+                                      // Name A-Z
+                                      FilterChip(
+                                        selected: _selectedSortOption == 2,
+                                        backgroundColor: widget.isDarkMode
+                                            ? AppColors.darkMain
+                                            : AppColors.lightMain,
+                                        selectedColor: widget.isDarkMode
+                                            ? AppColors.darkGreen
+                                            : AppColors.lightGreen,
+                                        label: Text(
+                                          'Name (A-Z)',
+                                          style: TextStyles.font14_500Weight
+                                              .copyWith(
+                                            color: _selectedSortOption == 2
+                                                ? widget.isDarkMode
+                                                    ? AppColors.darkBackground
+                                                    : AppColors.lightBackground
+                                                : widget.isDarkMode
+                                                    ? AppColors.darkTextColor
+                                                    : AppColors
+                                                        .lightSecondaryText,
+                                          ),
+                                        ),
+                                        onSelected: (bool selected) {
+                                          if (selected) {
+                                            setState(() {
+                                              _selectedSortOption = 2;
+                                            });
+                                            ref
+                                                .read(
+                                                    connectionsScreenViewModelProvider
+                                                        .notifier)
+                                                .sortConnections(2);
+                                            Navigator.pop(context);
+                                          }
+                                        },
+                                      ),
+
+                                      // Name Z-A
+                                      FilterChip(
+                                        selected: _selectedSortOption == 3,
+                                        backgroundColor: widget.isDarkMode
+                                            ? AppColors.darkMain
+                                            : AppColors.lightMain,
+                                        selectedColor: widget.isDarkMode
+                                            ? AppColors.darkGreen
+                                            : AppColors.lightGreen,
+                                        label: Text(
+                                          'Name (Z-A)',
+                                          style: TextStyles.font14_500Weight
+                                              .copyWith(
+                                            color: _selectedSortOption == 3
+                                                ? widget.isDarkMode
+                                                    ? AppColors.darkBackground
+                                                    : AppColors.lightBackground
+                                                : widget.isDarkMode
+                                                    ? AppColors.darkTextColor
+                                                    : AppColors
+                                                        .lightSecondaryText,
+                                          ),
+                                        ),
+                                        onSelected: (bool selected) {
+                                          if (selected) {
+                                            setState(() {
+                                              _selectedSortOption = 3;
+                                            });
+                                            ref
+                                                .read(
+                                                    connectionsScreenViewModelProvider
+                                                        .notifier)
+                                                .sortConnections(3);
+                                            Navigator.pop(context);
+                                          }
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
                         icon: Icon(
                           Icons.tune,
                           size: 25.r,
@@ -181,48 +407,30 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                           ? StandardEmptyListMessage(
                               isDarkMode: widget.isDarkMode,
                               message: 'No connections')
-                          : RefreshIndicator(
-                              color: Colors.white,
-                              backgroundColor: widget.isDarkMode
-                                  ? AppColors.darkBlue
-                                  : AppColors.lightBlue,
-                              onRefresh: () async {
-                                await ref
-                                    .read(connectionsScreenViewModelProvider
-                                        .notifier)
-                                    .getConnectionsList(
-                                  {
-                                    'limit': '${widget.paginationLimit}',
-                                    'cursor': null,
-                                  },
+                          : ListView.builder(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              itemCount: state.connections!.length +
+                                  (state.isLoadingMore ? 1 : 0),
+                              itemBuilder: (context, index) {
+                                if (index == state.connections!.length) {
+                                  // Show loading indicator at the bottom when loading more
+                                  return Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(vertical: 16.h),
+                                    child: Center(
+                                      child: CircularProgressIndicator(
+                                        color: widget.isDarkMode
+                                            ? AppColors.darkBlue
+                                            : AppColors.lightBlue,
+                                      ),
+                                    ),
+                                  );
+                                }
+                                return ConnectionsCard(
+                                  data: state.connections![index],
+                                  isDarkMode: widget.isDarkMode,
                                 );
                               },
-                              child: ListView.builder(
-                                physics: const AlwaysScrollableScrollPhysics(),
-                                itemCount: state.connections!.length +
-                                    (state.isLoadingMore ? 1 : 0),
-                                itemBuilder: (context, index) {
-                                  if (index == state.connections!.length) {
-                                    // Show loading indicator at the bottom when loading more
-                                    return Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(vertical: 16.h),
-                                      child: Center(
-                                        child: CircularProgressIndicator(
-                                          color: widget.isDarkMode
-                                              ? AppColors.darkBlue
-                                              : AppColors.lightBlue,
-                                        ),
-                                      ),
-                                    );
-                                  }
-
-                                  return ConnectionsCard(
-                                    data: state.connections![index],
-                                    isDarkMode: widget.isDarkMode,
-                                  );
-                                },
-                              ),
                             ),
             ),
           ),

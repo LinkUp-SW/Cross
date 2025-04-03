@@ -85,46 +85,29 @@ class _SentInvitationsTabState extends ConsumerState<SentInvitationsTab> {
                       isDarkMode: widget.isDarkMode,
                       message: 'No sent connection invitations',
                     )
-                  : RefreshIndicator(
-                      color: Colors.white,
-                      backgroundColor: widget.isDarkMode
-                          ? AppColors.darkBlue
-                          : AppColors.lightBlue,
-                      onRefresh: () async {
-                        await ref
-                            .read(sentInvitationsTabViewModelProvider.notifier)
-                            .getSentInvitations(
-                          {
-                            'limit': '${widget.paginationLimit}',
-                            'cursor': null,
-                          },
+                  : ListView.builder(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      itemCount:
+                          state.sent!.length + (state.isLoadingMore ? 1 : 0),
+                      itemBuilder: (context, index) {
+                        if (index == state.sent!.length) {
+                          // Show loading indicator at the bottom when loading more
+                          return Padding(
+                            padding: EdgeInsets.symmetric(vertical: 16.h),
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                color: widget.isDarkMode
+                                    ? AppColors.darkBlue
+                                    : AppColors.lightBlue,
+                              ),
+                            ),
+                          );
+                        }
+                        return SentInvitationsCard(
+                          data: state.sent![index],
+                          isDarkMode: widget.isDarkMode,
                         );
                       },
-                      child: ListView.builder(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        itemCount:
-                            state.sent!.length + (state.isLoadingMore ? 1 : 0),
-                        itemBuilder: (context, index) {
-                          if (index == state.sent!.length) {
-                            // Show loading indicator at the bottom when loading more
-                            return Padding(
-                              padding: EdgeInsets.symmetric(vertical: 16.h),
-                              child: Center(
-                                child: CircularProgressIndicator(
-                                  color: widget.isDarkMode
-                                      ? AppColors.darkBlue
-                                      : AppColors.lightBlue,
-                                ),
-                              ),
-                            );
-                          }
-
-                          return SentInvitationsCard(
-                            data: state.sent![index],
-                            isDarkMode: widget.isDarkMode,
-                          );
-                        },
-                      ),
                     ),
     );
   }

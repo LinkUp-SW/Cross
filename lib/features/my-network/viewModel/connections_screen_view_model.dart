@@ -46,6 +46,7 @@ class ConnectionsScreenViewModel extends StateNotifier<ConnectionsScreenState> {
               .map((connection) => ConnectionsCardModel.fromJson(connection))
               .toList();
       final nextCursor = response['nextCursor'];
+      sortConnections(0);
       state = state.copyWith(
           isLoading: false, connections: connections, nextCursor: nextCursor);
     } catch (e) {
@@ -138,6 +139,48 @@ class ConnectionsScreenViewModel extends StateNotifier<ConnectionsScreenState> {
     } catch (e) {
       state = state.copyWith(isLoading: false, isError: true);
     }
+  }
+
+  void sortConnections(int sortingType) {
+    if (state.connections == null || state.connections!.isEmpty) return;
+
+    final connectionsList = List<ConnectionsCardModel>.from(state.connections!);
+
+    // Oldest connections first
+    if (sortingType == 1) {
+      connectionsList.sort((a, b) {
+        final dateA = DateTime.parse(a.connectionDate);
+        final dateB = DateTime.parse(b.connectionDate);
+        return dateA.compareTo(dateB);
+      });
+    }
+
+    // Ascending order by first name
+    else if (sortingType == 2) {
+      connectionsList.sort((a, b) {
+        return a.firstName.compareTo(b.firstName);
+      });
+    }
+
+    // Descending order by first name
+    else if (sortingType == 3) {
+      connectionsList.sort((a, b) {
+        return b.firstName.compareTo(a.firstName);
+      });
+    }
+
+    // Newest connections first
+    else {
+      connectionsList.sort((a, b) {
+        final dateA = DateTime.parse(a.connectionDate);
+        final dateB = DateTime.parse(b.connectionDate);
+        return dateB.compareTo(dateA);
+      });
+    }
+
+    state = state.copyWith(
+      connections: connectionsList,
+    );
   }
 }
 

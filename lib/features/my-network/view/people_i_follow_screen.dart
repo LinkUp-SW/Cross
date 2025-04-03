@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/my-network/viewModel/manage_my_network_screen_view_model.dart';
 import 'package:link_up/features/my-network/viewModel/people_i_follow_screen_view_model.dart';
-import 'package:link_up/features/my-network/widgets/connections_loading_skeleton.dart';
 import 'package:link_up/features/my-network/widgets/following_card.dart';
+import 'package:link_up/features/my-network/widgets/following_card_loading_skeleton.dart';
 import 'package:link_up/features/my-network/widgets/retry_error_message.dart';
 import 'package:link_up/features/my-network/widgets/standard_empty_list_message.dart';
 import 'package:link_up/shared/themes/colors.dart';
@@ -60,11 +60,7 @@ class _PeopleIFollowScreenState extends ConsumerState<PeopleIFollowScreen> {
         backgroundColor: Theme.of(context).colorScheme.primary,
         title: Text(
           'People I follow',
-          style: TextStyles.font20_700Weight.copyWith(
-            color: widget.isDarkMode
-                ? AppColors.darkTextColor
-                : AppColors.lightTextColor,
-          ),
+          style: TextStyles.font20_500Weight,
         ),
         leading: IconButton(
           icon: Icon(
@@ -85,6 +81,26 @@ class _PeopleIFollowScreenState extends ConsumerState<PeopleIFollowScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color:
+                  widget.isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+              border: Border(
+                bottom: BorderSide(
+                  width: 0.3.w,
+                  color: widget.isDarkMode
+                      ? AppColors.darkGrey
+                      : AppColors.lightGrey,
+                ),
+              ),
+            ),
+            child: Padding(
+              padding: EdgeInsets.only(
+                top: 5.w,
+              ),
+            ),
+          ),
           Container(
             decoration: BoxDecoration(
               color:
@@ -112,30 +128,6 @@ class _PeopleIFollowScreenState extends ConsumerState<PeopleIFollowScreen> {
                           : AppColors.lightSecondaryText,
                     ),
                   ),
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: () => {},
-                        icon: Icon(
-                          Icons.search,
-                          size: 25.r,
-                          color: widget.isDarkMode
-                              ? AppColors.darkTextColor
-                              : AppColors.lightTextColor,
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: () => {},
-                        icon: Icon(
-                          Icons.tune,
-                          size: 25.r,
-                          color: widget.isDarkMode
-                              ? AppColors.darkTextColor
-                              : AppColors.lightTextColor,
-                        ),
-                      ),
-                    ],
-                  ),
                 ],
               ),
             ),
@@ -153,51 +145,35 @@ class _PeopleIFollowScreenState extends ConsumerState<PeopleIFollowScreen> {
               return false;
             },
             child: Expanded(
-              child: state.isLoading && state.followings == null
-                  ? ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: 3,
-                      itemBuilder: (context, index) =>
-                          ConnectionsLoadingSkeleton(
-                              isDarkMode: widget.isDarkMode),
-                    )
-                  : state.isError
-                      ? RetryErrorMessage(
-                          isDarkMode: widget.isDarkMode,
-                          errorMessage: "Failed to load followings :(",
-                          buttonFunctionality: () async {
-                            await ref
-                                .read(peopleIFollowScreenViewModelProvider
-                                    .notifier)
-                                .getFollowingsList(
-                              {
-                                'limit': '${widget.paginationLimit}',
-                                'cursor': null,
-                              },
-                            );
-                          },
-                        )
-                      : state.followings == null || state.followings!.isEmpty
-                          ? StandardEmptyListMessage(
-                              isDarkMode: widget.isDarkMode,
-                              message: 'No followings')
-                          : RefreshIndicator(
-                              color: Colors.white,
-                              backgroundColor: widget.isDarkMode
-                                  ? AppColors.darkBlue
-                                  : AppColors.lightBlue,
-                              onRefresh: () async {
-                                await ref
-                                    .read(peopleIFollowScreenViewModelProvider
-                                        .notifier)
-                                    .getFollowingsList(
-                                  {
-                                    'limit': '${widget.paginationLimit}',
-                                    'cursor': null,
-                                  },
-                                );
-                              },
-                              child: ListView.builder(
+                child: state.isLoading && state.followings == null
+                    ? ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: 3,
+                        itemBuilder: (context, index) =>
+                            FollowingCardLoadingSkeleton(
+                                isDarkMode: widget.isDarkMode),
+                      )
+                    : state.isError
+                        ? RetryErrorMessage(
+                            isDarkMode: widget.isDarkMode,
+                            errorMessage: "Failed to load followings :(",
+                            buttonFunctionality: () async {
+                              await ref
+                                  .read(peopleIFollowScreenViewModelProvider
+                                      .notifier)
+                                  .getFollowingsList(
+                                {
+                                  'limit': '${widget.paginationLimit}',
+                                  'cursor': null,
+                                },
+                              );
+                            },
+                          )
+                        : state.followings == null || state.followings!.isEmpty
+                            ? StandardEmptyListMessage(
+                                isDarkMode: widget.isDarkMode,
+                                message: 'No followings')
+                            : ListView.builder(
                                 physics: const AlwaysScrollableScrollPhysics(),
                                 itemCount: state.followings!.length +
                                     (state.isLoadingMore ? 1 : 0),
@@ -216,15 +192,12 @@ class _PeopleIFollowScreenState extends ConsumerState<PeopleIFollowScreen> {
                                       ),
                                     );
                                   }
-
                                   return FollowingCard(
                                     data: state.followings![index],
                                     isDarkMode: widget.isDarkMode,
                                   );
                                 },
-                              ),
-                            ),
-            ),
+                              )),
           ),
         ],
       ),

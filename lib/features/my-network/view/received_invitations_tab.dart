@@ -87,47 +87,29 @@ class _ReceivedInvitationsTabState
                       isDarkMode: widget.isDarkMode,
                       message: 'No received connection invitations',
                     )
-                  : RefreshIndicator(
-                      color: Colors.white,
-                      backgroundColor: widget.isDarkMode
-                          ? AppColors.darkBlue
-                          : AppColors.lightBlue,
-                      onRefresh: () async {
-                        await ref
-                            .read(receivedInvitationsTabViewModelProvider
-                                .notifier)
-                            .getReceivedInvitations(
-                          {
-                            'limit': '${widget.paginationLimit}',
-                            'cursor': null,
-                          },
+                  : ListView.builder(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      itemCount: state.received!.length +
+                          (state.isLoadingMore ? 1 : 0),
+                      itemBuilder: (context, index) {
+                        if (index == state.received!.length) {
+                          // Show loading indicator at the bottom when loading more
+                          return Padding(
+                            padding: EdgeInsets.symmetric(vertical: 16.h),
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                color: widget.isDarkMode
+                                    ? AppColors.darkBlue
+                                    : AppColors.lightBlue,
+                              ),
+                            ),
+                          );
+                        }
+                        return ReceivedInvitationsCard(
+                          data: state.received![index],
+                          isDarkMode: widget.isDarkMode,
                         );
                       },
-                      child: ListView.builder(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        itemCount: state.received!.length +
-                            (state.isLoadingMore ? 1 : 0),
-                        itemBuilder: (context, index) {
-                          if (index == state.received!.length) {
-                            // Show loading indicator at the bottom when loading more
-                            return Padding(
-                              padding: EdgeInsets.symmetric(vertical: 16.h),
-                              child: Center(
-                                child: CircularProgressIndicator(
-                                  color: widget.isDarkMode
-                                      ? AppColors.darkBlue
-                                      : AppColors.lightBlue,
-                                ),
-                              ),
-                            );
-                          }
-
-                          return ReceivedInvitationsCard(
-                            data: state.received![index],
-                            isDarkMode: widget.isDarkMode,
-                          );
-                        },
-                      ),
                     ),
     );
   }

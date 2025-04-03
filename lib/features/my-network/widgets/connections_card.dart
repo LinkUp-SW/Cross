@@ -65,7 +65,7 @@ class ConnectionsCard extends ConsumerWidget {
                         ),
                         // Connection date
                         Text(
-                          getDaysDifference(data.connectionDate),
+                          'Connected ${getDaysDifference(data.connectionDate)}',
                           style: TextStyles.font12_500Weight.copyWith(
                             color: isDarkMode
                                 ? AppColors.darkTextColor

@@ -59,8 +59,8 @@ class FollowingCard extends ConsumerWidget {
                           data.title,
                           style: TextStyles.font13_500Weight.copyWith(
                             color: isDarkMode
-                                ? AppColors.darkGrey
-                                : AppColors.lightSecondaryText,
+                                ? AppColors.darkSecondaryText
+                                : AppColors.lightTextColor,
                           ),
                           overflow: TextOverflow.ellipsis,
                           maxLines: 2,
