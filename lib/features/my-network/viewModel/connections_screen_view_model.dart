@@ -16,8 +16,8 @@ class ConnectionsScreenViewModel extends StateNotifier<ConnectionsScreenState> {
     state = state.copyWith(isLoading: true, isError: false);
 
     try {
-      final response = await _connectionsScreenServices.getConnectionsCount();
-      final connectionsCount = response['number_of_connections'];
+      final connectionsCount =
+          await _connectionsScreenServices.getConnectionsCount();
 
       state = state.copyWith(
         isLoading: false,
@@ -28,11 +28,16 @@ class ConnectionsScreenViewModel extends StateNotifier<ConnectionsScreenState> {
     }
   }
 
-  Future<void> getConnectionsList(Map<String, dynamic>? queryParameters) async {
+  Future<void> getConnectionsList(
+    Map<String, dynamic>? queryParameters,
+  ) async {
     state = state.copyWith(isLoading: true, isError: false);
+
     try {
+      final userId = await _connectionsScreenServices.getUserId();
       final response = await _connectionsScreenServices.getConnectionsList(
         queryParameters: queryParameters,
+        routeParameters: {'user_id': userId},
       );
 
       // Parse the connections from the response
@@ -48,7 +53,9 @@ class ConnectionsScreenViewModel extends StateNotifier<ConnectionsScreenState> {
     }
   }
 
-  Future<void> loadMoreConnections({required int paginationLimit}) async {
+  Future<void> loadMoreConnections({
+    required int paginationLimit,
+  }) async {
     final currentState = state;
 
     // Don't load if we're already loading or at the end
@@ -57,11 +64,13 @@ class ConnectionsScreenViewModel extends StateNotifier<ConnectionsScreenState> {
     state = currentState.copyWith(isLoadingMore: true);
 
     try {
+      final userId = await _connectionsScreenServices.getUserId();
       final response = await _connectionsScreenServices.getConnectionsList(
         queryParameters: {
           'limit': '$paginationLimit',
           'cursor': currentState.nextCursor,
         },
+        routeParameters: {'user_id': userId},
       );
 
       final newConnections = (response['connections'] as List)

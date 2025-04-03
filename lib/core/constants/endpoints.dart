@@ -16,6 +16,7 @@ class ExternalEndPoints {
   static const withdrawConnectionInvitation =
       "user/my-network/invitation-manager/withdraw/:user_id";
   static const connectionsCount = 'user/my-network/connections/count';
-  static const connectionsList = 'user/my-network/invite-connect/connections';
+  static const connectionsList =
+      'user/my-network/invite-connect/connections/:user_id';
   static const removeConnection = 'user/my-network/connections/remove/:user_id';
 }

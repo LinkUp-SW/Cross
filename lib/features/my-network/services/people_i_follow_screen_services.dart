@@ -3,18 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/core/services/base_service.dart';
 import 'package:link_up/core/constants/endpoints.dart';
 
-class ConnectionsScreenServices {
+class PeopleIFollowScreenServices {
   final BaseService _baseService;
 
-  const ConnectionsScreenServices(this._baseService);
+  const PeopleIFollowScreenServices(this._baseService);
 
-  Future<int> getConnectionsCount() async {
+  Future<Map<String, dynamic>> getConnectionsCount() async {
     try {
       final response =
           await _baseService.get(ExternalEndPoints.connectionsCount);
       if (response.statusCode == 200) {
-        final body = jsonDecode(response.body);
-        return body['number_of_connections'];
+        return jsonDecode(response.body);
       }
       throw Exception(
           'Failed to get connections count: ${response.statusCode}');
@@ -25,20 +24,17 @@ class ConnectionsScreenServices {
 
   Future<Map<String, dynamic>> getConnectionsList({
     Map<String, dynamic>? queryParameters,
-    Map<String, dynamic>? routeParameters,
   }) async {
     try {
       final response = await _baseService.get(
         ExternalEndPoints.connectionsList,
         queryParameters: queryParameters,
-        routeParameters: routeParameters,
       );
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       }
       throw Exception('Failed to get connections list: ${response.statusCode}');
     } catch (e) {
-      print(e);
       rethrow;
     }
   }
@@ -55,26 +51,12 @@ class ConnectionsScreenServices {
       rethrow;
     }
   }
-
-  Future<String> getUserId() async {
-    try {
-      final response =
-          await _baseService.get(ExternalEndPoints.connectionsCount);
-      if (response.statusCode == 200) {
-        final body = jsonDecode(response.body);
-        return body['user_id'];
-      }
-      throw Exception('Failed to get  user id: ${response.statusCode}');
-    } catch (e) {
-      print(e);
-      rethrow;
-    }
-  }
 }
 
-final connectionsScreenServicesProvider = Provider<ConnectionsScreenServices>(
+final peopleIFollowScreenServicesProvider =
+    Provider<PeopleIFollowScreenServices>(
   (ref) {
-    return ConnectionsScreenServices(
+    return PeopleIFollowScreenServices(
       ref.read(baseServiceProvider),
     );
   },

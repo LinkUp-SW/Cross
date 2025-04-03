@@ -19,7 +19,7 @@ class ConnectionsCardModel {
     return ConnectionsCardModel(
       cardId: json['user_id'],
       firstName: json['name'].split(' ')[0],
-      lastName: json['name'].split(' ')[1],
+      lastName: json['name'].split(' ').last,
       title: json['headline'],
       profilePicture: json['profilePicture'],
       connectionDate: json['date'],
