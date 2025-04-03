@@ -7,6 +7,7 @@ import 'package:link_up/features/my-network/widgets/confirmation_pop_up.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/shared/utils/my_network_utils.dart';
+import 'dart:math' show pi;
 
 class ConnectionsCard extends ConsumerWidget {
   final ConnectionsCardModel data;
@@ -80,7 +81,7 @@ class ConnectionsCard extends ConsumerWidget {
             ),
             // Remove connection & Message icons
             Row(
-              spacing: 8.w,
+              spacing: 4.w,
               children: [
                 IconButton(
                   onPressed: () => {
@@ -111,14 +112,17 @@ class ConnectionsCard extends ConsumerWidget {
                 ),
                 IconButton(
                   onPressed: () => {},
-                  icon: Icon(
-                    Icons.send,
-                    size: 25.r,
-                    color: isDarkMode
-                        ? AppColors.darkTextColor
-                        : AppColors.lightTextColor,
+                  icon: Transform.rotate(
+                    angle: -pi / 4, // 45 degrees counterclockwise
+                    child: Icon(
+                      Icons.send,
+                      size: 25.r,
+                      color: isDarkMode
+                          ? AppColors.darkTextColor
+                          : AppColors.lightTextColor,
+                    ),
                   ),
-                ),
+                )
               ],
             ),
           ],
