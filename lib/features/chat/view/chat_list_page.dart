@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:link_up/features/chat/view/chat_screen.dart';
 import '../viewModel/chat_viewmodel.dart';
 import '../widgets/chat_tile.dart';
 
@@ -23,20 +24,28 @@ class ChatListScreen extends ConsumerWidget {
         ],
       ),
       body: chats.isEmpty
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator(color:Color.fromRGBO(16, 131, 224, 0.925),))
           : ListView.builder(
               itemCount: chats.length,
               itemBuilder: (context, index) {
                 return ChatTile(
                   chat: chats[index],
                   onTap: () {
-                    // When the user taps, toggle the read/unread status
-                    ref.read(chatViewModelProvider.notifier).toggleReadUnreadStatus(index);
-                  },
-                  onLongPress: () {
-                    // When the user long-presses, show the read/unread options
-                    _showReadUnreadOption(context, ref, index, chats[index].isUnread);
-                  },
+                          // Mark as read if it is unread
+                        ref.read(chatViewModelProvider.notifier).toggleReadUnreadStatus(index);
+
+                          // Navigate to ChatScreen
+                         Navigator.push(
+                                  context,
+                            MaterialPageRoute(
+                              builder: (context) => ChatScreen(chat: chats[index]),
+                               ),
+                            );
+                             },
+                            onLongPress: () {
+                          // Show read/unread options
+                              _showReadUnreadOption(context, ref, index, chats[index].isUnread);
+                             },
                 );
               },
             ),
