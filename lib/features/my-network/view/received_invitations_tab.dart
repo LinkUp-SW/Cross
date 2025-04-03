@@ -28,11 +28,18 @@ class _ReceivedInvitationsTabState
   @override
   void initState() {
     super.initState();
-    Future.microtask(() {
-      ref
-          .read(receivedInvitationsTabViewModelProvider.notifier)
-          .getReceivedInvitations();
-    });
+    Future.microtask(
+      () {
+        ref
+            .read(receivedInvitationsTabViewModelProvider.notifier)
+            .getReceivedInvitations(
+          {
+            'limit': '${widget.paginationLimit}',
+            'cursor': null,
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -46,7 +53,8 @@ class _ReceivedInvitationsTabState
           ref
               .read(receivedInvitationsTabViewModelProvider.notifier)
               .loadMoreReceivedInvitations(
-                  paginationLimit: widget.paginationLimit);
+                paginationLimit: widget.paginationLimit,
+              );
         }
         return false;
       },
@@ -66,13 +74,19 @@ class _ReceivedInvitationsTabState
                   buttonFunctionality: () async {
                     await ref
                         .read(receivedInvitationsTabViewModelProvider.notifier)
-                        .getReceivedInvitations();
+                        .getReceivedInvitations(
+                      {
+                        'limit': '${widget.paginationLimit}',
+                        'cursor': null,
+                      },
+                    );
                   },
                 )
               : state.received == null || state.received!.isEmpty
                   ? StandardEmptyListMessage(
                       isDarkMode: widget.isDarkMode,
-                      message: 'No received connection invitations')
+                      message: 'No received connection invitations',
+                    )
                   : RefreshIndicator(
                       color: Colors.white,
                       backgroundColor: widget.isDarkMode
@@ -82,7 +96,12 @@ class _ReceivedInvitationsTabState
                         await ref
                             .read(receivedInvitationsTabViewModelProvider
                                 .notifier)
-                            .getReceivedInvitations();
+                            .getReceivedInvitations(
+                          {
+                            'limit': '${widget.paginationLimit}',
+                            'cursor': null,
+                          },
+                        );
                       },
                       child: ListView.builder(
                         physics: const AlwaysScrollableScrollPhysics(),

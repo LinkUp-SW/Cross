@@ -32,7 +32,8 @@ class ConnectionsScreenViewModel extends StateNotifier<ConnectionsScreenState> {
     state = state.copyWith(isLoading: true, isError: false);
     try {
       final response = await _connectionsScreenServices.getConnectionsList(
-          queryParameters: queryParameters);
+        queryParameters: queryParameters,
+      );
 
       // Parse the connections from the response
       final List<ConnectionsCardModel> connections =

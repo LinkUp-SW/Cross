@@ -11,10 +11,12 @@ class SentInvitationsTabViewModel
       : super(SentInvitationsTabState.initial());
 
   // Fetch sent invitations
-  Future<void> getSentInvitations() async {
+  Future<void> getSentInvitations(Map<String, dynamic>? queryParameters) async {
     try {
       state = state.copyWith(isLoading: true, error: false);
-      final response = await _sentInvitationsTabServices.getSentInvitations();
+      final response = await _sentInvitationsTabServices.getSentInvitations(
+        queryParameters: queryParameters,
+      );
 
       // Parse the sent invitations from the response
       final List<InvitationsCardModel> sentInvitations =

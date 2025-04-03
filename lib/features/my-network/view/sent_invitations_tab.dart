@@ -27,11 +27,18 @@ class _SentInvitationsTabState extends ConsumerState<SentInvitationsTab> {
   void initState() {
     super.initState();
     // Load data when the tab is created
-    Future.microtask(() {
-      ref
-          .read(sentInvitationsTabViewModelProvider.notifier)
-          .getSentInvitations();
-    });
+    Future.microtask(
+      () {
+        ref
+            .read(sentInvitationsTabViewModelProvider.notifier)
+            .getSentInvitations(
+          {
+            'limit': '${widget.paginationLimit}',
+            'cursor': null,
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -44,7 +51,9 @@ class _SentInvitationsTabState extends ConsumerState<SentInvitationsTab> {
                 notification.metrics.maxScrollExtent - 200) {
           ref
               .read(sentInvitationsTabViewModelProvider.notifier)
-              .loadMoreSentInvitations(paginationLimit: widget.paginationLimit);
+              .loadMoreSentInvitations(
+                paginationLimit: widget.paginationLimit,
+              );
         }
         return false;
       },
@@ -52,8 +61,9 @@ class _SentInvitationsTabState extends ConsumerState<SentInvitationsTab> {
           ? ListView.builder(
               shrinkWrap: true,
               itemCount: 3,
-              itemBuilder: (context, index) =>
-                  SentInvitationsLoadingSkeleton(isDarkMode: widget.isDarkMode),
+              itemBuilder: (context, index) => SentInvitationsLoadingSkeleton(
+                isDarkMode: widget.isDarkMode,
+              ),
             )
           : state.error
               ? RetryErrorMessage(
@@ -62,13 +72,19 @@ class _SentInvitationsTabState extends ConsumerState<SentInvitationsTab> {
                   buttonFunctionality: () async {
                     await ref
                         .read(sentInvitationsTabViewModelProvider.notifier)
-                        .getSentInvitations();
+                        .getSentInvitations(
+                      {
+                        'limit': '${widget.paginationLimit}',
+                        'cursor': null,
+                      },
+                    );
                   },
                 )
               : state.sent == null || state.sent!.isEmpty
                   ? StandardEmptyListMessage(
                       isDarkMode: widget.isDarkMode,
-                      message: 'No sent connection invitations')
+                      message: 'No sent connection invitations',
+                    )
                   : RefreshIndicator(
                       color: Colors.white,
                       backgroundColor: widget.isDarkMode
@@ -77,7 +93,12 @@ class _SentInvitationsTabState extends ConsumerState<SentInvitationsTab> {
                       onRefresh: () async {
                         await ref
                             .read(sentInvitationsTabViewModelProvider.notifier)
-                            .getSentInvitations();
+                            .getSentInvitations(
+                          {
+                            'limit': '${widget.paginationLimit}',
+                            'cursor': null,
+                          },
+                        );
                       },
                       child: ListView.builder(
                         physics: const AlwaysScrollableScrollPhysics(),
