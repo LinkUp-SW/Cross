@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/my-network/viewModel/connections_screen_view_model.dart';
+import 'package:link_up/features/my-network/viewModel/manage_my_network_screen_view_model.dart';
 import 'package:link_up/features/my-network/widgets/connections_card.dart';
 import 'package:link_up/features/my-network/widgets/connections_loading_skeleton.dart';
 import 'package:link_up/features/my-network/widgets/retry_error_message.dart';
@@ -73,7 +74,12 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                 ? AppColors.darkSecondaryText
                 : AppColors.lightSecondaryText,
           ),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () {
+            Navigator.of(context).pop();
+            ref
+                .read(manageMyNetworkScreenViewModelProvider.notifier)
+                .getManageMyNetworkScreenCounts();
+          },
         ),
       ),
       body: Column(

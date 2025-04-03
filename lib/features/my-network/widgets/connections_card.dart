@@ -98,10 +98,6 @@ class ConnectionsCard extends ConsumerWidget {
                           ref
                               .read(connectionsScreenViewModelProvider.notifier)
                               .removeConnection(data.cardId);
-                          ref
-                              .read(manageMyNetworkScreenViewModelProvider
-                                  .notifier)
-                              .getManageMyNetworkScreenCounts();
                         },
                       ),
                     ),
