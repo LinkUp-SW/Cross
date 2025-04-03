@@ -2,24 +2,27 @@ class Chat {
   final String name;
   final String lastMessage;
   final String timestamp;
-  bool isUnread;
+  final bool isUnread;
   final String profilePictureUrl;
+  final int unreadMessageCount;
 
   Chat({
     required this.name,
     required this.lastMessage,
     required this.timestamp,
-    this.isUnread = true,
+    required this.isUnread,
     required this.profilePictureUrl,
+    required this.unreadMessageCount,
   });
 
-  // Add a copyWith method to create a modified instance
+  //  copyWith method to update properties immutably
   Chat copyWith({
     String? name,
     String? lastMessage,
     String? timestamp,
     bool? isUnread,
     String? profilePictureUrl,
+    int? unreadMessageCount,
   }) {
     return Chat(
       name: name ?? this.name,
@@ -27,6 +30,7 @@ class Chat {
       timestamp: timestamp ?? this.timestamp,
       isUnread: isUnread ?? this.isUnread,
       profilePictureUrl: profilePictureUrl ?? this.profilePictureUrl,
+      unreadMessageCount: unreadMessageCount ?? this.unreadMessageCount,
     );
   }
 }
