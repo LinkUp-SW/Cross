@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/core/services/storage.dart';
-import 'package:link_up/features/logIn/services/login_service.dart';
 import 'package:link_up/features/logIn/viewModel/login_view_model.dart';
 import 'package:link_up/features/logIn/widgets/widgets.dart';
 import 'package:link_up/features/logIn/state/login_state.dart';
@@ -216,7 +215,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           onPressed: () {
                             context.push('/login/forgotpassword');
                           },
-                          child: const Text('Forgot Password?'),
                           style: const ButtonStyle(
                             overlayColor:
                                 WidgetStatePropertyAll(Colors.transparent),
@@ -224,6 +222,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                               Colors.blue,
                             ),
                           ),
+                          child: const Text('Forgot Password?'),
                         ),
                       ],
                     ),

@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:link_up/features/signUp/model/name_model.dart';
 import 'package:link_up/features/signUp/services/name_service.dart';
 import 'package:link_up/features/signUp/state/name_state.dart';
 import 'package:link_up/features/signUp/viewModel/signup_notifier.dart';

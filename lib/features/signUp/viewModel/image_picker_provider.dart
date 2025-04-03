@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/features/signUp/services/image_picker_service.dart';
 import 'package:link_up/features/signUp/viewModel/signup_notifier.dart';
@@ -43,16 +42,16 @@ class ImagePickerNotifier extends StateNotifier<ImagePickerState> {
         return Wrap(
           children: [
             ListTile(
-              leading: Icon(Icons.camera_alt),
-              title: Text('Take a Photo'),
+              leading: const Icon(Icons.camera_alt),
+              title: const Text('Take a Photo'),
               onTap: () {
                 Navigator.pop(context);
                 notifier.pickImage(ImageSource.camera);
               },
             ),
             ListTile(
-              leading: Icon(Icons.photo_library),
-              title: Text('Choose from Gallery'),
+              leading: const Icon(Icons.photo_library),
+              title: const Text('Choose from Gallery'),
               onTap: () {
                 Navigator.pop(context);
                 notifier.pickImage(ImageSource.gallery);

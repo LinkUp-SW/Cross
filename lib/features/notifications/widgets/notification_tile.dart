@@ -20,7 +20,7 @@ class NotificationTile extends StatelessWidget {
     return Container(
       color: notification.isRead
           ? theme.colorScheme.surface // White (light mode) / Dark (dark mode)
-          : theme.colorScheme.secondary.withOpacity(0.3), // Light blue (light mode) / Dark blue (dark 
+          : theme.colorScheme.secondary.withValues(alpha: 0.3), // Light blue (light mode) / Dark blue (dark 
       child: ListTile(
 
         leading: const CircleAvatar(
@@ -40,7 +40,7 @@ class NotificationTile extends StatelessWidget {
           ),
         ),
         subtitle: Text(notification.time,
-            style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6))),
+            style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.6))),
         onTap: onTap, // Trigger read state change when tapped
       ),
     );

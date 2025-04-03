@@ -14,19 +14,19 @@ final verficationProvider = StateNotifierProvider<VerficationNotifier, Verificat
 class VerficationNotifier extends StateNotifier<VerificationState> {
   final VerficationService _verficationService;
 
-  VerficationNotifier(this._verficationService) : super(VerificationInitial());
+  VerficationNotifier(this._verficationService) : super(const VerificationInitial());
 
   Future<void> verifyCode(String code) async {
     try {
-      state = VerificationLoading();
+      state = const VerificationLoading();
       final success = await _verficationService.verifyCode(VerficationModel(code: code));
       if (success == true) {
-        state = VerificationSuccess();
+        state = const VerificationSuccess();
       } else {
-        state = VerificationFailure("Failed to verify code");
+        state = const VerificationFailure("Failed to verify code");
       }
     } catch (e) {
-      state = VerificationFailure("Failed to verify code");
+      state = const VerificationFailure("Failed to verify code");
     }
   }
 
@@ -39,15 +39,15 @@ class VerficationNotifier extends StateNotifier<VerificationState> {
 
   Future<void> resendCode() async {
     try {
-      state = ResendCodeLoading();
+      state = const ResendCodeLoading();
       final success = await _verficationService.resendCode();
       if (success == true) {
-        state = VerificationInitial();
+        state = const VerificationInitial();
       } else {
-        state = VerificationFailure("Failed to resend code");
+        state = const VerificationFailure("Failed to resend code");
       }
     } catch (e) {
-      state = VerificationFailure("Failed to resend code");
+      state = const VerificationFailure("Failed to resend code");
     }
   }
 

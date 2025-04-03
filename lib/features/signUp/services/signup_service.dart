@@ -1,6 +1,4 @@
-import 'package:http/http.dart' as http;
 import 'package:link_up/core/services/base_service.dart';
-import 'dart:convert';
 import 'package:link_up/features/signUp/model/signup_global_model.dart';
 
 class SignUpService extends BaseService {
