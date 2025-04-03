@@ -1,13 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/shared/themes/colors.dart';
 
 class CarouselImages extends StatefulWidget {
-  final List<String> images;
-  const CarouselImages({
-    super.key,
-    required this.images,
-  });
+  final List<dynamic> images;
+  final bool network;
+  const CarouselImages({super.key, required this.images, this.network = true});
 
   @override
   State<CarouselImages> createState() {
@@ -52,10 +52,14 @@ class _CarouselImagesState extends State<CarouselImages> {
               children: List<Widget>.generate(
                 widget.images.length,
                 (int index) {
-                  return Image.network(
-                    widget.images[index],
-                    fit: BoxFit.cover,
-                  );
+                  if (widget.network) {
+                    return Image.network(
+                      widget.images[index],
+                      fit: BoxFit.cover,
+                    );
+                  } else {
+                    return Image.file(File(widget.images[index].path));
+                  }
                 },
               ),
             ),
@@ -70,7 +74,7 @@ class _CarouselImagesState extends State<CarouselImages> {
                 child: Padding(
                   padding: EdgeInsets.all(4.r),
                   child: Text(
-                    '${_positionNotifier.value.ceil() == 0 ? '1': _positionNotifier.value.ceil()} / ${widget.images.length}',
+                    '${_positionNotifier.value.ceil() == 0 ? '1' : _positionNotifier.value.ceil()} / ${widget.images.length}',
                     style: const TextStyle(color: AppColors.lightMain),
                   ),
                 ),

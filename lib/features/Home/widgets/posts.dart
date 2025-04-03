@@ -4,11 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/Home/home_enums.dart';
+import 'package:link_up/features/Home/model/media_model.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
 import 'package:link_up/features/Home/viewModel/post_vm.dart';
+import 'package:link_up/features/Home/viewModel/posts_vm.dart';
 import 'package:link_up/features/Home/widgets/bottom_sheets.dart';
 import 'package:link_up/features/Home/widgets/post_header.dart';
 import 'package:link_up/features/Home/widgets/reactions.dart';
+import 'package:link_up/features/Post/viewModel/write_post_vm.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/widgets/bottom_sheet.dart';
 import 'package:readmore/readmore.dart';
@@ -38,15 +41,20 @@ class _PostsState extends ConsumerState<Posts> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        ref.read(postProvider.notifier).setPost(widget.post);
-        context.push('/postPage');
+        if (!widget.inMessage) {
+          ref.read(postProvider.notifier).setPost(widget.post);
+          context.push('/postPage');
+        }
       },
       child: Column(
         children: [
           if (reacted && widget.showTop)
             Column(
               children: [
-                PostHeader(isAd: widget.post.isAd),
+                PostHeader(
+                  isAd: widget.post.isAd,
+                  postId: widget.post.id,
+                ),
                 Divider(
                   indent: 10.w,
                   endIndent: 10.w,
@@ -55,82 +63,132 @@ class _PostsState extends ConsumerState<Posts> {
                 ),
               ],
             ),
-          ListTile(
-            leading: CircleAvatar(
-              radius: 20.r,
-              backgroundImage: NetworkImage(widget.post.header.profileImage),
-            ),
-            title: Text.rich(
-              TextSpan(
-                children: [
-                  TextSpan(
-                    text: widget.post.header.name,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  TextSpan(
-                    text: ' • ${widget.post.header.connectionDegree}',
-                    style: TextStyle(color: AppColors.grey, fontSize: 10.r),
-                  ),
-                ],
-              ),
-            ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.post.header.about,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: 10.r, color: AppColors.grey),
-                ),
-                Text.rich(
-                  TextSpan(
-                    children: [
-                      TextSpan(
-                        text: '${widget.post.header.getTime()} • ',
-                        style: TextStyle(color: AppColors.grey, fontSize: 10.r),
-                      ),
-                      if (widget.post.header.edited)
+          Flex(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            direction: Axis.horizontal,
+            children: [
+              Flexible(
+                flex: 2,
+                child: ListTile(
+                  leading: !widget.post.isCompany
+                      ? CircleAvatar(
+                          radius: 20.r,
+                          backgroundImage:
+                              NetworkImage(widget.post.header.profileImage),
+                        )
+                      : ClipRRect(
+                          borderRadius: BorderRadius.circular(5.r),
+                          child: Image.network(widget.post.header.profileImage,
+                              width: 40.h, height: 40.h, fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                            return const Icon(Icons.error);
+                          }),
+                        ),
+                  title: Text.rich(
+                    TextSpan(
+                      children: [
                         TextSpan(
-                          text: 'Edited • ',
-                          style:
-                              TextStyle(color: AppColors.grey, fontSize: 10.r),
+                          text: widget.post.header.name,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
-                      WidgetSpan(
-                        child: Icon(
-                          widget.post.header.visibility == Visibilities.anyone
-                              ? Icons.public
-                              : Icons.people,
-                          size: 10.r,
-                          color: AppColors.grey,
-                        ),
+                        if (!widget.post.isCompany)
+                          TextSpan(
+                            text: ' • ${widget.post.header.connectionDegree}',
+                            style: TextStyle(
+                                color: AppColors.grey, fontSize: 10.r),
+                          ),
+                      ],
+                    ),
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.post.header.about,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 10.r, color: AppColors.grey),
                       ),
+                      if (!widget.post.isCompany)
+                        Text.rich(
+                          TextSpan(
+                            children: [
+                              TextSpan(
+                                text: '${widget.post.header.getTime()} • ',
+                                style: TextStyle(
+                                    color: AppColors.grey, fontSize: 10.r),
+                              ),
+                              if (widget.post.header.edited)
+                                TextSpan(
+                                  text: 'Edited • ',
+                                  style: TextStyle(
+                                      color: AppColors.grey, fontSize: 10.r),
+                                ),
+                              WidgetSpan(
+                                child: Icon(
+                                  widget.post.header.visibilityPost ==
+                                          Visibilities.anyone
+                                      ? Icons.public
+                                      : Icons.people,
+                                  size: 10.r,
+                                  color: AppColors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
                     ],
                   ),
-                )
-              ],
-            ),
-            trailing: TextButton(
-                onPressed: () {
-                  setState(() {
-                    _following = !_following;
-                  });
-                },
-                child: Wrap(
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    Icon(
-                      _following ? Icons.check : Icons.add,
-                      color: _following ? AppColors.grey : null,
-                    ),
-                    SizedBox(width: 5.w),
-                    Text(
-                      _following ? 'Following' : 'Follow',
-                      style: TextStyle(
-                        color: _following ? AppColors.grey : null,
+                ),
+              ),
+              Flexible(
+                flex: 1,
+                child: widget.post.header.userId == '1'
+                    ? TextButton(
+                        onPressed: () {
+                          setState(() {
+                            _following = !_following;
+                          });
+                        },
+                        child: Wrap(
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            Icon(
+                              _following ? Icons.check : Icons.add,
+                              color: _following ? AppColors.grey : null,
+                            ),
+                            SizedBox(width: 5.w),
+                            Text(
+                              _following ? 'Following' : 'Follow',
+                              style: TextStyle(
+                                color: _following ? AppColors.grey : null,
+                              ),
+                            ),
+                          ],
+                        ))
+                    : Wrap(
+                        alignment: WrapAlignment.end,
+                        runAlignment: WrapAlignment.end,
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              myPostBottomSheet(context,ref,post: widget.post);
+                            },
+                            icon: const Icon(Icons.more_horiz),
+                          ),
+                          IconButton(
+                            //TODO: Remove post from feed
+                            onPressed: () {
+                              ref
+                                  .read(postsProvider.notifier)
+                                  .showUndo(widget.post.id);
+                            },
+                            icon: const Icon(Icons.close),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
-                )),
+              ),
+            ],
           ),
           Align(
             alignment: Alignment.centerLeft,
@@ -147,7 +205,7 @@ class _PostsState extends ConsumerState<Posts> {
           ),
           SizedBox(height: 10.h),
           if (widget.post.media.type != MediaType.none) ...[
-            widget.post.media.getMedia(post: widget.post.repost),
+            widget.post.media.getMedia(),
             SizedBox(height: 10.h),
           ],
           if (widget.showBottom) ...[
@@ -162,14 +220,17 @@ class _PostsState extends ConsumerState<Posts> {
                     },
                     child: Row(
                       children: [
-                        CircleAvatar(
-                          backgroundColor:
-                              Theme.of(context).colorScheme.secondary,
-                          radius: 10.r,
-                          child: const Icon(
-                            Icons.thumb_up_alt,
-                            size: 15,
-                          ),
+                        //TODO: Need to change to Like or top reaction depending on the impelementation of the back team
+                        Wrap(
+                          children: [
+                            for (var i = 0; i < 3; i++) ...[
+                              Align(
+                                widthFactor: 0.7,
+                                child:
+                                    Reaction.getIcon(Reaction.values[i], 15.r),
+                              )
+                            ],
+                          ],
                         ),
                         SizedBox(width: 5.w),
                         Text(widget.post.reactions.toString()),
@@ -230,7 +291,7 @@ class _PostsState extends ConsumerState<Posts> {
                     width: 55.w,
                     child: Column(
                       children: [
-                        Reaction.getIcon(widget.post.reaction),
+                        Reaction.getIcon(widget.post.reaction, 20.r),
                         Text(
                           Reaction.getReactionString(widget.post.reaction),
                           style: TextStyle(
@@ -264,14 +325,37 @@ class _PostsState extends ConsumerState<Posts> {
                         content: Column(
                           children: [
                             ListTile(
-                              onTap: () {},
+                              onTap: () {
+                                if (widget.post.media.type == MediaType.post) {
+                                  ref.read(writePostProvider.notifier).setMedia(
+                                        Media(
+                                          type: MediaType.post,
+                                          urls: [],
+                                          post: widget.post.copyWith(
+                                            media: Media.initial(),
+                                          ),
+                                        ),
+                                      );
+                                } else {
+                                  ref.read(writePostProvider.notifier).setMedia(
+                                        Media(
+                                            type: MediaType.post,
+                                            urls: [],
+                                            post: widget.post),
+                                      );
+                                }
+                                context.pop();
+                                context.push('/post');
+                              },
                               leading: const Icon(Icons.edit),
                               title: const Text("Repost with your thoughts"),
                               subtitle: const Text(
                                   "Create new post with 'name' post attached"),
                             ),
                             ListTile(
-                              onTap: () {},
+                              onTap: () {
+                                //TODO: send repost request to backend
+                              },
                               leading: const Icon(Icons.loop),
                               title: const Text("Repost"),
                               subtitle: const Text(

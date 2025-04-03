@@ -1,3 +1,5 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/Home/home_enums.dart';
@@ -18,90 +20,145 @@ class Reactions extends StatefulWidget {
   State<Reactions> createState() => _ReactionsState();
 }
 
-class _ReactionsState extends State<Reactions> {
-  Offset? _tapPosition;
-  late Reaction _reaction;
+class _ReactionsState extends State<Reactions> with SingleTickerProviderStateMixin {
+  final _overlayController = OverlayPortalController();
+  bool _selected = false;
+  Offset _offset = Offset.zero;
+  late Reaction reaction = widget.reaction;
 
-  @override
-  void initState() {
-    super.initState();
-    _reaction = widget.reaction;
-  }
-
-  Future<void> _showCustomMenu() async {
-    if (_tapPosition == null) {
-      return;
-    }
-    final overlay = Overlay.of(context).context.findRenderObject();
-    if (overlay == null) {
-      return;
-    }
-
-    final menu = await showMenu(
-      context: context,
-      constraints: BoxConstraints(
-        maxWidth: 300.w,
-      ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(100.r),
-      ),
-      elevation: 10,
-      color: Theme.of(context).colorScheme.primary,
-      position: RelativeRect.fromRect(
-          _tapPosition! & Size(40.r, 40.r), // smaller rect, the touch area
-          Offset(0, widget.offset) &
-              overlay.semanticBounds.size // Bigger rect, the entire screen
-          ),
-      items: [
-        PopupMenuItem(
-          child: Row(
-            children: [
-              SizedBox(
-                width: 10.w,
-              ),
-              for (var i = 0; i < Reaction.values.length - 1; i++) ...[
-                IconButton(
-                    tooltip: Reaction.values[i].name,
-                    onPressed: () {
-                      setState(() {
-                        _reaction = Reaction.values[i];
-                      });
-                      widget.setReaction(_reaction);
-                    },
-                    icon: Reaction.getIcon(Reaction.values[i])),
-              ],
-            ],
-          ),
-        ),
-      ],
-    );
-    if (menu == null) {
-      return;
-    }
-  }
-
-  void _storePosition(TapDownDetails details) {
-    _tapPosition = details.globalPosition;
-  }
+  final List<GlobalKey<TooltipState>> _tooltipKeys = Reaction.values.sublist(0, 6)
+      .map((reaction) => GlobalKey<TooltipState>())
+      .toList();
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      // This does not give the tap position ...
-      onLongPress: _showCustomMenu,
-
-      // Have to remember it on tap-down.
-      onTapDown: _storePosition,
-
-      onTap: () {
-        setState(() {
-          _reaction =
-              _reaction == Reaction.none ? Reaction.like : Reaction.none;
+    final targetRenderBox = context.findRenderObject() as RenderBox?;
+    final position = targetRenderBox == null
+        ? const Offset(0, 0)
+        : targetRenderBox.localToGlobal(Offset.zero);
+    return OverlayPortal(
+      controller: _overlayController,
+      overlayChildBuilder: (context) {
+        return StatefulBuilder(builder: (context, state) {
+          return Stack(
+            alignment: Alignment.center,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  _overlayController.hide();
+                },
+                onVerticalDragUpdate: (details) {
+                  _overlayController.hide();
+                },
+              ),
+              Positioned(
+                top: position.dy - widget.offset,
+                left: 0,
+                right: 0,
+                child: Padding(
+                  padding: EdgeInsets.all(15.r),
+                  child: Column(
+                    children: [
+                      Card(
+                        color: Theme.of(context).colorScheme.primary,
+                        elevation: 10,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(100.r),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(5.r),
+                          child: Wrap(
+                            spacing: 5.w,
+                            children: [
+                              for (var i = 0;
+                                  i < Reaction.values.length - 1;
+                                  i++) ...[
+                                Tooltip(
+                                  triggerMode: TooltipTriggerMode.manual,
+                                  preferBelow: false,
+                                  enableFeedback: true,
+                                  key: _tooltipKeys[i],
+                                  showDuration: const Duration(seconds: 1),
+                                  message: Reaction.getReactionString(
+                                      Reaction.values[i]),
+                                  child: AnimatedScale(
+                                    scale: !_selected
+                                        ? 1.0
+                                        : _offset.dx > i * 40.w + 60.w &&
+                                                _offset.dx <
+                                                    (i + 1) * 40.w + 60.w
+                                            ? 1.5
+                                            : 0.8,
+                                    duration:
+                                        const Duration(milliseconds: 200),
+                                    child: GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            reaction = Reaction.values[i];
+                                          });
+                                          widget.setReaction(reaction);
+                                        },
+                                        child: Reaction.getIcon(
+                                            Reaction.values[i], 40.w)),
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          );
         });
-        widget.setReaction(_reaction);
       },
-
-      child: widget.child,
+      child: GestureDetector(
+        onLongPressMoveUpdate: (details) {
+          if (details.offsetFromOrigin.dy < 0 &&
+              details.offsetFromOrigin.dy > -100.h) {
+            setState(() {
+              _selected = true;
+              _offset = details.globalPosition;
+              Tooltip.dismissAllToolTips();
+              for (var i = 0; i < Reaction.values.length - 1; i++) {
+                if (_offset.dx > i * 40.w + 60.w &&
+                    _offset.dx < (i + 1) * 40.w + 60.w) {
+                  _tooltipKeys[i].currentState?.ensureTooltipVisible();
+                  reaction = Reaction.values[i];
+                }
+              }
+            });
+          } else {
+            setState(() {
+              _selected = false;
+              reaction = widget.reaction;
+            });
+          }
+        },
+        onLongPress: () {
+          _overlayController.show();
+        },
+        onLongPressUp: () {
+          setState(() {
+            _selected = false;
+          });
+          widget.setReaction(reaction);
+          Future.delayed(const Duration(milliseconds: 1000), () {
+            _overlayController.hide();
+          });
+        },
+        onTap: () {
+          setState(() {
+            reaction =
+                reaction == Reaction.none ? Reaction.like : Reaction.none;
+          });
+          widget.setReaction(reaction);
+        },
+        child: widget.child,
+      ),
     );
   }
 }

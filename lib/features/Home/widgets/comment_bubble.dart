@@ -111,14 +111,18 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                                               content: Column(
                                                 children: [
                                                   ListTile(
-                                                    onTap: () {},
+                                                    onTap: () {
+                                                      //TODO: share comment
+                                                    },
                                                     leading: const Icon(
                                                         Icons.ios_share),
                                                     title:
                                                         const Text("Share via"),
                                                   ),
                                                   ListTile(
-                                                    onTap: () {},
+                                                    onTap: () {
+                                                      //TODO: report comment
+                                                    },
                                                     leading:
                                                         const Icon(Icons.report),
                                                     title: const Text("Report"),

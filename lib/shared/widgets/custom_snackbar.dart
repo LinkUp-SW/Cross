@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:link_up/core/utils/global_keys.dart';
 
 
-openSnackbar(BuildContext context,{required Widget child,
+openSnackbar({required Widget child,
     Function? onPressed, String? label}) {
+  final context = navigatorKey.currentContext!;
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       content: child,

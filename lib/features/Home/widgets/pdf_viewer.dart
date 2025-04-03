@@ -8,7 +8,8 @@ import 'package:link_up/shared/themes/colors.dart';
 
 class PDFViewer extends StatefulWidget {
   final String url;
-  const PDFViewer({super.key, required this.url});
+  final bool network;
+  const PDFViewer({super.key, required this.url, this.network = true});
 
   @override
   State<PDFViewer> createState() => _PDFViewerState();
@@ -26,38 +27,76 @@ class _PDFViewerState extends State<PDFViewer> {
       children: [
         SizedBox(
           height: 420.h,
-          child: PDF(
-            backgroundColor: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.2),
-            swipeHorizontal: true,
-            pageSnap: true,
-            autoSpacing: true,
-            fitEachPage: true,
-            defaultPage: currentPage!,
-            onRender: (pages) {
-              log("page rendered: $pages");
-            },
-            onError: (error) {
-              log(error.toString());
-            },
-            onPageError: (page, error) {
-              log('$page: ${error.toString()}');
-            },
-            onViewCreated: (PDFViewController pdfViewController) {
-              _pdfViewController.complete(pdfViewController);
-            },
-            onLinkHandler: (String? uri) {
-              log('goto uri: $uri');
-            },
-            onPageChanged: (int? page, int? total) {
-              log('page change: $page/$total');
-              setState(() {
-                currentPage = page;
-                pages = total;
-              });
-            },
-          ).cachedFromUrl(widget.url),
-          //'https://www.sldttc.org/allpdf/21583473018.pdf'
+          child: widget.network
+              ? PDF(
+                  backgroundColor: Theme.of(context)
+                      .colorScheme
+                      .secondary
+                      .withValues(alpha: 0.2),
+                  swipeHorizontal: true,
+                  pageSnap: true,
+                  autoSpacing: true,
+                  fitEachPage: true,
+                  defaultPage: currentPage!,
+                  onRender: (pages) {
+                    log("page rendered: $pages");
+                  },
+                  onError: (error) {
+                    log(error.toString());
+                  },
+                  onPageError: (page, error) {
+                    log('$page: ${error.toString()}');
+                  },
+                  onViewCreated: (PDFViewController pdfViewController) {
+                    _pdfViewController.complete(pdfViewController);
+                  },
+                  onLinkHandler: (String? uri) {
+                    log('goto uri: $uri');
+                  },
+                  onPageChanged: (int? page, int? total) {
+                    log('page change: $page/$total');
+                    setState(() {
+                      currentPage = page;
+                      pages = total;
+                    });
+                  },
+                ).cachedFromUrl(
+                  widget.url) //'https://www.sldttc.org/allpdf/21583473018.pdf'
+              : PDF(
+                  backgroundColor: Theme.of(context)
+                      .colorScheme
+                      .secondary
+                      .withValues(alpha: 0.2),
+                  swipeHorizontal: true,
+                  pageSnap: true,
+                  autoSpacing: true,
+                  fitEachPage: true,
+                  defaultPage: currentPage!,
+                  onRender: (pages) {
+                    log("page rendered: $pages");
+                  },
+                  onError: (error) {
+                    log(error.toString());
+                  },
+                  onPageError: (page, error) {
+                    log('$page: ${error.toString()}');
+                  },
+                  onViewCreated: (PDFViewController pdfViewController) {
+                    _pdfViewController.complete(pdfViewController);
+                  },
+                  onLinkHandler: (String? uri) {
+                    log('goto uri: $uri');
+                  },
+                  onPageChanged: (int? page, int? total) {
+                    log('page change: $page/$total');
+                    setState(() {
+                      currentPage = page;
+                      pages = total;
+                    });
+                  },
+                ).fromPath(widget.url),
         ),
+        if (currentPage! > 0)
         Positioned(
           left: 5.w,
           top: 0,
@@ -82,6 +121,7 @@ class _PDFViewerState extends State<PDFViewer> {
             ),
           ),
         ),
+        if((currentPage! < pages! - 1))
         Positioned(
           right: 5.w,
           top: 0,
@@ -107,22 +147,22 @@ class _PDFViewerState extends State<PDFViewer> {
           ),
         ),
         Positioned(
-              top: 15.h,
-              right: 15.w,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: AppColors.darkBackground.withValues(alpha: 0.5),
-                  borderRadius: BorderRadius.circular(10.r),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.all(4.r),
-                  child: Text(
-                    '${currentPage!+1} / $pages',
-                    style: const TextStyle(color: AppColors.lightMain),
-                  ),
-                ),
+          top: 15.h,
+          right: 15.w,
+          child: Container(
+            decoration: BoxDecoration(
+              color: AppColors.darkBackground.withValues(alpha: 0.5),
+              borderRadius: BorderRadius.circular(10.r),
+            ),
+            child: Padding(
+              padding: EdgeInsets.all(4.r),
+              child: Text(
+                '${currentPage! + 1} / $pages',
+                style: const TextStyle(color: AppColors.lightMain),
               ),
             ),
+          ),
+        ),
       ],
     );
   }
