@@ -5,14 +5,16 @@ class ConnectionsScreenState {
   final int? connectionsCount;
   final String? nextCursor;
   final bool isLoading;
+  final bool isLoadingMore;
   final bool isError;
 
   const ConnectionsScreenState({
     this.connections,
     this.connectionsCount,
     this.nextCursor,
-    required this.isError,
     required this.isLoading,
+    required this.isLoadingMore,
+    required this.isError,
   });
 
   factory ConnectionsScreenState.initial() {
@@ -20,8 +22,9 @@ class ConnectionsScreenState {
       connections: null,
       connectionsCount: null,
       nextCursor: null,
-      isError: false,
       isLoading: true,
+      isLoadingMore: false,
+      isError: false,
     );
   }
 
@@ -30,6 +33,7 @@ class ConnectionsScreenState {
     final int? connectionsCount,
     final String? nextCursor,
     final bool? isLoading,
+    final bool? isLoadingMore,
     final bool? isError,
   }) {
     return ConnectionsScreenState(
@@ -37,6 +41,7 @@ class ConnectionsScreenState {
       connectionsCount: connectionsCount ?? this.connectionsCount,
       nextCursor: nextCursor ?? this.nextCursor,
       isLoading: isLoading ?? this.isLoading,
+      isLoadingMore: isLoadingMore ?? this.isLoadingMore,
       isError: isError ?? this.isError,
     );
   }

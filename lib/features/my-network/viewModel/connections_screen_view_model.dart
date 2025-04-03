@@ -47,6 +47,41 @@ class ConnectionsScreenViewModel extends StateNotifier<ConnectionsScreenState> {
     }
   }
 
+  Future<void> loadMoreConnections({required int paginationLimit}) async {
+    final currentState = state;
+
+    // Don't load if we're already loading or at the end
+    if (currentState.isLoadingMore || currentState.nextCursor == null) return;
+
+    state = currentState.copyWith(isLoadingMore: true);
+
+    try {
+      final response = await _connectionsScreenServices.getConnectionsList(
+        queryParameters: {
+          'limit': '$paginationLimit',
+          'cursor': currentState.nextCursor,
+        },
+      );
+
+      final newConnections = (response['connections'] as List)
+          .map((c) => ConnectionsCardModel.fromJson(c))
+          .toList();
+
+      final List<ConnectionsCardModel> allConnections = [
+        ...currentState.connections ?? [],
+        ...newConnections
+      ];
+
+      state = currentState.copyWith(
+        connections: allConnections,
+        nextCursor: response['nextCursor'],
+        isLoadingMore: false,
+      );
+    } catch (e) {
+      state = currentState.copyWith(isLoadingMore: false);
+    }
+  }
+
   Future<void> removeConnection(String userId) async {
     state = state.copyWith(isLoading: true, isError: false);
     try {

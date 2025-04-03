@@ -29,14 +29,12 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
   @override
   void initState() {
     super.initState();
-    // Load data when the tab is created
-    Future.microtask(
-      () {
-        ref
-            .read(connectionsScreenViewModelProvider.notifier)
-            .getConnectionsCount();
-      },
-    );
+    // Load initial data
+    Future.microtask(() {
+      ref
+          .read(connectionsScreenViewModelProvider.notifier)
+          .getConnectionsCount();
+    });
 
     Future.microtask(
       () {
@@ -54,8 +52,8 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Watch for state changes
     final state = ref.watch(connectionsScreenViewModelProvider);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -101,7 +99,7 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    '${parseIntegerToCommaSeparatedString(state.connectionsCount!)} connections',
+                    '${parseIntegerToCommaSeparatedString(state.connectionsCount ?? 0)} connections',
                     style: TextStyles.font18_500Weight.copyWith(
                       color: widget.isDarkMode
                           ? AppColors.darkGrey
@@ -109,7 +107,6 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                     ),
                   ),
                   Row(
-                    spacing: 8.w,
                     children: [
                       IconButton(
                         onPressed: () => {},
@@ -137,60 +134,91 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
               ),
             ),
           ),
-          Expanded(
-            child: state.isLoading && state.connections == null
-                ? ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: 3,
-                    itemBuilder: (context, index) => ConnectionsLoadingSkeleton(
-                        isDarkMode: widget.isDarkMode),
-                  )
-                : state.isError
-                    ? RetryErrorMessage(
-                        isDarkMode: widget.isDarkMode,
-                        errorMessage: "Failed to load connections :(",
-                        buttonFunctionality: () async {
-                          await ref
-                              .read(connectionsScreenViewModelProvider.notifier)
-                              .getConnectionsList(
-                            {
-                              'limit': '${widget.paginationLimit}',
-                              'cursor': null,
-                            },
-                          );
-                        },
-                      )
-                    : state.connections == null || state.connections!.isEmpty
-                        ? StandardEmptyListMessage(
-                            isDarkMode: widget.isDarkMode,
-                            message: 'No connections')
-                        : RefreshIndicator(
-                            color: Colors.white,
-                            backgroundColor: widget.isDarkMode
-                                ? AppColors.darkBlue
-                                : AppColors.lightBlue,
-                            onRefresh: () async {
-                              await ref
-                                  .read(connectionsScreenViewModelProvider
-                                      .notifier)
-                                  .getConnectionsList(
-                                {
-                                  'limit': '${widget.paginationLimit}',
-                                  'cursor': null,
-                                },
-                              );
-                            },
-                            child: ListView.builder(
-                              physics: const AlwaysScrollableScrollPhysics(),
-                              itemCount: state.connections!.length,
-                              itemBuilder: (context, index) {
-                                return ConnectionsCard(
-                                  data: state.connections![index],
-                                  isDarkMode: widget.isDarkMode,
+          NotificationListener<ScrollNotification>(
+            onNotification: (notification) {
+              if (notification is ScrollEndNotification &&
+                  notification.metrics.pixels >=
+                      notification.metrics.maxScrollExtent - 200) {
+                ref
+                    .read(connectionsScreenViewModelProvider.notifier)
+                    .loadMoreConnections(
+                        paginationLimit: widget.paginationLimit);
+              }
+              return false;
+            },
+            child: Expanded(
+              child: state.isLoading && state.connections == null
+                  ? ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: 3,
+                      itemBuilder: (context, index) =>
+                          ConnectionsLoadingSkeleton(
+                              isDarkMode: widget.isDarkMode),
+                    )
+                  : state.isError
+                      ? RetryErrorMessage(
+                          isDarkMode: widget.isDarkMode,
+                          errorMessage: "Failed to load connections :(",
+                          buttonFunctionality: () async {
+                            await ref
+                                .read(
+                                    connectionsScreenViewModelProvider.notifier)
+                                .getConnectionsList(
+                              {
+                                'limit': '${widget.paginationLimit}',
+                                'cursor': null,
+                              },
+                            );
+                          },
+                        )
+                      : state.connections == null || state.connections!.isEmpty
+                          ? StandardEmptyListMessage(
+                              isDarkMode: widget.isDarkMode,
+                              message: 'No connections')
+                          : RefreshIndicator(
+                              color: Colors.white,
+                              backgroundColor: widget.isDarkMode
+                                  ? AppColors.darkBlue
+                                  : AppColors.lightBlue,
+                              onRefresh: () async {
+                                await ref
+                                    .read(connectionsScreenViewModelProvider
+                                        .notifier)
+                                    .getConnectionsList(
+                                  {
+                                    'limit': '${widget.paginationLimit}',
+                                    'cursor': null,
+                                  },
                                 );
                               },
+                              child: ListView.builder(
+                                physics: const AlwaysScrollableScrollPhysics(),
+                                itemCount: state.connections!.length +
+                                    (state.isLoadingMore ? 1 : 0),
+                                itemBuilder: (context, index) {
+                                  if (index == state.connections!.length) {
+                                    // Show loading indicator at the bottom when loading more
+                                    return Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 16.h),
+                                      child: Center(
+                                        child: CircularProgressIndicator(
+                                          color: widget.isDarkMode
+                                              ? AppColors.darkBlue
+                                              : AppColors.lightBlue,
+                                        ),
+                                      ),
+                                    );
+                                  }
+
+                                  return ConnectionsCard(
+                                    data: state.connections![index],
+                                    isDarkMode: widget.isDarkMode,
+                                  );
+                                },
+                              ),
                             ),
-                          ),
+            ),
           ),
         ],
       ),
