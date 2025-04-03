@@ -13,6 +13,30 @@ class ChatViewModel extends StateNotifier<List<Chat>> {
   void _fetchChats() async {
     state = await _chatService.fetchChats();
   }
+  
+  void sendMessage(int chatIndex, String messageContent) {
+  final chat = state[chatIndex];
+
+  final newMessage = Message(
+    sender: "Me", // Assuming you're the sender
+    content: messageContent,
+    timestamp: DateTime.now(),
+  );
+
+  state = [
+    for (int i = 0; i < state.length; i++)
+      if (i == chatIndex)
+        state[i].copyWith(
+          messages: [...chat.messages, newMessage], // Add new message
+          lastMessage: messageContent, // Update last message
+          lastMessageTimestamp: DateTime.now(), // Update timestamp
+          isUnread: false, // Mark chat as read when you send a message
+          unreadMessageCount: 0, // Reset unread count
+        )
+      else
+        state[i], // Keep other chats unchanged
+  ];
+}
 
   // Toggle read/unread status (Only marks as read when tapped)
   void toggleReadUnreadStatus(int index) {

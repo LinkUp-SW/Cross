@@ -13,11 +13,11 @@ class Chat {
     required this.lastMessage,
     required this.isUnread,
     required this.unreadMessageCount,
-    required this.messages, // Initialize the list of messages
-    required this.lastMessageTimestamp, // Initialize the timestamp for the last message
+    required this.messages, 
+    required this.lastMessageTimestamp, 
   });
 
-  // Add a method to add a new message to the chat
+  // method to add a new message to the chat
   Chat addMessage(Message newMessage) {
     return Chat(
       name: name,

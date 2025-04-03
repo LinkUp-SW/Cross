@@ -1,107 +1,73 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../viewModel/chat_viewmodel.dart';
 import '../model/chat_model.dart';
 
-class ChatScreen extends StatelessWidget {
-  final Chat chat;
+class ChatScreen extends ConsumerWidget {
+  final int chatIndex; // The index of the selected chat
 
-  const ChatScreen({Key? key, required this.chat}) : super(key: key);
+  const ChatScreen({Key? key, required this.chatIndex}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final chats = ref.watch(chatViewModelProvider);
+    final chat = chats[chatIndex]; // Get the selected chat
+
+    // Text controller for the message input field
+    final messageController = TextEditingController();
+
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Row(
-          children: [
-            CircleAvatar(
-              backgroundImage: NetworkImage(chat.profilePictureUrl),
-            ),
-            const SizedBox(width: 10),
-            Text(chat.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-          ],
-        ),
+        title: Text(chat.name),
       ),
       body: Column(
         children: [
+          // Chat messages display
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.all(10),
+            child: ListView.builder(
+              itemCount: chat.messages.length,
+              itemBuilder: (context, index) {
+                final message = chat.messages[index];
+                return ListTile(
+                  title: Text(message.sender),
+                  subtitle: Text(message.content),
+                  trailing: Text(
+                    "${message.timestamp.hour}:${message.timestamp.minute}",
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                );
+              },
+            ),
+          ),
+          
+          // Message input field and send button
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
               children: [
-                _buildChatBubble("Hey there! How’s your work going?", false),
-                _buildChatBubble("It’s going great, thanks for asking!", true),
-                _buildChatBubble("That’s awesome to hear. Let’s catch up soon!", false),
-                _buildChatBubble("Sure, let’s do it!", true),
+                Expanded(
+                  child: TextField(
+                    controller: messageController,
+                    decoration: InputDecoration(
+                      hintText: "Type a message...",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.send),
+                  onPressed: () {
+                    if (messageController.text.isNotEmpty) {
+                      // Send the message
+                      ref.read(chatViewModelProvider.notifier).sendMessage(chatIndex, messageController.text);
+                      messageController.clear(); // Clear the text field after sending
+                    }
+                  },
+                ),
               ],
             ),
-          ),
-          _buildMessageInput(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildChatBubble(String message, bool isMe) {
-    return Align(
-      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        margin: const EdgeInsets.symmetric(vertical: 5),
-        constraints: const BoxConstraints(maxWidth: 300),
-        decoration: BoxDecoration(
-          color: isMe ? Colors.blue[100] : Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(10),
-            topRight: const Radius.circular(10),
-            bottomLeft: isMe ? const Radius.circular(10) : Radius.zero,
-            bottomRight: isMe ? Radius.zero : const Radius.circular(10),
-          ),
-          boxShadow: [
-            BoxShadow(color: Colors.grey.withOpacity(0.2), blurRadius: 5),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              message,
-              style: TextStyle(color: Colors.black, fontSize: 16),
-            ),
-            const SizedBox(height: 5),
-            Text(
-              "10:30 AM",
-              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMessageInput() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: "Write a message...",
-                filled: true,
-                fillColor: Colors.grey[200],
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 10),
-          IconButton(
-            icon: const Icon(Icons.send, color: Colors.blue),
-            onPressed: () {},
           ),
         ],
       ),

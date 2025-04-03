@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:link_up/features/chat/view/chat_screen.dart';
+import 'package:link_up/features/chat/view/chat_screen.dart'; // Import the ChatScreen
 import '../viewModel/chat_viewmodel.dart';
 import '../widgets/chat_tile.dart';
 
@@ -24,28 +24,28 @@ class ChatListScreen extends ConsumerWidget {
         ],
       ),
       body: chats.isEmpty
-          ? const Center(child: CircularProgressIndicator(color:Color.fromRGBO(16, 131, 224, 0.925),))
+          ? const Center(child: CircularProgressIndicator(color: Color.fromRGBO(16, 131, 224, 0.925)))
           : ListView.builder(
               itemCount: chats.length,
               itemBuilder: (context, index) {
                 return ChatTile(
                   chat: chats[index],
                   onTap: () {
-                          // Mark as read if it is unread
-                        ref.read(chatViewModelProvider.notifier).toggleReadUnreadStatus(index);
+                    // Mark as read if it is unread
+                    ref.read(chatViewModelProvider.notifier).toggleReadUnreadStatus(index);
 
-                          // Navigate to ChatScreen
-                         Navigator.push(
-                                  context,
-                            MaterialPageRoute(
-                              builder: (context) => ChatScreen(chat: chats[index]),
-                               ),
-                            );
-                             },
-                            onLongPress: () {
-                          // Show read/unread options
-                              _showReadUnreadOption(context, ref, index, chats[index].isUnread);
-                             },
+                    // Navigate to the ChatScreen when tapped
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ChatScreen(chatIndex: index),
+                      ),
+                    );
+                  },
+                  onLongPress: () {
+                    // Show read/unread options on long press
+                    _showReadUnreadOption(context, ref, index, chats[index].isUnread);
+                  },
                 );
               },
             ),
