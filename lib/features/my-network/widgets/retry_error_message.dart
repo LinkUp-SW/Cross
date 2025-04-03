@@ -22,44 +22,46 @@ class RetryErrorMessage extends ConsumerWidget {
       padding: EdgeInsets.symmetric(
         horizontal: 10.w,
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        spacing: 10.w,
-        children: [
-          Text(
-            errorMessage,
-            style: TextStyles.font20_700Weight.copyWith(
-              color: isDarkMode
-                  ? AppColors.darkSecondaryText
-                  : AppColors.lightTextColor,
-            ),
-          ),
-          ElevatedButton(
-            style: isDarkMode
-                ? LinkUpButtonStyles().profileOpenToDark(
-                    padding: EdgeInsets.symmetric(
-                      vertical: 8.h,
-                      horizontal: 15.w,
-                    ),
-                  )
-                : LinkUpButtonStyles().profileOpenToLight(
-                    padding: EdgeInsets.symmetric(
-                      vertical: 8.h,
-                      horizontal: 15.w,
-                    ),
-                  ),
-            onPressed: buttonFunctionality,
-            child: Text(
-              "Retry",
-              style: TextStyles.font18_700Weight.copyWith(
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          spacing: 10.w,
+          children: [
+            Text(
+              errorMessage,
+              style: TextStyles.font20_700Weight.copyWith(
                 color: isDarkMode
-                    ? AppColors.darkBackground
-                    : AppColors.lightBackground,
+                    ? AppColors.darkSecondaryText
+                    : AppColors.lightTextColor,
               ),
             ),
-          ),
-        ],
+            ElevatedButton(
+              style: isDarkMode
+                  ? LinkUpButtonStyles().profileOpenToDark(
+                      padding: EdgeInsets.symmetric(
+                        vertical: 8.h,
+                        horizontal: 15.w,
+                      ),
+                    )
+                  : LinkUpButtonStyles().profileOpenToLight(
+                      padding: EdgeInsets.symmetric(
+                        vertical: 8.h,
+                        horizontal: 15.w,
+                      ),
+                    ),
+              onPressed: buttonFunctionality,
+              child: Text(
+                "Retry",
+                style: TextStyles.font18_700Weight.copyWith(
+                  color: isDarkMode
+                      ? AppColors.darkBackground
+                      : AppColors.lightBackground,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

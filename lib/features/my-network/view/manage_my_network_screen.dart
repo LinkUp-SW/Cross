@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/my-network/viewModel/manage_my_network_screen_view_model.dart';
 import 'package:link_up/features/my-network/widgets/manage_my_network_screen_navigation_row.dart';
+import 'package:link_up/features/my-network/widgets/retry_error_message.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 
@@ -120,34 +121,19 @@ class _ManageMyNetworkScreenState extends ConsumerState<ManageMyNetworkScreen> {
             count: state.isLoading ? 0 : state.pagesCount,
             isLoading: state.isLoading,
           ),
+          SizedBox(
+            height: 15.w,
+          ),
           // Show retry button if there was an error
           if (state.error)
-            Padding(
-              padding: EdgeInsets.all(16.w),
-              child: Center(
-                child: Column(
-                  children: [
-                    Text(
-                      'Failed to load connection count',
-                      style: TextStyle(
-                        color: widget.isDarkMode
-                            ? AppColors.darkSecondaryText
-                            : AppColors.lightSecondaryText,
-                      ),
-                    ),
-                    SizedBox(height: 8.h),
-                    ElevatedButton(
-                      onPressed: () {
-                        ref
-                            .read(
-                                manageMyNetworkScreenViewModelProvider.notifier)
-                            .getManageMyNetworkScreenCounts();
-                      },
-                      child: const Text('Retry'),
-                    ),
-                  ],
-                ),
-              ),
+            RetryErrorMessage(
+              isDarkMode: widget.isDarkMode,
+              errorMessage: 'Failed to load counts :(',
+              buttonFunctionality: () async {
+                ref
+                    .read(manageMyNetworkScreenViewModelProvider.notifier)
+                    .getManageMyNetworkScreenCounts();
+              },
             ),
         ],
       ),
