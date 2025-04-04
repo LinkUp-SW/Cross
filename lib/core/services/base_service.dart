@@ -11,8 +11,9 @@ import 'package:link_up/core/constants/endpoints.dart';
 class BaseService {
   Map<String, String> headers = {};
 
-  Future<Response> post(String endpoint, Map<String, dynamic>? body,
-      Map<String, dynamic>? routeParameters) async {
+  Future<Response> post(String endpoint,
+      {Map<String, dynamic>? body,
+      Map<String, dynamic>? routeParameters}) async {
     final token = await getToken();
     // Replace route parameters in the endpoint if provided
     String finalEndpoint = endpoint;

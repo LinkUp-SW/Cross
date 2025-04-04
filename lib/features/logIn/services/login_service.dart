@@ -4,8 +4,10 @@ import 'package:link_up/features/logIn/model/login_model.dart';
 
 class LogInService extends BaseService {
   Future<bool> logIn(LogInModel logInModel) async {
-    final response = await post("auth/login",
-        {"email": logInModel.email, "password": logInModel.password});
+    final response = await post(
+      "auth/login",
+      body: {"email": logInModel.email, "password": logInModel.password},
+    );
 
     print(response.statusCode);
 

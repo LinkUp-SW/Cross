@@ -32,9 +32,7 @@ class ReceivedInvitationsTabServices {
     try {
       final response = await _baseService.post(
           ExternalEndPoints.acceptConnectionInvitation,
-          {}, // Empty body or data payload
-          {'user_id': userId} // Route parameters
-          );
+          routeParameters: {'user_id': userId});
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       }
