@@ -14,7 +14,7 @@ import 'package:link_up/features/profile/view/add_new_education.dart';
 
 
 final goRouterProvider = Provider<GoRouter>((ref) {
-  return GoRouter(initialLocation: '/profile', routes: <RouteBase>[
+  return GoRouter(initialLocation: '/', routes: <RouteBase>[
     GoRoute(path: "/profile", builder: (context, state) => const ProfilePage()),
     GoRoute(path: "/login", builder: (context, state) => Container()),
     GoRoute(path: "/signup", builder: (context, state) => Container()),
