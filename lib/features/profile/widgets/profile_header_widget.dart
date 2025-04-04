@@ -60,7 +60,6 @@ class ProfileHeaderWidget extends ConsumerWidget {
     showReusableBottomSheet(context: context, options: options);
   }
 
-  // Action Handler for "Open to" Button Tap
   void _handleOpenToTap(BuildContext context) {
     final options = [
       ReusableBottomSheetOption(
@@ -101,10 +100,8 @@ class ProfileHeaderWidget extends ConsumerWidget {
           Stack(
             clipBehavior: Clip.none,
             children: [
-              // Background Image (GestureDetector wraps Container)
               GestureDetector(
-                // onTap: _uploadBackgroundImage, // Replaced
-                onTap: () => _handleBackgroundPicTap(context), // Use new handler
+                onTap: () => _handleBackgroundPicTap(context), 
                 child: Container(
                   height: backgroundHeight,
                   width: double.infinity,
@@ -119,18 +116,15 @@ class ProfileHeaderWidget extends ConsumerWidget {
                     alignment: Alignment.topRight,
                     child: IconButton(
                       icon: Icon(Icons.camera_alt_rounded, color: Colors.white),
-                      // onPressed: () {_showProfilePicBottomSheet(context);}, // Replaced - Handled by parent GestureDetector now
-                       onPressed: () => _handleBackgroundPicTap(context), // Explicitly call handler here too if icon button needs separate logic target
+                       onPressed: () => _handleBackgroundPicTap(context), 
                     ),
                   ),
                 ),
               ),
-              // Profile Picture (GestureDetector wraps Stack)
               Padding(
                 padding: EdgeInsets.only(top: 30.h, left: 16.w),
                 child: GestureDetector(
-                  // onTap: () { _showProfilePicBottomSheet(context); }, // Replaced
-                  onTap: () => _handleProfilePicTap(context), // Use new handler
+                  onTap: () => _handleProfilePicTap(context), 
                   child: Stack(
                     clipBehavior: Clip.none,
                     children: [
@@ -155,7 +149,6 @@ class ProfileHeaderWidget extends ConsumerWidget {
                   ),
                 ),
               ),
-              // Edit Intro Button
               Positioned(
                 top: backgroundHeight + 5.h,
                 right: 16.w,
@@ -177,7 +170,6 @@ class ProfileHeaderWidget extends ConsumerWidget {
             ],
           ),
           SizedBox(height: 20.h),
-          // User Info Text Section
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w),
             child: Column(
@@ -213,7 +205,6 @@ class ProfileHeaderWidget extends ConsumerWidget {
               ],
             ),
           ),
-          // Action Buttons Section
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w),
             child: Column(
@@ -224,8 +215,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
                     Expanded(
                       flex: 4,
                       child: ElevatedButton(
-                        // onPressed: () { _showOpenToBottomSheet(context); }, // Replaced
-                        onPressed: () => _handleOpenToTap(context), // Use new handler
+                        onPressed: () => _handleOpenToTap(context), 
                         style: isDarkMode
                             ? buttonStyles.wideBlueElevatedButtonDark()
                             : buttonStyles.wideBlueElevatedButton(),
@@ -241,7 +231,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
                     Expanded(
                       flex: 4,
                       child: OutlinedButton(
-                        onPressed: () {}, // Original onPressed
+                        onPressed: () {}, 
                         style: isDarkMode
                             ? buttonStyles.blueOutlinedButtonDark()
                             : buttonStyles.blueOutlinedButton(),
@@ -258,7 +248,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
                       width: 30.r,
                       height: 35.r,
                       child: OutlinedButton(
-                        onPressed: () {}, // Original onPressed
+                        onPressed: () {}, 
                         style: isDarkMode
                             ? buttonStyles.circularButtonDark()
                             : buttonStyles.circularButton(),
@@ -274,7 +264,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton(
-                    onPressed: () {}, // Original onPressed
+                    onPressed: () {}, 
                     style: isDarkMode
                         ? buttonStyles.blueOutlinedButtonDark()
                         : buttonStyles.blueOutlinedButton(),
@@ -294,9 +284,4 @@ class ProfileHeaderWidget extends ConsumerWidget {
       ),
     );
   }
-
-  // Original private methods related to bottom sheets are removed:
-  // void _showOpenToBottomSheet(BuildContext context) { ... } // REMOVED
-  // void _showProfilePicBottomSheet(BuildContext context) { ... } // REMOVED
-  // void _uploadBackgroundImage() { ... } // REMOVED (replaced by _handleBackgroundPicTap)
 }
