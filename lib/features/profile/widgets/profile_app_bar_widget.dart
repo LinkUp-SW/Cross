@@ -19,16 +19,16 @@ class ProfileAppBar extends ConsumerWidget implements PreferredSizeWidget {
         padding: EdgeInsets.only(top: 13.h), 
         child: Row(
           children: [
-            // Back Button 
+     
             IconButton(
               icon: Icon(Icons.arrow_back, color: Colors.black54, size: 28.sp),
               onPressed: () => Navigator.pop(context),
             ),
 
-            // Search Bar
+     
             Expanded(
               child: Container(
-                height: 36.h, // Slightly thinner
+                height: 36.h, 
                 padding: EdgeInsets.symmetric(horizontal: 10.w),
                 decoration: BoxDecoration(
                   color: const Color(0xFFEAF3FC), 
@@ -55,11 +55,9 @@ class ProfileAppBar extends ConsumerWidget implements PreferredSizeWidget {
               ),
             ),
 
-            // Settings Icon (Larger)
             IconButton(
               icon: Icon(Icons.settings, color: Colors.black54, size: 28.sp),
               onPressed: () {
-                // Settings action
               },
             ),
           ],

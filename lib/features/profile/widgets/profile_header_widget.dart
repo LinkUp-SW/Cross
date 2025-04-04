@@ -5,14 +5,90 @@ import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/shared/themes/button_styles.dart';
 import 'package:go_router/go_router.dart';
+import 'package:link_up/features/profile/widgets/bottom_sheet.dart';
+
+
+
 
 class ProfileHeaderWidget extends ConsumerWidget {
   const ProfileHeaderWidget({Key? key}) : super(key: key);
+
+  void _handleProfilePicTap(BuildContext context) {
+    final options = [
+      ReusableBottomSheetOption(
+        icon: Icons.camera_alt_outlined,
+        title: 'Take a photo',
+        onTap: () {
+          // TODO: Implement take photo logic
+        },
+      ),
+      ReusableBottomSheetOption(
+        icon: Icons.arrow_upward,
+        title: 'Upload from photos',
+        onTap: () {
+          // TODO: Implement upload photo logic
+        },
+      ),
+       ReusableBottomSheetOption(
+        icon: Icons.delete_outline, 
+        title: 'Delete profile picture', 
+        onTap: () {
+          // TODO: Implement view logic
+        },
+      ),
+    ];
+    showReusableBottomSheet(context: context, options: options);
+  }
+
+  void _handleBackgroundPicTap(BuildContext context) {
+    final options = [
+      ReusableBottomSheetOption(
+        icon: Icons.arrow_upward,
+        title: 'Upload background photo',
+        onTap: () {
+          // TODO: Implement upload background photo logic
+        },
+      ),  
+       ReusableBottomSheetOption(
+        icon: Icons.delete_outline, 
+        title: 'Delete background photo', 
+        onTap: () {
+          // TODO: Implement delete background photo logic
+        },
+      ),
+    ];
+    showReusableBottomSheet(context: context, options: options);
+  }
+
+  // Action Handler for "Open to" Button Tap
+  void _handleOpenToTap(BuildContext context) {
+    final options = [
+      ReusableBottomSheetOption(
+        title: 'Finding a new job',
+        subtitle: 'Show recruiters and others that you\'re open to work',
+        onTap: () {
+          print("Finding a new job Tapped");
+          // TODO: Implement action for Finding a new job
+        },
+      ),
+      ReusableBottomSheetOption(
+        title: 'Hiring',
+        subtitle: 'Share that you\'re hiring and attract qualified candidates',
+        onTap: () {
+          print("Hiring Tapped");
+          // TODO: Implement action for Hiring
+        },
+      ),
+    ];
+    showReusableBottomSheet(context: context, options: options);
+  }
+
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final buttonStyles = LinkUpButtonStyles();
+    final double backgroundHeight = 70.h;
 
     return Container(
       width: double.infinity,
@@ -25,10 +101,12 @@ class ProfileHeaderWidget extends ConsumerWidget {
           Stack(
             clipBehavior: Clip.none,
             children: [
+              // Background Image (GestureDetector wraps Container)
               GestureDetector(
-                onTap: _uploadBackgroundImage,
+                // onTap: _uploadBackgroundImage, // Replaced
+                onTap: () => _handleBackgroundPicTap(context), // Use new handler
                 child: Container(
-                  height: 70.h,
+                  height: backgroundHeight,
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: AppColors.lightGrey,
@@ -41,60 +119,65 @@ class ProfileHeaderWidget extends ConsumerWidget {
                     alignment: Alignment.topRight,
                     child: IconButton(
                       icon: Icon(Icons.camera_alt_rounded, color: Colors.white),
-                      onPressed: () {},
+                      // onPressed: () {_showProfilePicBottomSheet(context);}, // Replaced - Handled by parent GestureDetector now
+                       onPressed: () => _handleBackgroundPicTap(context), // Explicitly call handler here too if icon button needs separate logic target
                     ),
                   ),
                 ),
               ),
+              // Profile Picture (GestureDetector wraps Stack)
+              Padding(
+                padding: EdgeInsets.only(top: 30.h, left: 16.w),
+                child: GestureDetector(
+                  // onTap: () { _showProfilePicBottomSheet(context); }, // Replaced
+                  onTap: () => _handleProfilePicTap(context), // Use new handler
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      CircleAvatar(
+                        radius: 50.r,
+                        backgroundColor: Colors.white,
+                        child: CircleAvatar(
+                          radius: 48.r,
+                          backgroundImage: AssetImage('assets/images/uploadProfilePic.png'),
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: CircleAvatar(
+                          radius: 10.r,
+                          backgroundColor: AppColors.lightBlue,
+                          child: Icon(Icons.add, size: 14.sp, color: AppColors.lightMain),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              // Edit Intro Button
               Positioned(
-                top: 30.h,
-                left: 16.w,
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    CircleAvatar(
-                      radius: 50.r,
-                      backgroundColor: Colors.white,
-                      child: CircleAvatar(
-                        radius: 48.r,
-                        backgroundImage: AssetImage('assets/images/uploadProfilePic.png'),
-                      ),
+                top: backgroundHeight + 5.h,
+                right: 16.w,
+                child: GestureDetector(
+                  onTap: () {
+                    GoRouter.of(context).push('/edit_intro');
+                  },
+                  child: CircleAvatar(
+                    radius: 16.r,
+                    backgroundColor: AppColors.lightMain,
+                    child: Icon(
+                      Icons.edit,
+                      color: AppColors.lightSecondaryText,
+                      size: 20.sp,
                     ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: CircleAvatar(
-                        radius: 10.r,
-                        backgroundColor: AppColors.lightBlue,
-                        child: Icon(Icons.add, size: 14.sp, color: AppColors.lightMain),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ],
           ),
-          Padding(
-            padding: EdgeInsets.only(top: 10.h, right: 16.w),
-            child: Align(
-              alignment: Alignment.topRight,
-              child: GestureDetector(
-                onTap: () {
-                  GoRouter.of(context).push('/edit_intro');
-                },
-                child: CircleAvatar(
-                  radius: 16.r,
-                  backgroundColor: AppColors.lightMain  ,
-                  child: Icon(
-                    Icons.edit,
-                    color: AppColors.lightSecondaryText,
-                    size: 20.sp,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          SizedBox(height: 50.h),
+          SizedBox(height: 20.h),
+          // User Info Text Section
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w),
             child: Column(
@@ -130,6 +213,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
               ],
             ),
           ),
+          // Action Buttons Section
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w),
             child: Column(
@@ -140,9 +224,8 @@ class ProfileHeaderWidget extends ConsumerWidget {
                     Expanded(
                       flex: 4,
                       child: ElevatedButton(
-                        onPressed: () {
-                          GoRouter.of(context).push('/edit_intro');
-                        },
+                        // onPressed: () { _showOpenToBottomSheet(context); }, // Replaced
+                        onPressed: () => _handleOpenToTap(context), // Use new handler
                         style: isDarkMode
                             ? buttonStyles.wideBlueElevatedButtonDark()
                             : buttonStyles.wideBlueElevatedButton(),
@@ -158,7 +241,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
                     Expanded(
                       flex: 4,
                       child: OutlinedButton(
-                        onPressed: () {},
+                        onPressed: () {}, // Original onPressed
                         style: isDarkMode
                             ? buttonStyles.blueOutlinedButtonDark()
                             : buttonStyles.blueOutlinedButton(),
@@ -175,7 +258,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
                       width: 30.r,
                       height: 35.r,
                       child: OutlinedButton(
-                        onPressed: () {},
+                        onPressed: () {}, // Original onPressed
                         style: isDarkMode
                             ? buttonStyles.circularButtonDark()
                             : buttonStyles.circularButton(),
@@ -191,7 +274,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton(
-                    onPressed: () {},
+                    onPressed: () {}, // Original onPressed
                     style: isDarkMode
                         ? buttonStyles.blueOutlinedButtonDark()
                         : buttonStyles.blueOutlinedButton(),
@@ -212,7 +295,8 @@ class ProfileHeaderWidget extends ConsumerWidget {
     );
   }
 
-  void _uploadBackgroundImage() {
-    // Handle background image upload
-  }
+  // Original private methods related to bottom sheets are removed:
+  // void _showOpenToBottomSheet(BuildContext context) { ... } // REMOVED
+  // void _showProfilePicBottomSheet(BuildContext context) { ... } // REMOVED
+  // void _uploadBackgroundImage() { ... } // REMOVED (replaced by _handleBackgroundPicTap)
 }
