@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 
 class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final Widget searchBar;
@@ -8,13 +9,15 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final Function leadingAction;
   final bool leadingArrow;
   final bool viewMessages;
+  final PreferredSizeWidget? bottom;
   const CustomAppBar(
       {super.key,
       required this.searchBar,
       this.actions = const [],
       this.leadingArrow = false,
       this.viewMessages = true,
-      required this.leadingAction});
+      required this.leadingAction,
+      this.bottom});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -47,12 +50,13 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
         viewMessages
             ? IconButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, '/messages');
+                  context.push('/messages');
                 },
                 icon: const Icon(Icons.message),
               )
             : const SizedBox.shrink(),
       ],
+      bottom: bottom,
     );
   }
 

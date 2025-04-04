@@ -5,7 +5,24 @@ class InternalEndPoints {
 }
 
 class ExternalEndPoints {
-  static const baseUrl = '127.1.0.3000';
-  static const postLoginEndpoint = '/login';
+  static const baseUrl = 'http://10.0.2.2:3000/';
+  static const receivedConnectionInvitations =
+      'api/v1/user/my-network/invitation-manager/received';
+  static const sentConnectionInvitations =
+      'api/v1/user/my-network/invitation-manager/sent';
+  static const acceptConnectionInvitation = "api/v1/user/accept/:user_id";
+  static const ignoreConnectionInvitation =
+      'api/v1/user/my-network/invitation-manager/ignore/:user_id';
+  static const withdrawConnectionInvitation =
+      "api/v1/user/my-network/invitation-manager/withdraw/:user_id";
+  static const connectionsAndFollowingsCounts =
+      'api/v1/user/my-network/connections/count';
+  static const connectionsList =
+      'api/v1/user/my-network/invite-connect/connections/:user_id';
+  static const removeConnection =
+      'api/v1/user/my-network/connections/remove/:user_id';
+  static const userId = 'api/v1/user/my-network/connections/count';
+  static const followingsList =
+      'api/v1/user/my-network/network-manager/following';
+  static const unfollow = 'api/v1/user/unfollow/:user_id';
 }
-

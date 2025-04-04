@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/shared/widgets/bottom_sheet.dart';
 
 class DummyPage extends StatelessWidget {
@@ -12,7 +11,6 @@ class DummyPage extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: Column(
-            spacing: 8.0.h,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
