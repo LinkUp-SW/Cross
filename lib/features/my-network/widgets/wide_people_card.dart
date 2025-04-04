@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:link_up/features/my-network/model/model.dart';
+import 'package:link_up/features/my-network/model/grow_tab_model.dart';
 import 'package:link_up/shared/themes/button_styles.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
@@ -54,16 +54,9 @@ class WidePeopleCard extends ConsumerWidget {
               Positioned(
                 bottom: -25.h,
                 left: 10.w,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8.r),
-                  child: Image(
-                    width: 80.w,
-                    height: 75.h,
-                    image: AssetImage(
-                      data.profilePicture,
-                    ),
-                    fit: BoxFit.fitWidth,
-                  ),
+                child: CircleAvatar(
+                  radius: 40.r,
+                  foregroundImage: AssetImage(data.profilePicture),
                 ),
               ),
               // Follow Button
@@ -169,30 +162,16 @@ class WidePeopleCard extends ConsumerWidget {
                   clipBehavior: Clip.none,
                   alignment: Alignment.bottomLeft,
                   children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8.r),
-                      child: Image(
-                        width: 20.w,
-                        height: 20.h,
-                        image: AssetImage(
-                          data.profilePicture,
-                        ),
-                        fit: BoxFit.cover,
-                      ),
+                    CircleAvatar(
+                      radius: 12.r,
+                      foregroundImage: AssetImage(data.profilePicture),
                     ),
                     Positioned(
                       left: 15.w,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8.r),
-                        child: Image(
-                          width: 20.w,
-                          height: 20.h,
-                          image: AssetImage(
-                            data.secondMutualConnectionProfilePicture ??
-                                "assets/images/default-profile-picture.jpg",
-                          ),
-                          fit: BoxFit.cover,
-                        ),
+                      child: CircleAvatar(
+                        radius: 12.r,
+                        foregroundImage: const AssetImage(
+                            'assets/images/default-profile-picture.jpg'),
                       ),
                     ),
                   ],

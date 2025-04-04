@@ -6,7 +6,11 @@ import 'package:link_up/shared/themes/app_themes.dart';
 import 'shared/themes/theme_provider.dart';
 
 void main() {
-  runApp(const ProviderScope(child: MyApp()));
+  runApp(
+    const ProviderScope(
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends ConsumerWidget {
@@ -41,4 +45,3 @@ class MyApp extends ConsumerWidget {
     );
   }
 }
-

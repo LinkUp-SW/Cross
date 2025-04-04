@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:link_up/features/my-network/model/invitations_screen_model.dart';
-import 'package:link_up/features/my-network/viewModel/sent_invitations_tab_view_model.dart';
+import 'package:link_up/features/my-network/model/people_i_follow_screen_model.dart';
+import 'package:link_up/features/my-network/viewModel/people_i_follow_screen_view_model.dart';
 import 'package:link_up/features/my-network/widgets/confirmation_pop_up.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
-import 'package:link_up/shared/utils/my_network_utils.dart';
 
-class SentInvitationsCard extends ConsumerWidget {
-  final InvitationsCardModel data;
+class FollowingCard extends ConsumerWidget {
+  final FollowingCardModel data;
   final bool isDarkMode;
-  const SentInvitationsCard({
+  const FollowingCard({
     super.key,
     required this.data,
     required this.isDarkMode,
@@ -60,15 +59,11 @@ class SentInvitationsCard extends ConsumerWidget {
                           data.title,
                           style: TextStyles.font13_500Weight.copyWith(
                             color: isDarkMode
-                                ? AppColors.darkGrey
-                                : AppColors.lightSecondaryText,
+                                ? AppColors.darkSecondaryText
+                                : AppColors.lightTextColor,
                           ),
                           overflow: TextOverflow.ellipsis,
                           maxLines: 2,
-                        ),
-                        Text(
-                          "Sent ${getDaysDifference(data.daysCount)}",
-                          style: TextStyles.font12_500Weight,
                         ),
                       ],
                     ),
@@ -83,22 +78,22 @@ class SentInvitationsCard extends ConsumerWidget {
                   showDialog(
                     context: context,
                     builder: (context) => ConfirmationPopUp(
-                      title: 'Withdraw invitation',
+                      title: 'Unfollowing',
                       content:
-                          'Are you sure you want to withdraw your connection invitation to ${data.firstName} ${data.lastName}?',
+                          'Are you sure you want to unfollow ${data.firstName} ${data.lastName}?',
                       isDarkMode: isDarkMode,
-                      buttonText: 'Withdraw',
+                      buttonText: 'Unfollow',
                       buttonFunctionality: () {
                         Navigator.of(context).pop();
                         ref
-                            .read(sentInvitationsTabViewModelProvider.notifier)
-                            .withdrawInvitation(data.cardId);
+                            .read(peopleIFollowScreenViewModelProvider.notifier)
+                            .unfollow(data.cardId);
                       },
                     ),
                   );
                 },
                 child: Text(
-                  "Withdraw",
+                  "Following",
                   style: TextStyles.font15_500Weight.copyWith(
                     color: isDarkMode
                         ? AppColors.darkTextColor

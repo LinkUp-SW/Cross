@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:link_up/features/my-network/view/connections_screen.dart';
 import 'package:link_up/core/utils/global_keys.dart';
 import 'package:link_up/features/logIn/view/forgot_pasword_view.dart';
 import 'package:link_up/features/logIn/view/login_view.dart';
@@ -20,168 +21,197 @@ import 'package:link_up/features/Home/view/reactions_page.dart';
 import 'package:link_up/features/Home/view/reposts_page.dart';
 import 'package:link_up/features/Post/view/write_post.dart';
 import 'package:link_up/features/notifications/view/notifications_view.dart';
-import 'package:link_up/features/my-network/view/invitations.dart';
+import 'package:link_up/features/my-network/view/invitations_screen.dart';
+import 'package:link_up/features/my-network/view/manage_my_network_screen.dart';
+import 'package:link_up/features/my-network/view/people_i_follow_screen.dart';
 import 'package:link_up/features/my-network/view/view.dart';
 import 'package:link_up/shared/dummy_page.dart';
 import 'package:link_up/shared/widgets/bottom_navigation_bar.dart';
 import 'package:link_up/shared/widgets/main_drawer.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) {
-
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   return GoRouter(
-    navigatorKey: navigatorKey,
-    initialLocation: '/',
-    routes: <RouteBase>[
-    GoRoute(path: "/profile", builder: (context, state) => Container()),
-    GoRoute(
-        path: "/login",
-        builder: (context, state) => const LoginPage(),
-        routes: [
-          GoRoute(
-              path: "/forgotpassword",
-              builder: (context, state) => const ForgotPasswordView()),
-        ]),
-    GoRoute(
-        path: "/signup",
-        builder: (context, state) => const EmailPasswordView(),
-        routes: [
-          GoRoute(
-              path: "/usersname",
-              builder: (context, state) => const NamingPage()),
-          GoRoute(
-              path: "/getphone",
-              builder: (context, state) => const GetPhoneNumber()),
-          GoRoute(
-              path: "/verification",
-              builder: (context, state) => const Verification()),
-          GoRoute(
-              path: "/pastjobs",
-              builder: (context, state) => const PastJobDetails()),
-          GoRoute(
-              path: "/takephoto",
-              builder: (context, state) => const TakePhoto()),
-          GoRoute(path: "/otp", builder: (context, state) => const OtpView()),
-        ]),
-    GoRoute(
-      path: "/invitations",
-      builder: (context, state) => InvitationsScreen(
-        isDarkMode: Theme.of(context).brightness == Brightness.dark,
-      ),
-    ),
-    GoRoute(
-      path: "/manage-network",
-      builder: (context, state) => const DummyPage(
-        title: "Manage My Network Screen",
-      ),
-    ),
-    StatefulShellRoute.indexedStack(
-      builder: (context, state, navigationShell) => Scaffold(
-        key: scaffoldKey,
-        drawer: const MainDrawer(),
-        body: navigationShell, // The body displays the current screen
-        bottomNavigationBar: CustomBottomNavigationBar(
-          navigationShell: navigationShell,
+      navigatorKey: navigatorKey,
+      initialLocation: '/',
+      routes: <RouteBase>[
+        GoRoute(path: "/profile", builder: (context, state) => Container()),
+        GoRoute(
+            path: "/login",
+            builder: (context, state) => const LoginPage(),
+            routes: [
+              GoRoute(
+                  path: "/forgotpassword",
+                  builder: (context, state) => const ForgotPasswordView()),
+            ]),
+        GoRoute(
+            path: "/signup",
+            builder: (context, state) => const EmailPasswordView(),
+            routes: [
+              GoRoute(
+                  path: "/usersname",
+                  builder: (context, state) => const NamingPage()),
+              GoRoute(
+                  path: "/getphone",
+                  builder: (context, state) => const GetPhoneNumber()),
+              GoRoute(
+                  path: "/verification",
+                  builder: (context, state) => const Verification()),
+              GoRoute(
+                  path: "/pastjobs",
+                  builder: (context, state) => const PastJobDetails()),
+              GoRoute(
+                  path: "/takephoto",
+                  builder: (context, state) => const TakePhoto()),
+              GoRoute(
+                  path: "/otp", builder: (context, state) => const OtpView()),
+            ]),
+        GoRoute(
+          path: "/invitations",
+          builder: (context, state) => InvitationsScreen(
+            isDarkMode: Theme.of(context).brightness == Brightness.dark,
+          ),
         ),
-      ),
-      branches: <StatefulShellBranch>[
-        // The route branch for the first tab of the bottom navigation bar.
-        StatefulShellBranch(
-          routes: <GoRoute>[
-            GoRoute(path: "/", builder: (context, state) => HomePage(scaffoldKey: scaffoldKey,)),
-          ],
+        GoRoute(
+          path: "/manage-network",
+          builder: (context, state) => ManageMyNetworkScreen(
+            isDarkMode: Theme.of(context).brightness == Brightness.dark,
+          ),
         ),
-        StatefulShellBranch(
-          routes: <GoRoute>[
-            GoRoute(
-              path: "/network",
-              builder: (context, state) => const MyNetworkScreen(),
+        GoRoute(
+          path: "/connections",
+          builder: (context, state) => ConnectionsScreen(
+            isDarkMode: Theme.of(context).brightness == Brightness.dark,
+          ),
+        ),
+        GoRoute(
+          path: "/following",
+          builder: (context, state) => PeopleIFollowScreen(
+            isDarkMode: Theme.of(context).brightness == Brightness.dark,
+          ),
+        ),
+        GoRoute(
+          path: "/pages",
+          builder: (context, state) => const DummyPage(
+            title: 'Pages Screen',
+          ),
+        ),
+        StatefulShellRoute.indexedStack(
+          builder: (context, state, navigationShell) => Scaffold(
+            key: scaffoldKey,
+            drawer: const MainDrawer(),
+            body: navigationShell, // The body displays the current screen
+            bottomNavigationBar: CustomBottomNavigationBar(
+              navigationShell: navigationShell,
+            ),
+          ),
+          branches: <StatefulShellBranch>[
+            // The route branch for the first tab of the bottom navigation bar.
+            StatefulShellBranch(
+              routes: <GoRoute>[
+                GoRoute(
+                    path: "/",
+                    builder: (context, state) => HomePage(
+                          scaffoldKey: scaffoldKey,
+                        )),
+              ],
+            ),
+            StatefulShellBranch(
+              routes: <GoRoute>[
+                GoRoute(
+                  path: "/network",
+                  builder: (context, state) => const MyNetworkScreen(),
+                ),
+              ],
+            ),
+            StatefulShellBranch(
+              routes: <GoRoute>[
+                GoRoute(
+                  path: "/post",
+                  redirect: (context, state) => "/writePost",
+                ),
+              ],
+            ),
+            StatefulShellBranch(
+              routes: <GoRoute>[
+                GoRoute(
+                  path: "/notifications",
+                  builder: (context, state) => const NotificationsView(),
+                )
+              ],
+            ),
+            StatefulShellBranch(
+              routes: <GoRoute>[
+                GoRoute(
+                    path: "/jobs",
+                    builder: (context, state) =>
+                        const DummyPage(title: 'Jobs')),
+              ],
+            ),
+            StatefulShellBranch(
+              routes: <GoRoute>[
+                GoRoute(
+                    path: "/postPage",
+                    builder: (context, state) => const PostPage(),
+                    routes: [
+                      GoRoute(
+                        path: '/focused',
+                        builder: (context, state) =>
+                            const PostPage(focused: true),
+                      ),
+                    ]),
+              ],
+            ),
+            StatefulShellBranch(
+              routes: <GoRoute>[
+                GoRoute(
+                    path: "/commentReplies",
+                    builder: (context, state) => const CommentRepliesPage(),
+                    routes: [
+                      GoRoute(
+                        path: '/unfocused',
+                        builder: (context, state) =>
+                            const CommentRepliesPage(focused: false),
+                      )
+                    ]),
+              ],
+            ),
+            StatefulShellBranch(
+              routes: <GoRoute>[
+                GoRoute(
+                    path: "/reposts",
+                    builder: (context, state) => const RepostsPage()),
+              ],
+            ),
+            StatefulShellBranch(
+              routes: <GoRoute>[
+                GoRoute(
+                    path: "/reactions",
+                    builder: (context, state) => const ReactionsPage()),
+              ],
             ),
           ],
         ),
-        StatefulShellBranch(
-          routes: <GoRoute>[
-            GoRoute(
-                path: "/post",
-                redirect: (context, state) => "/writePost",),
-          ],
-        ),
-        StatefulShellBranch(
-          routes: <GoRoute>[
-            GoRoute(
-                path: "/notifications",
-                builder: 
-                    (context, state) => const NotificationsView(),
-        )],
-        ),
-        StatefulShellBranch(
-          routes: <GoRoute>[
-            GoRoute(
-                path: "/jobs",
-                builder: (context, state) => const DummyPage(title: 'Jobs')),
-          ],
-        ),
-        StatefulShellBranch(
-          routes: <GoRoute>[
-            GoRoute(
-                path: "/postPage",
-                builder: (context, state) => const PostPage(),
-                routes: [
-                  GoRoute(
-                    path: '/focused',
-                    builder: (context, state) => const PostPage(focused: true),
-                  ),
-                ]),
-          ],
-        ),
-        StatefulShellBranch(
-          routes: <GoRoute>[
-            GoRoute(
-                path: "/commentReplies",
-                builder: (context, state) => const CommentRepliesPage(),
-                routes: [
-                  GoRoute(
-                    path: '/unfocused',
-                    builder: (context, state) => const CommentRepliesPage(focused: false),
-                  )]
-                  ),
-                
-          ],
-        ),
-        StatefulShellBranch(
-          routes: <GoRoute>[
-            GoRoute(
-                path: "/reposts",
-                builder: (context, state) => const RepostsPage()),
-          ],
-        ),
-        StatefulShellBranch(
-          routes: <GoRoute>[
-            GoRoute(
-                path: "/reactions",
-                builder: (context, state) => const ReactionsPage()),
-          ],
-        ),
-        
-      ],
-    ),
-    GoRoute(path: "/company", builder: (context, state) => Container()),
-    GoRoute(path: "/writePost", pageBuilder: (context, state) => 
-    CustomTransitionPage(child: const WritePost(), transitionsBuilder: 
-    (context, animation, secondaryAnimation, child) {
-      return SlideTransition(
-        position: Tween<Offset>(
-          begin: const Offset(0, 1.0),
-          end: Offset.zero,
-        ).animate(animation),
-        child: child,
-      );
-    })),
-    GoRoute(
-        path: "/messages",
-        builder: (context, state) => const DummyPage(title: "messages")),
-    GoRoute(path: "/chatpage", builder: (context, state) => Container()),
-    GoRoute(path: "/settings", builder: (context, state) => Container()),
-  ]);
+        GoRoute(path: "/company", builder: (context, state) => Container()),
+        GoRoute(
+            path: "/writePost",
+            pageBuilder: (context, state) => CustomTransitionPage(
+                child: const WritePost(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  return SlideTransition(
+                    position: Tween<Offset>(
+                      begin: const Offset(0, 1.0),
+                      end: Offset.zero,
+                    ).animate(animation),
+                    child: child,
+                  );
+                })),
+        GoRoute(
+            path: "/messages",
+            builder: (context, state) => const DummyPage(title: "messages")),
+        GoRoute(path: "/chatpage", builder: (context, state) => Container()),
+        GoRoute(path: "/settings", builder: (context, state) => Container()),
+      ]);
 });
