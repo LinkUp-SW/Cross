@@ -10,7 +10,10 @@ class AppColors {
   static const Color salmon = Color(0xfff5987e);
   static const Color brown = Color(0xff915907);
   static const Color red = Color(0xffcb112d);
-  static const Color grey = Color(0xff3f3f3f);
+  static const Color funnyBlue = Color(0xff44bfd3);
+
+  static const Color fineLinesGrey = Color(0xff3f3f3f);
+  static const Color grey = Colors.grey;
 
   // Accent colors
   static const Color blueHue = Color(0xffdce6f1);

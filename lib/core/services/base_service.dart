@@ -9,6 +9,8 @@ import 'package:link_up/core/services/storage.dart';
 import 'package:link_up/core/constants/endpoints.dart';
 
 class BaseService {
+  Map<String, String> headers = {};
+
   Future<Response> post(String endpoint, Map<String, dynamic>? body,
       Map<String, dynamic>? routeParameters) async {
     final token = await getToken();
@@ -20,6 +22,8 @@ class BaseService {
       });
     }
     final uri = Uri.parse('${ExternalEndPoints.baseUrl}$finalEndpoint');
+    headers['Content-Type'] = 'application/json';
+    headers['Authorization'] = 'Bearer $token';
     final response = await http
         .post(
           uri,
@@ -30,22 +34,23 @@ class BaseService {
           body: body != null ? jsonEncode(body) : null,
         )
         .timeout(const Duration(seconds: 10));
+    updateCookie(response);
     return response;
   }
 
   Future<Response> put(String endpoint, Map<String, dynamic> body) async {
     final token = await getToken();
     final uri = Uri.parse('${ExternalEndPoints.baseUrl}$endpoint');
+    headers['Content-Type'] = 'application/json';
+    headers['Authorization'] = 'Bearer $token';
     final response = await http
         .put(
           uri,
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token'
-          },
+          headers: headers,
           body: jsonEncode(body),
         )
         .timeout(const Duration(seconds: 10));
+    updateCookie(response);
     return response;
   }
 
@@ -83,7 +88,7 @@ class BaseService {
         seconds: 10,
       ),
     );
-
+    updateCookie(response);
     return response;
   }
 
@@ -102,7 +107,29 @@ class BaseService {
       uri,
       headers: {'Authorization': 'Bearer $token'},
     ).timeout(const Duration(seconds: 10));
+    updateCookie(response);
     return response;
+  }
+
+  void updateCookie(http.Response response) {
+    String? rawCookie = response.headers['set-cookie'];
+    if (rawCookie != null) {
+      // Extract the session ID from the raw cookie string
+      int index = rawCookie.indexOf(';');
+      headers['cookie'] =
+          (index == -1) ? rawCookie : rawCookie.substring(0, index);
+
+      // Extract the token from the raw cookie string
+      final tokenMatch =
+          RegExp(r'linkup_auth_token=([^;]+)').firstMatch(rawCookie);
+      if (tokenMatch != null) {
+        final token = tokenMatch.group(1);
+        if (token != null && token.isNotEmpty) {
+          // Store the extracted token in local storage
+          storeToken(token);
+        }
+      }
+    }
   }
 }
 

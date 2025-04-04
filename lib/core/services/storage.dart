@@ -16,7 +16,32 @@ Future<String?> getToken() async {
   return await secureStorage.read(key: InternalEndPoints.token);
 }
 
+Future<void> rememberMe(String email, String password) async {
+  await secureStorage.write(key: "email", value: email);
+  await secureStorage.write(key: "password", value: password);
+}
+
+Future<bool> checkForRememberMe() async {
+  final email = await secureStorage.read(key: "email");
+  final password = await secureStorage.read(key: "password");
+  if (email != null && password != null) {
+    return true; // Credentials are stored
+  }
+  return false; // No credentials found
+}
+
+Future returncred() async {
+  final email = await secureStorage.read(key: "email");
+  final password = await secureStorage.read(key: "password");
+  return [
+    email,
+    password,
+  ]; // No credentials found
+}
+
 Future<void> logout(BuildContext context) async {
   await secureStorage.delete(key: InternalEndPoints.token);
+  await secureStorage.delete(key: "email");
+  await secureStorage.delete(key: "password");
   (navigatorKey.currentContext ?? context).go('/login');
 }

@@ -5,22 +5,24 @@ class InternalEndPoints {
 }
 
 class ExternalEndPoints {
-  static const baseUrl = 'http://10.0.2.2:3000/api/v1/';
+  static const baseUrl = 'http://10.0.2.2:3000/';
+  static const postLoginEndpoint = '/login';
   static const receivedConnectionInvitations =
-      'user/my-network/invitation-manager/received';
+      'api/v1/user/my-network/invitation-manager/received';
   static const sentConnectionInvitations =
-      'user/my-network/invitation-manager/sent';
-  static const acceptConnectionInvitation = "user/accept/:user_id";
+      'api/v1/user/my-network/invitation-manager/sent';
+  static const acceptConnectionInvitation = "api/v1/user/accept/:user_id";
   static const ignoreConnectionInvitation =
-      "user/my-network/invitation-manager/ignore/:user_id";
+      "api/v1/user/my-network/invitation-manager/ignore/:user_id";
   static const withdrawConnectionInvitation =
-      "user/my-network/invitation-manager/withdraw/:user_id";
+      "api/v1/user/my-network/invitation-manager/withdraw/:user_id";
   static const connectionsAndFollowingsCounts =
-      'user/my-network/connections/count';
+      'api/v1/user/my-network/connections/count';
   static const connectionsList =
-      'user/my-network/invite-connect/connections/:user_id';
+      'api/v1/user/my-network/invite-connect/connections/:user_id';
   static const removeConnection = 'user/my-network/connections/remove/:user_id';
-  static const userId = 'user/my-network/connections/count';
-  static const followingsList = 'user/my-network/network-manager/following';
-  static const unfollow = 'user/unfollow/:user_id';
+  static const userId = 'api/v1/user/my-network/connections/count';
+  static const followingsList =
+      'api/v1/user/my-network/network-manager/following';
+  static const unfollow = 'api/v1/user/unfollow/:user_id';
 }
