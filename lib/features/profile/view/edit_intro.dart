@@ -52,25 +52,25 @@ class EditIntroPage extends ConsumerWidget {
                     children: [
                       SubPagesIndicatesRequiredLabel(),
                       SizedBox(height: 10.h),
-                      SubPagesFormLabel(label: "First Name*", isRequired: true),
+                      SubPagesFormLabel(label: "First Name", isRequired: true),
                       SizedBox(height: 2.h),
                       SubPagesCustomTextField(
                         controller: firstNameController,
                       ),
                       SizedBox(height: 20.h),
-                      SubPagesFormLabel(label: "Family Name*", isRequired: true),
+                      SubPagesFormLabel(label: "Family Name", isRequired: true),
                       SizedBox(height: 2.h),
                       SubPagesCustomTextField(
                         controller: lastNameController,
                       ),
                       SizedBox(height: 20.h),
-                      SubPagesFormLabel(label: "Additional Name*"),
+                      SubPagesFormLabel(label: "Additional Name"),
                       SizedBox(height: 2.h),
                       SubPagesCustomTextField(
                         controller: additionalNameController,
                       ),
                       SizedBox(height: 20.h),
-                      SubPagesFormLabel(label: "Headline*", isRequired: true),
+                      SubPagesFormLabel(label: "Headline", isRequired: true),
                       SizedBox(height: 2.h),
                       SubPagesCustomTextField(
                         controller: headlineController,
@@ -88,7 +88,7 @@ class EditIntroPage extends ConsumerWidget {
                         ),
                       ),
                       SizedBox(height: 20.h),
-                      SubPagesFormLabel(label: "Industry*", isRequired: true),
+                      SubPagesFormLabel(label: "Industry", isRequired: true),
                       SizedBox(height: 2.h),
                       SubPagesCustomTextField(
                         controller: industryController,
@@ -97,7 +97,7 @@ class EditIntroPage extends ConsumerWidget {
                       SizedBox(height: 20.h),
                       SubPagesSectionHeader(title: "Education"),
                       SizedBox(height: 10.h),
-                      SubPagesFormLabel(label: "School*", isRequired: true),
+                      SubPagesFormLabel(label: "School", isRequired: true),
                       SizedBox(height: 2.h),
                       SubPagesCustomTextField(
                         controller: schoolController,
@@ -142,7 +142,7 @@ class EditIntroPage extends ConsumerWidget {
                       SizedBox(height: 20.h),
                       SubPagesSectionHeader(title: "Location"),
                       SizedBox(height: 10.h),
-                      SubPagesFormLabel(label: "Country/Region*", isRequired: true),
+                      SubPagesFormLabel(label: "Country/Region", isRequired: true),
                       SizedBox(height: 2.h),
                       SubPagesCustomTextField(
                         controller: countryController,
