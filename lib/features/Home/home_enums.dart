@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:link_up/shared/themes/colors.dart';
 
 enum Visibilities { anyone, connectionsOnly, noOne;
@@ -21,9 +22,9 @@ enum Visibilities { anyone, connectionsOnly, noOne;
         case Visibilities.anyone:
           return 'Anyone';
         case Visibilities.connectionsOnly:
-          return 'Connections Only';
+          return 'Connections only';
         case Visibilities.noOne:
-          return 'No One';
+          return 'No one';
       }
     }
   }
@@ -86,61 +87,22 @@ enum Reaction {
     }
   }
 
-  static Icon getIcon(Reaction reaction) {
+  static Widget getIcon(Reaction reaction,double size) {
     switch (reaction) {
       case Reaction.like:
-        return const Icon(
-          Icons.thumb_up_alt,
-          color: AppColors.darkBlue,
-        );
+        return SvgPicture.asset('assets/icons/Like.svg',width: size,height: size,);
       case Reaction.celebrate:
-        return const Icon(
-          Icons.celebration,
-          color: Colors.green,
-        );
+        return SvgPicture.asset('assets/icons/Celebrate.svg',width: size,height: size,);
       case Reaction.support:
-        return Icon(
-          Icons.support,
-          color: Colors.purple[300],
-        );
+        return SvgPicture.asset('assets/icons/Support.svg',width: size,height: size,);
       case Reaction.love:
-        return const Icon(
-          Icons.favorite,
-          color: AppColors.red,
-        );
+        return SvgPicture.asset('assets/icons/Love.svg',width: size,height: size,);
       case Reaction.insightful:
-        return const Icon(
-          Icons.lightbulb,
-          color: AppColors.amber,
-        );
+        return SvgPicture.asset('assets/icons/Insightful.svg',width: size,height: size,);
       case Reaction.funny:
-        return const Icon(
-          Icons.emoji_emotions,
-          color: AppColors.lightBlue,
-        );
+        return SvgPicture.asset('assets/icons/Funny.svg',width: size,height: size,);
       case Reaction.none:
-        return const Icon(
-          Icons.thumb_up_alt_outlined,
-        );
-    }
-  }
-
-  static IconData getIconData(Reaction reaction) {
-    switch (reaction) {
-      case Reaction.like:
-        return Icons.thumb_up_alt;
-      case Reaction.celebrate:
-        return Icons.celebration;
-      case Reaction.support:
-        return Icons.support;
-      case Reaction.love:
-        return Icons.favorite;
-      case Reaction.insightful:
-        return Icons.lightbulb;
-      case Reaction.funny:
-        return Icons.emoji_emotions;
-      case Reaction.none:
-        return Icons.thumb_up_alt_outlined;
+        return Icon(Icons.thumb_up_alt_outlined,size: size,);
     }
   }
 
@@ -176,7 +138,7 @@ enum Reaction {
       case Reaction.insightful:
         return AppColors.amber;
       case Reaction.funny:
-        return AppColors.lightBlue;
+        return AppColors.funnyBlue;
       case Reaction.none:
         return null;
     }

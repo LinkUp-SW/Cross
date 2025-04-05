@@ -72,7 +72,7 @@ class _ReactionsPageState extends ConsumerState<ReactionsPage> {
                     Tab(
                       icon: Row(
                         children: [
-                          Reaction.getIcon(Reaction.getReaction(reaction)),
+                          Reaction.getIcon(Reaction.getReaction(reaction), 20.r),
                           Text(
                             '  ${reactionsCount[reaction].toString()}',
                           ),
@@ -116,17 +116,7 @@ class ReactionTile extends StatelessWidget {
           Positioned(
             bottom: 0,
             right: 0,
-            child: CircleAvatar(
-              radius: 11.r,
-              backgroundColor: Reaction.getColor(reactionTile.reaction),
-              child: Icon(
-                Reaction.getIconData(
-                  reactionTile.reaction,
-                ),
-                color: AppColors.lightBackground,
-                size: 15.r,
-              ),
-            ),
+            child: Reaction.getIcon(reactionTile.reaction, 25.r),
           ),
         ],
       ),

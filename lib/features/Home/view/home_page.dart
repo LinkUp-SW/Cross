@@ -1,9 +1,15 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
 import 'package:link_up/features/Home/viewModel/posts_vm.dart';
+import 'package:link_up/features/Home/widgets/deleted_post.dart';
 import 'package:link_up/features/Home/widgets/posts.dart';
 import 'package:link_up/shared/themes/colors.dart';
+import 'package:link_up/shared/widgets/custom_snackbar.dart';
 import 'package:link_up/shared/widgets/tab_provider.dart';
 import 'package:link_up/shared/widgets/custom_app_bar.dart';
 import 'package:link_up/shared/widgets/custom_search_bar.dart';
@@ -29,6 +35,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     scrollController2 = ScrollController();
     ref.read(postsProvider.notifier).fetchPosts().then((value) {
       ref.read(postsProvider.notifier).addPosts(value);
+      checkInternetConnection();
     });
   }
 
@@ -57,6 +64,36 @@ class _HomePageState extends ConsumerState<HomePage> {
         duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
   }
 
+  void checkInternetConnection() {
+    InternetAddress.lookup('exmaple.com').then((result) {
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        log('connected');
+      }
+    }).catchError(
+      (_) {
+        log('Not Connected');
+        if (mounted) {
+          openSnackbar(
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.dangerous,
+                  color: AppColors.red,
+                ),
+                SizedBox(
+                  width: 10.w,
+                ),
+                Text("No Internet Connection",
+                    style: TextStyle(
+                        color: Theme.of(context).textTheme.bodyLarge!.color))
+              ],
+            ),
+          );
+        }
+      },
+    );
+  }
+
   @override
   void dispose() {
     scrollController.removeListener(_scrollListener);
@@ -65,7 +102,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final List<PostModel> posts = ref.watch(postsProvider);
+    final List<PostState> posts = ref.watch(postsProvider);
     ref.listen(currentTabProvider, (previous, current) {
       if (current) {
         scrollTop();
@@ -128,9 +165,14 @@ class _HomePageState extends ConsumerState<HomePage> {
                       );
                     }
                     return Card(
-                        child: Posts(
-                      post: posts[index],
-                    ));
+                        child: !posts[index].showUndo
+                            ? Posts(
+                                post: posts[index].post,
+                              )
+                            : DeletedPost(
+                                userName: posts[index].post.header.name,
+                                id: posts[index].post.id,
+                              ));
                   });
             }),
           ),

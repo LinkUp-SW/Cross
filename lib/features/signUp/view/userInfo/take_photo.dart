@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:io';
-
 import 'package:link_up/features/signUp/state/image_picker_state.dart';
 import 'package:link_up/features/signUp/viewModel/image_picker_provider.dart';
 
@@ -17,16 +16,16 @@ class TakePhoto extends ConsumerWidget {
 
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: EdgeInsets.all(8.r),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const Image(
+            Image(
                 alignment: Alignment.topLeft,
-                width: 100,
-                height: 100,
-                image: AssetImage('assets/images/Logo.png')),
+                width: 100.w,
+                height: 100.h,
+                image: const AssetImage('assets/images/Logo.png')),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -62,7 +61,7 @@ class TakePhoto extends ConsumerWidget {
                         : const Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
+                            children:  [
                               Icon(Icons.camera_alt, size: 100),
                               SizedBox(height: 10),
                               Center(

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:link_up/features/my-network/model/model.dart';
+import 'package:link_up/features/my-network/model/invitations_screen_model.dart';
+import 'package:link_up/features/my-network/viewModel/sent_invitations_tab_view_model.dart';
+import 'package:link_up/features/my-network/widgets/confirmation_pop_up.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/shared/utils/my_network_utils.dart';
@@ -40,15 +42,10 @@ class SentInvitationsCard extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 spacing: 8.w,
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8.r),
-                    child: Image(
-                      width: 50.w,
-                      height: 50.h,
-                      image: AssetImage(
-                        data.profilePicture,
-                      ),
-                      fit: BoxFit.fitWidth,
+                  CircleAvatar(
+                    radius: 30.r,
+                    foregroundImage: NetworkImage(
+                      data.profilePicture,
                     ),
                   ),
                   Expanded(
@@ -83,8 +80,22 @@ class SentInvitationsCard extends ConsumerWidget {
               color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
               child: InkWell(
                 onTap: () {
-                  print(
-                      "Pressed on ${data.firstName} ${data.lastName} withdraw");
+                  showDialog(
+                    context: context,
+                    builder: (context) => ConfirmationPopUp(
+                      title: 'Withdraw invitation',
+                      content:
+                          'Are you sure you want to withdraw your connection invitation to ${data.firstName} ${data.lastName}?',
+                      isDarkMode: isDarkMode,
+                      buttonText: 'Withdraw',
+                      buttonFunctionality: () {
+                        Navigator.of(context).pop();
+                        ref
+                            .read(sentInvitationsTabViewModelProvider.notifier)
+                            .withdrawInvitation(data.cardId);
+                      },
+                    ),
+                  );
                 },
                 child: Text(
                   "Withdraw",

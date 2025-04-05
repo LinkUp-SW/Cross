@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:link_up/features/my-network/model/model.dart';
+import 'package:link_up/features/my-network/model/invitations_screen_model.dart';
+import 'package:link_up/features/my-network/viewModel/received_invitations_tab_view_model.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/shared/utils/my_network_utils.dart';
@@ -39,15 +40,10 @@ class ReceivedInvitationsCard extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 spacing: 12.w,
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8.r),
-                    child: Image(
-                      width: 50.w,
-                      height: 50.h,
-                      image: AssetImage(
-                        data.profilePicture,
-                      ),
-                      fit: BoxFit.fitWidth,
+                  CircleAvatar(
+                    radius: 30.r,
+                    foregroundImage: NetworkImage(
+                      data.profilePicture,
                     ),
                   ),
                   Expanded(
@@ -96,8 +92,10 @@ class ReceivedInvitationsCard extends ConsumerWidget {
                   child: InkWell(
                     borderRadius: BorderRadius.circular(8.r),
                     onTap: () {
-                      print(
-                          "Pressed on ${data.firstName} ${data.lastName} ignore");
+                      ref
+                          .read(
+                              receivedInvitationsTabViewModelProvider.notifier)
+                          .acceptInvitation(data.cardId);
                     },
                     child: Container(
                       padding: EdgeInsets.all(2.r),
@@ -127,8 +125,10 @@ class ReceivedInvitationsCard extends ConsumerWidget {
                   child: InkWell(
                     borderRadius: BorderRadius.circular(8.r),
                     onTap: () {
-                      print(
-                          "Pressed on ${data.firstName} ${data.lastName} ignore");
+                      ref
+                          .read(
+                              receivedInvitationsTabViewModelProvider.notifier)
+                          .ignoreInvitation(data.cardId);
                     },
                     child: Container(
                       padding: EdgeInsets.all(2.r),

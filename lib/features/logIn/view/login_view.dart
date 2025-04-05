@@ -27,7 +27,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final logInNotifier = ref.read(logInProvider.notifier);
-      await logInNotifier.checkStoredCredentials();
+      await logInNotifier.checkStoredCredentials(ref);
     });
   }
 
@@ -245,6 +245,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                 logInNotifier.logIn(
                                   _emailController.text,
                                   _passwordController.text,
+                                  ref,
                                 );
                               }
                             },

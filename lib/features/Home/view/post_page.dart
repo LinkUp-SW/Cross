@@ -134,14 +134,18 @@ class _PostPageState extends ConsumerState<PostPage> {
                             content: Column(
                               children: [
                                 ListTile(
-                                  onTap: () {},
+                                  onTap: () {
+                                    //TODO: sort on most relevant
+                                  },
                                   leading: const Icon(Icons.rocket_launch),
                                   title: const Text("Most Relevant"),
                                   subtitle: const Text(
                                       "See the most relevatant comments"),
                                 ),
                                 ListTile(
-                                  onTap: () {},
+                                  onTap: () {
+                                    //TODO: sort on most recent
+                                  },
                                   leading:
                                       const Icon(Icons.watch_later_rounded),
                                   title: const Text("Most Recent"),

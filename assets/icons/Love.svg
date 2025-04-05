@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" id="empathy-consumption-large" data-supported-dps="48x48">
+  <g>
+    <circle cx="24" cy="24" r="24" fill="none"/>
+    <circle cx="24" cy="24" r="22" fill="#df704d"/>
+    <path d="M23.08 14.6a8.21 8.21 0 00-11.66 0 8.35 8.35 0 000 11.76L24 39l12.58-12.64a8.35 8.35 0 000-11.75 8.13 8.13 0 00-11.63 0l-.94.9z" fill="#fff3f0" stroke="#77280c" fill-rule="evenodd"/>
+    <path d="M34.79 15.14a6.68 6.68 0 011.66 2c2.83 5.25-1.9 8.52-4.84 11.51-1.91 1.93-3.83 3.85-5.82 5.68M17 14a6.69 6.69 0 00-2.39.34 5.69 5.69 0 00-3 2.57 7.85 7.85 0 00-1 3.91v.29" fill="none"/>
+    <path d="M23.08 14.44a8.18 8.18 0 00-11.66 0 8.35 8.35 0 000 11.76L24 38.83 36.58 26.2a8.37 8.37 0 000-11.76 8.11 8.11 0 00-11.62 0l-.94.9z" fill="none" stroke="#77280c" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+    <path d="M23 15.71a9.93 9.93 0 01.84 1.2 1 1 0 001.72-1 13 13 0 00-1.15-1.6 1 1 0 00-1.76.39 1 1 0 00.35 1.01z" fill="#77280c" fill-rule="evenodd"/>
+  </g>
+</svg>

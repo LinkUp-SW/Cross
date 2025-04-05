@@ -4,12 +4,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 
-class NavigationRow extends ConsumerWidget {
+class GrowTabNavigationRow extends ConsumerWidget {
   final String title;
   final bool isDarkMode;
   final VoidCallback? onTap;
 
-  const NavigationRow({
+  const GrowTabNavigationRow({
     super.key,
     required this.title,
     required this.isDarkMode,

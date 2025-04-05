@@ -16,8 +16,13 @@ class OtpService extends BaseService {
 
   Future<bool> verifyOtp(String otp, String? email) async {
     try {
-      final response =
-          await post("api/v1/user/verify-otp", {"otp": otp, "email": email});
+      final response = await post(
+        "user/verify-otp",
+        body: {
+          "otp": otp,
+          "email": email,
+        },
+      );
 
       print(response.statusCode);
       if (response.statusCode == 200) {
