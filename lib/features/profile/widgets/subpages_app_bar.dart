@@ -9,11 +9,11 @@ class SubPagesAppBar extends StatelessWidget {
   final VoidCallback onClosePressed;
 
   const SubPagesAppBar({
-    Key? key,
+    super.key,
     required this.title,
     this.action,
     required this.onClosePressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -27,7 +27,6 @@ import 'package:link_up/features/my-network/view/people_i_follow_screen.dart';
 import 'package:link_up/features/my-network/view/view.dart';
 import 'package:link_up/shared/dummy_page.dart';
 import 'package:link_up/shared/widgets/bottom_navigation_bar.dart';
-import 'package:link_up/features/profile/view/view.dart';
 import 'package:link_up/features/profile/view/edit_intro.dart';
 import 'package:link_up/features/profile/view/edit_contact_info.dart';
 import 'package:link_up/features/profile/view/add_new_position.dart';

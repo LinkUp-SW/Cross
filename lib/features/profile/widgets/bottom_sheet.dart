@@ -22,9 +22,9 @@ class ReusableBottomSheetContent extends StatelessWidget {
   final List<ReusableBottomSheetOption> options;
 
   const ReusableBottomSheetContent({
-    Key? key,
+    super.key,
     required this.options,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

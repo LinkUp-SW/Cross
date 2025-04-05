@@ -3,7 +3,7 @@ import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 
 class SubPagesIndicatesRequiredLabel extends StatelessWidget {
-  const SubPagesIndicatesRequiredLabel({Key? key}) : super(key: key);
+  const SubPagesIndicatesRequiredLabel({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -11,7 +11,7 @@ import 'package:link_up/features/profile/widgets/bottom_sheet.dart';
 
 
 class ProfileHeaderWidget extends ConsumerWidget {
-  const ProfileHeaderWidget({Key? key}) : super(key: key);
+  const ProfileHeaderWidget({super.key});
 
   void _handleProfilePicTap(BuildContext context) {
     final options = [

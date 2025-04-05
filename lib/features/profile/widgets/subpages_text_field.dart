@@ -10,13 +10,13 @@ class SubPagesCustomTextField extends StatelessWidget {
   final VoidCallback? onTap;
 
   const SubPagesCustomTextField({
-    Key? key,
+    super.key,
     this.controller,
     this.hintText,
     this.maxLines,
     this.suffixIcon,
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
