@@ -11,7 +11,6 @@ class PastJobDetails extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final locationController = TextEditingController();
     final schoolController = TextEditingController();
     final startDateController = TextEditingController();
     final pastJobTitleController = TextEditingController();

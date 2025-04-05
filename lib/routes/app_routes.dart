@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:link_up/features/admin_panel/view/statistics_view.dart';
 import 'package:link_up/features/my-network/view/connections_screen.dart';
 import 'package:link_up/core/utils/global_keys.dart';
 import 'package:link_up/features/logIn/view/forgot_pasword_view.dart';
@@ -36,47 +37,74 @@ import 'package:link_up/shared/widgets/main_drawer.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-
-  return GoRouter(
-      navigatorKey: navigatorKey,
-      initialLocation: '/login',
-      routes: <RouteBase>[
-        GoRoute(path: "/profile", builder: (context, state) => ProfilePage()),
-        GoRoute(
-            path: "/login",
-            builder: (context, state) => const LoginPage(),
-            routes: [
-              GoRoute(
-                  path: "/forgotpassword",
-                  builder: (context, state) => const ForgotPasswordView()),
-            ]),
-        GoRoute(
-            path: "/signup",
-            builder: (context, state) => const EmailPasswordView(),
-            routes: [
-              GoRoute(
-                  path: "/usersname",
-                  builder: (context, state) => const NamingPage()),
-              GoRoute(
-                  path: "/getphone",
-                  builder: (context, state) => const GetPhoneNumber()),
-              GoRoute(
-                  path: "/verification",
-                  builder: (context, state) => const Verification()),
-              GoRoute(
-                  path: "/pastjobs",
-                  builder: (context, state) => const PastJobDetails()),
-              GoRoute(
-                  path: "/takephoto",
-                  builder: (context, state) => const TakePhoto()),
-              GoRoute(
-                  path: "/otp", builder: (context, state) => const OtpView()),
-            ]),
-        GoRoute(
-          path: "/invitations",
-          builder: (context, state) => InvitationsScreen(
-            isDarkMode: Theme.of(context).brightness == Brightness.dark,
-          ),
+  return GoRouter(initialLocation: '/login', routes: <RouteBase>[
+    GoRoute(path: "/profile", builder: (context, state) => Container()),
+    GoRoute(
+        path: "/login",
+        builder: (context, state) => const LoginPage(),
+        routes: [
+          GoRoute(
+              path: "/forgotpassword",
+              builder: (context, state) => const ForgotPasswordView()),
+        ]),
+    GoRoute(
+        path: '/statistics',
+        builder: (context, state) => const StatisticsView()),
+    GoRoute(
+        path: '/priv',
+        builder: (context, state) => const DummyPage(title: 'Users')),
+    GoRoute(
+        path: "/signup",
+        builder: (context, state) => const EmailPasswordView(),
+        routes: [
+          GoRoute(
+              path: "/usersname",
+              builder: (context, state) => const NamingPage()),
+          GoRoute(
+              path: "/getphone",
+              builder: (context, state) => const GetPhoneNumber()),
+          GoRoute(
+              path: "/verification",
+              builder: (context, state) => const Verification()),
+          GoRoute(
+              path: "/pastjobs",
+              builder: (context, state) => const PastJobDetails()),
+          GoRoute(
+              path: "/takephoto",
+              builder: (context, state) => const TakePhoto()),
+          GoRoute(path: "/otp", builder: (context, state) => const OtpView()),
+        ]),
+    GoRoute(
+      path: "/invitations",
+      builder: (context, state) => InvitationsScreen(
+        isDarkMode: Theme.of(context).brightness == Brightness.dark,
+      ),
+    ),
+    GoRoute(
+      path: "/manage-network",
+      builder: (context, state) => const DummyPage(
+        title: "Manage My Network Screen",
+      ),
+    ),
+    StatefulShellRoute.indexedStack(
+      builder: (context, state, navigationShell) => Scaffold(
+        key: scaffoldKey,
+        drawer: const MainDrawer(),
+        body: navigationShell, // The body displays the current screen
+        bottomNavigationBar: CustomBottomNavigationBar(
+          navigationShell: navigationShell,
+        ),
+      ),
+      branches: <StatefulShellBranch>[
+        // The route branch for the first tab of the bottom navigation bar.
+        StatefulShellBranch(
+          routes: <GoRoute>[
+            GoRoute(
+                path: "/",
+                builder: (context, state) => HomePage(
+                      scaffoldKey: scaffoldKey,
+                    )),
+          ],
         ),
         GoRoute(
           path: "/manage-network",
@@ -84,6 +112,21 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             isDarkMode: Theme.of(context).brightness == Brightness.dark,
           ),
         ),
+        StatefulShellBranch(
+          routes: <GoRoute>[
+            GoRoute(
+              path: "/post",
+              redirect: (context, state) => "/writePost",
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: <GoRoute>[
+            GoRoute(
+              path: "/notifications",
+              builder: (context, state) => const NotificationsView(),
+            )
+          ],
         GoRoute(
           path: "/connections",
           builder: (context, state) => ConnectionsScreen(
@@ -108,6 +151,19 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             builder: (context, state) => const EditIntroPage(),
           ),
             GoRoute(
+                path: "/commentReplies",
+                builder: (context, state) => const CommentRepliesPage(),
+                routes: [
+                  GoRoute(
+                    path: '/unfocused',
+                    builder: (context, state) =>
+                        const CommentRepliesPage(focused: false),
+                  )
+                ]),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: <GoRoute>[
             path: "/edit_contact_info",
             builder: (context, state) => const EditContactInfo(),
           ),
