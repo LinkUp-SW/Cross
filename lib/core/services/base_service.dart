@@ -34,7 +34,15 @@ class BaseService {
           },
           body: body != null ? jsonEncode(body) : null,
         )
-        .timeout(const Duration(seconds: 10));
+        .timeout(const Duration(seconds: 10),
+        onTimeout: () {
+          // Handle timeout here
+          return Response('Request timed out', 408);
+        }
+        ).onError((error, stackTrace) {
+          // Handle error here
+          return Response('Request failed', 500);
+        });
     updateCookie(response);
     return response;
   }
@@ -50,7 +58,15 @@ class BaseService {
           headers: headers,
           body: jsonEncode(body),
         )
-        .timeout(const Duration(seconds: 10));
+        .timeout(const Duration(seconds: 10),
+        onTimeout: () {
+          // Handle timeout here
+          return Response('Request timed out', 408);
+        }
+        ).onError((error, stackTrace) {
+          // Handle error here
+          return Response(jsonEncode(error), 500);
+        });
     updateCookie(response);
     return response;
   }
@@ -88,6 +104,15 @@ class BaseService {
       const Duration(
         seconds: 10,
       ),
+      onTimeout: () {
+        // Handle timeout here
+        return Response('Request timed out', 408);
+      },
+    ).onError(
+      (error, stackTrace) {
+        // Handle error here
+        return Response('Request failed', 500);
+      },
     );
     updateCookie(response);
     return response;
@@ -107,7 +132,14 @@ class BaseService {
     final response = await http.delete(
       uri,
       headers: {'Authorization': 'Bearer $token'},
-    ).timeout(const Duration(seconds: 10));
+    ).timeout(const Duration(seconds: 10),
+        onTimeout: () {
+          // Handle timeout here
+          return Response('Request timed out', 408);
+        }).onError((error, stackTrace) {
+          // Handle error here
+          return Response('Request failed', 500);
+        });
     updateCookie(response);
     return response;
   }
