@@ -79,7 +79,12 @@ class _CommentsTextFieldState extends State<CommentsTextField> {
                                           color: AppColors.grey,
                                         )),
                                 onTap: () {
-                                  widget.textController.text += "User $index ";
+                                  widget.textController.text =
+                                      widget.textController.text.replaceRange(
+                                    widget.textController.text.lastIndexOf('@'),
+                                    widget.textController.text.length,
+                                    "User $index ",
+                                  );
                                   widget.focusNode.requestFocus();
                                   setState(() {
                                     _showTags = false;
@@ -178,7 +183,8 @@ class _CommentsTextFieldState extends State<CommentsTextField> {
                                               isDense: true,
                                               isCollapsed: true,
                                             ),
-                                            autofocus: widget.focusNode.hasFocus,
+                                            autofocus:
+                                                widget.focusNode.hasFocus,
                                             style: TextStyle(
                                               decoration: TextDecoration.none,
                                               color: Colors.transparent,
@@ -191,7 +197,9 @@ class _CommentsTextFieldState extends State<CommentsTextField> {
                                     ),
                                     if (imagePath.path != '')
                                       Padding(
-                                        padding: EdgeInsets.all(10.r,),
+                                        padding: EdgeInsets.all(
+                                          10.r,
+                                        ),
                                         child: ClipRRect(
                                           borderRadius:
                                               BorderRadius.circular(10.r),

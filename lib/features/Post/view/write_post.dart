@@ -29,6 +29,19 @@ class WritePost extends ConsumerStatefulWidget {
 class _WritePostState extends ConsumerState<WritePost> {
   bool _sending = false;
   Timer? _debounce;
+  bool _showTags = false;
+  final FocusNode _focusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(() {
+      setState(() {
+        if (!_focusNode.hasFocus) {
+          _showTags = false;
+        }
+      });});
+  }
 
   void checkForLinks(String text) {
     final elements = linkify(text);
@@ -185,9 +198,13 @@ class _WritePostState extends ConsumerState<WritePost> {
               disabledForegroundColor: AppColors.grey,
             ),
             onPressed: postData.controller.text.isEmpty &&
-                    postData.media.file.isEmpty
+                        postData.media.file.isEmpty ||
+                    _sending == true
                 ? null
                 : () {
+                    if (_sending) {
+                      return;
+                    }
                     setState(() {
                       _sending = true;
                     });
@@ -195,7 +212,29 @@ class _WritePostState extends ConsumerState<WritePost> {
                         .read(writePostProvider.notifier)
                         .createPost()
                         .then((value) {
-                      if (value != '') {
+                      if (value == 'error') {
+                        setState(() {
+                          _sending = false;
+                          openSnackbar(
+                            child: Row(
+                              children: [
+                                Icon(Icons.error_sharp, color: AppColors.red),
+                                SizedBox(
+                                  width: 10.w,
+                                ),
+                                Text(
+                                  'Error occured! Couldn\'t create post. Try again',
+                                  style: TextStyle(
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge!
+                                          .color),
+                                ),
+                              ],
+                            ),
+                          );
+                        });
+                      } else {
                         setState(() {
                           _sending = false;
                           ref.read(writePostProvider.notifier).clearWritePost();
@@ -247,18 +286,25 @@ class _WritePostState extends ConsumerState<WritePost> {
                   child: Stack(
                     children: [
                       TextField(
+                        focusNode: _focusNode,
                         controller: postData.controller,
                         onChanged: (value) {
-                          if (postData.media.type == MediaType.none) {
-                            if (_debounce?.isActive ?? false) {
-                              _debounce!.cancel();
-                            }
-                            _debounce = Timer(const Duration(seconds: 2), () {
-                              setState(() {
-                                checkForLinks(value);
-                              });
-                            });
+                          if (_debounce?.isActive ?? false) {
+                            _debounce!.cancel();
                           }
+                          _debounce = Timer(const Duration(seconds: 1), () {
+                            setState(() {
+                              if (postData.media.type == MediaType.none) {
+                                checkForLinks(value);
+                              }
+                              if (value.contains('@')) {
+                                _showTags = true;
+                              } else {
+                                _showTags = false;
+                              }
+                            });
+                          });
+
                           setState(() {});
                         },
                         cursorColor: AppColors.lightBlue,
@@ -330,6 +376,44 @@ class _WritePostState extends ConsumerState<WritePost> {
             ),
           ),
         ),
+        if (_showTags && _focusNode.hasFocus)
+          SizedBox(
+            height: 200.h,
+            child: ListView.separated(
+              shrinkWrap: true,
+              physics: const ClampingScrollPhysics(),
+              itemCount: 10,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  leading: CircleAvatar(
+                    radius: 20.r,
+                    backgroundImage: const NetworkImage(
+                        'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg'),
+                  ),
+                  title: Text("User $index"),
+                  subtitle: Text("user $index",
+                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                            color: AppColors.grey,
+                          )),
+                  onTap: () {
+                    postData.controller.text =
+                        postData.controller.text.replaceRange(
+                      postData.controller.text.lastIndexOf('@'),
+                      postData.controller.text.length,
+                      "**User $index** ",
+                    );
+                    setState(() {
+                      _showTags = false;
+                    });
+                  },
+                );
+              },
+              separatorBuilder: (context, index) => const Divider(
+                color: AppColors.lightGrey,
+                height: 0,
+              ),
+            ),
+          ),
         if (postData.media.type == MediaType.none)
           Padding(
             padding: EdgeInsets.all(10.r),
