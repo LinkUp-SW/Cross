@@ -11,16 +11,15 @@ class PastJobDetails extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _locationController = TextEditingController();
-    final _schoolController = TextEditingController();
-    final _startDateController = TextEditingController();
-    final _pastJobTitleController = TextEditingController();
-    final _pastJobTitleFocusNode = FocusNode();
-    final _pastJobCompanyController = TextEditingController();
-    final _formKey = GlobalKey<FormState>();
-    final _countryController = TextEditingController();
-    final _stateController = TextEditingController();
-    final _cityController = TextEditingController();
+    final schoolController = TextEditingController();
+    final startDateController = TextEditingController();
+    final pastJobTitleController = TextEditingController();
+    final pastJobTitleFocusNode = FocusNode();
+    final pastJobCompanyController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+    final countryController = TextEditingController();
+    final stateController = TextEditingController();
+    final cityController = TextEditingController();
     final pastJobDetailsState = ref.watch(pastJobDetailProvider);
     final pastJobDetailsNotifier = ref.read(pastJobDetailProvider.notifier);
     bool amStudent = pastJobDetailsState is Student;
@@ -99,16 +98,16 @@ class PastJobDetails extends ConsumerWidget {
                 height: 20.h,
               ),
               Form(
-                key: _formKey,
+                key: formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     CountryStateCityPicker(
                       key: const Key('countryStateCityPicker'),
-                      city: _cityController,
-                      state: _stateController,
-                      country: _countryController,
+                      city: cityController,
+                      state: stateController,
+                      country: countryController,
                       textFieldDecoration: const InputDecoration(
                         border: OutlineInputBorder(
                           borderSide: BorderSide(),
@@ -124,7 +123,7 @@ class PastJobDetails extends ConsumerWidget {
                       ),
                       TextFormField(
                         key: const Key('schoolTextField'),
-                        controller: _schoolController,
+                        controller: schoolController,
                         decoration: const InputDecoration(
                           labelText: 'School/University',
                           border: OutlineInputBorder(
@@ -137,7 +136,7 @@ class PastJobDetails extends ConsumerWidget {
                       ),
                       TextFormField(
                         key: const Key('startDateTextField'),
-                        controller: _startDateController,
+                        controller: startDateController,
                         decoration: const InputDecoration(
                           labelText: 'Start Date',
                           suffixIcon: Icon(Icons.calendar_today),
@@ -149,7 +148,7 @@ class PastJobDetails extends ConsumerWidget {
                         onTap: () async {
                           await pastJobDetailsNotifier.pickDate(context);
                           if (pastJobDetailsNotifier.selectedDate != null) {
-                            _startDateController.text =
+                            startDateController.text =
                                 "${pastJobDetailsNotifier.selectedDate!.day}/${pastJobDetailsNotifier.selectedDate!.month}/${pastJobDetailsNotifier.selectedDate!.year}";
                           }
                         },
@@ -160,8 +159,8 @@ class PastJobDetails extends ConsumerWidget {
                       ),
                       TextFormField(
                         key: const Key('pastJobTitleTextField'),
-                        controller: _pastJobTitleController,
-                        focusNode: _pastJobTitleFocusNode,
+                        controller: pastJobTitleController,
+                        focusNode: pastJobTitleFocusNode,
                         decoration: const InputDecoration(
                           labelText: 'Past Job Title',
                           border: OutlineInputBorder(
@@ -174,7 +173,7 @@ class PastJobDetails extends ConsumerWidget {
                       ),
                       TextFormField(
                         key: const Key('pastJobCompanyTextField'),
-                        controller: _pastJobCompanyController,
+                        controller: pastJobCompanyController,
                         decoration: const InputDecoration(
                           labelText: 'Past Job Company',
                           border: OutlineInputBorder(
@@ -192,12 +191,12 @@ class PastJobDetails extends ConsumerWidget {
                           ? null
                           : () {
                               pastJobDetailsNotifier.setData(
-                                _countryController.text,
-                                _cityController.text,
-                                _pastJobTitleController.text,
-                                _pastJobCompanyController.text,
-                                _schoolController.text,
-                                _startDateController.text,
+                                countryController.text,
+                                cityController.text,
+                                pastJobTitleController.text,
+                                pastJobCompanyController.text,
+                                schoolController.text,
+                                startDateController.text,
                               );
                             },
                       child: pastJobDetailsState is PastJobDetailsLoading

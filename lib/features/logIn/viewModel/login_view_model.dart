@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/core/services/storage.dart';
 import 'package:link_up/features/logIn/model/login_model.dart';
@@ -16,20 +14,19 @@ final logInProvider = StateNotifierProvider<LogInNotifier, LogInState>((ref) {
 class LogInNotifier extends StateNotifier<LogInState> {
   final LogInService _logInService;
 
-  LogInNotifier(this._logInService) : super(LogInInitialState());
+  LogInNotifier(this._logInService) : super(const LogInInitialState());
 
   Future<void> logIn(String email, String password) async {
-    state = LogInLoadingState(); // Show loading indicator
+    state = const LogInLoadingState(); // Show loading indicator
     try {
       final success = await _logInService
           .logIn(LogInModel(email: email, password: password));
       if (success) {
-        state = LogInSuccessState();
+        state = const LogInSuccessState();
       } else {
-        state = LogInErrorState("Invalid credentials");
+        state = const LogInErrorState("Invalid credentials");
       }
     } catch (e) {
-      print(e.toString());
       state = const LogInErrorState(
           'There was an error logging in. Please try again.');
     }

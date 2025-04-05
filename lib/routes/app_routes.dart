@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:link_up/features/admin_panel/view/statistics_view.dart';
 import 'package:link_up/features/logIn/view/forgot_pasword_view.dart';
 import 'package:link_up/features/logIn/view/login_view.dart';
 import 'package:link_up/features/signUp/view/userInfo/names_view.dart';
@@ -26,10 +27,9 @@ import 'package:link_up/shared/widgets/bottom_navigation_bar.dart';
 import 'package:link_up/shared/widgets/main_drawer.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) {
-
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
-  return GoRouter(initialLocation: '/login', routes: <RouteBase>[
+  return GoRouter(initialLocation: '/statistics', routes: <RouteBase>[
     GoRoute(path: "/profile", builder: (context, state) => Container()),
     GoRoute(
         path: "/login",
@@ -39,6 +39,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               path: "/forgotpassword",
               builder: (context, state) => const ForgotPasswordView()),
         ]),
+    GoRoute(
+        path: '/statistics',
+        builder: (context, state) => const StatisticsView()),
+    GoRoute(
+        path: '/priv',
+        builder: (context, state) => const DummyPage(title: 'Users')),
     GoRoute(
         path: "/signup",
         builder: (context, state) => const EmailPasswordView(),
@@ -85,7 +91,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         // The route branch for the first tab of the bottom navigation bar.
         StatefulShellBranch(
           routes: <GoRoute>[
-            GoRoute(path: "/", builder: (context, state) => HomePage(scaffoldKey: scaffoldKey,)),
+            GoRoute(
+                path: "/",
+                builder: (context, state) => HomePage(
+                      scaffoldKey: scaffoldKey,
+                    )),
           ],
         ),
         StatefulShellBranch(
@@ -99,17 +109,18 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         StatefulShellBranch(
           routes: <GoRoute>[
             GoRoute(
-                path: "/post",
-                redirect: (context, state) => "/writePost",),
+              path: "/post",
+              redirect: (context, state) => "/writePost",
+            ),
           ],
         ),
         StatefulShellBranch(
           routes: <GoRoute>[
             GoRoute(
-                path: "/notifications",
-                builder: 
-                    (context, state) => const NotificationsView(),
-        )],
+              path: "/notifications",
+              builder: (context, state) => const NotificationsView(),
+            )
+          ],
         ),
         StatefulShellBranch(
           routes: <GoRoute>[
@@ -139,10 +150,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 routes: [
                   GoRoute(
                     path: '/unfocused',
-                    builder: (context, state) => const CommentRepliesPage(focused: false),
-                  )]
-                  ),
-                
+                    builder: (context, state) =>
+                        const CommentRepliesPage(focused: false),
+                  )
+                ]),
           ],
         ),
         StatefulShellBranch(
@@ -159,21 +170,23 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) => const ReactionsPage()),
           ],
         ),
-        
       ],
     ),
     GoRoute(path: "/company", builder: (context, state) => Container()),
-    GoRoute(path: "/writePost", pageBuilder: (context, state) => 
-    CustomTransitionPage(child: const WritePost(), transitionsBuilder: 
-    (context, animation, secondaryAnimation, child) {
-      return SlideTransition(
-        position: Tween<Offset>(
-          begin: const Offset(0, 1.0),
-          end: Offset.zero,
-        ).animate(animation),
-        child: child,
-      );
-    })),
+    GoRoute(
+        path: "/writePost",
+        pageBuilder: (context, state) => CustomTransitionPage(
+            child: const WritePost(),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(0, 1.0),
+                  end: Offset.zero,
+                ).animate(animation),
+                child: child,
+              );
+            })),
     GoRoute(
         path: "/messages",
         builder: (context, state) => const DummyPage(title: "messages")),

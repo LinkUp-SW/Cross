@@ -3,7 +3,7 @@ import 'package:link_up/features/signUp/model/verfication_model.dart';
 class VerficationService {
   Future<bool?> verifyCode(VerficationModel code) async {
     try {
-      await Future.delayed(Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 2));
       if (code.code == '1234') {
         return true;
       }
@@ -15,7 +15,7 @@ class VerficationService {
 
   Future<bool?> resendCode() async {
     try {
-      await Future.delayed(Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 2));
       return true;
     } catch (e) {
       return false;

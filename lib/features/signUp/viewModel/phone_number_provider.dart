@@ -1,10 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl_phone_field/phone_number.dart';
 import 'package:link_up/features/signUp/model/phone_number_model.dart';
 import 'package:link_up/features/signUp/services/phone_number_service.dart';
 import 'package:link_up/features/signUp/state/phone_number_state.dart';
 import 'package:link_up/features/signUp/viewModel/signup_notifier.dart';
-import 'package:link_up/shared/functions.dart';
 
 final phoneNumberServiceProvider = Provider((ref) => PhoneNumberService());
 

@@ -24,8 +24,8 @@ class _ForgotPasswordViewState extends ConsumerState<ForgotPasswordView> {
     ref.listen<ForgotPasswordState>(forgotPasswordProvider, (previous, next) {
       if (next is ForgotPasswordSuccess) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Email sent successfully'),
+          const SnackBar(
+            content: Text('Email sent successfully'),
           ),
         );
         context.push('/login');

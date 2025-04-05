@@ -5,7 +5,6 @@ class InternalEndPoints {
 }
 
 class ExternalEndPoints {
-  static const baseUrl = 'http://10.0.2.2:3000/';
+  static const baseUrl = 'http://20.46.48.83/api/';
   static const postLoginEndpoint = '/login';
 }
-

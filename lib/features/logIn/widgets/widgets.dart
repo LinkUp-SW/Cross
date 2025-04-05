@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class DividerWithText extends StatelessWidget {
   final String text;
 
-  const DividerWithText({Key? key, required this.text}) : super(key: key);
+  const DividerWithText({super.key, required this.text});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,7 @@ class DividerWithText extends StatelessWidget {
           height: 20,
         ),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
           color: Theme.of(context)
               .colorScheme
               .surface, // Same as background to make it blend

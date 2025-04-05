@@ -106,7 +106,6 @@ class _OtpViewState extends ConsumerState<OtpView> {
                                 otpNotifier.sendOtp();
                                 _otpController.clear();
                               },
-                        child: const Text('Resend OTP ?'),
                         style: const ButtonStyle(
                           overlayColor:
                               WidgetStatePropertyAll(Colors.transparent),
@@ -114,6 +113,7 @@ class _OtpViewState extends ConsumerState<OtpView> {
                             Colors.blue,
                           ),
                         ),
+                        child: const Text('Resend OTP ?'),
                       ),
                       ElevatedButton(
                         key: const Key('verify_otp_button'),

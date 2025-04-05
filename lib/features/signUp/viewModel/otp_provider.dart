@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/features/signUp/services/otp_service.dart';
 import 'package:link_up/features/signUp/state/otp_state.dart';

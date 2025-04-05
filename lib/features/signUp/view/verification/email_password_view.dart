@@ -64,13 +64,13 @@ class _EmailPasswordViewState extends ConsumerState<EmailPasswordView> {
                     onPressed: () {
                       context.push('/login');
                     },
-                    child: const Text('Sign In'),
                     style: const ButtonStyle(
                       overlayColor: WidgetStatePropertyAll(Colors.transparent),
                       foregroundColor: WidgetStatePropertyAll(
                         Colors.blue,
                       ),
                     ),
+                    child: const Text('Sign In'),
                   ),
                 ],
               ),

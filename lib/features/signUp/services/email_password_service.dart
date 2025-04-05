@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:http/http.dart';
 import 'package:link_up/core/services/base_service.dart';
 import 'package:link_up/features/signUp/model/email_password_model.dart';
 

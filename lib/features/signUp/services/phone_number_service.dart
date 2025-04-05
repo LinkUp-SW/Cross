@@ -4,7 +4,7 @@ class PhoneNumberService {
 
   Future<bool?> setPhoneNumber(PhoneNumberModel phoneNumber) async {
     try {
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
       return true;
     } catch (e) {
       return false;
@@ -13,7 +13,7 @@ class PhoneNumberService {
 
   Future<bool> sendphonenumber() async {
     try {
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
       return true;
     } catch (e) {
       return false;

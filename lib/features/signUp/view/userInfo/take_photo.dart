@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:io';
-import 'package:image_picker/image_picker.dart';
+
 import 'package:link_up/features/signUp/state/image_picker_state.dart';
 import 'package:link_up/features/signUp/viewModel/image_picker_provider.dart';
 
@@ -17,7 +17,7 @@ class TakePhoto extends ConsumerWidget {
 
     return Scaffold(
       body: Padding(
-        padding: EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -59,10 +59,10 @@ class TakePhoto extends ConsumerWidget {
                     ),
                     child: (imagePickerState is ImageSelectedState)
                         ? null
-                        : Column(
+                        : const Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: const [
+                            children: [
                               Icon(Icons.camera_alt, size: 100),
                               SizedBox(height: 10),
                               Center(
@@ -78,7 +78,7 @@ class TakePhoto extends ConsumerWidget {
                 SizedBox(height: 220.h),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    minimumSize: Size(double.infinity, 50),
+                    minimumSize: const Size(double.infinity, 50),
                   ),
                   onPressed: () {
                     context.push('/login');
