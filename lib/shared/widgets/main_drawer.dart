@@ -1,18 +1,21 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/core/services/storage.dart';
+import 'package:link_up/features/logIn/viewModel/user_data_vm.dart';
 import 'package:link_up/shared/themes/colors.dart';
 
-class MainDrawer extends StatelessWidget {
+class MainDrawer extends ConsumerWidget {
   const MainDrawer({
     super.key,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userData = ref.watch(userDataProvider);
     return Drawer(
       backgroundColor: Theme.of(context).colorScheme.primary,
       child: Padding(
@@ -37,8 +40,7 @@ class MainDrawer extends StatelessWidget {
                         children: [
                           CircleAvatar(
                             radius: 30.r,
-                            backgroundImage: const NetworkImage(
-                                'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg'),
+                            backgroundImage: NetworkImage(userData.profileUrl),
                           ),
                           SizedBox(
                             height: 5.h,

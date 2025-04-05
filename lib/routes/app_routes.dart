@@ -7,6 +7,7 @@ import 'package:link_up/features/my-network/view/connections_screen.dart';
 import 'package:link_up/core/utils/global_keys.dart';
 import 'package:link_up/features/logIn/view/forgot_pasword_view.dart';
 import 'package:link_up/features/logIn/view/login_view.dart';
+import 'package:link_up/features/profile/view/view.dart';
 import 'package:link_up/features/signUp/view/userInfo/names_view.dart';
 import 'package:link_up/features/signUp/view/userInfo/past_job_details.dart';
 import 'package:link_up/features/signUp/view/userInfo/take_photo.dart';
@@ -40,7 +41,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       navigatorKey: navigatorKey,
       initialLocation: '/login',
       routes: <RouteBase>[
-        GoRoute(path: "/profile", builder: (context, state) => Container()),
+        GoRoute(path: "/profile", builder: (context, state) => ProfilePage()),
         GoRoute(
             path: "/login",
             builder: (context, state) => const LoginPage(),
