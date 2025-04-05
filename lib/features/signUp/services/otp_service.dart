@@ -4,7 +4,7 @@ class OtpService extends BaseService {
   Future<bool> sendOtp(String? email) async {
     try {
       final response =
-          await post("api/v1/user/send-otp", {"email": email});
+          await post("api/v1/user/send-otp", body: {"email": email});
       if (response.statusCode != 200) {
         return false;
       }

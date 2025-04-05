@@ -1,9 +1,7 @@
 //the page ui only and try avoiding any logic here
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/features/admin_panel/widgets/widgets.dart';
-import 'package:link_up/shared/widgets/main_drawer.dart';
 
 class StatisticsView extends ConsumerStatefulWidget {
   const StatisticsView({super.key});

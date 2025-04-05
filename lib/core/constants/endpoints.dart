@@ -5,25 +5,23 @@ class InternalEndPoints {
 }
 
 class ExternalEndPoints {
-  static const baseUrl = 'http://20.46.48.83/api/';
-  static const postLoginEndpoint = '/login';
+  static const baseUrl = 'https://linkup-egypt.tech/api/';
   static const receivedConnectionInvitations =
-      'api/v1/user/my-network/invitation-manager/received';
+      'v1/user/my-network/invitation-manager/received';
   static const sentConnectionInvitations =
-      'api/v1/user/my-network/invitation-manager/sent';
-  static const acceptConnectionInvitation = "api/v1/user/accept/:user_id";
+      'v1/user/my-network/invitation-manager/sent';
+  static const acceptConnectionInvitation = "v1/user/accept/:user_id";
   static const ignoreConnectionInvitation =
-      'api/v1/user/my-network/invitation-manager/ignore/:user_id';
+      'v1/user/my-network/invitation-manager/ignore/:user_id';
   static const withdrawConnectionInvitation =
-      "api/v1/user/my-network/invitation-manager/withdraw/:user_id";
+      "v1/user/my-network/invitation-manager/withdraw/:user_id";
   static const connectionsAndFollowingsCounts =
-      'api/v1/user/my-network/connections/count';
+      'v1/user/my-network/connections/count';
   static const connectionsList =
-      'api/v1/user/my-network/invite-connect/connections/:user_id';
+      'v1/user/my-network/invite-connect/connections/:user_id';
   static const removeConnection =
-      'api/v1/user/my-network/connections/remove/:user_id';
-  static const userId = 'api/v1/user/my-network/connections/count';
-  static const followingsList =
-      'api/v1/user/my-network/network-manager/following';
-  static const unfollow = 'api/v1/user/unfollow/:user_id';
+      'v1/user/my-network/connections/remove/:user_id';
+  static const userId = 'v1/user/my-network/connections/count';
+  static const followingsList = 'v1/user/my-network/network-manager/following';
+  static const unfollow = 'v1/user/unfollow/:user_id';
 }
