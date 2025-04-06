@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:link_up/features/logIn/viewModel/user_data_vm.dart';
 
 class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final Widget searchBar;
@@ -9,16 +10,19 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final Function leadingAction;
   final bool leadingArrow;
   final bool viewMessages;
+  final PreferredSizeWidget? bottom;
   const CustomAppBar(
       {super.key,
       required this.searchBar,
       this.actions = const [],
       this.leadingArrow = false,
       this.viewMessages = true,
-      required this.leadingAction});
+      required this.leadingAction,
+      this.bottom});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final userData = ref.watch(userDataProvider);
     return AppBar(
       backgroundColor: Theme.of(context).colorScheme.primary,
       leading: leadingArrow == false
@@ -26,10 +30,11 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
               onTap: () {
                 leadingAction();
               },
-              child: CircleAvatar(
-                radius: 20.r,
-                child: const Image(
-                  image: AssetImage("assets/images/profile.png"),
+              child: Padding(
+                padding: EdgeInsets.all(5.r),
+                child: CircleAvatar(
+                  radius: 20.r,
+                  backgroundImage: NetworkImage(userData.profileUrl),
                 ),
               ),
             )
@@ -54,6 +59,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
               )
             : const SizedBox.shrink(),
       ],
+      bottom: bottom,
     );
   }
 
