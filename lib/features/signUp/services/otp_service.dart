@@ -3,12 +3,8 @@ import 'package:link_up/core/services/base_service.dart';
 class OtpService extends BaseService {
   Future<bool> sendOtp(String? email) async {
     try {
-      final response = await post(
-        "api/v1/user/send-otp",
-        body: {
-          "email": email,
-        },
-      );
+      final response =
+          await post("api/v1/user/send-otp", body: {"email": email});
       if (response.statusCode != 200) {
         return false;
       }

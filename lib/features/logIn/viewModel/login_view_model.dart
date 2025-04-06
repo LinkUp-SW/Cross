@@ -1,4 +1,3 @@
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/core/services/storage.dart';
 import 'package:link_up/features/logIn/model/login_model.dart';
@@ -17,7 +16,6 @@ class LogInNotifier extends StateNotifier<LogInState> {
   final LogInService _logInService;
 
   LogInNotifier(this._logInService) : super(const LogInInitialState());
-
   Future<void> logIn(String email, String password,WidgetRef ref) async {
     state = const LogInLoadingState(); // Show loading indicator
     try {
@@ -32,7 +30,6 @@ class LogInNotifier extends StateNotifier<LogInState> {
         state = const LogInSuccessState();
       }
     } catch (e) {
-      print(e.toString());
       state = const LogInErrorState(
           'There was an error logging in. Please try again.');
     }
