@@ -1,11 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:link_up/features/Home/home_enums.dart';
+import 'package:link_up/features/Post/widgets/formatted_input.dart';
 import 'package:link_up/shared/themes/colors.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class CommentsTextField extends StatefulWidget {
   final FocusNode focusNode;
@@ -83,7 +83,7 @@ class _CommentsTextFieldState extends State<CommentsTextField> {
                                       widget.textController.text.replaceRange(
                                     widget.textController.text.lastIndexOf('@'),
                                     widget.textController.text.length,
-                                    "User $index ",
+                                    "*User $index* ",
                                   );
                                   widget.focusNode.requestFocus();
                                   setState(() {
@@ -116,6 +116,7 @@ class _CommentsTextFieldState extends State<CommentsTextField> {
                               separatorBuilder: (context, index) =>
                                   SizedBox(width: 5.w),
                               itemBuilder: (context, index) {
+                                //TODO: Suggestions
                                 return Chip(label: Text("label $index"));
                               }),
                         ),
@@ -149,52 +150,18 @@ class _CommentsTextFieldState extends State<CommentsTextField> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Padding(
-                                      padding: EdgeInsets.all(10.r),
-                                      child: Stack(
-                                        children: [
-                                          Linkify(
-                                            text: widget.textController.text,
-                                            style: TextStyle(
-                                              fontSize: 15.r,
-                                              letterSpacing: 0,
-                                            ),
-                                            options: const LinkifyOptions(
-                                                humanize: false),
-                                            onOpen: (link) async {
-                                              if (!await launchUrl(
-                                                  Uri.parse(link.url))) {
-                                                throw Exception(
-                                                    'Could not open the link');
-                                              }
-                                            },
-                                          ),
-                                          TextField(
-                                            focusNode: widget.focusNode,
+                                        padding: EdgeInsets.all(10.r),
+                                        child: FormattedInput(
+                                            mediaType: MediaType.none,
                                             controller: widget.textController,
-                                            onChanged: (value) {
-                                              setState(() {});
+                                            focusNode: widget.focusNode,
+                                            onTagsVisibilityChanged:
+                                                (showTags) {
+                                              setState(() {
+                                                _showTags = showTags;
+                                              });
                                             },
-                                            cursorColor: AppColors.lightBlue,
-                                            maxLines: null,
-                                            decoration: const InputDecoration(
-                                              border: InputBorder.none,
-                                              hintText:
-                                                  'What are your thoughts?',
-                                              isDense: true,
-                                              isCollapsed: true,
-                                            ),
-                                            autofocus:
-                                                widget.focusNode.hasFocus,
-                                            style: TextStyle(
-                                              decoration: TextDecoration.none,
-                                              color: Colors.transparent,
-                                              fontSize: 15.r,
-                                              letterSpacing: 0,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
+                                            onMediaChanged: (media) {})),
                                     if (imagePath.path != '')
                                       Padding(
                                         padding: EdgeInsets.all(
@@ -244,6 +211,19 @@ class _CommentsTextFieldState extends State<CommentsTextField> {
                                         onTap: () {
                                           setState(() {
                                             _showTags = !_showTags;
+                                            if (_showTags) {
+                                              widget.textController.text += '@';
+                                            } else {
+                                              widget.textController.text =
+                                                  widget.textController.text
+                                                      .replaceRange(
+                                                widget.textController.text
+                                                    .lastIndexOf('@'),
+                                                widget
+                                                    .textController.text.length,
+                                                "",
+                                              );
+                                            }
                                           });
                                         },
                                         child:
@@ -297,6 +277,18 @@ class _CommentsTextFieldState extends State<CommentsTextField> {
                                       onTap: () {
                                         setState(() {
                                           _showTags = !_showTags;
+                                          if (_showTags) {
+                                            widget.textController.text += '@';
+                                          } else {
+                                            widget.textController.text = widget
+                                                .textController.text
+                                                .replaceRange(
+                                              widget.textController.text
+                                                  .lastIndexOf('@'),
+                                              widget.textController.text.length,
+                                              "",
+                                            );
+                                          }
                                         });
                                       },
                                       child: const Icon(Icons.alternate_email))

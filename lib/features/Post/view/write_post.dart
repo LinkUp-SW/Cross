@@ -1,10 +1,6 @@
-import 'dart:developer';
-import 'dart:async';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:linkify/linkify.dart';
-import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:link_up/features/Post/widgets/formatted_input.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -17,7 +13,6 @@ import 'package:link_up/features/Post/viewModel/write_post_vm.dart';
 import 'package:link_up/features/Post/widgets/bottom_sheet.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/widgets/custom_snackbar.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class WritePost extends ConsumerStatefulWidget {
   const WritePost({super.key});
@@ -28,7 +23,6 @@ class WritePost extends ConsumerStatefulWidget {
 
 class _WritePostState extends ConsumerState<WritePost> {
   bool _sending = false;
-  Timer? _debounce;
   bool _showTags = false;
   final FocusNode _focusNode = FocusNode();
 
@@ -40,36 +34,8 @@ class _WritePostState extends ConsumerState<WritePost> {
         if (!_focusNode.hasFocus) {
           _showTags = false;
         }
-      });});
-  }
-
-  void checkForLinks(String text) {
-    final elements = linkify(text);
-
-    for (var element in elements) {
-      if (element is LinkableElement) {
-        // A link was found
-        log('Found link: ${element.url}');
-
-        // Validate the URL before setting it as media
-        try {
-          final uri = Uri.parse(element.url);
-          if (uri.hasScheme && uri.host.isNotEmpty) {
-            // Valid URL, set it as media
-            ref
-                .read(writePostProvider.notifier)
-                .setMedia(Media(type: MediaType.link, urls: [element.url]));
-
-            log('Valid link added: ${element.url}');
-            break; // If you only care about the first link
-          } else {
-            log('Invalid link format: ${element.url}');
-          }
-        } catch (e) {
-          log('Error parsing URL: ${e.toString()}');
-        }
-      }
-    }
+      });
+    });
   }
 
   @override
@@ -281,63 +247,18 @@ class _WritePostState extends ConsumerState<WritePost> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                Padding(
-                  padding: EdgeInsets.all(10.r),
-                  child: Stack(
-                    children: [
-                      TextField(
-                        focusNode: _focusNode,
-                        controller: postData.controller,
-                        onChanged: (value) {
-                          if (_debounce?.isActive ?? false) {
-                            _debounce!.cancel();
-                          }
-                          _debounce = Timer(const Duration(seconds: 1), () {
-                            setState(() {
-                              if (postData.media.type == MediaType.none) {
-                                checkForLinks(value);
-                              }
-                              if (value.contains('@')) {
-                                _showTags = true;
-                              } else {
-                                _showTags = false;
-                              }
-                            });
-                          });
-
-                          setState(() {});
-                        },
-                        cursorColor: AppColors.lightBlue,
-                        maxLines: null,
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
-                          hintText: 'What are your thoughts?',
-                          isDense: true,
-                          isCollapsed: true,
-                        ),
-                        autofocus: true,
-                        style: TextStyle(
-                          decoration: TextDecoration.none,
-                          color: Colors.transparent,
-                          fontSize: 15.r,
-                          letterSpacing: 0,
-                        ),
-                      ),
-                      Linkify(
-                        text: postData.controller.text,
-                        style: TextStyle(
-                          fontSize: 15.r,
-                          letterSpacing: 0,
-                        ),
-                        options: const LinkifyOptions(humanize: false),
-                        onOpen: (link) async {
-                          if (!await launchUrl(Uri.parse(link.url))) {
-                            throw Exception('Could not open the link');
-                          }
-                        },
-                      ),
-                    ],
-                  ),
+                FormattedInput(
+                  mediaType: postData.media.type,
+                  controller: postData.controller,
+                  focusNode: _focusNode,
+                  onTagsVisibilityChanged: (showTags) {
+                    setState(() {
+                      _showTags = showTags;
+                    });
+                  },
+                  onMediaChanged: (media) {
+                    ref.read(writePostProvider.notifier).setMedia(media);
+                  },
                 ),
                 if (postData.media.type != MediaType.none)
                   Column(
@@ -400,7 +321,7 @@ class _WritePostState extends ConsumerState<WritePost> {
                         postData.controller.text.replaceRange(
                       postData.controller.text.lastIndexOf('@'),
                       postData.controller.text.length,
-                      "**User $index** ",
+                      "*User $index* ",
                     );
                     setState(() {
                       _showTags = false;
