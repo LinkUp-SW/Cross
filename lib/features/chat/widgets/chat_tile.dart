@@ -5,12 +5,15 @@ class ChatTile extends StatelessWidget {
   final Chat chat;
   final VoidCallback onTap;
   final VoidCallback onLongPress;
+  final VoidCallback onThreeDotPressed;
 
   const ChatTile({
+    Key? key,
     required this.chat,
     required this.onTap,
     required this.onLongPress,
-  });
+    required this.onThreeDotPressed,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,13 +27,21 @@ class ChatTile extends StatelessWidget {
         chat.name,
         style: TextStyle(
           fontWeight: chat.isUnread ? FontWeight.bold : FontWeight.normal, // Bold if unread
+          color: chat.isBlocked ? Colors.grey : Colors.black, // Grey out blocked users
         ),
       ),
-      subtitle: Text(chat.lastMessage),
+      subtitle: Text(
+        chat.lastMessage,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+          color: chat.isBlocked ? Colors.grey : Colors.black, // Blocked users show grey text
+        ),
+      ),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (chat.unreadMessageCount > 0) // Show unread count normally
+          if (chat.unreadMessageCount > 0) // Show unread counter normally
             Container(
               padding: const EdgeInsets.all(6),
               decoration: const BoxDecoration(
@@ -45,9 +56,13 @@ class ChatTile extends StatelessWidget {
                 ),
               ),
             )
-          else if (chat.unreadMessageCount == -1) // Show blue dot only if marked unread via long press
-            const Icon(Icons.circle, color: Colors.blue, size: 12),
-          const Icon(Icons.more_vert),
+          else if (chat.isUnread) // Show blue dot when marked unread via long press
+            const Icon(Icons.circle, color: Colors.blue, size: 20),
+          const SizedBox(width: 8), // Add spacing
+          IconButton(
+            icon: const Icon(Icons.more_vert), // 3-dot menu icon
+            onPressed: onThreeDotPressed, // Trigger the 3-dot pressed callback
+          ),
         ],
       ),
     );

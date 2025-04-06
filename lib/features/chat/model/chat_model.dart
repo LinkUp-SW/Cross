@@ -1,11 +1,14 @@
+enum MessageType { text, image, video, document, sticker }
+
 class Chat {
   final String name;
   final String profilePictureUrl;
   final String lastMessage;
   final bool isUnread;
   final int unreadMessageCount;
-  final List<Message> messages; // List to store messages
-  final DateTime lastMessageTimestamp; // Timestamp for the last message in the chat
+  final List<Message> messages;
+  final DateTime lastMessageTimestamp;
+  final bool isBlocked;
 
   Chat({
     required this.name,
@@ -13,24 +16,11 @@ class Chat {
     required this.lastMessage,
     required this.isUnread,
     required this.unreadMessageCount,
-    required this.messages, 
-    required this.lastMessageTimestamp, 
+    required this.messages,
+    required this.lastMessageTimestamp,
+    this.isBlocked = false,  // Default value is false (not blocked)
   });
 
-  // method to add a new message to the chat
-  Chat addMessage(Message newMessage) {
-    return Chat(
-      name: name,
-      profilePictureUrl: profilePictureUrl,
-      lastMessage: newMessage.content,
-      isUnread: true, // Mark as unread when a new message arrives
-      unreadMessageCount: unreadMessageCount + 1,
-      messages: [...messages, newMessage], // Add new message to the list
-      lastMessageTimestamp: newMessage.timestamp, // Update the last message timestamp
-    );
-  }
-
-  // Copy with method for immutability
   Chat copyWith({
     String? name,
     String? profilePictureUrl,
@@ -39,6 +29,7 @@ class Chat {
     int? unreadMessageCount,
     List<Message>? messages,
     DateTime? lastMessageTimestamp,
+     bool? isBlocked, 
   }) {
     return Chat(
       name: name ?? this.name,
@@ -48,6 +39,7 @@ class Chat {
       unreadMessageCount: unreadMessageCount ?? this.unreadMessageCount,
       messages: messages ?? this.messages,
       lastMessageTimestamp: lastMessageTimestamp ?? this.lastMessageTimestamp,
+      isBlocked: isBlocked ?? this.isBlocked,  
     );
   }
 }
@@ -56,10 +48,33 @@ class Message {
   final String sender;
   final String content;
   final DateTime timestamp;
-  
+  final MessageType type;
+
   Message({
     required this.sender,
     required this.content,
     required this.timestamp,
+    required this.type,
   });
+
+  factory Message.fromJson(Map<String, dynamic> json) {
+    return Message(
+      sender: json['sender'],
+      content: json['content'],
+      timestamp: DateTime.parse(json['timestamp']),
+      type: MessageType.values.firstWhere(
+        (e) => e.toString() == 'MessageType.${json['type']}',
+        orElse: () => MessageType.text,
+      ),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'sender': sender,
+      'content': content,
+      'timestamp': timestamp.toIso8601String(),
+      'type': type.toString().split('.').last,
+    };
+  }
 }
