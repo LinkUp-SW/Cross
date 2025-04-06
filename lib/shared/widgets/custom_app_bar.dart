@@ -53,7 +53,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
         viewMessages
             ? IconButton(
                 onPressed: () {
-                  context.push('/messages');
+                  GoRouter.of(context).go('/messages');
                 },
                 icon: const Icon(Icons.message),
               )
