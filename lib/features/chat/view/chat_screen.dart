@@ -45,7 +45,7 @@ class ChatScreen extends ConsumerWidget {
               }
             },
             onAttachmentPressed: () {
-              
+              _showAttachmentOptions(context, ref, chatIndex);
             },
           ),
         ],
@@ -53,5 +53,37 @@ class ChatScreen extends ConsumerWidget {
     );
   }
 
-  
+  void _showAttachmentOptions(BuildContext context, WidgetRef ref, int chatIndex) {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => Wrap(
+        children: [
+          ListTile(
+            leading: const Icon(Icons.insert_drive_file),
+            title: const Text("Send Document"),
+            onTap: () {
+              ref.read(chatViewModelProvider.notifier).sendMediaAttachment(
+                    chatIndex,
+                    "https://example.com/docs/sample-document.pdf",
+                    MessageType.document,
+                  );
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.photo_library),
+            title: const Text("Send Media from Library"),
+            onTap: () {
+              ref.read(chatViewModelProvider.notifier).sendMediaAttachment(
+                    chatIndex,
+                    "https://www.w3schools.com/w3images/avatar5.png",
+                    MessageType.image,
+                  );
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      ),
+    );
+  }
 }

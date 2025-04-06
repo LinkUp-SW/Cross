@@ -82,7 +82,30 @@ class ChatViewModel extends StateNotifier<List<Chat>> {
           state[i], // Keep other chats unchanged
     ];
   }
-  
+  void sendMediaAttachment(int chatIndex, String mediaUrl, MessageType type) {
+  final chat = state[chatIndex];
+
+  final newMessage = Message(
+    sender: "Me",
+    content: mediaUrl, // Media URL (image, video, doc)
+    timestamp: DateTime.now(),
+    type: type,
+  );
+
+  state = [
+    for (int i = 0; i < state.length; i++)
+      if (i == chatIndex)
+        state[i].copyWith(
+          messages: [...chat.messages, newMessage],
+          lastMessage: "📎 Media Attachment",
+          lastMessageTimestamp: DateTime.now(),
+          isUnread: false,
+          unreadMessageCount: 0,
+        )
+      else
+        state[i],
+  ];
+}
 
 }
 
