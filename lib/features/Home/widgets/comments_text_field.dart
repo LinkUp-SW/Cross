@@ -1,36 +1,56 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:link_up/features/Home/viewModel/write_comment_vm.dart';
+import 'package:link_up/features/Post/widgets/formatted_input.dart';
+import 'package:link_up/features/logIn/viewModel/user_data_vm.dart';
 import 'package:link_up/shared/themes/colors.dart';
-import 'package:url_launcher/url_launcher.dart';
 
-class CommentsTextField extends StatefulWidget {
+class CommentsTextField extends ConsumerStatefulWidget {
   final FocusNode focusNode;
-  final TextEditingController textController;
   final bool focused;
   final String buttonName;
   final bool showSuggestions;
   const CommentsTextField(
       {super.key,
       required this.focusNode,
-      required this.textController,
       required this.focused,
       required this.buttonName,
       this.showSuggestions = true});
 
   @override
-  State<CommentsTextField> createState() => _CommentsTextFieldState();
+  ConsumerState<CommentsTextField> createState() => _CommentsTextFieldState();
 }
 
-class _CommentsTextFieldState extends State<CommentsTextField> {
+class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
   bool _showTags = false;
   XFile imagePath = XFile('');
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(writeCommentProvider.notifier).setController(
+        (showTags) {
+          if (_showTags != showTags) {
+            setState(() {
+              _showTags = showTags;
+            });
+          }
+        },
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final height = widget.showSuggestions ? 120.h : 70.h;
+    final userData = ref.watch(userDataProvider);
+    final writeComment = ref.watch(writeCommentProvider);
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primary,
@@ -68,7 +88,8 @@ class _CommentsTextFieldState extends State<CommentsTextField> {
                                 leading: CircleAvatar(
                                   radius: 20.r,
                                   backgroundImage: const NetworkImage(
-                                      'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg'),
+                                    'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
+                                  ),
                                 ),
                                 title: Text("User $index"),
                                 subtitle: Text("user $index",
@@ -79,11 +100,12 @@ class _CommentsTextFieldState extends State<CommentsTextField> {
                                           color: AppColors.grey,
                                         )),
                                 onTap: () {
-                                  widget.textController.text =
-                                      widget.textController.text.replaceRange(
-                                    widget.textController.text.lastIndexOf('@'),
-                                    widget.textController.text.length,
-                                    "User $index ",
+                                  writeComment.controller.text =
+                                      writeComment.controller.text.replaceRange(
+                                    writeComment.controller.text
+                                        .lastIndexOf('@'),
+                                    writeComment.controller.text.length,
+                                    "@User $index:${userData.userId}^ ",
                                   );
                                   widget.focusNode.requestFocus();
                                   setState(() {
@@ -116,6 +138,7 @@ class _CommentsTextFieldState extends State<CommentsTextField> {
                               separatorBuilder: (context, index) =>
                                   SizedBox(width: 5.w),
                               itemBuilder: (context, index) {
+                                //TODO: Suggestions
                                 return Chip(label: Text("label $index"));
                               }),
                         ),
@@ -131,8 +154,8 @@ class _CommentsTextFieldState extends State<CommentsTextField> {
                             child: CircleAvatar(
                               radius: 20.r,
                               //TODO: Replace with user profile image
-                              backgroundImage: const NetworkImage(
-                                  'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg'),
+                              backgroundImage:
+                                  NetworkImage(userData.profileUrl),
                             ),
                           ),
                           Flexible(
@@ -150,49 +173,9 @@ class _CommentsTextFieldState extends State<CommentsTextField> {
                                   children: [
                                     Padding(
                                       padding: EdgeInsets.all(10.r),
-                                      child: Stack(
-                                        children: [
-                                          Linkify(
-                                            text: widget.textController.text,
-                                            style: TextStyle(
-                                              fontSize: 15.r,
-                                              letterSpacing: 0,
-                                            ),
-                                            options: const LinkifyOptions(
-                                                humanize: false),
-                                            onOpen: (link) async {
-                                              if (!await launchUrl(
-                                                  Uri.parse(link.url))) {
-                                                throw Exception(
-                                                    'Could not open the link');
-                                              }
-                                            },
-                                          ),
-                                          TextField(
-                                            focusNode: widget.focusNode,
-                                            controller: widget.textController,
-                                            onChanged: (value) {
-                                              setState(() {});
-                                            },
-                                            cursorColor: AppColors.lightBlue,
-                                            maxLines: null,
-                                            decoration: const InputDecoration(
-                                              border: InputBorder.none,
-                                              hintText:
-                                                  'What are your thoughts?',
-                                              isDense: true,
-                                              isCollapsed: true,
-                                            ),
-                                            autofocus:
-                                                widget.focusNode.hasFocus,
-                                            style: TextStyle(
-                                              decoration: TextDecoration.none,
-                                              color: Colors.transparent,
-                                              fontSize: 15.r,
-                                              letterSpacing: 0,
-                                            ),
-                                          ),
-                                        ],
+                                      child: FormattedInput(
+                                        controller: writeComment.controller,
+                                        focusNode: widget.focusNode,
                                       ),
                                     ),
                                     if (imagePath.path != '')
@@ -238,32 +221,26 @@ class _CommentsTextFieldState extends State<CommentsTextField> {
                           ),
                           if (!widget.focusNode.hasFocus)
                             Flexible(
-                                flex: 1,
-                                child: widget.textController.text.isEmpty
-                                    ? GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            _showTags = !_showTags;
-                                          });
-                                        },
-                                        child:
-                                            const Icon(Icons.alternate_email))
-                                    : IconButton.filled(
-                                        onPressed: () {
-                                          //TODO: send message to backend
-                                        },
-                                        icon: Icon(
-                                          Icons.arrow_upward,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .surface,
-                                        ),
-                                        style: IconButton.styleFrom(
-                                          backgroundColor: Theme.of(context)
-                                              .colorScheme
-                                              .secondary,
-                                        ),
-                                      ))
+                              flex: writeComment.controller.text.isEmpty ? 0:1,
+                              child: writeComment.controller.text.isEmpty
+                                  ? SizedBox()
+                                  : IconButton.filled(
+                                      onPressed: () {
+                                        //TODO: send message to backend
+                                      },
+                                      icon: Icon(
+                                        Icons.arrow_upward,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .surface,
+                                      ),
+                                      style: IconButton.styleFrom(
+                                        backgroundColor: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
+                                      ),
+                                    ),
+                            )
                         ],
                       ),
                       if (widget.focusNode.hasFocus)
@@ -297,6 +274,19 @@ class _CommentsTextFieldState extends State<CommentsTextField> {
                                       onTap: () {
                                         setState(() {
                                           _showTags = !_showTags;
+                                          if (_showTags) {
+                                            writeComment.controller.text += '@ ';
+                                          } else {
+                                            writeComment.controller.text =
+                                                writeComment.controller.text
+                                                    .replaceRange(
+                                              writeComment.controller.text
+                                                  .lastIndexOf('@'),
+                                              writeComment
+                                                  .controller.text.length,
+                                              "",
+                                            );
+                                          }
                                         });
                                       },
                                       child: const Icon(Icons.alternate_email))

@@ -12,9 +12,9 @@ import 'package:link_up/features/Home/widgets/bottom_sheets.dart';
 import 'package:link_up/features/Home/widgets/post_header.dart';
 import 'package:link_up/features/Home/widgets/reactions.dart';
 import 'package:link_up/features/Post/viewModel/write_post_vm.dart';
+import 'package:link_up/features/Post/widgets/formatted_richtext.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/widgets/bottom_sheet.dart';
-import 'package:readmore/readmore.dart';
 
 class Posts extends ConsumerStatefulWidget {
   final bool showTop;
@@ -172,7 +172,8 @@ class _PostsState extends ConsumerState<Posts> {
                         children: [
                           IconButton(
                             onPressed: () {
-                              myPostBottomSheet(context,ref,post: widget.post);
+                              myPostBottomSheet(context, ref,
+                                  post: widget.post);
                             },
                             icon: const Icon(Icons.more_horiz),
                           ),
@@ -194,12 +195,20 @@ class _PostsState extends ConsumerState<Posts> {
             alignment: Alignment.centerLeft,
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 10.r),
-              child: ReadMoreText(
-                trimExpandedText: '   less',
-                trimCollapsedText: 'more    ',
-                trimLines: 3,
-                trimMode: TrimMode.Line,
-                widget.post.text,
+              child: FormattedRichText(
+                defaultStyle: TextStyle(
+                  fontSize: 14.r,
+                ),
+                text: widget.post.text,
+                enableReadMore: true,
+                readMoreThreshold: 2,
+                readMoreText: '...more',
+                readLessText: '',
+                readMoreStyle: TextStyle(
+                  color: Theme.of(context).colorScheme.secondary,
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
