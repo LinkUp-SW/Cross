@@ -101,7 +101,6 @@ class _ManageMyNetworkScreenState extends ConsumerState<ManageMyNetworkScreen> {
             icon: Icons.people,
             title: 'Connections',
             onTap: () => context.push('/connections'),
-            // Use the count from state, show loading indicator if still loading
             count: state.isLoading ? 0 : state.connectionsCount,
             isLoading: state.isLoading,
           ),

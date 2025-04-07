@@ -54,20 +54,6 @@ class ConnectionsScreenServices {
       rethrow;
     }
   }
-
-  Future<String> getUserId() async {
-    try {
-      final response = await _baseService
-          .get(ExternalEndPoints.connectionsAndFollowingsCounts);
-      if (response.statusCode == 200) {
-        final body = jsonDecode(response.body);
-        return body['user_id'];
-      }
-      throw Exception('Failed to get  user id: ${response.statusCode}');
-    } catch (e) {
-      rethrow;
-    }
-  }
 }
 
 final connectionsScreenServicesProvider = Provider<ConnectionsScreenServices>(
