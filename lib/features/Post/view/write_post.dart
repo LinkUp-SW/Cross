@@ -1,6 +1,8 @@
+import 'dart:developer';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:link_up/features/Post/widgets/formatted_input.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -11,6 +13,8 @@ import 'package:link_up/features/Home/model/media_model.dart';
 import 'package:link_up/features/Home/viewModel/post_vm.dart';
 import 'package:link_up/features/Post/viewModel/write_post_vm.dart';
 import 'package:link_up/features/Post/widgets/bottom_sheet.dart';
+import 'package:link_up/features/Post/widgets/formatted_input.dart';
+import 'package:link_up/features/logIn/viewModel/user_data_vm.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/widgets/custom_snackbar.dart';
 
@@ -26,6 +30,44 @@ class _WritePostState extends ConsumerState<WritePost> {
   bool _showTags = false;
   final FocusNode _focusNode = FocusNode();
 
+  final List<dynamic> _listtiles = [
+    {
+      'name': 'This is title',
+      'id': '1',
+      'profile':
+          'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
+      'subtitle': 'This is subtitle',
+    },
+    {
+      'name': 'This is title',
+      'id': '2',
+      'profile':
+          'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
+      'subtitle': 'This is subtitle',
+    },
+    {
+      'name': 'This is title',
+      'id': '3',
+      'profile':
+          'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
+      'subtitle': 'This is subtitle',
+    },
+    {
+      'name': 'This is title',
+      'id': '4',
+      'profile':
+          'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
+      'subtitle': 'This is subtitle',
+    },
+    {
+      'name': 'This is title',
+      'id': '5',
+      'profile':
+          'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
+      'subtitle': 'This is subtitle',
+    },
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -36,11 +78,44 @@ class _WritePostState extends ConsumerState<WritePost> {
         }
       });
     });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+    ref.read(writePostProvider.notifier).setController((showTags) {
+      if (_showTags != showTags) {
+        setState(() {
+          _showTags = showTags;
+        });
+      }
+    },
+    (media) {
+      ref.read(writePostProvider.notifier).setMedia(media);
+    }
+    );
+  });
+  }
+
+  // Add this utility function to your code
+  Future<bool> isAccessibleUrl(String url) async {
+    try {
+      // First check if the URL format is valid
+      final uri = Uri.parse(url);
+      if (uri.scheme != 'http' && uri.scheme != 'https') {
+        return false;
+      }
+
+      // Then try to check if the URL is accessible
+      // Using a HEAD request to minimize data transfer
+      final response = await http.head(uri);
+      return response.statusCode >= 200 && response.statusCode < 400;
+    } catch (e) {
+      log('Error checking URL accessibility: $e');
+      return false;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final postData = ref.watch(writePostProvider);
+    final userData = ref.read(userDataProvider);
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primary,
       appBar: AppBar(
@@ -106,7 +181,7 @@ class _WritePostState extends ConsumerState<WritePost> {
           children: [
             CircleAvatar(
               radius: 20.r,
-              backgroundImage: const AssetImage('assets/images/profile.png'),
+              backgroundImage: NetworkImage(userData.profileUrl),
             ),
             SizedBox(
               width: 10.w,
@@ -248,17 +323,8 @@ class _WritePostState extends ConsumerState<WritePost> {
             child: Column(
               children: [
                 FormattedInput(
-                  mediaType: postData.media.type,
                   controller: postData.controller,
                   focusNode: _focusNode,
-                  onTagsVisibilityChanged: (showTags) {
-                    setState(() {
-                      _showTags = showTags;
-                    });
-                  },
-                  onMediaChanged: (media) {
-                    ref.read(writePostProvider.notifier).setMedia(media);
-                  },
                 ),
                 if (postData.media.type != MediaType.none)
                   Column(
@@ -303,16 +369,16 @@ class _WritePostState extends ConsumerState<WritePost> {
             child: ListView.separated(
               shrinkWrap: true,
               physics: const ClampingScrollPhysics(),
-              itemCount: 10,
+              itemCount: _listtiles.length,
               itemBuilder: (context, index) {
                 return ListTile(
                   leading: CircleAvatar(
                     radius: 20.r,
-                    backgroundImage: const NetworkImage(
-                        'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg'),
+                    backgroundImage: NetworkImage(_listtiles[index]['profile']),
                   ),
-                  title: Text("User $index"),
-                  subtitle: Text("user $index",
+                  title: Text(_listtiles[index]['name'],
+                      style: Theme.of(context).textTheme.bodyLarge),
+                  subtitle: Text(_listtiles[index]['subtitle'],
                       style: Theme.of(context).textTheme.bodySmall!.copyWith(
                             color: AppColors.grey,
                           )),
@@ -321,7 +387,7 @@ class _WritePostState extends ConsumerState<WritePost> {
                         postData.controller.text.replaceRange(
                       postData.controller.text.lastIndexOf('@'),
                       postData.controller.text.length,
-                      "*User $index* ",
+                      "@${_listtiles[index]['name']}:${_listtiles[index]['id']}^ ",
                     );
                     setState(() {
                       _showTags = false;

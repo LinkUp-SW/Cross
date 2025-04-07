@@ -25,7 +25,6 @@ class PostPage extends ConsumerStatefulWidget {
 }
 
 class _PostPageState extends ConsumerState<PostPage> {
-  final TextEditingController _textController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   late ScrollController _scrollController;
   late String postId;
@@ -81,7 +80,6 @@ class _PostPageState extends ConsumerState<PostPage> {
       ),
       bottomNavigationBar: CommentsTextField(
           focusNode: _focusNode,
-          textController: _textController,
           focused: widget.focused,
           buttonName: 'Comment',),
       body: Padding(

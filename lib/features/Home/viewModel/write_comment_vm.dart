@@ -10,37 +10,29 @@ import 'package:link_up/features/Home/model/media_model.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
 import 'package:link_up/features/Post/widgets/formatted_input.dart';
 import 'package:link_up/features/Post/widgets/formatting_styles.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 final context = navigatorKey.currentContext!;
 
-class WritePostVm {
-  Visibilities visbilityPost;
-  Visibilities visibilityComment;
-  //bool brandPartnerships = false;
+class WriteCommentVm {
   TextEditingController controller;
   Media media;
   bool isEdited = false;
   List<dynamic> taggedUsers = [];
 
-  WritePostVm({
-    required this.visbilityPost,
-    required this.visibilityComment,
+  WriteCommentVm({
     required this.media,
     required this.controller,
     this.isEdited = false,
   });
 
-  WritePostVm.initial()
-      : visbilityPost = Visibilities.anyone,
-        visibilityComment = Visibilities.anyone,
-        isEdited = false,
+  WriteCommentVm.initial()
+      : isEdited = false,
         media = Media.initial(),
         controller = TextEditingController(); // Use basic controller initially
 
   // Initialize styleable controller after construction
   void initController(
-      BuildContext context, Function updateTags, Function setMedia) {
+      BuildContext context, Function updateTags) {
     controller = StyleableTextFieldController(
       styles: TextPartStyleDefinitions(
         definitionList: [
@@ -73,34 +65,6 @@ class WritePostVm {
               }
             },
           ),
-          FormattingTextStyles.urlStyle(
-            context,
-            onTap: (url) async {
-              url = url.trim();
-              final isAccessible = await isAccessibleUrl(url);
-              if (isAccessible) {
-                launchUrl(Uri.parse(url), mode: LaunchMode.inAppBrowserView);
-              } else {
-                log('URL is not accessible: $url');
-                // Show feedback in your app
-              }
-            },
-            onDetected: (url) async {
-              url = url.trim();
-              final isAccessible = await isAccessibleUrl(url);
-              if (isAccessible) {
-                if (media.type == MediaType.none) {
-                  setMedia(Media(
-                    type: MediaType.link,
-                    urls: [url],
-                  ));
-                }
-              } else {
-                log('URL is not accessible: $url');
-                // Show feedback in your app
-              }
-            },
-          ),
           TextPartStyleDefinition(
             pattern: r'@[\w ]*',
             style: TextStyle(),
@@ -124,29 +88,27 @@ class WritePostVm {
     );
   }
 
-  WritePostVm copyWith({
+  WriteCommentVm copyWith({
     Visibilities? visbilityPost,
     Visibilities? visibilityComment,
     Media? media,
     bool? isEdited,
     TextEditingController? controller,
   }) {
-    return WritePostVm(
-        visbilityPost: visbilityPost ?? this.visbilityPost,
-        visibilityComment: visibilityComment ?? this.visibilityComment,
+    return WriteCommentVm(
         media: media ?? this.media,
         isEdited: isEdited ?? this.isEdited,
         controller: controller ?? this.controller);
   }
 }
 
-class WritePostProvider extends StateNotifier<WritePostVm> {
-  WritePostProvider() : super(WritePostVm.initial()) {
-    state.initController(context, () {}, () {});
+class WriteCommentProvider extends StateNotifier<WriteCommentVm> {
+  WriteCommentProvider() : super(WriteCommentVm.initial()) {
+    state.initController(context, () {});
   }
 
-  void setController(Function updateTags, Function setMedia) {
-    state.initController(context, updateTags, setMedia);
+  void setController(Function updateTags) {
+    state.initController(context, updateTags);
   }
 
   void setVisibilityPost(Visibilities visibility) {
@@ -162,58 +124,42 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
   }
 
   void clearWritePost() {
-    state = WritePostVm.initial();
-    state.initController(context, () {}, () {});
+    state = WriteCommentVm.initial();
+    state.initController(context, () {});
   }
 
-  void setPost(PostModel post, bool isEdited) {
-    state = WritePostVm(
+  void setComment(PostModel post, bool isEdited) {
+    state = WriteCommentVm(
       isEdited: isEdited,
-      visbilityPost: post.header.visibilityPost,
-      visibilityComment: post.header.visibilityComments,
       media: post.media,
       controller: TextEditingController(text: post.text),
     );
   }
 
-  Future<String> createPost() async {
+  Future<String> createComment() async {
     final BaseService service = BaseService();
 
     final mediaContent = <dynamic>[];
 
-    if (state.media.type == MediaType.link) {
-      mediaContent.addAll(state.media.urls);
-    } else if (state.media.type == MediaType.post) {
-      mediaContent.add(state.media.post!.id);
-    } else if (state.media.type == MediaType.pdf) {
-      // For PDF files
-      final bytes = await File(state.media.file[0]!.path).readAsBytes();
-      // Explicitly set mime type for PDF
-      final uriData = UriData.fromBytes(bytes, mimeType: 'application/pdf');
-      mediaContent.add(uriData.toString());
-    } else if (state.media.file.isNotEmpty) {
+    if (state.media.type == MediaType.image) {
       // For images or other files
-      for (int i = 0; i < state.media.file.length; i++) {
-        if (state.media.file[i] != null) {
-          final path = state.media.file[i]!.path;
-          final bytes = await File(path).readAsBytes();
+      if (state.media.file[0] != null) {
+        final path = state.media.file[0]!.path;
+        final bytes = await File(path).readAsBytes();
 
-          // Determine MIME type from file extension
-          String mimeType = '';
-          if (path.toLowerCase().endsWith('.jpg') ||
-              path.toLowerCase().endsWith('.jpeg')) {
-            mimeType = 'image/jpeg';
-          } else if (path.toLowerCase().endsWith('.png')) {
-            mimeType = 'image/png';
-          } else if (path.toLowerCase().endsWith('.gif')) {
-            mimeType = 'image/gif';
-          } else if (path.toLowerCase().endsWith('.mp4')) {
-            mimeType = 'video/mp4';
-          }
-
-          final uriData = UriData.fromBytes(bytes, mimeType: mimeType);
-          mediaContent.add(uriData.toString());
+        // Determine MIME type from file extension
+        String mimeType = '';
+        if (path.toLowerCase().endsWith('.jpg') ||
+            path.toLowerCase().endsWith('.jpeg')) {
+          mimeType = 'image/jpeg';
+        } else if (path.toLowerCase().endsWith('.png')) {
+          mimeType = 'image/png';
+        } else if (path.toLowerCase().endsWith('.gif')) {
+          mimeType = 'image/gif';
         }
+
+        final uriData = UriData.fromBytes(bytes, mimeType: mimeType);
+        mediaContent.add(uriData.toString());
       }
     }
 
@@ -221,10 +167,7 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
       "content": state.controller.text,
       "mediaType": state.media.type.name,
       "media": mediaContent,
-      "commentsDisabled":
-          Visibilities.getVisibilityString(state.visibilityComment),
-      "publicPost": state.visbilityPost == Visibilities.anyone ? true : false,
-      "taggedUsers": state.taggedUsers,
+      "taggedUsers": []
     });
 
     // Rest of the function remains the same
@@ -240,7 +183,7 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
   }
 }
 
-final writePostProvider =
-    StateNotifierProvider<WritePostProvider, WritePostVm>((ref) {
-  return WritePostProvider();
+final writeCommentProvider =
+    StateNotifierProvider<WriteCommentProvider, WriteCommentVm>((ref) {
+  return WriteCommentProvider();
 });
