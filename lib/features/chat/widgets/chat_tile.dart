@@ -8,12 +8,12 @@ class ChatTile extends StatelessWidget {
   final VoidCallback onThreeDotPressed;
 
   const ChatTile({
-    Key? key,
+    super.key,
     required this.chat,
     required this.onTap,
     required this.onLongPress,
     required this.onThreeDotPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

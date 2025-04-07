@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 
 class UnreadMessageCounter extends StatelessWidget {
+  const UnreadMessageCounter({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Container(

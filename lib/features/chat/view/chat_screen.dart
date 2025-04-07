@@ -10,7 +10,7 @@ class ChatScreen extends ConsumerWidget {
   
   final int chatIndex;
 
-  const ChatScreen({Key? key, required this.chatIndex}) : super(key: key);
+  const ChatScreen({super.key, required this.chatIndex});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
