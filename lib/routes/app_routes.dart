@@ -151,7 +151,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               routes: <GoRoute>[
                 GoRoute(
                   path: "/network",
-                  builder: (context, state) => const MyNetworkScreen(),
+                  builder: (context, state) => MyNetworkScreen(
+                    scaffoldKey: scaffoldKey,
+                  ),
                 ),
               ],
             ),
