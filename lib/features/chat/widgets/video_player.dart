@@ -13,7 +13,7 @@ class CustomVideoPlayer extends StatefulWidget {
 
 class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
   late VideoPlayerController _controller;
-  bool _isPlaying = true;
+  bool _isPlaying = false; // Start with false so video doesn't play automatically
 
   @override
   void initState() {
@@ -25,7 +25,6 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
     _controller.initialize().then((_) {
       setState(() {});
       _controller.setLooping(true);
-      _controller.play();
     });
 
     _controller.addListener(() {
