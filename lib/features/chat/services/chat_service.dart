@@ -35,7 +35,7 @@ class ChatService {
               type: MessageType.video), // Real video URL
           Message(
               sender: "John Doe",
-              content: "https://www.w3.org/WAI/WCAG21/quickref/files/WCAG21-quickref-2018.pdf",
+              content: "https://css4.pub/2015/icelandic/dictionary.pdf",
               timestamp: DateTime.now().subtract(const Duration(minutes: 1)),
               type: MessageType.document), // Real PDF document URL
         ],
@@ -55,7 +55,7 @@ class ChatService {
               type: MessageType.text),
           Message(
               sender: "Jane Smith",
-              content: "https://www.w3.org/WAI/WCAG21/quickref/files/WCAG21-quickref-2018.pdf",
+              content: "https://www.princexml.com/samples/catalog/PrinceCatalogue.pdf",
               timestamp: DateTime.now().subtract(const Duration(days: 1)),
               type: MessageType.document), // Real PDF document URL
         ],
@@ -80,7 +80,7 @@ class ChatService {
               type: MessageType.text),
           Message(
               sender: "Sam Green",
-              content: "https://www.w3.org/WAI/WCAG21/quickref/files/WCAG21-quickref-2018.pdf",
+              content: "https://css4.pub/2015/usenix/example.pdf",
               timestamp: DateTime.now().subtract(const Duration(days: 1)),
               type: MessageType.document), // Real document URL
           Message(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:link_up/features/chat/widgets/document_message.dart';
 import '../model/chat_model.dart';
 import 'dart:io'; 
 import '../widgets/video_player.dart';
@@ -96,13 +97,8 @@ class ChatMessageBubble extends StatelessWidget {
       return CustomVideoPlayer(videoPath: message.content); 
 
     case MessageType.document:
-      return Row(
-        children: [
-          const Icon(Icons.insert_drive_file, color: Colors.green),
-          const SizedBox(width: 5),
-          Expanded(child: Text(message.content.split('/').last)),
-        ],
-      );
+       return DocumentMessageWidget(message: message);
+      
 
     default:
       return const SizedBox.shrink();

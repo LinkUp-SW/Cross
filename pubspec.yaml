@@ -57,6 +57,7 @@ dependencies:
   country_state_city_pro: ^0.0.6
   file_picker: ^9.2.2
   linkify: ^5.0.0
+  open_filex: ^4.3.2
 
 dev_dependencies:
   flutter_test:

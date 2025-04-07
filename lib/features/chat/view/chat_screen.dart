@@ -1,10 +1,11 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../viewModel/chat_viewmodel.dart';
 import '../widgets/chat_message_bubble.dart';
 import '../widgets/chat_input_field.dart';
 import '../model/chat_model.dart';
-import 'package:image_picker/image_picker.dart'; // add this import
+import 'package:image_picker/image_picker.dart';
 
 class ChatScreen extends ConsumerWidget {
   final int chatIndex;
@@ -30,8 +31,8 @@ class ChatScreen extends ConsumerWidget {
               itemBuilder: (context, index) {
                 return ChatMessageBubble(
                   message: chat.messages[index],
-                  currentUserName: "jumana", // from mock profile feature
-                  currentUserProfilePicUrl: "assets/images/profile.png", // or mocked URL
+                  currentUserName: "jumana",
+                  currentUserProfilePicUrl: "assets/images/profile.png",
                   chatProfilePicUrl: chat.profilePictureUrl,
                 );
               },
@@ -66,12 +67,16 @@ class ChatScreen extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.insert_drive_file),
             title: const Text("Send Document"),
-            onTap: () {
-              ref.read(chatViewModelProvider.notifier).sendMediaAttachment(
-                    chatIndex,
-                    "https://example.com/docs/sample-document.pdf",
-                    MessageType.document,
-                  );
+            onTap: () async {
+              final result = await FilePicker.platform.pickFiles();
+              if (result != null && result.files.single.path != null) {
+                final filePath = result.files.single.path!;
+                ref.read(chatViewModelProvider.notifier).sendMediaAttachment(
+                      chatIndex,
+                      filePath,
+                      MessageType.document,
+                    );
+              }
               Navigator.pop(context);
             },
           ),
@@ -80,10 +85,9 @@ class ChatScreen extends ConsumerWidget {
             title: const Text("Send Media from Library"),
             onTap: () async {
               final picker = ImagePicker();
-              final pickedFile = await picker.pickMedia(); // <-- This shows both images & videos
+              final pickedFile = await picker.pickMedia();
 
               if (pickedFile != null) {
-                // Decide if it's a video or an image based on the file extension
                 final isVideo = pickedFile.path.toLowerCase().endsWith(".mp4") ||
                     pickedFile.path.toLowerCase().endsWith(".mov") ||
                     pickedFile.path.toLowerCase().endsWith(".avi");
@@ -96,7 +100,6 @@ class ChatScreen extends ConsumerWidget {
                       messageType,
                     );
               }
-
               Navigator.pop(context);
             },
           ),
