@@ -53,9 +53,7 @@ class WideSection extends ConsumerWidget {
               ),
             ),
             InkWell(
-              onTap: () {
-                print("Pressed on $title Show all");
-              },
+              onTap: () {},
               child: Text(
                 "Show all",
                 style: TextStyles.font15_700Weight.copyWith(

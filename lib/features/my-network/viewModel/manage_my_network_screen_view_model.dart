@@ -28,7 +28,6 @@ class ManageMyNetworkScreenViewModel
         followingCount: followingCount,
       );
     } catch (e) {
-      print(e);
       state = state.copyWith(isLoading: false, error: true);
     }
   }
