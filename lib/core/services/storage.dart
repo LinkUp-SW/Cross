@@ -9,11 +9,11 @@ import 'package:link_up/core/utils/global_keys.dart';
 const FlutterSecureStorage secureStorage = FlutterSecureStorage();
 
 Future<void> storeToken(String token) async {
-  await secureStorage.write(key: InternalEndPoints.token, value: token);
+  await secureStorage.write(key: "token", value: token);
 }
 
 Future<String?> getToken() async {
-  return await secureStorage.read(key: InternalEndPoints.token);
+  return await secureStorage.read(key: "token");
 }
 
 Future<void> rememberMe(String email, String password) async {
@@ -40,7 +40,7 @@ Future returncred() async {
 }
 
 Future<void> logout(BuildContext context) async {
-  await secureStorage.delete(key: InternalEndPoints.token);
+  await secureStorage.delete(key: "token");
   await secureStorage.delete(key: "email");
   await secureStorage.delete(key: "password");
   (navigatorKey.currentContext ?? context).go('/login');
