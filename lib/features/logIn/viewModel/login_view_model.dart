@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:link_up/core/constants/endpoints.dart';
 import 'package:link_up/core/services/storage.dart';
 import 'package:link_up/features/logIn/model/login_model.dart';
 import 'package:link_up/features/logIn/services/login_service.dart';
@@ -16,15 +17,18 @@ class LogInNotifier extends StateNotifier<LogInState> {
   final LogInService _logInService;
 
   LogInNotifier(this._logInService) : super(const LogInInitialState());
-  Future<void> logIn(String email, String password,WidgetRef ref) async {
+  Future<void> logIn(String email, String password, WidgetRef ref) async {
     state = const LogInLoadingState(); // Show loading indicator
     try {
       final success = await _logInService
-          .logIn(LogInModel(email: email, password: password)).catchError((error, stackTrace) {
-            state = const LogInErrorState("Invalid credentials");
-            throw error;
-          });
+          .logIn(LogInModel(email: email, password: password))
+          .catchError((error, stackTrace) {
+        state = const LogInErrorState("Invalid credentials");
+        throw error;
+      });
       if (success.isNotEmpty) {
+        InternalEndPoints.email = email;
+        InternalEndPoints.userId = success['user']['id'];
         ref.read(userDataProvider.notifier).setUserId(success['user']['id']);
         await ref.read(userDataProvider.notifier).getProfileUrl();
         state = const LogInSuccessState();
@@ -43,7 +47,7 @@ class LogInNotifier extends StateNotifier<LogInState> {
 
       // Automatically log in if credentials are found
 
-      logIn(credentials[0], credentials[1],ref);
+      logIn(credentials[0], credentials[1], ref);
     }
   }
 }
