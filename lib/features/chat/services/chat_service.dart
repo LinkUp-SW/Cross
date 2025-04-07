@@ -19,7 +19,7 @@ class ChatService {
               timestamp: DateTime.now().subtract(const Duration(minutes: 10)),
               type: MessageType.text),
           Message(
-              sender: "You",
+              sender: "jumana",
               content: "I'm good, thanks!",
               timestamp: DateTime.now().subtract(const Duration(minutes: 5)),
               type: MessageType.text),
@@ -29,7 +29,7 @@ class ChatService {
               timestamp: DateTime.now().subtract(const Duration(minutes: 2)),
               type: MessageType.image),
           Message(
-              sender: "You",
+              sender: "jumana",
               content: "https://www.w3schools.com/html/movie.mp4",
               timestamp: DateTime.now().subtract(const Duration(minutes: 1)),
               type: MessageType.video), // Real video URL
@@ -74,7 +74,7 @@ class ChatService {
               timestamp: DateTime.now().subtract(const Duration(days: 3)),
               type: MessageType.text),
           Message(
-              sender: "You",
+              sender: "jumana",
               content: "Here's the link",
               timestamp: DateTime.now().subtract(const Duration(days: 2)),
               type: MessageType.text),
@@ -84,7 +84,7 @@ class ChatService {
               timestamp: DateTime.now().subtract(const Duration(days: 1)),
               type: MessageType.document), // Real document URL
           Message(
-              sender: "You",
+              sender: "jumana",
               content: "https://www.w3schools.com/html/movie.mp4",
               timestamp: DateTime.now().subtract(const Duration(hours: 5)),
               type: MessageType.video), // Real video URL
@@ -104,7 +104,7 @@ class ChatService {
               timestamp: DateTime.now().subtract(const Duration(hours: 1)),
               type: MessageType.text),
           Message(
-              sender: "You",
+              sender: "jumana",
               content: "Check out this picture",
               timestamp: DateTime.now().subtract(const Duration(minutes: 50)),
               type: MessageType.text),

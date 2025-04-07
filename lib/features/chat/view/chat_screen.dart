@@ -6,8 +6,6 @@ import '../widgets/chat_input_field.dart';
 import '../model/chat_model.dart';
 
 class ChatScreen extends ConsumerWidget {
-
-  
   final int chatIndex;
 
   const ChatScreen({Key? key, required this.chatIndex}) : super(key: key);
@@ -20,7 +18,8 @@ class ChatScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(chat.name),
+        backgroundColor: Colors.white,
+        title: Text(chat.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
       ),
       body: Column(
         children: [
@@ -28,7 +27,12 @@ class ChatScreen extends ConsumerWidget {
             child: ListView.builder(
               itemCount: chat.messages.length,
               itemBuilder: (context, index) {
-                return ChatMessageBubble(message: chat.messages[index]);
+                return ChatMessageBubble(
+                  message: chat.messages[index],
+                  currentUserName: "jumana", // from mock profile feature
+                  currentUserProfilePicUrl: "assets/images/profile.png", // or mocked URL
+                  chatProfilePicUrl: chat.profilePictureUrl,
+                );
               },
             ),
           ),
