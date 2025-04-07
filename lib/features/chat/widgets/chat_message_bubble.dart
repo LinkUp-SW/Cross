@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../model/chat_model.dart';
+import 'dart:io'; 
+import '../widgets/video_player.dart';
 
 class ChatMessageBubble extends StatelessWidget {
   final Message message;
@@ -15,16 +17,14 @@ class ChatMessageBubble extends StatelessWidget {
     this.chatProfilePicUrl,
   }) : super(key: key);
 
-    bool get isCurrentUser {
+  bool get isCurrentUser {
     print("Checking sender: ${message.sender}, currentUser: $currentUserName");
     return message.sender == currentUserName;
   }
 
   Widget build(BuildContext context) {
     final displayName = isCurrentUser ? currentUserName : message.sender;
-    final displayPic = isCurrentUser
-        ? currentUserProfilePicUrl
-        : chatProfilePicUrl;
+    final displayPic = isCurrentUser ? currentUserProfilePicUrl : chatProfilePicUrl;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
@@ -58,11 +58,9 @@ class ChatMessageBubble extends StatelessWidget {
 
   Widget _buildProfilePicture(String name, String? url) {
     ImageProvider imageProvider;
-    
 
     if (url == null) {
       imageProvider = const AssetImage("assets/images/profile.png");
-      
     } else if (url.startsWith('http')) {
       imageProvider = NetworkImage(url);
     } else {
@@ -72,36 +70,47 @@ class ChatMessageBubble extends StatelessWidget {
     return CircleAvatar(
       radius: 20,
       backgroundImage: imageProvider,
-      backgroundColor:  Colors.transparent,
-      
+      backgroundColor: Colors.transparent,
     );
   }
 
   Widget _buildMessageContent() {
-    switch (message.type) {
-      case MessageType.text:
-        return Text(message.content);
-      case MessageType.image:
+  switch (message.type) {
+    case MessageType.text:
+      return Text(message.content);
+
+    case MessageType.image:
+      if (message.content.startsWith('http')) {
         return Image.network(
           message.content,
-          errorBuilder: (context, error, stackTrace) {
-            return _errorWidget("Failed to load image");
-          },
+          errorBuilder: (context, error, stackTrace) => _errorWidget("Failed to load image"),
         );
-      case MessageType.video:
-        return const Icon(Icons.videocam, color: Colors.blue);
-      case MessageType.document:
-        return Row(
-          children: [
-            const Icon(Icons.insert_drive_file, color: Colors.green),
-            const SizedBox(width: 5),
-            Expanded(child: Text(message.content.split('/').last)),
-          ],
+      } else {
+        return Image.file(
+          File(message.content),
+          errorBuilder: (context, error, stackTrace) => _errorWidget("Failed to load image"),
         );
-      default:
-        return const SizedBox.shrink();
-    }
+      }
+
+    case MessageType.video:
+      return CustomVideoPlayer(videoPath: message.content); 
+
+    case MessageType.document:
+      return Row(
+        children: [
+          const Icon(Icons.insert_drive_file, color: Colors.green),
+          const SizedBox(width: 5),
+          Expanded(child: Text(message.content.split('/').last)),
+        ],
+      );
+
+    default:
+      return const SizedBox.shrink();
   }
+}
+ 
+
+
 
   Widget _errorWidget(String message) {
     return Column(
@@ -113,3 +122,5 @@ class ChatMessageBubble extends StatelessWidget {
     );
   }
 }
+
+

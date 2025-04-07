@@ -4,6 +4,7 @@ import '../viewModel/chat_viewmodel.dart';
 import '../widgets/chat_message_bubble.dart';
 import '../widgets/chat_input_field.dart';
 import '../model/chat_model.dart';
+import 'package:image_picker/image_picker.dart'; // add this import
 
 class ChatScreen extends ConsumerWidget {
   final int chatIndex;
@@ -77,12 +78,25 @@ class ChatScreen extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.photo_library),
             title: const Text("Send Media from Library"),
-            onTap: () {
-              ref.read(chatViewModelProvider.notifier).sendMediaAttachment(
-                    chatIndex,
-                    "https://www.w3schools.com/w3images/avatar5.png",
-                    MessageType.image,
-                  );
+            onTap: () async {
+              final picker = ImagePicker();
+              final pickedFile = await picker.pickMedia(); // <-- This shows both images & videos
+
+              if (pickedFile != null) {
+                // Decide if it's a video or an image based on the file extension
+                final isVideo = pickedFile.path.toLowerCase().endsWith(".mp4") ||
+                    pickedFile.path.toLowerCase().endsWith(".mov") ||
+                    pickedFile.path.toLowerCase().endsWith(".avi");
+
+                final messageType = isVideo ? MessageType.video : MessageType.image;
+
+                ref.read(chatViewModelProvider.notifier).sendMediaAttachment(
+                      chatIndex,
+                      pickedFile.path,
+                      messageType,
+                    );
+              }
+
               Navigator.pop(context);
             },
           ),
