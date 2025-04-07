@@ -25,7 +25,7 @@ class EmailPasswordService extends BaseService {
   Future<String> hashPassword(String password) async {
     try {
       final response = await get(
-        "api/v1/user/hash-password",
+        "user/hash-password",
         queryParameters: {
           'password': password,
         },

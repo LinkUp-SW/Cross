@@ -10,7 +10,6 @@ import 'package:link_up/core/constants/endpoints.dart';
 
 class BaseService {
   Map<String, String> headers = {};
-
   Future<Response> post(String endpoint,
       {Map<String, dynamic>? body,
       Map<String, dynamic>? routeParameters}) async {
@@ -28,10 +27,7 @@ class BaseService {
     final response = await http
         .post(
           uri,
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token'
-          },
+          headers: headers,
           body: body != null ? jsonEncode(body) : null,
         )
         .timeout(const Duration(seconds: 10));
@@ -81,14 +77,17 @@ class BaseService {
       );
     }
 
-    final response = await http.get(
-      uri,
-      headers: {'Authorization': 'Bearer $token'},
-    ).timeout(
-      const Duration(
-        seconds: 10,
-      ),
-    );
+    headers['Authorization'] = 'Bearer $token';
+    final response = await http
+        .get(
+          uri,
+          headers: headers,
+        )
+        .timeout(
+          const Duration(
+            seconds: 10,
+          ),
+        );
     updateCookie(response);
     return response;
   }
@@ -103,11 +102,14 @@ class BaseService {
         finalEndpoint = finalEndpoint.replaceAll(':$key', value.toString());
       });
     }
+    headers['Authorization'] = 'Bearer $token';
     final uri = Uri.parse('${ExternalEndPoints.baseUrl}$finalEndpoint');
-    final response = await http.delete(
-      uri,
-      headers: {'Authorization': 'Bearer $token'},
-    ).timeout(const Duration(seconds: 10));
+    final response = await http
+        .delete(
+          uri,
+          headers: headers,
+        )
+        .timeout(const Duration(seconds: 10));
     updateCookie(response);
     return response;
   }

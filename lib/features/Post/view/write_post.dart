@@ -1,10 +1,6 @@
-import 'dart:developer';
-import 'dart:async';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:linkify/linkify.dart';
-import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:link_up/features/Post/widgets/formatted_input.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -17,7 +13,6 @@ import 'package:link_up/features/Post/viewModel/write_post_vm.dart';
 import 'package:link_up/features/Post/widgets/bottom_sheet.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/widgets/custom_snackbar.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class WritePost extends ConsumerStatefulWidget {
   const WritePost({super.key});
@@ -28,35 +23,19 @@ class WritePost extends ConsumerStatefulWidget {
 
 class _WritePostState extends ConsumerState<WritePost> {
   bool _sending = false;
-  Timer? _debounce;
+  bool _showTags = false;
+  final FocusNode _focusNode = FocusNode();
 
-  void checkForLinks(String text) {
-    final elements = linkify(text);
-
-    for (var element in elements) {
-      if (element is LinkableElement) {
-        // A link was found
-        log('Found link: ${element.url}');
-
-        // Validate the URL before setting it as media
-        try {
-          final uri = Uri.parse(element.url);
-          if (uri.hasScheme && uri.host.isNotEmpty) {
-            // Valid URL, set it as media
-            ref
-                .read(writePostProvider.notifier)
-                .setMedia(Media(type: MediaType.link, urls: [element.url]));
-
-            log('Valid link added: ${element.url}');
-            break; // If you only care about the first link
-          } else {
-            log('Invalid link format: ${element.url}');
-          }
-        } catch (e) {
-          log('Error parsing URL: ${e.toString()}');
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(() {
+      setState(() {
+        if (!_focusNode.hasFocus) {
+          _showTags = false;
         }
-      }
-    }
+      });
+    });
   }
 
   @override
@@ -185,9 +164,13 @@ class _WritePostState extends ConsumerState<WritePost> {
               disabledForegroundColor: AppColors.grey,
             ),
             onPressed: postData.controller.text.isEmpty &&
-                    postData.media.file.isEmpty
+                        postData.media.file.isEmpty ||
+                    _sending == true
                 ? null
                 : () {
+                    if (_sending) {
+                      return;
+                    }
                     setState(() {
                       _sending = true;
                     });
@@ -195,7 +178,29 @@ class _WritePostState extends ConsumerState<WritePost> {
                         .read(writePostProvider.notifier)
                         .createPost()
                         .then((value) {
-                      if (value != '') {
+                      if (value == 'error') {
+                        setState(() {
+                          _sending = false;
+                          openSnackbar(
+                            child: Row(
+                              children: [
+                                Icon(Icons.error_sharp, color: AppColors.red),
+                                SizedBox(
+                                  width: 10.w,
+                                ),
+                                Text(
+                                  'Error occured! Couldn\'t create post. Try again',
+                                  style: TextStyle(
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge!
+                                          .color),
+                                ),
+                              ],
+                            ),
+                          );
+                        });
+                      } else {
                         setState(() {
                           _sending = false;
                           ref.read(writePostProvider.notifier).clearWritePost();
@@ -242,56 +247,18 @@ class _WritePostState extends ConsumerState<WritePost> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                Padding(
-                  padding: EdgeInsets.all(10.r),
-                  child: Stack(
-                    children: [
-                      TextField(
-                        controller: postData.controller,
-                        onChanged: (value) {
-                          if (postData.media.type == MediaType.none) {
-                            if (_debounce?.isActive ?? false) {
-                              _debounce!.cancel();
-                            }
-                            _debounce = Timer(const Duration(seconds: 2), () {
-                              setState(() {
-                                checkForLinks(value);
-                              });
-                            });
-                          }
-                          setState(() {});
-                        },
-                        cursorColor: AppColors.lightBlue,
-                        maxLines: null,
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
-                          hintText: 'What are your thoughts?',
-                          isDense: true,
-                          isCollapsed: true,
-                        ),
-                        autofocus: true,
-                        style: TextStyle(
-                          decoration: TextDecoration.none,
-                          color: Colors.transparent,
-                          fontSize: 15.r,
-                          letterSpacing: 0,
-                        ),
-                      ),
-                      Linkify(
-                        text: postData.controller.text,
-                        style: TextStyle(
-                          fontSize: 15.r,
-                          letterSpacing: 0,
-                        ),
-                        options: const LinkifyOptions(humanize: false),
-                        onOpen: (link) async {
-                          if (!await launchUrl(Uri.parse(link.url))) {
-                            throw Exception('Could not open the link');
-                          }
-                        },
-                      ),
-                    ],
-                  ),
+                FormattedInput(
+                  mediaType: postData.media.type,
+                  controller: postData.controller,
+                  focusNode: _focusNode,
+                  onTagsVisibilityChanged: (showTags) {
+                    setState(() {
+                      _showTags = showTags;
+                    });
+                  },
+                  onMediaChanged: (media) {
+                    ref.read(writePostProvider.notifier).setMedia(media);
+                  },
                 ),
                 if (postData.media.type != MediaType.none)
                   Column(
@@ -330,6 +297,44 @@ class _WritePostState extends ConsumerState<WritePost> {
             ),
           ),
         ),
+        if (_showTags && _focusNode.hasFocus)
+          SizedBox(
+            height: 200.h,
+            child: ListView.separated(
+              shrinkWrap: true,
+              physics: const ClampingScrollPhysics(),
+              itemCount: 10,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  leading: CircleAvatar(
+                    radius: 20.r,
+                    backgroundImage: const NetworkImage(
+                        'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg'),
+                  ),
+                  title: Text("User $index"),
+                  subtitle: Text("user $index",
+                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                            color: AppColors.grey,
+                          )),
+                  onTap: () {
+                    postData.controller.text =
+                        postData.controller.text.replaceRange(
+                      postData.controller.text.lastIndexOf('@'),
+                      postData.controller.text.length,
+                      "*User $index* ",
+                    );
+                    setState(() {
+                      _showTags = false;
+                    });
+                  },
+                );
+              },
+              separatorBuilder: (context, index) => const Divider(
+                color: AppColors.lightGrey,
+                height: 0,
+              ),
+            ),
+          ),
         if (postData.media.type == MediaType.none)
           Padding(
             padding: EdgeInsets.all(10.r),

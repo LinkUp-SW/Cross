@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:link_up/core/services/base_service.dart';
 import 'package:link_up/features/Home/home_enums.dart';
-import 'package:link_up/features/Home/model/header_model.dart';
 import 'package:link_up/features/Home/model/media_model.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
 
@@ -16,13 +17,13 @@ class WritePostVm {
   Media media;
   bool isEdited = false;
 
-  WritePostVm(
-      {required this.visbilityPost,
-      required this.visibilityComment,
-      required this.media,
-      required this.controller,
-      this.isEdited = false,
-      });
+  WritePostVm({
+    required this.visbilityPost,
+    required this.visibilityComment,
+    required this.media,
+    required this.controller,
+    this.isEdited = false,
+  });
   WritePostVm.initial()
       : visbilityPost = Visibilities.anyone,
         visibilityComment = Visibilities.anyone,
@@ -65,7 +66,7 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
     state = WritePostVm.initial();
   }
 
-  void setPost(PostModel post,bool isEdited) {
+  void setPost(PostModel post, bool isEdited) {
     state = WritePostVm(
       isEdited: isEdited,
       visbilityPost: post.header.visibilityPost,
@@ -77,19 +78,39 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
 
   Future<String> createPost() async {
     //TODO: send tempPost to backend
-    PostModel tempPost = PostModel(
-        id: 'noId',
-        header: HeaderModel.initial(),
-        text: state.controller.text,
-        media: state.media,
-        reactions: 0,
-        comments: 0,
-        reposts: 0,
-        reaction: Reaction.none);
-    return await Future.delayed(const Duration(milliseconds: 2000), () {
-      log(jsonEncode(tempPost.toJson()));
-      return true;
-    }).then((value) => tempPost.id);
+    final BaseService service = BaseService();
+    final mediaContent = [
+      if (state.media.type == MediaType.link)
+        ...state.media.urls
+      else if (state.media.type == MediaType.post)
+        state.media.post!.id
+      else if (state.media.type == MediaType.pdf)
+        base64Encode(await File(state.media.file[0]).readAsBytes())
+      else
+        for (int i = 0; i < state.media.file.length; i++)
+          {
+            base64Encode(await File(state.media.file[i]!.path).readAsBytes()),
+          }
+    ];
+    //log(mediaContent.toString());
+    final response = await service.post('api/v1/post/create-post', body: {
+      "content": state.controller.text,
+      "mediaType": state.media.type.name,
+      "media": mediaContent,
+      "commentsDisabled":
+          Visibilities.getVisibilityString(state.visibilityComment),
+      "publicPost": state.visbilityPost == Visibilities.anyone ? true : false,
+      "taggedUsers": []
+    });
+    log('Response: ${response.statusCode} - ${response.body}');
+    if (response.statusCode == 200) {
+      log('Post created successfully: ${response.body}');
+      return 'created';
+      //return jsonDecode(response.body)['postId'];
+    } else {
+      log('Failed to create post');
+      return 'error';
+    }
   }
 }
 

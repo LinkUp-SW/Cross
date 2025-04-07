@@ -3,10 +3,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:link_up/features/admin_panel/view/statistics_view.dart';
 import 'package:link_up/features/my-network/view/connections_screen.dart';
 import 'package:link_up/core/utils/global_keys.dart';
 import 'package:link_up/features/logIn/view/forgot_pasword_view.dart';
 import 'package:link_up/features/logIn/view/login_view.dart';
+import 'package:link_up/features/profile/view/view.dart';
 import 'package:link_up/features/signUp/view/userInfo/names_view.dart';
 import 'package:link_up/features/signUp/view/userInfo/past_job_details.dart';
 import 'package:link_up/features/signUp/view/userInfo/take_photo.dart';
@@ -25,8 +27,13 @@ import 'package:link_up/features/my-network/view/invitations_screen.dart';
 import 'package:link_up/features/my-network/view/manage_my_network_screen.dart';
 import 'package:link_up/features/my-network/view/people_i_follow_screen.dart';
 import 'package:link_up/features/my-network/view/view.dart';
+import 'package:link_up/features/chat/view/chat_list_page.dart';
 import 'package:link_up/shared/dummy_page.dart';
 import 'package:link_up/shared/widgets/bottom_navigation_bar.dart';
+import 'package:link_up/features/profile/view/edit_intro.dart';
+import 'package:link_up/features/profile/view/edit_contact_info.dart';
+import 'package:link_up/features/profile/view/add_new_position.dart';
+import 'package:link_up/features/profile/view/add_new_education.dart';
 import 'package:link_up/shared/widgets/main_drawer.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) {
@@ -34,9 +41,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
 
   return GoRouter(
       navigatorKey: navigatorKey,
-      initialLocation: '/',
+      initialLocation: '/login',
       routes: <RouteBase>[
-        GoRoute(path: "/profile", builder: (context, state) => Container()),
+        GoRoute(path: "/profile", builder: (context, state) => ProfilePage()),
         GoRoute(
             path: "/login",
             builder: (context, state) => const LoginPage(),
@@ -45,6 +52,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                   path: "/forgotpassword",
                   builder: (context, state) => const ForgotPasswordView()),
             ]),
+        GoRoute(
+            path: '/statistics',
+            builder: (context, state) => const StatisticsView()),
+        GoRoute(
+            path: '/priv',
+            builder: (context, state) => const DummyPage(title: 'Users')),
         GoRoute(
             path: "/signup",
             builder: (context, state) => const EmailPasswordView(),
@@ -96,6 +109,23 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           builder: (context, state) => const DummyPage(
             title: 'Pages Screen',
           ),
+        ),
+        //Profile Page Routes
+        GoRoute(
+          path: "/edit_intro",
+          builder: (context, state) => const EditIntroPage(),
+        ),
+        GoRoute(
+          path: "/edit_contact_info",
+          builder: (context, state) => const EditContactInfo(),
+        ),
+        GoRoute(
+          path: "/add_new_position",
+          builder: (context, state) => const AddNewPosition(),
+        ),
+        GoRoute(
+          path: "/add_new_education",
+          builder: (context, state) => const AddNewEducation(),
         ),
         StatefulShellRoute.indexedStack(
           builder: (context, state, navigationShell) => Scaffold(
@@ -212,7 +242,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 })),
         GoRoute(
             path: "/messages",
-            builder: (context, state) => const DummyPage(title: "messages")),
+            builder: (context, state) => ChatListScreen()),
         GoRoute(path: "/chatpage", builder: (context, state) => Container()),
         GoRoute(path: "/settings", builder: (context, state) => Container()),
       ]);

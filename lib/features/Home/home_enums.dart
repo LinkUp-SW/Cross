@@ -22,9 +22,9 @@ enum Visibilities { anyone, connectionsOnly, noOne;
         case Visibilities.anyone:
           return 'Anyone';
         case Visibilities.connectionsOnly:
-          return 'Connections Only';
+          return 'Connections only';
         case Visibilities.noOne:
-          return 'No One';
+          return 'No one';
       }
     }
   }

@@ -3,7 +3,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 
+
 // Need to be revised but for the outlined and text buttons
+
 
 class LinkUpButtonStyles {
   ElevatedButtonThemeData lightElevatedButtonTheme() {
@@ -41,6 +43,8 @@ class LinkUpButtonStyles {
       style: darkTextButtonStyle(),
     );
   }
+
+
 
   ButtonStyle lightTextButtonStyle({
     double elevation = 0.0,
@@ -103,6 +107,7 @@ class LinkUpButtonStyles {
       textStyle: textStyle,
     );
   }
+
 
   ButtonStyle profileOpenToDark({
     double elevation = 0.0,
@@ -183,5 +188,69 @@ class LinkUpButtonStyles {
       textStyle: textStyle,
     );
   }
+  // Profile buttons
+  // Light Theme Button Styles
+  ButtonStyle wideBlueElevatedButton() {
+    return ElevatedButton.styleFrom(
+      backgroundColor: AppColors.lightBlue,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24.r),
+      ),
+      padding: EdgeInsets.symmetric(vertical: 5.h),
+    );
+  }
+
+  ButtonStyle circularButton() {
+    return OutlinedButton.styleFrom(
+      side: BorderSide(color: AppColors.lightTextColor, width: 1.2.r),
+      shape: const CircleBorder(),
+      padding: EdgeInsets.zero,
+      backgroundColor: Colors.transparent,
+    );
+  }
+
+  ButtonStyle blueOutlinedButton() {
+    return OutlinedButton.styleFrom(
+      backgroundColor: AppColors.lightMain,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24.r),
+      ),
+      side: BorderSide(color: AppColors.lightBlue, width: 1.2.r),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+    );
+  }
+
+  // Dark Theme Button Styles
+  ButtonStyle wideBlueElevatedButtonDark() {
+    return ElevatedButton.styleFrom(
+      backgroundColor: AppColors.darkBlue,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24.r),
+      ),
+      padding: EdgeInsets.symmetric(vertical: 5.h),
+    );
+  }
+
+  ButtonStyle circularButtonDark() {
+    return OutlinedButton.styleFrom(
+      side: BorderSide(color: AppColors.darkTextColor, width: 1.2.r),
+      shape: const CircleBorder(),
+      padding: EdgeInsets.zero,
+      backgroundColor: Colors.transparent,
+    );
+  }
+
+  ButtonStyle blueOutlinedButtonDark() {
+    return OutlinedButton.styleFrom(
+      backgroundColor: AppColors.darkMain,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24.r),
+      ),
+      side: BorderSide(color: AppColors.darkBlue, width: 1.2.r),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+    );
+  }
 }
+
 // The rest of buttons styles should be exist here
+
