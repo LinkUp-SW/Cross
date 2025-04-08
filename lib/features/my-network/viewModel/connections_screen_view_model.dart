@@ -141,7 +141,6 @@ class ConnectionsScreenViewModel extends Notifier<ConnectionsScreenState> {
       }
     } catch (e) {
       state = state.copyWith(isLoading: false, isError: true);
-      print(e);
     }
   }
 
