@@ -4,21 +4,22 @@ import 'package:link_up/features/my-network/services/received_invitations_tab_se
 import 'package:link_up/features/my-network/state/received_invitations_tab_state.dart';
 
 class ReceivedInvitationsTabViewModel
-    extends StateNotifier<ReceivedInvitationsTabState> {
-  final ReceivedInvitationsTabServices _receivedInvitationsTabServices;
-
-  ReceivedInvitationsTabViewModel(this._receivedInvitationsTabServices)
-      : super(ReceivedInvitationsTabState.initial());
+    extends Notifier<ReceivedInvitationsTabState> {
+  @override
+  ReceivedInvitationsTabState build() {
+    return ReceivedInvitationsTabState.initial();
+  }
 
   // Fetch received invitations
   Future<void> getReceivedInvitations(
       Map<String, dynamic>? queryParameters) async {
     try {
       state = state.copyWith(isLoading: true, error: false);
-      final response =
-          await _receivedInvitationsTabServices.getReceivedInvitations(
-        queryParameters: queryParameters,
-      );
+      final response = await ref
+          .read(receivedInvitationsTabServicesProvider)
+          .getReceivedInvitations(
+            queryParameters: queryParameters,
+          );
 
       // Parse the received invitations from the response
       final List<InvitationsCardModel> receivedInvitations =
@@ -41,8 +42,9 @@ class ReceivedInvitationsTabViewModel
     state = currentState.copyWith(isLoadingMore: true);
 
     try {
-      final response =
-          await _receivedInvitationsTabServices.getReceivedInvitations(
+      final response = await ref
+          .read(receivedInvitationsTabServicesProvider)
+          .getReceivedInvitations(
         queryParameters: {
           'limit': '$paginationLimit',
           'cursor': currentState.nextCursor,
@@ -98,7 +100,9 @@ class ReceivedInvitationsTabViewModel
   Future<void> acceptInvitation(String userId) async {
     try {
       state = state.copyWith(isLoading: true, error: false);
-      await _receivedInvitationsTabServices.acceptInvitation(userId);
+      await ref
+          .read(receivedInvitationsTabServicesProvider)
+          .acceptInvitation(userId);
 
       // Remove the accepted invitation from the received list
       if (state.received != null) {
@@ -117,7 +121,9 @@ class ReceivedInvitationsTabViewModel
   Future<void> ignoreInvitation(String userId) async {
     try {
       state = state.copyWith(isLoading: true, error: false);
-      await _receivedInvitationsTabServices.ignoreInvitation(userId);
+      await ref
+          .read(receivedInvitationsTabServicesProvider)
+          .ignoreInvitation(userId);
 
       // Remove the ignored invitation from the received list
       if (state.received != null) {
@@ -134,8 +140,7 @@ class ReceivedInvitationsTabViewModel
 }
 
 // Provider for the view model
-final receivedInvitationsTabViewModelProvider = StateNotifierProvider<
-    ReceivedInvitationsTabViewModel, ReceivedInvitationsTabState>((ref) {
-  return ReceivedInvitationsTabViewModel(
-      ref.read(receivedInvitationsTabServicesProvider));
+final receivedInvitationsTabViewModelProvider = NotifierProvider<
+    ReceivedInvitationsTabViewModel, ReceivedInvitationsTabState>(() {
+  return ReceivedInvitationsTabViewModel();
 });
