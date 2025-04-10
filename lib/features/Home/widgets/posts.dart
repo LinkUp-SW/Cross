@@ -13,6 +13,7 @@ import 'package:link_up/features/Home/widgets/post_header.dart';
 import 'package:link_up/features/Home/widgets/reactions.dart';
 import 'package:link_up/features/Post/viewModel/write_post_vm.dart';
 import 'package:link_up/features/Post/widgets/formatted_richtext.dart';
+import 'package:link_up/features/logIn/viewModel/user_data_vm.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/widgets/bottom_sheet.dart';
 
@@ -39,6 +40,7 @@ class _PostsState extends ConsumerState<Posts> {
 
   @override
   Widget build(BuildContext context) {
+    final user = ref.watch(userDataProvider);
     return GestureDetector(
       onTap: () {
         if (!widget.inMessage) {
@@ -53,7 +55,7 @@ class _PostsState extends ConsumerState<Posts> {
               children: [
                 PostHeader(
                   isAd: widget.post.isAd,
-                  postId: widget.post.id,
+                  post: widget.post,
                 ),
                 Divider(
                   indent: 10.w,
@@ -143,7 +145,7 @@ class _PostsState extends ConsumerState<Posts> {
               ),
               Flexible(
                 flex: 1,
-                child: widget.post.header.userId == '1'
+                child: widget.post.header.userId != user.userId
                     ? TextButton(
                         onPressed: () {
                           setState(() {

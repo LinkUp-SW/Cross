@@ -19,7 +19,8 @@ import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/widgets/custom_snackbar.dart';
 
 class WritePost extends ConsumerStatefulWidget {
-  const WritePost({super.key});
+  const WritePost({super.key,required this.text});
+  final String text;
 
   @override
   ConsumerState<WritePost> createState() => _WritePostState();
@@ -79,18 +80,18 @@ class _WritePostState extends ConsumerState<WritePost> {
       });
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
-    ref.read(writePostProvider.notifier).setController((showTags) {
-      if (_showTags != showTags) {
-        setState(() {
-          _showTags = showTags;
-        });
-      }
-    },
-    (media) {
-      ref.read(writePostProvider.notifier).setMedia(media);
-    }
-    );
-  });
+      ref.read(writePostProvider.notifier).setController((showTags) {
+        if (_showTags != showTags) {
+          setState(() {
+            _showTags = showTags;
+          });
+        }
+      }, (media) {
+        ref.read(writePostProvider.notifier).setMedia(media);
+      },
+      text: widget.text,
+      );
+    });
   }
 
   // Add this utility function to your code
@@ -125,7 +126,7 @@ class _WritePostState extends ConsumerState<WritePost> {
           icon: const Icon(Icons.close),
           onPressed: () {
             if (postData.controller.text.isEmpty &&
-                postData.media.file.isEmpty) {
+                postData.media.type == MediaType.none) {
               context.pop();
             } else {
               showDialog(
@@ -239,7 +240,7 @@ class _WritePostState extends ConsumerState<WritePost> {
               disabledForegroundColor: AppColors.grey,
             ),
             onPressed: postData.controller.text.isEmpty &&
-                        postData.media.file.isEmpty ||
+                        postData.media.type == MediaType.none || 
                     _sending == true
                 ? null
                 : () {
@@ -251,7 +252,7 @@ class _WritePostState extends ConsumerState<WritePost> {
                     });
                     ref
                         .read(writePostProvider.notifier)
-                        .createPost()
+                        .post()
                         .then((value) {
                       if (value == 'error') {
                         setState(() {
@@ -325,6 +326,7 @@ class _WritePostState extends ConsumerState<WritePost> {
                 FormattedInput(
                   controller: postData.controller,
                   focusNode: _focusNode,
+                  onChanged: (value){setState(() {});},
                 ),
                 if (postData.media.type != MediaType.none)
                   Column(
@@ -351,7 +353,7 @@ class _WritePostState extends ConsumerState<WritePost> {
                         borderRadius: BorderRadius.circular(20.r),
                         child: Padding(
                           padding: EdgeInsets.all(5.r),
-                          child: postData.media.getMediaLocal(),
+                          child: postData.media.getMedia(),
                         ),
                       ),
                       SizedBox(
@@ -410,15 +412,16 @@ class _WritePostState extends ConsumerState<WritePost> {
                 IconButton(
                   onPressed: () async {
                     final ImagePicker picker = ImagePicker();
-                    // Pick multiple images and videos.
+                    // Pick multiple images or a single image.
                     final tempImages = await picker.pickMultiImage();
                     setState(() {
                       ref.read(writePostProvider.notifier).setMedia(Media(
+                          isLocal: true,
                           type: tempImages.length > 1
                               ? MediaType.images
                               : MediaType.image,
                           urls: [],
-                          file: [...tempImages]));
+                          files: [...tempImages]));
                     });
                   },
                   icon: Icon(
@@ -435,7 +438,10 @@ class _WritePostState extends ConsumerState<WritePost> {
                     setState(() {
                       if (video != null) {
                         ref.read(writePostProvider.notifier).setMedia(Media(
-                            type: MediaType.video, urls: [], file: [video]));
+                            isLocal: true,
+                            type: MediaType.video,
+                            urls: [],
+                            files: [video]));
                       } else {
                         throw Exception('Could not add video');
                       }
@@ -455,9 +461,10 @@ class _WritePostState extends ConsumerState<WritePost> {
                     setState(() {
                       if (pdf != null) {
                         ref.read(writePostProvider.notifier).setMedia(Media(
+                            isLocal: true,
                             type: MediaType.pdf,
                             urls: [],
-                            file: [pdf.paths[0]!]));
+                            files: [pdf.paths[0]!]));
                       } else {
                         throw Exception('Could not add pdf');
                       }
