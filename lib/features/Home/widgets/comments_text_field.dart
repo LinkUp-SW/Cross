@@ -176,6 +176,7 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                                       child: FormattedInput(
                                         controller: writeComment.controller,
                                         focusNode: widget.focusNode,
+                                        onChanged: (value) {setState(() {});},
                                       ),
                                     ),
                                     if (imagePath.path != '')
