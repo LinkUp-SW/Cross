@@ -10,6 +10,7 @@ import 'package:link_up/features/Post/viewModel/write_post_vm.dart';
 import 'package:link_up/features/Post/widgets/bottom_sheet.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/widgets/bottom_sheet.dart';
+import 'package:share_plus/share_plus.dart';
 
 aboutPostBottomSheet(BuildContext context, {bool isAd = false, required PostModel post}) {
   showModalBottomSheet(
@@ -41,6 +42,9 @@ aboutPostBottomSheet(BuildContext context, {bool isAd = false, required PostMode
               ListTile(
                 onTap: () {
                   //TODO: share post
+                context.pop();
+                Share.shareUri(Uri.parse('https://github.com'));
+
                 },
                 leading: const Icon(Icons.ios_share),
                 title: const Text("Share via"),
@@ -63,6 +67,8 @@ aboutPostBottomSheet(BuildContext context, {bool isAd = false, required PostMode
                   : ListTile(
                       onTap: () {
                         //TODO: unfollow user
+                        //Needs to be changed to top id and name
+                        unfollowUser(post.header.userId);
                       },
                       leading: Transform.rotate(
                           angle: math.pi / 4,
@@ -127,6 +133,8 @@ myPostBottomSheet(BuildContext context, WidgetRef ref,
             ListTile(
               onTap: () {
                 //TODO: share post
+                context.pop();
+                Share.shareUri(Uri.parse('https://github.com'));
               },
               leading: const Icon(Icons.ios_share),
               title: const Text("Share via"),

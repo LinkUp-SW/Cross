@@ -45,6 +45,48 @@ Future<void> unsavePost(String postId) async {
   }
 }
 
+Future<void> followUser(String userId) async {
+  final BaseService service = BaseService();
+  final response = await service.post('api/v1/user/follow/:userId', routeParameters: {
+    "userId": userId,
+  });
+
+  log('Response: ${response.statusCode} - ${response.body}');
+  if (response.statusCode == 200) {
+    log('User followed successfully: ${response.body}');
+  } else {
+    log('Failed to follow user');
+  }
+}
+
+Future<void> unfollowUser(String userId) async {
+  final BaseService service = BaseService();
+  final response = await service.delete('api/v1/user/unfollow/:userId', {
+    "userId": userId,
+  });
+
+  log('Response: ${response.statusCode} - ${response.body}');
+  if (response.statusCode == 200) {
+    log('User unfollowed successfully: ${response.body}');
+  } else {
+    log('Failed to unfollow user');
+  }
+}
+
+Future<void> connectToUser(String userId) async {
+  final BaseService service = BaseService();
+  final response = await service.post('api/v1/user/connect/:userId', routeParameters: {
+    "userId": userId,
+  });
+
+  log('Response: ${response.statusCode} - ${response.body}');
+  if (response.statusCode == 200) {
+    log('User connected successfully: ${response.body}');
+  } else {
+    log('Failed to connect to user');
+  }
+}
+
 Future<List<PostModel>> getSavedPosts() async {
   final BaseService service = BaseService();
   final response = await service.get('api/v1/post/saved-post',queryParameters: {
