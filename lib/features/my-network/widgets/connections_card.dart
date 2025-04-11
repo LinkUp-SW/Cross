@@ -81,7 +81,6 @@ class ConnectionsCard extends ConsumerWidget {
             ),
             // Remove connection & Message icons
             Row(
-              spacing: 4.w,
               children: [
                 IconButton(
                   onPressed: () => {
@@ -103,7 +102,7 @@ class ConnectionsCard extends ConsumerWidget {
                     ),
                   },
                   icon: Icon(
-                    Icons.person_off,
+                    Icons.more_vert,
                     size: 25.r,
                     color: isDarkMode
                         ? AppColors.darkTextColor

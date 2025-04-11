@@ -1,8 +1,10 @@
 // The route management packages and the class handling it
 
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:link_up/features/Home/view/saved_posts.dart';
 import 'package:link_up/features/admin_panel/view/statistics_view.dart';
 import 'package:link_up/features/my-network/view/connections_screen.dart';
 import 'package:link_up/core/utils/global_keys.dart';
@@ -151,7 +153,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               routes: <GoRoute>[
                 GoRoute(
                   path: "/network",
-                  builder: (context, state) => const MyNetworkScreen(),
+                  builder: (context, state) => MyNetworkScreen(
+                    scaffoldKey: scaffoldKey,
+                  ),
                 ),
               ],
             ),
@@ -226,8 +230,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         GoRoute(path: "/company", builder: (context, state) => Container()),
         GoRoute(
             path: "/writePost",
-            pageBuilder: (context, state) => CustomTransitionPage(
-                child: const WritePost(),
+            pageBuilder: (context, state) {
+              final text = state.extra as String?;
+                 return CustomTransitionPage(
+                child: WritePost(text: text ?? ''),
                 transitionsBuilder:
                     (context, animation, secondaryAnimation, child) {
                   return SlideTransition(
@@ -237,7 +243,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                     ).animate(animation),
                     child: child,
                   );
-                })),
+                });}),
+        GoRoute( 
+          path: '/savedPosts',
+          builder: (context, state) => SavedPostsPage(),
+        ),
         GoRoute(
             path: "/messages",
             builder: (context, state) => ChatListScreen()),

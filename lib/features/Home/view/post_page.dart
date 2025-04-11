@@ -25,7 +25,6 @@ class PostPage extends ConsumerStatefulWidget {
 }
 
 class _PostPageState extends ConsumerState<PostPage> {
-  final TextEditingController _textController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   late ScrollController _scrollController;
   late String postId;
@@ -74,14 +73,13 @@ class _PostPageState extends ConsumerState<PostPage> {
           IconButton(
             icon: const Icon(Icons.more_horiz),
             onPressed: () {
-              aboutPostBottomSheet(context, isAd: widget.isAd);
+              aboutPostBottomSheet(context, isAd: widget.isAd, post: post);
             },
           )
         ],
       ),
       bottomNavigationBar: CommentsTextField(
           focusNode: _focusNode,
-          textController: _textController,
           focused: widget.focused,
           buttonName: 'Comment',),
       body: Padding(

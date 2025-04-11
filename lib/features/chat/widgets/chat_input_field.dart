@@ -6,11 +6,11 @@ class ChatInputField extends StatelessWidget {
   final VoidCallback onAttachmentPressed;
 
   const ChatInputField({
-    Key? key,
+    super.key,
     required this.messageController,
     required this.onSendPressed,
     required this.onAttachmentPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

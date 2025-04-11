@@ -63,10 +63,7 @@ class PeopleCard extends ConsumerWidget {
                 top: 5.h,
                 right: 3.w,
                 child: InkWell(
-                  onTap: () {
-                    print(
-                        "Pressed on ${data.firstName} ${data.lastName} cancel");
-                  },
+                  onTap: () {},
                   child: Container(
                     padding: EdgeInsets.all(2.r),
                     decoration: const BoxDecoration(
@@ -142,10 +139,7 @@ class PeopleCard extends ConsumerWidget {
                   horizontal: 6.w,
                 ),
                 child: ElevatedButton(
-                  onPressed: () {
-                    print(
-                        "Pressed on ${data.firstName} ${data.lastName} connect");
-                  },
+                  onPressed: () {},
                   style: isDarkMode
                       ? LinkUpButtonStyles().myNetworkScreenConnectDark()
                       : LinkUpButtonStyles().myNetworkScreenConnectLight(),

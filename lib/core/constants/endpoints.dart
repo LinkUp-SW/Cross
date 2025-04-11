@@ -1,7 +1,8 @@
 // The internal and external endpoints
 
 class InternalEndPoints {
-  static String token = "";
+  static String userId = "";
+  static String email = "";
 }
 
 class ExternalEndPoints {

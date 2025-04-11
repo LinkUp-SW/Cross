@@ -9,37 +9,29 @@ import 'package:link_up/features/Home/model/media_model.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
 import 'package:link_up/features/Post/widgets/formatted_input.dart';
 import 'package:link_up/features/Post/widgets/formatting_styles.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 final context = navigatorKey.currentContext!;
 
-class WritePostVm {
-  Visibilities visbilityPost;
-  Visibilities visibilityComment;
-  //bool brandPartnerships = false;
+class WriteCommentVm {
   TextEditingController controller;
   Media media;
+  bool isEdited = false;
   List<dynamic> taggedUsers = [];
-  String postId = 'noId';
 
-  WritePostVm({
-    required this.visbilityPost,
-    required this.visibilityComment,
+  WriteCommentVm({
     required this.media,
     required this.controller,
-    this.postId = 'noId',
-    this.taggedUsers = const [],
+    this.isEdited = false,
   });
 
-  WritePostVm.initial()
-      : visbilityPost = Visibilities.anyone,
-        visibilityComment = Visibilities.anyone,
+  WriteCommentVm.initial()
+      : isEdited = false,
         media = Media.initial(),
         controller = TextEditingController(); // Use basic controller initially
 
   // Initialize styleable controller after construction
   void initController(
-      BuildContext context, Function updateTags, Function setMedia) {
+      BuildContext context, Function updateTags) {
     controller = StyleableTextFieldController(
       styles: TextPartStyleDefinitions(
         definitionList: [
@@ -72,34 +64,6 @@ class WritePostVm {
               }
             },
           ),
-          FormattingTextStyles.urlStyle(
-            context,
-            onTap: (url) async {
-              url = url.trim();
-              final isAccessible = await isAccessibleUrl(url);
-              if (isAccessible) {
-                launchUrl(Uri.parse(url), mode: LaunchMode.inAppBrowserView);
-              } else {
-                log('URL is not accessible: $url');
-                // Show feedback in your app
-              }
-            },
-            onDetected: (url) async {
-              url = url.trim();
-              final isAccessible = await isAccessibleUrl(url);
-              if (isAccessible) {
-                if (media.type == MediaType.none) {
-                  setMedia(Media(
-                    type: MediaType.link,
-                    urls: [url],
-                  ));
-                }
-              } else {
-                log('URL is not accessible: $url');
-                // Show feedback in your app
-              }
-            },
-          ),
           TextPartStyleDefinition(
             pattern: r'@[\w ]*',
             style: TextStyle(),
@@ -123,29 +87,27 @@ class WritePostVm {
     );
   }
 
-  WritePostVm copyWith({
+  WriteCommentVm copyWith({
     Visibilities? visbilityPost,
     Visibilities? visibilityComment,
     Media? media,
     bool? isEdited,
     TextEditingController? controller,
   }) {
-    return WritePostVm(
-        visbilityPost: visbilityPost ?? this.visbilityPost,
-        visibilityComment: visibilityComment ?? this.visibilityComment,
+    return WriteCommentVm(
         media: media ?? this.media,
+        isEdited: isEdited ?? this.isEdited,
         controller: controller ?? this.controller);
   }
 }
 
-class WritePostProvider extends StateNotifier<WritePostVm> {
-  WritePostProvider() : super(WritePostVm.initial()) {
-    state.initController(context, () {}, () {});
+class WriteCommentProvider extends StateNotifier<WriteCommentVm> {
+  WriteCommentProvider() : super(WriteCommentVm.initial()) {
+    state.initController(context, () {});
   }
 
-  void setController(Function updateTags, Function setMedia,{String? text}) {
-    state.initController(context, updateTags, setMedia);
-    state.controller.text = text ?? '';
+  void setController(Function updateTags) {
+    state.initController(context, updateTags);
   }
 
   void setVisibilityPost(Visibilities visibility) {
@@ -161,70 +123,28 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
   }
 
   void clearWritePost() {
-    state = WritePostVm.initial();
-    state.initController(context, () {}, () {});
+    state = WriteCommentVm.initial();
+    state.initController(context, () {});
   }
 
-  void setPost(PostModel post, bool isEdited) {
-    state.controller.text = post.text;
-    state = WritePostVm(
-      taggedUsers: post.taggedUsers,
-      postId: post.id,
-      visbilityPost: post.header.visibilityPost,
-      visibilityComment: post.header.visibilityComments,
+  void setComment(PostModel post, bool isEdited) {
+    state = WriteCommentVm(
+      isEdited: isEdited,
       media: post.media,
-      controller: state.controller,
+      controller: TextEditingController(text: post.text),
     );
-    
   }
 
-  Future<String> post() async {
-    if (state.postId != 'noId') {
-      return await editPost();
-    } else {
-      return await createPost();
-    }
-  }
-
-  Future<String> editPost() async {
+  Future<String> createComment() async {
     final BaseService service = BaseService();
 
-    final mediaContent = await state.media.setToUpload();
-
-    final response = await service.put('api/v1/post/edit-post', {
-      "postId": state.postId,
-      "content": state.controller.text,
-      "mediaType": state.media.type.name,
-      "media": mediaContent,
-      "commentsDisabled":
-          Visibilities.getVisibilityString(state.visibilityComment),
-      "publicPost": state.visbilityPost == Visibilities.anyone ? true : false,
-      "taggedUsers": state.taggedUsers,
-    });
-
-    log('Response: ${response.statusCode} - ${response.body}');
-    if (response.statusCode == 200) {
-      log('Post edited successfully: ${response.body}');
-      return 'edited';
-    } else {
-      log('Failed to edit post');
-      return 'error';
-    }
-  }
-
-  Future<String> createPost() async {
-    final BaseService service = BaseService();
-
-    final mediaContent = await state.media.setToUpload();
-
+    final mediaContent = state.media.setToUpload();
+    //TODO: change to create comment
     final response = await service.post('api/v1/post/create-post', body: {
       "content": state.controller.text,
       "mediaType": state.media.type.name,
       "media": mediaContent,
-      "commentsDisabled":
-          Visibilities.getVisibilityString(state.visibilityComment),
-      "publicPost": state.visbilityPost == Visibilities.anyone ? true : false,
-      "taggedUsers": state.taggedUsers,
+      "taggedUsers": []
     });
 
     // Rest of the function remains the same
@@ -240,7 +160,7 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
   }
 }
 
-final writePostProvider =
-    StateNotifierProvider<WritePostProvider, WritePostVm>((ref) {
-  return WritePostProvider();
+final writeCommentProvider =
+    StateNotifierProvider<WriteCommentProvider, WriteCommentVm>((ref) {
+  return WriteCommentProvider();
 });

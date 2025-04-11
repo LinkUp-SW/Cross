@@ -15,7 +15,7 @@ import '../widgets/chat_input_field.dart';
 class ChatScreen extends ConsumerStatefulWidget {
   final int chatIndex;
 
-  const ChatScreen({Key? key, required this.chatIndex}) : super(key: key);
+  const ChatScreen({super.key, required this.chatIndex});
 
   @override
   _ChatScreenState createState() => _ChatScreenState();

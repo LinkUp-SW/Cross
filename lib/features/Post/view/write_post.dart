@@ -1,10 +1,8 @@
 import 'dart:developer';
-import 'dart:async';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:linkify/linkify.dart';
-import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -15,12 +13,14 @@ import 'package:link_up/features/Home/model/media_model.dart';
 import 'package:link_up/features/Home/viewModel/post_vm.dart';
 import 'package:link_up/features/Post/viewModel/write_post_vm.dart';
 import 'package:link_up/features/Post/widgets/bottom_sheet.dart';
+import 'package:link_up/features/Post/widgets/formatted_input.dart';
+import 'package:link_up/features/logIn/viewModel/user_data_vm.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/widgets/custom_snackbar.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class WritePost extends ConsumerStatefulWidget {
-  const WritePost({super.key});
+  const WritePost({super.key,required this.text});
+  final String text;
 
   @override
   ConsumerState<WritePost> createState() => _WritePostState();
@@ -28,9 +28,46 @@ class WritePost extends ConsumerStatefulWidget {
 
 class _WritePostState extends ConsumerState<WritePost> {
   bool _sending = false;
-  Timer? _debounce;
   bool _showTags = false;
   final FocusNode _focusNode = FocusNode();
+
+  final List<dynamic> _listtiles = [
+    {
+      'name': 'This is title',
+      'id': '1',
+      'profile':
+          'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
+      'subtitle': 'This is subtitle',
+    },
+    {
+      'name': 'This is title',
+      'id': '2',
+      'profile':
+          'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
+      'subtitle': 'This is subtitle',
+    },
+    {
+      'name': 'This is title',
+      'id': '3',
+      'profile':
+          'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
+      'subtitle': 'This is subtitle',
+    },
+    {
+      'name': 'This is title',
+      'id': '4',
+      'profile':
+          'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
+      'subtitle': 'This is subtitle',
+    },
+    {
+      'name': 'This is title',
+      'id': '5',
+      'profile':
+          'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
+      'subtitle': 'This is subtitle',
+    },
+  ];
 
   @override
   void initState() {
@@ -40,41 +77,46 @@ class _WritePostState extends ConsumerState<WritePost> {
         if (!_focusNode.hasFocus) {
           _showTags = false;
         }
-      });});
+      });
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(writePostProvider.notifier).setController((showTags) {
+        if (_showTags != showTags) {
+          setState(() {
+            _showTags = showTags;
+          });
+        }
+      }, (media) {
+        ref.read(writePostProvider.notifier).setMedia(media);
+      },
+      text: widget.text,
+      );
+    });
   }
 
-  void checkForLinks(String text) {
-    final elements = linkify(text);
-
-    for (var element in elements) {
-      if (element is LinkableElement) {
-        // A link was found
-        log('Found link: ${element.url}');
-
-        // Validate the URL before setting it as media
-        try {
-          final uri = Uri.parse(element.url);
-          if (uri.hasScheme && uri.host.isNotEmpty) {
-            // Valid URL, set it as media
-            ref
-                .read(writePostProvider.notifier)
-                .setMedia(Media(type: MediaType.link, urls: [element.url]));
-
-            log('Valid link added: ${element.url}');
-            break; // If you only care about the first link
-          } else {
-            log('Invalid link format: ${element.url}');
-          }
-        } catch (e) {
-          log('Error parsing URL: ${e.toString()}');
-        }
+  // Add this utility function to your code
+  Future<bool> isAccessibleUrl(String url) async {
+    try {
+      // First check if the URL format is valid
+      final uri = Uri.parse(url);
+      if (uri.scheme != 'http' && uri.scheme != 'https') {
+        return false;
       }
+
+      // Then try to check if the URL is accessible
+      // Using a HEAD request to minimize data transfer
+      final response = await http.head(uri);
+      return response.statusCode >= 200 && response.statusCode < 400;
+    } catch (e) {
+      log('Error checking URL accessibility: $e');
+      return false;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final postData = ref.watch(writePostProvider);
+    final userData = ref.read(userDataProvider);
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primary,
       appBar: AppBar(
@@ -84,7 +126,7 @@ class _WritePostState extends ConsumerState<WritePost> {
           icon: const Icon(Icons.close),
           onPressed: () {
             if (postData.controller.text.isEmpty &&
-                postData.media.file.isEmpty) {
+                postData.media.type == MediaType.none) {
               context.pop();
             } else {
               showDialog(
@@ -140,7 +182,7 @@ class _WritePostState extends ConsumerState<WritePost> {
           children: [
             CircleAvatar(
               radius: 20.r,
-              backgroundImage: const AssetImage('assets/images/profile.png'),
+              backgroundImage: NetworkImage(userData.profileUrl),
             ),
             SizedBox(
               width: 10.w,
@@ -198,7 +240,7 @@ class _WritePostState extends ConsumerState<WritePost> {
               disabledForegroundColor: AppColors.grey,
             ),
             onPressed: postData.controller.text.isEmpty &&
-                        postData.media.file.isEmpty ||
+                        postData.media.type == MediaType.none || 
                     _sending == true
                 ? null
                 : () {
@@ -210,7 +252,7 @@ class _WritePostState extends ConsumerState<WritePost> {
                     });
                     ref
                         .read(writePostProvider.notifier)
-                        .createPost()
+                        .post()
                         .then((value) {
                       if (value == 'error') {
                         setState(() {
@@ -281,63 +323,10 @@ class _WritePostState extends ConsumerState<WritePost> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                Padding(
-                  padding: EdgeInsets.all(10.r),
-                  child: Stack(
-                    children: [
-                      TextField(
-                        focusNode: _focusNode,
-                        controller: postData.controller,
-                        onChanged: (value) {
-                          if (_debounce?.isActive ?? false) {
-                            _debounce!.cancel();
-                          }
-                          _debounce = Timer(const Duration(seconds: 1), () {
-                            setState(() {
-                              if (postData.media.type == MediaType.none) {
-                                checkForLinks(value);
-                              }
-                              if (value.contains('@')) {
-                                _showTags = true;
-                              } else {
-                                _showTags = false;
-                              }
-                            });
-                          });
-
-                          setState(() {});
-                        },
-                        cursorColor: AppColors.lightBlue,
-                        maxLines: null,
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
-                          hintText: 'What are your thoughts?',
-                          isDense: true,
-                          isCollapsed: true,
-                        ),
-                        autofocus: true,
-                        style: TextStyle(
-                          decoration: TextDecoration.none,
-                          color: Colors.transparent,
-                          fontSize: 15.r,
-                          letterSpacing: 0,
-                        ),
-                      ),
-                      Linkify(
-                        text: postData.controller.text,
-                        style: TextStyle(
-                          fontSize: 15.r,
-                          letterSpacing: 0,
-                        ),
-                        options: const LinkifyOptions(humanize: false),
-                        onOpen: (link) async {
-                          if (!await launchUrl(Uri.parse(link.url))) {
-                            throw Exception('Could not open the link');
-                          }
-                        },
-                      ),
-                    ],
-                  ),
+                FormattedInput(
+                  controller: postData.controller,
+                  focusNode: _focusNode,
+                  onChanged: (value){setState(() {});},
                 ),
                 if (postData.media.type != MediaType.none)
                   Column(
@@ -364,7 +353,7 @@ class _WritePostState extends ConsumerState<WritePost> {
                         borderRadius: BorderRadius.circular(20.r),
                         child: Padding(
                           padding: EdgeInsets.all(5.r),
-                          child: postData.media.getMediaLocal(),
+                          child: postData.media.getMedia(),
                         ),
                       ),
                       SizedBox(
@@ -382,16 +371,16 @@ class _WritePostState extends ConsumerState<WritePost> {
             child: ListView.separated(
               shrinkWrap: true,
               physics: const ClampingScrollPhysics(),
-              itemCount: 10,
+              itemCount: _listtiles.length,
               itemBuilder: (context, index) {
                 return ListTile(
                   leading: CircleAvatar(
                     radius: 20.r,
-                    backgroundImage: const NetworkImage(
-                        'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg'),
+                    backgroundImage: NetworkImage(_listtiles[index]['profile']),
                   ),
-                  title: Text("User $index"),
-                  subtitle: Text("user $index",
+                  title: Text(_listtiles[index]['name'],
+                      style: Theme.of(context).textTheme.bodyLarge),
+                  subtitle: Text(_listtiles[index]['subtitle'],
                       style: Theme.of(context).textTheme.bodySmall!.copyWith(
                             color: AppColors.grey,
                           )),
@@ -400,7 +389,7 @@ class _WritePostState extends ConsumerState<WritePost> {
                         postData.controller.text.replaceRange(
                       postData.controller.text.lastIndexOf('@'),
                       postData.controller.text.length,
-                      "**User $index** ",
+                      "@${_listtiles[index]['name']}:${_listtiles[index]['id']}^ ",
                     );
                     setState(() {
                       _showTags = false;
@@ -423,15 +412,16 @@ class _WritePostState extends ConsumerState<WritePost> {
                 IconButton(
                   onPressed: () async {
                     final ImagePicker picker = ImagePicker();
-                    // Pick multiple images and videos.
+                    // Pick multiple images or a single image.
                     final tempImages = await picker.pickMultiImage();
                     setState(() {
                       ref.read(writePostProvider.notifier).setMedia(Media(
+                          isLocal: true,
                           type: tempImages.length > 1
                               ? MediaType.images
                               : MediaType.image,
                           urls: [],
-                          file: [...tempImages]));
+                          files: [...tempImages]));
                     });
                   },
                   icon: Icon(
@@ -448,7 +438,10 @@ class _WritePostState extends ConsumerState<WritePost> {
                     setState(() {
                       if (video != null) {
                         ref.read(writePostProvider.notifier).setMedia(Media(
-                            type: MediaType.video, urls: [], file: [video]));
+                            isLocal: true,
+                            type: MediaType.video,
+                            urls: [],
+                            files: [video]));
                       } else {
                         throw Exception('Could not add video');
                       }
@@ -468,9 +461,10 @@ class _WritePostState extends ConsumerState<WritePost> {
                     setState(() {
                       if (pdf != null) {
                         ref.read(writePostProvider.notifier).setMedia(Media(
+                            isLocal: true,
                             type: MediaType.pdf,
                             urls: [],
-                            file: [pdf.paths[0]!]));
+                            files: [pdf.paths[0]!]));
                       } else {
                         throw Exception('Could not add pdf');
                       }

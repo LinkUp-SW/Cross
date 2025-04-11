@@ -16,6 +16,9 @@ class PostModel {
   int reposts;
 
   Reaction reaction;
+  List<String> taggedUsers = [];
+
+  bool saved;
 
   PostModel({
     required this.id,
@@ -28,6 +31,8 @@ class PostModel {
     required this.reaction,
     this.isAd = false,
     this.isCompany = false,
+    this.taggedUsers = const [],
+    this.saved = false,
   });
 
   PostModel.fromJson(Map<String, dynamic> json)
@@ -40,7 +45,9 @@ class PostModel {
         reposts = json['reposts'],
         reaction = Reaction.getReaction(json['reaction']),
         isAd = json['isAd'] ?? false,
-        isCompany = json['isCompany'] ?? false;
+        isCompany = json['isCompany'] ?? false,
+        saved = json['saved'] ?? false,
+        taggedUsers = List<String>.from(json['taggedUsers'] ?? []);
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -53,6 +60,7 @@ class PostModel {
         'reaction': reaction.toString(),
         'isAd': isAd,
         'isCompany': isCompany,
+        'taggedUsers': taggedUsers,
       };
 
   PostModel copyWith({
@@ -67,6 +75,8 @@ class PostModel {
     bool? isAd,
     bool? isCompany,
     PostModel? repost,
+    List<String>? taggedUsers,
+    bool? saved,
   }) {
     return PostModel(
       id: id ?? this.id,
@@ -79,6 +89,8 @@ class PostModel {
       reaction: reaction ?? this.reaction,
       isAd: isAd ?? this.isAd,
       isCompany: isCompany ?? this.isCompany,
+      saved: saved ?? this.saved,
+      taggedUsers: taggedUsers ?? this.taggedUsers,
     );
   }
 
@@ -92,5 +104,7 @@ class PostModel {
         reposts = 5,
         reaction = Reaction.none,
         isAd = false,
+        saved = false,
+        taggedUsers = [],
         isCompany = false;
 }

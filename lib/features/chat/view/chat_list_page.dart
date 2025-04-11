@@ -6,6 +6,8 @@ import '../viewModel/chat_viewmodel.dart';
 import '../widgets/chat_tile.dart';
 
 class ChatListScreen extends ConsumerWidget {
+  const ChatListScreen({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final chats = ref.watch(chatViewModelProvider);
