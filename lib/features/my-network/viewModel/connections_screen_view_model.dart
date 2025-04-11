@@ -158,17 +158,21 @@ class ConnectionsScreenViewModel extends Notifier<ConnectionsScreenState> {
       });
     }
 
-    // Ascending order by first name
+    // Ascending order by name
     else if (sortingType == 2) {
       connectionsList.sort((a, b) {
-        return a.firstName.compareTo(b.firstName);
+        String nameOne = a.firstName + a.lastName;
+        String nameTwo = b.firstName + b.lastName;
+        return nameOne.compareTo(nameTwo);
       });
     }
 
-    // Descending order by first name
+    // Descending order byname
     else if (sortingType == 3) {
       connectionsList.sort((a, b) {
-        return b.firstName.compareTo(a.firstName);
+        String nameOne = a.firstName + a.lastName;
+        String nameTwo = b.firstName + b.lastName;
+        return nameTwo.compareTo(nameOne);
       });
     }
 

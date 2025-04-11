@@ -58,7 +58,7 @@ class _ManageMyNetworkScreenState extends ConsumerState<ManageMyNetworkScreen> {
                 ? AppColors.darkSecondaryText
                 : AppColors.lightSecondaryText,
           ),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => context.pop(),
         ),
       ),
       body: Column(
