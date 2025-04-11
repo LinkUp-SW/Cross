@@ -33,7 +33,7 @@ class _ReceivedInvitationsTabState
         ref
             .read(receivedInvitationsTabViewModelProvider.notifier)
             .getReceivedInvitations(
-          {
+          queryParameters: {
             'limit': '${widget.paginationLimit}',
             'cursor': null,
           },
@@ -53,7 +53,7 @@ class _ReceivedInvitationsTabState
           ref
               .read(receivedInvitationsTabViewModelProvider.notifier)
               .loadMoreReceivedInvitations(
-                paginationLimit: widget.paginationLimit,
+                widget.paginationLimit,
               );
         }
         return false;
@@ -75,7 +75,7 @@ class _ReceivedInvitationsTabState
                     await ref
                         .read(receivedInvitationsTabViewModelProvider.notifier)
                         .getReceivedInvitations(
-                      {
+                      queryParameters: {
                         'limit': '${widget.paginationLimit}',
                         'cursor': null,
                       },

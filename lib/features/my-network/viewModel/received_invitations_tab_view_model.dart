@@ -12,7 +12,7 @@ class ReceivedInvitationsTabViewModel
 
   // Fetch received invitations
   Future<void> getReceivedInvitations(
-      Map<String, dynamic>? queryParameters) async {
+      {Map<String, dynamic>? queryParameters}) async {
     try {
       state = state.copyWith(isLoading: true, error: false);
       final response = await ref
@@ -32,8 +32,7 @@ class ReceivedInvitationsTabViewModel
     }
   }
 
-  Future<void> loadMoreReceivedInvitations(
-      {required int paginationLimit}) async {
+  Future<void> loadMoreReceivedInvitations(int paginationLimit) async {
     final currentState = state;
 
     // Don't load if we're already loading or at the end
