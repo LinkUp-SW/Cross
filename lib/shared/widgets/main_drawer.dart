@@ -27,6 +27,7 @@ class MainDrawer extends ConsumerWidget {
               children: [
                 GestureDetector(
                   onTap: () {
+                    context.pop();
                     context.push('/profile');
                     log('Profile tapped');
                   },
@@ -63,6 +64,7 @@ class MainDrawer extends ConsumerWidget {
                 ListTile(
                   title: const Text('X profile viewers'),
                   onTap: () {
+                    context.pop();
                     context.push('/profileViews');
                   },
                 ),

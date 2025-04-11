@@ -13,14 +13,15 @@ class ChatListScreen extends ConsumerWidget {
     final chats = ref.watch(chatViewModelProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F2F2), // Default LinkedIn-like background
+      backgroundColor:
+          const Color(0xFFF2F2F2), // Default LinkedIn-like background
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 1,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            context.go('/');
+            context.pop();
           },
         ),
         actions: [
@@ -51,11 +52,14 @@ class ChatListScreen extends ConsumerWidget {
               itemBuilder: (context, index) {
                 return Container(
                   color: Colors.white, // Chat tile background white
-                  padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
                   child: ChatTile(
                     chat: chats[index],
                     onTap: () {
-                      ref.read(chatViewModelProvider.notifier).toggleReadUnreadStatus(index);
+                      ref
+                          .read(chatViewModelProvider.notifier)
+                          .toggleReadUnreadStatus(index);
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -64,7 +68,8 @@ class ChatListScreen extends ConsumerWidget {
                       );
                     },
                     onLongPress: () {
-                      _showReadUnreadOption(context, ref, index, chats[index].isUnread);
+                      _showReadUnreadOption(
+                          context, ref, index, chats[index].isUnread);
                     },
                     onThreeDotPressed: () {
                       _showChatOptions(context, ref, index);
@@ -76,14 +81,16 @@ class ChatListScreen extends ConsumerWidget {
     );
   }
 
-  void _showReadUnreadOption(BuildContext context, WidgetRef ref, int index, bool isUnread) {
+  void _showReadUnreadOption(
+      BuildContext context, WidgetRef ref, int index, bool isUnread) {
     showModalBottomSheet(
       context: context,
       builder: (_) {
         return Wrap(
           children: [
             ListTile(
-              leading: Icon(isUnread ? Icons.mark_chat_read : Icons.mark_chat_unread),
+              leading: Icon(
+                  isUnread ? Icons.mark_chat_read : Icons.mark_chat_unread),
               title: Text(isUnread ? "Mark as Read" : "Mark as Unread"),
               onTap: () {
                 ref.read(chatViewModelProvider.notifier).markReadUnread(index);

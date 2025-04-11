@@ -1,6 +1,5 @@
 // The route management packages and the class handling it
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -171,7 +170,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               routes: <GoRoute>[
                 GoRoute(
                   path: "/notifications",
-                  builder: (context, state) => const NotificationsView(),
+                  builder: (context, state) => NotificationsView(
+                    scaffoldKey: scaffoldKey,
+                  ),
                 )
               ],
             ),
@@ -232,25 +233,25 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             path: "/writePost",
             pageBuilder: (context, state) {
               final text = state.extra as String?;
-                 return CustomTransitionPage(
-                child: WritePost(text: text ?? ''),
-                transitionsBuilder:
-                    (context, animation, secondaryAnimation, child) {
-                  return SlideTransition(
-                    position: Tween<Offset>(
-                      begin: const Offset(0, 1.0),
-                      end: Offset.zero,
-                    ).animate(animation),
-                    child: child,
-                  );
-                });}),
-        GoRoute( 
+              return CustomTransitionPage(
+                  child: WritePost(text: text ?? ''),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return SlideTransition(
+                      position: Tween<Offset>(
+                        begin: const Offset(0, 1.0),
+                        end: Offset.zero,
+                      ).animate(animation),
+                      child: child,
+                    );
+                  });
+            }),
+        GoRoute(
           path: '/savedPosts',
           builder: (context, state) => SavedPostsPage(),
         ),
         GoRoute(
-            path: "/messages",
-            builder: (context, state) => ChatListScreen()),
+            path: "/messages", builder: (context, state) => ChatListScreen()),
         GoRoute(path: "/chatpage", builder: (context, state) => Container()),
         GoRoute(path: "/settings", builder: (context, state) => Container()),
       ]);
