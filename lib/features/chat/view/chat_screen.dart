@@ -166,25 +166,32 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   void _showImageInFullScreen({required String imagePath}) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => Scaffold(
+  showDialog(
+    context: context,
+    builder: (BuildContext context) => Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
         backgroundColor: Colors.black,
-        appBar: AppBar(
-          backgroundColor: Colors.black,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () {
-              Navigator.of(context).pop(); // Close the image and return to chat
-            },
-          ),
-        ),
-        body: Center(
-          child: Image.network(imagePath, fit: BoxFit.contain),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.of(context).pop(); // Close the image and return to chat
+          },
         ),
       ),
-    );
-  }
+      body: Center(
+        child: imagePath.isEmpty
+            ? const Text(
+                "No image available",
+                style: TextStyle(color: Colors.white),
+              )
+            : imagePath.startsWith('http')
+                ? Image.network(imagePath, fit: BoxFit.contain)
+                : Image.file(File(imagePath), fit: BoxFit.contain),
+      ),
+    ),
+  );
+}
 
   void _showAttachmentOptions(BuildContext context, WidgetRef ref, int chatIndex) {
     showModalBottomSheet(
