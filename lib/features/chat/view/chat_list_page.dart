@@ -104,30 +104,37 @@ class ChatListScreen extends ConsumerWidget {
   }
 
   void _showChatOptions(BuildContext context, WidgetRef ref, int index) {
-    showModalBottomSheet(
-      context: context,
-      builder: (_) {
-        return Wrap(
-          children: [
-            ListTile(
-              leading: const Icon(Icons.delete),
-              title: const Text("Delete Chat"),
-              onTap: () {
-                ref.read(chatViewModelProvider.notifier).deleteChat(index);
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.block),
-              title: const Text("Block this Person"),
-              onTap: () {
+  final chat = ref.read(chatViewModelProvider)[index];
+
+  showModalBottomSheet(
+    context: context,
+    builder: (_) {
+      return Wrap(
+        children: [
+          ListTile(
+            leading: const Icon(Icons.delete),
+            title: const Text("Delete Chat"),
+            onTap: () {
+              ref.read(chatViewModelProvider.notifier).deleteChat(index);
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            leading: Icon(chat.isBlocked ? Icons.lock_open : Icons.block),
+            title: Text(chat.isBlocked ? "Unblock this Person" : "Block this Person"),
+            onTap: () {
+              if (chat.isBlocked) {
+                ref.read(chatViewModelProvider.notifier).unblockUser(index);
+              } else {
                 ref.read(chatViewModelProvider.notifier).blockUser(index);
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+              }
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
 }

@@ -19,23 +19,23 @@ class ChatService {
               timestamp: DateTime.now().subtract(const Duration(minutes: 10)),
               type: MessageType.text),
           Message(
-              sender: "You",
+              sender: "jumana",
               content: "I'm good, thanks!",
               timestamp: DateTime.now().subtract(const Duration(minutes: 5)),
               type: MessageType.text),
           Message(
               sender: "John Doe",
-              content: "https://www.w3schools.com/w3images/fjords.jpg",
-              timestamp: DateTime.now().subtract(const Duration(minutes: 2)),
-              type: MessageType.image),
-          Message(
-              sender: "You",
               content: "https://www.w3schools.com/html/movie.mp4",
               timestamp: DateTime.now().subtract(const Duration(minutes: 1)),
-              type: MessageType.video), // Real video URL
+              type: MessageType.video),
+          Message(
+              sender: "jumana",
+              content: "https://www.w3schools.com/w3images/fjords.jpg",
+              timestamp: DateTime.now().subtract(const Duration(minutes: 2)),
+              type: MessageType.image), // Real video URL
           Message(
               sender: "John Doe",
-              content: "https://www.w3.org/WAI/WCAG21/quickref/files/WCAG21-quickref-2018.pdf",
+              content: "https://css4.pub/2015/icelandic/dictionary.pdf",
               timestamp: DateTime.now().subtract(const Duration(minutes: 1)),
               type: MessageType.document), // Real PDF document URL
         ],
@@ -55,7 +55,7 @@ class ChatService {
               type: MessageType.text),
           Message(
               sender: "Jane Smith",
-              content: "https://www.w3.org/WAI/WCAG21/quickref/files/WCAG21-quickref-2018.pdf",
+              content: "https://www.princexml.com/samples/catalog/PrinceCatalogue.pdf",
               timestamp: DateTime.now().subtract(const Duration(days: 1)),
               type: MessageType.document), // Real PDF document URL
         ],
@@ -74,20 +74,20 @@ class ChatService {
               timestamp: DateTime.now().subtract(const Duration(days: 3)),
               type: MessageType.text),
           Message(
-              sender: "You",
+              sender: "jumana",
               content: "Here's the link",
               timestamp: DateTime.now().subtract(const Duration(days: 2)),
               type: MessageType.text),
           Message(
               sender: "Sam Green",
-              content: "https://www.w3.org/WAI/WCAG21/quickref/files/WCAG21-quickref-2018.pdf",
-              timestamp: DateTime.now().subtract(const Duration(days: 1)),
-              type: MessageType.document), // Real document URL
-          Message(
-              sender: "You",
               content: "https://www.w3schools.com/html/movie.mp4",
-              timestamp: DateTime.now().subtract(const Duration(hours: 5)),
-              type: MessageType.video), // Real video URL
+              timestamp: DateTime.now().subtract(const Duration(days: 1)),
+              type: MessageType.video), // Real document URL
+          Message(
+              sender: "jumana",
+              content: "https://css4.pub/2015/usenix/example.pdf",
+              timestamp: DateTime.now().subtract(const Duration(days : 1)),
+              type: MessageType.document), // Real video URL
         ],
       ),
       Chat(
@@ -104,7 +104,7 @@ class ChatService {
               timestamp: DateTime.now().subtract(const Duration(hours: 1)),
               type: MessageType.text),
           Message(
-              sender: "You",
+              sender: "jumana",
               content: "Check out this picture",
               timestamp: DateTime.now().subtract(const Duration(minutes: 50)),
               type: MessageType.text),

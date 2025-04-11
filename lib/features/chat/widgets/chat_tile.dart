@@ -17,31 +17,43 @@ class ChatTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isBlocked = chat.isBlocked;
+
     return ListTile(
-      onTap: onTap,
-      onLongPress: onLongPress,
-      leading: CircleAvatar(
-        backgroundImage: NetworkImage(chat.profilePictureUrl),
+      onTap: isBlocked ? null : onTap,
+      onLongPress: isBlocked ? null : onLongPress,
+      leading: Stack(
+        alignment: Alignment.center,
+        children: [
+          CircleAvatar(
+            backgroundImage: NetworkImage(chat.profilePictureUrl),
+            foregroundColor: isBlocked ? Colors.black.withOpacity(0.3) : null,
+            backgroundColor: Colors.grey.shade200,
+          ),
+          if (isBlocked)
+            const Icon(Icons.block, color: Colors.redAccent, size: 18),
+        ],
       ),
       title: Text(
         chat.name,
         style: TextStyle(
-          fontWeight: chat.isUnread ? FontWeight.bold : FontWeight.normal, // Bold if unread
-          color: chat.isBlocked ? Colors.grey : Colors.black, // Grey out blocked users
+          fontWeight: chat.isUnread ? FontWeight.bold : FontWeight.normal,
+          color: isBlocked ? Colors.grey : Colors.black,
         ),
       ),
       subtitle: Text(
-        chat.lastMessage,
+        isBlocked ? "This user is blocked" : chat.lastMessage,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: TextStyle(
-          color: chat.isBlocked ? Colors.grey : Colors.black, // Blocked users show grey text
+          fontStyle: isBlocked ? FontStyle.italic : FontStyle.normal,
+          color: isBlocked ? Colors.grey : Colors.black,
         ),
       ),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (chat.unreadMessageCount > 0) // Show unread counter normally
+          if (!isBlocked && chat.unreadMessageCount > 0)
             Container(
               padding: const EdgeInsets.all(6),
               decoration: const BoxDecoration(
@@ -56,12 +68,12 @@ class ChatTile extends StatelessWidget {
                 ),
               ),
             )
-          else if (chat.isUnread) // Show blue dot when marked unread via long press
+          else if (!isBlocked && chat.isUnread)
             const Icon(Icons.circle, color: Colors.blue, size: 20),
-          const SizedBox(width: 8), // Add spacing
+          const SizedBox(width: 8),
           IconButton(
-            icon: const Icon(Icons.more_vert), // 3-dot menu icon
-            onPressed: onThreeDotPressed, // Trigger the 3-dot pressed callback
+            icon: const Icon(Icons.more_vert),
+            onPressed: onThreeDotPressed,
           ),
         ],
       ),
