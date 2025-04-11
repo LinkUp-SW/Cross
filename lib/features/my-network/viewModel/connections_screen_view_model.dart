@@ -1,23 +1,22 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:link_up/core/constants/endpoints.dart';
 import 'package:link_up/features/my-network/model/connections_screen_model.dart';
 import 'package:link_up/features/my-network/services/connections_screen_services.dart';
 import 'package:link_up/features/my-network/state/connections_screen_state.dart';
 
-class ConnectionsScreenViewModel extends StateNotifier<ConnectionsScreenState> {
-  final ConnectionsScreenServices _connectionsScreenServices;
-
-  ConnectionsScreenViewModel(
-    this._connectionsScreenServices,
-  ) : super(
-          ConnectionsScreenState.initial(),
-        );
+class ConnectionsScreenViewModel extends Notifier<ConnectionsScreenState> {
+  @override
+  ConnectionsScreenState build() {
+    return ConnectionsScreenState.initial();
+  }
 
   Future<void> getConnectionsCount() async {
     state = state.copyWith(isLoading: true, isError: false);
 
     try {
-      final connectionsCount =
-          await _connectionsScreenServices.getConnectionsCount();
+      final connectionsCount = await ref
+          .read(connectionsScreenServicesProvider)
+          .getConnectionsCount();
 
       state = state.copyWith(
         isLoading: false,
@@ -34,8 +33,9 @@ class ConnectionsScreenViewModel extends StateNotifier<ConnectionsScreenState> {
     state = state.copyWith(isLoading: true, isError: false);
 
     try {
-      final userId = await _connectionsScreenServices.getUserId();
-      final response = await _connectionsScreenServices.getConnectionsList(
+      final userId = InternalEndPoints.userId;
+      final response =
+          await ref.read(connectionsScreenServicesProvider).getConnectionsList(
         queryParameters: queryParameters,
         routeParameters: {'user_id': userId},
       );
@@ -65,8 +65,9 @@ class ConnectionsScreenViewModel extends StateNotifier<ConnectionsScreenState> {
     state = currentState.copyWith(isLoadingMore: true);
 
     try {
-      final userId = await _connectionsScreenServices.getUserId();
-      final response = await _connectionsScreenServices.getConnectionsList(
+      final userId = InternalEndPoints.userId;
+      final response =
+          await ref.read(connectionsScreenServicesProvider).getConnectionsList(
         queryParameters: {
           'limit': '$paginationLimit',
           'cursor': currentState.nextCursor,
@@ -122,7 +123,9 @@ class ConnectionsScreenViewModel extends StateNotifier<ConnectionsScreenState> {
   Future<void> removeConnection(String userId) async {
     state = state.copyWith(isLoading: true, isError: false);
     try {
-      await _connectionsScreenServices.removeConnection(userId);
+      await ref
+          .read(connectionsScreenServicesProvider)
+          .removeConnection(userId);
 
       // Remove the connection from the connections list
       if (state.connections != null) {
@@ -155,17 +158,21 @@ class ConnectionsScreenViewModel extends StateNotifier<ConnectionsScreenState> {
       });
     }
 
-    // Ascending order by first name
+    // Ascending order by name
     else if (sortingType == 2) {
       connectionsList.sort((a, b) {
-        return a.firstName.compareTo(b.firstName);
+        String nameOne = a.firstName + a.lastName;
+        String nameTwo = b.firstName + b.lastName;
+        return nameOne.compareTo(nameTwo);
       });
     }
 
-    // Descending order by first name
+    // Descending order byname
     else if (sortingType == 3) {
       connectionsList.sort((a, b) {
-        return b.firstName.compareTo(a.firstName);
+        String nameOne = a.firstName + a.lastName;
+        String nameTwo = b.firstName + b.lastName;
+        return nameTwo.compareTo(nameOne);
       });
     }
 
@@ -185,10 +192,8 @@ class ConnectionsScreenViewModel extends StateNotifier<ConnectionsScreenState> {
 }
 
 final connectionsScreenViewModelProvider =
-    StateNotifierProvider<ConnectionsScreenViewModel, ConnectionsScreenState>(
-  (ref) {
-    return ConnectionsScreenViewModel(
-      ref.read(connectionsScreenServicesProvider),
-    );
+    NotifierProvider<ConnectionsScreenViewModel, ConnectionsScreenState>(
+  () {
+    return ConnectionsScreenViewModel();
   },
 );
