@@ -25,14 +25,14 @@ class ChatService {
               type: MessageType.text),
           Message(
               sender: "John Doe",
-              content: "https://www.w3schools.com/w3images/fjords.jpg",
-              timestamp: DateTime.now().subtract(const Duration(minutes: 2)),
-              type: MessageType.image),
-          Message(
-              sender: "jumana",
               content: "https://www.w3schools.com/html/movie.mp4",
               timestamp: DateTime.now().subtract(const Duration(minutes: 1)),
-              type: MessageType.video), // Real video URL
+              type: MessageType.video),
+          Message(
+              sender: "jumana",
+              content: "https://www.w3schools.com/w3images/fjords.jpg",
+              timestamp: DateTime.now().subtract(const Duration(minutes: 2)),
+              type: MessageType.image), // Real video URL
           Message(
               sender: "John Doe",
               content: "https://css4.pub/2015/icelandic/dictionary.pdf",
@@ -80,14 +80,14 @@ class ChatService {
               type: MessageType.text),
           Message(
               sender: "Sam Green",
-              content: "https://css4.pub/2015/usenix/example.pdf",
+              content: "https://www.w3schools.com/html/movie.mp4",
               timestamp: DateTime.now().subtract(const Duration(days: 1)),
-              type: MessageType.document), // Real document URL
+              type: MessageType.video), // Real document URL
           Message(
               sender: "jumana",
-              content: "https://www.w3schools.com/html/movie.mp4",
-              timestamp: DateTime.now().subtract(const Duration(hours: 5)),
-              type: MessageType.video), // Real video URL
+              content: "https://css4.pub/2015/usenix/example.pdf",
+              timestamp: DateTime.now().subtract(const Duration(days : 1)),
+              type: MessageType.document), // Real video URL
         ],
       ),
       Chat(
