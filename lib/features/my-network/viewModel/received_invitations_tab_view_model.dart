@@ -4,7 +4,6 @@ import 'package:link_up/features/my-network/services/received_invitations_tab_se
 import 'package:link_up/features/my-network/state/received_invitations_tab_state.dart';
 
 class ReceivedInvitationsTabViewModel
-<<<<<<< HEAD
     extends Notifier<ReceivedInvitationsTabState> {
   @override
   ReceivedInvitationsTabState build() {
@@ -21,23 +20,6 @@ class ReceivedInvitationsTabViewModel
           .getReceivedInvitations(
             queryParameters: queryParameters,
           );
-=======
-    extends StateNotifier<ReceivedInvitationsTabState> {
-  final ReceivedInvitationsTabServices _receivedInvitationsTabServices;
-
-  ReceivedInvitationsTabViewModel(this._receivedInvitationsTabServices)
-      : super(ReceivedInvitationsTabState.initial());
-
-  // Fetch received invitations
-  Future<void> getReceivedInvitations(
-      Map<String, dynamic>? queryParameters) async {
-    try {
-      state = state.copyWith(isLoading: true, error: false);
-      final response =
-          await _receivedInvitationsTabServices.getReceivedInvitations(
-        queryParameters: queryParameters,
-      );
->>>>>>> feature/jobss
 
       // Parse the received invitations from the response
       final List<InvitationsCardModel> receivedInvitations =
@@ -50,12 +32,7 @@ class ReceivedInvitationsTabViewModel
     }
   }
 
-<<<<<<< HEAD
   Future<void> loadMoreReceivedInvitations(int paginationLimit) async {
-=======
-  Future<void> loadMoreReceivedInvitations(
-      {required int paginationLimit}) async {
->>>>>>> feature/jobss
     final currentState = state;
 
     // Don't load if we're already loading or at the end
@@ -64,14 +41,9 @@ class ReceivedInvitationsTabViewModel
     state = currentState.copyWith(isLoadingMore: true);
 
     try {
-<<<<<<< HEAD
       final response = await ref
           .read(receivedInvitationsTabServicesProvider)
           .getReceivedInvitations(
-=======
-      final response =
-          await _receivedInvitationsTabServices.getReceivedInvitations(
->>>>>>> feature/jobss
         queryParameters: {
           'limit': '$paginationLimit',
           'cursor': currentState.nextCursor,
@@ -127,13 +99,9 @@ class ReceivedInvitationsTabViewModel
   Future<void> acceptInvitation(String userId) async {
     try {
       state = state.copyWith(isLoading: true, error: false);
-<<<<<<< HEAD
       await ref
           .read(receivedInvitationsTabServicesProvider)
           .acceptInvitation(userId);
-=======
-      await _receivedInvitationsTabServices.acceptInvitation(userId);
->>>>>>> feature/jobss
 
       // Remove the accepted invitation from the received list
       if (state.received != null) {
@@ -152,13 +120,9 @@ class ReceivedInvitationsTabViewModel
   Future<void> ignoreInvitation(String userId) async {
     try {
       state = state.copyWith(isLoading: true, error: false);
-<<<<<<< HEAD
       await ref
           .read(receivedInvitationsTabServicesProvider)
           .ignoreInvitation(userId);
-=======
-      await _receivedInvitationsTabServices.ignoreInvitation(userId);
->>>>>>> feature/jobss
 
       // Remove the ignored invitation from the received list
       if (state.received != null) {
@@ -175,14 +139,7 @@ class ReceivedInvitationsTabViewModel
 }
 
 // Provider for the view model
-<<<<<<< HEAD
 final receivedInvitationsTabViewModelProvider = NotifierProvider<
     ReceivedInvitationsTabViewModel, ReceivedInvitationsTabState>(() {
   return ReceivedInvitationsTabViewModel();
-=======
-final receivedInvitationsTabViewModelProvider = StateNotifierProvider<
-    ReceivedInvitationsTabViewModel, ReceivedInvitationsTabState>((ref) {
-  return ReceivedInvitationsTabViewModel(
-      ref.read(receivedInvitationsTabServicesProvider));
->>>>>>> feature/jobss
 });

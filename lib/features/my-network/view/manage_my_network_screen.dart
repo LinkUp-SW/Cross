@@ -58,11 +58,7 @@ class _ManageMyNetworkScreenState extends ConsumerState<ManageMyNetworkScreen> {
                 ? AppColors.darkSecondaryText
                 : AppColors.lightSecondaryText,
           ),
-<<<<<<< HEAD
           onPressed: () => context.pop(),
-=======
-          onPressed: () => Navigator.of(context).pop(),
->>>>>>> feature/jobss
         ),
       ),
       body: Column(
@@ -105,10 +101,6 @@ class _ManageMyNetworkScreenState extends ConsumerState<ManageMyNetworkScreen> {
             icon: Icons.people,
             title: 'Connections',
             onTap: () => context.push('/connections'),
-<<<<<<< HEAD
-=======
-            // Use the count from state, show loading indicator if still loading
->>>>>>> feature/jobss
             count: state.isLoading ? 0 : state.connectionsCount,
             isLoading: state.isLoading,
           ),

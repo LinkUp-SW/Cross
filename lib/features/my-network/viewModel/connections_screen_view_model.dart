@@ -1,41 +1,22 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-<<<<<<< HEAD
 import 'package:link_up/core/constants/endpoints.dart';
-=======
->>>>>>> feature/jobss
 import 'package:link_up/features/my-network/model/connections_screen_model.dart';
 import 'package:link_up/features/my-network/services/connections_screen_services.dart';
 import 'package:link_up/features/my-network/state/connections_screen_state.dart';
 
-<<<<<<< HEAD
 class ConnectionsScreenViewModel extends Notifier<ConnectionsScreenState> {
   @override
   ConnectionsScreenState build() {
     return ConnectionsScreenState.initial();
   }
-=======
-class ConnectionsScreenViewModel extends StateNotifier<ConnectionsScreenState> {
-  final ConnectionsScreenServices _connectionsScreenServices;
-
-  ConnectionsScreenViewModel(
-    this._connectionsScreenServices,
-  ) : super(
-          ConnectionsScreenState.initial(),
-        );
->>>>>>> feature/jobss
 
   Future<void> getConnectionsCount() async {
     state = state.copyWith(isLoading: true, isError: false);
 
     try {
-<<<<<<< HEAD
       final connectionsCount = await ref
           .read(connectionsScreenServicesProvider)
           .getConnectionsCount();
-=======
-      final connectionsCount =
-          await _connectionsScreenServices.getConnectionsCount();
->>>>>>> feature/jobss
 
       state = state.copyWith(
         isLoading: false,
@@ -52,14 +33,9 @@ class ConnectionsScreenViewModel extends StateNotifier<ConnectionsScreenState> {
     state = state.copyWith(isLoading: true, isError: false);
 
     try {
-<<<<<<< HEAD
       final userId = InternalEndPoints.userId;
       final response =
           await ref.read(connectionsScreenServicesProvider).getConnectionsList(
-=======
-      final userId = await _connectionsScreenServices.getUserId();
-      final response = await _connectionsScreenServices.getConnectionsList(
->>>>>>> feature/jobss
         queryParameters: queryParameters,
         routeParameters: {'user_id': userId},
       );
@@ -89,14 +65,9 @@ class ConnectionsScreenViewModel extends StateNotifier<ConnectionsScreenState> {
     state = currentState.copyWith(isLoadingMore: true);
 
     try {
-<<<<<<< HEAD
       final userId = InternalEndPoints.userId;
       final response =
           await ref.read(connectionsScreenServicesProvider).getConnectionsList(
-=======
-      final userId = await _connectionsScreenServices.getUserId();
-      final response = await _connectionsScreenServices.getConnectionsList(
->>>>>>> feature/jobss
         queryParameters: {
           'limit': '$paginationLimit',
           'cursor': currentState.nextCursor,
@@ -152,13 +123,9 @@ class ConnectionsScreenViewModel extends StateNotifier<ConnectionsScreenState> {
   Future<void> removeConnection(String userId) async {
     state = state.copyWith(isLoading: true, isError: false);
     try {
-<<<<<<< HEAD
       await ref
           .read(connectionsScreenServicesProvider)
           .removeConnection(userId);
-=======
-      await _connectionsScreenServices.removeConnection(userId);
->>>>>>> feature/jobss
 
       // Remove the connection from the connections list
       if (state.connections != null) {
@@ -191,7 +158,6 @@ class ConnectionsScreenViewModel extends StateNotifier<ConnectionsScreenState> {
       });
     }
 
-<<<<<<< HEAD
     // Ascending order by name
     else if (sortingType == 2) {
       connectionsList.sort((a, b) {
@@ -207,19 +173,6 @@ class ConnectionsScreenViewModel extends StateNotifier<ConnectionsScreenState> {
         String nameOne = a.firstName + a.lastName;
         String nameTwo = b.firstName + b.lastName;
         return nameTwo.compareTo(nameOne);
-=======
-    // Ascending order by first name
-    else if (sortingType == 2) {
-      connectionsList.sort((a, b) {
-        return a.firstName.compareTo(b.firstName);
-      });
-    }
-
-    // Descending order by first name
-    else if (sortingType == 3) {
-      connectionsList.sort((a, b) {
-        return b.firstName.compareTo(a.firstName);
->>>>>>> feature/jobss
       });
     }
 
@@ -239,16 +192,8 @@ class ConnectionsScreenViewModel extends StateNotifier<ConnectionsScreenState> {
 }
 
 final connectionsScreenViewModelProvider =
-<<<<<<< HEAD
     NotifierProvider<ConnectionsScreenViewModel, ConnectionsScreenState>(
   () {
     return ConnectionsScreenViewModel();
-=======
-    StateNotifierProvider<ConnectionsScreenViewModel, ConnectionsScreenState>(
-  (ref) {
-    return ConnectionsScreenViewModel(
-      ref.read(connectionsScreenServicesProvider),
-    );
->>>>>>> feature/jobss
   },
 );

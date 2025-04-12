@@ -3,10 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/my-network/model/grow_tab_model.dart';
-<<<<<<< HEAD
 import 'package:link_up/features/my-network/viewModel/received_invitations_tab_view_model.dart';
-=======
->>>>>>> feature/jobss
 import 'package:link_up/features/my-network/widgets/grow_tab_navigation_row.dart';
 import 'package:link_up/features/my-network/widgets/newsletter_card.dart';
 import 'package:link_up/features/my-network/widgets/people_card.dart';
@@ -14,11 +11,7 @@ import 'package:link_up/features/my-network/widgets/section.dart';
 import 'package:link_up/features/my-network/widgets/wide_people_card.dart';
 import 'package:link_up/features/my-network/widgets/wide_section.dart';
 
-<<<<<<< HEAD
 class GrowTab extends ConsumerStatefulWidget {
-=======
-class GrowTab extends ConsumerWidget {
->>>>>>> feature/jobss
   final bool isDarkMode;
 
   const GrowTab({
@@ -27,7 +20,6 @@ class GrowTab extends ConsumerWidget {
   });
 
   @override
-<<<<<<< HEAD
   ConsumerState<ConsumerStatefulWidget> createState() => _GrowTabState();
 }
 
@@ -55,14 +47,6 @@ class _GrowTabState extends ConsumerState<GrowTab> {
         GrowTabNavigationRow(
           title: invitationsTitle,
           isDarkMode: widget.isDarkMode,
-=======
-  Widget build(BuildContext context, WidgetRef ref) {
-    return ListView(
-      children: [
-        GrowTabNavigationRow(
-          title: 'Invitations',
-          isDarkMode: isDarkMode,
->>>>>>> feature/jobss
           onTap: () => context.push('/invitations'),
         ),
         SizedBox(
@@ -70,11 +54,7 @@ class _GrowTabState extends ConsumerState<GrowTab> {
         ),
         GrowTabNavigationRow(
           title: 'Manage my network',
-<<<<<<< HEAD
           isDarkMode: widget.isDarkMode,
-=======
-          isDarkMode: isDarkMode,
->>>>>>> feature/jobss
           onTap: () => context.push('/manage-network'),
         ),
         SizedBox(
@@ -85,7 +65,6 @@ class _GrowTabState extends ConsumerState<GrowTab> {
           cards: [
             PeopleCard(
               data: GrowTabPeopleCardsModel.initial(),
-<<<<<<< HEAD
               isDarkMode: widget.isDarkMode,
             ),
             PeopleCard(
@@ -102,24 +81,6 @@ class _GrowTabState extends ConsumerState<GrowTab> {
             ),
           ],
           isDarkMode: widget.isDarkMode,
-=======
-              isDarkMode: isDarkMode,
-            ),
-            PeopleCard(
-              data: GrowTabPeopleCardsModel.initial(),
-              isDarkMode: isDarkMode,
-            ),
-            PeopleCard(
-              data: GrowTabPeopleCardsModel.initial(),
-              isDarkMode: isDarkMode,
-            ),
-            PeopleCard(
-              data: GrowTabPeopleCardsModel.initial(),
-              isDarkMode: isDarkMode,
-            ),
-          ],
-          isDarkMode: isDarkMode,
->>>>>>> feature/jobss
         ),
         SizedBox(
           height: 10.h,
@@ -129,7 +90,6 @@ class _GrowTabState extends ConsumerState<GrowTab> {
           cards: [
             PeopleCard(
               data: GrowTabPeopleCardsModel.initial(),
-<<<<<<< HEAD
               isDarkMode: widget.isDarkMode,
             ),
             PeopleCard(
@@ -146,24 +106,6 @@ class _GrowTabState extends ConsumerState<GrowTab> {
             ),
           ],
           isDarkMode: widget.isDarkMode,
-=======
-              isDarkMode: isDarkMode,
-            ),
-            PeopleCard(
-              data: GrowTabPeopleCardsModel.initial(),
-              isDarkMode: isDarkMode,
-            ),
-            PeopleCard(
-              data: GrowTabPeopleCardsModel.initial(),
-              isDarkMode: isDarkMode,
-            ),
-            PeopleCard(
-              data: GrowTabPeopleCardsModel.initial(),
-              isDarkMode: isDarkMode,
-            ),
-          ],
-          isDarkMode: isDarkMode,
->>>>>>> feature/jobss
         ),
         SizedBox(
           height: 10.h,
@@ -174,7 +116,6 @@ class _GrowTabState extends ConsumerState<GrowTab> {
             cards: [
               WidePeopleCard(
                 data: GrowTabPeopleCardsModel.initial(),
-<<<<<<< HEAD
                 isDarkMode: widget.isDarkMode,
               ),
               WidePeopleCard(
@@ -183,16 +124,6 @@ class _GrowTabState extends ConsumerState<GrowTab> {
               ),
             ],
             isDarkMode: widget.isDarkMode),
-=======
-                isDarkMode: isDarkMode,
-              ),
-              WidePeopleCard(
-                data: GrowTabPeopleCardsModel.initial(),
-                isDarkMode: isDarkMode,
-              ),
-            ],
-            isDarkMode: isDarkMode),
->>>>>>> feature/jobss
         SizedBox(
           height: 10.h,
         ),
@@ -202,7 +133,6 @@ class _GrowTabState extends ConsumerState<GrowTab> {
           cards: [
             NewsletterCard(
               data: GrowTabNewsletterCardsModel.initial(),
-<<<<<<< HEAD
               isDarkMode: widget.isDarkMode,
             ),
             NewsletterCard(
@@ -211,16 +141,6 @@ class _GrowTabState extends ConsumerState<GrowTab> {
             ),
           ],
           isDarkMode: widget.isDarkMode,
-=======
-              isDarkMode: isDarkMode,
-            ),
-            NewsletterCard(
-              data: GrowTabNewsletterCardsModel.initial(),
-              isDarkMode: isDarkMode,
-            ),
-          ],
-          isDarkMode: isDarkMode,
->>>>>>> feature/jobss
         ),
         SizedBox(
           height: 10.h,
@@ -230,7 +150,6 @@ class _GrowTabState extends ConsumerState<GrowTab> {
           cards: [
             PeopleCard(
               data: GrowTabPeopleCardsModel.initial(),
-<<<<<<< HEAD
               isDarkMode: widget.isDarkMode,
             ),
             PeopleCard(
@@ -255,32 +174,6 @@ class _GrowTabState extends ConsumerState<GrowTab> {
             ),
           ],
           isDarkMode: widget.isDarkMode,
-=======
-              isDarkMode: isDarkMode,
-            ),
-            PeopleCard(
-              data: GrowTabPeopleCardsModel.initial(),
-              isDarkMode: isDarkMode,
-            ),
-            PeopleCard(
-              data: GrowTabPeopleCardsModel.initial(),
-              isDarkMode: isDarkMode,
-            ),
-            PeopleCard(
-              data: GrowTabPeopleCardsModel.initial(),
-              isDarkMode: isDarkMode,
-            ),
-            PeopleCard(
-              data: GrowTabPeopleCardsModel.initial(),
-              isDarkMode: isDarkMode,
-            ),
-            PeopleCard(
-              data: GrowTabPeopleCardsModel.initial(),
-              isDarkMode: isDarkMode,
-            ),
-          ],
-          isDarkMode: isDarkMode,
->>>>>>> feature/jobss
         ),
       ],
     );

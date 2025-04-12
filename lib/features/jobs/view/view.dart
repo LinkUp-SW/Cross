@@ -1,4 +1,3 @@
-//the page ui only and try avoiding any logic here
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,20 +9,23 @@ import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/shared/widgets/custom_app_bar.dart';
 import 'package:link_up/shared/widgets/custom_search_bar.dart';
-class JobsScreen extends ConsumerWidget {
-  final bool isDarkMode;
 
+class JobsScreen extends ConsumerWidget {
+  final GlobalKey<ScaffoldState> scaffoldKey;
   const JobsScreen({
     super.key,
-    required this.isDarkMode,
+    required this.scaffoldKey,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: CustomAppBar(
         searchBar: const CustomSearchBar(),
-        leadingAction: () {},
+        leadingAction: () {
+          scaffoldKey.currentState!.openDrawer();
+        },
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -106,7 +108,6 @@ class JobsScreen extends ConsumerWidget {
                 ),
               ],
             ),
-           
             JobsSection(
               isDarkMode: isDarkMode,
               title: 'More jobs for you',
