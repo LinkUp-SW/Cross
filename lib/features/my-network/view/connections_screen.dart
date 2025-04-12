@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:link_up/features/my-network/viewModel/connections_screen_view_model.dart';
 import 'package:link_up/features/my-network/viewModel/manage_my_network_screen_view_model.dart';
 import 'package:link_up/features/my-network/widgets/connections_card.dart';
@@ -73,7 +74,7 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                 : AppColors.lightSecondaryText,
           ),
           onPressed: () {
-            Navigator.of(context).pop();
+            context.pop();
             ref
                 .read(manageMyNetworkScreenViewModelProvider.notifier)
                 .getManageMyNetworkScreenCounts();
@@ -122,14 +123,26 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    '${parseIntegerToCommaSeparatedString(state.connectionsCount ?? 0)} connections',
-                    style: TextStyles.font18_500Weight.copyWith(
-                      color: widget.isDarkMode
-                          ? AppColors.darkGrey
-                          : AppColors.lightSecondaryText,
+                  if (state.isLoading)
+                    SizedBox(
+                      width: 16.w,
+                      height: 16.w,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.w,
+                        color: widget.isDarkMode
+                            ? AppColors.darkGrey
+                            : AppColors.lightSecondaryText,
+                      ),
+                    )
+                  else if (state.connectionsCount != null)
+                    Text(
+                      '${parseIntegerToCommaSeparatedString(state.connectionsCount ?? 0)} connections',
+                      style: TextStyles.font18_500Weight.copyWith(
+                        color: widget.isDarkMode
+                            ? AppColors.darkGrey
+                            : AppColors.lightSecondaryText,
+                      ),
                     ),
-                  ),
                   Row(
                     children: [
                       IconButton(
@@ -227,7 +240,7 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                                                     connectionsScreenViewModelProvider
                                                         .notifier)
                                                 .sortConnections(0);
-                                            Navigator.pop(context);
+                                            context.pop();
                                           }
                                         },
                                       ),
@@ -265,7 +278,7 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                                                     connectionsScreenViewModelProvider
                                                         .notifier)
                                                 .sortConnections(1);
-                                            Navigator.pop(context);
+                                            context.pop();
                                           }
                                         },
                                       ),
@@ -303,7 +316,7 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                                                     connectionsScreenViewModelProvider
                                                         .notifier)
                                                 .sortConnections(2);
-                                            Navigator.pop(context);
+                                            context.pop();
                                           }
                                         },
                                       ),
@@ -341,7 +354,7 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                                                     connectionsScreenViewModelProvider
                                                         .notifier)
                                                 .sortConnections(3);
-                                            Navigator.pop(context);
+                                            context.pop();
                                           }
                                         },
                                       ),

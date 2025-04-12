@@ -17,7 +17,7 @@ final phoneTypeProvider = StateProvider<String?>((ref) => null);
 final addressLengthProvider = StateProvider<int>((ref) => 0);
 
 class EditContactInfo extends ConsumerWidget {
-  const EditContactInfo({Key? key}) : super(key: key);
+  const EditContactInfo({super.key});
 
   void _copyToClipboard(BuildContext context, String text) {
     Clipboard.setData(ClipboardData(text: text));

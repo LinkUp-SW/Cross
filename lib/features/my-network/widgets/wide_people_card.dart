@@ -69,10 +69,7 @@ class WidePeopleCard extends ConsumerWidget {
                     maxHeight: 40.h,
                   ),
                   child: ElevatedButton(
-                    onPressed: () {
-                      print(
-                          "Pressed on ${data.firstName} ${data.lastName} Follow");
-                    },
+                    onPressed: () {},
                     style: isDarkMode
                         ? LinkUpButtonStyles().myNetworkScreenConnectDark(
                             padding: EdgeInsets.symmetric(
@@ -107,10 +104,7 @@ class WidePeopleCard extends ConsumerWidget {
                 top: 5.h,
                 right: 5.w,
                 child: InkWell(
-                  onTap: () {
-                    print(
-                        "Pressed on ${data.firstName} ${data.lastName} cancel");
-                  },
+                  onTap: () {},
                   child: Container(
                     padding: EdgeInsets.all(2.r),
                     decoration: const BoxDecoration(

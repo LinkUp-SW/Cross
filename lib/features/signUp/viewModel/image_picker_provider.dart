@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/features/signUp/services/image_picker_service.dart';
-import 'package:link_up/features/signUp/viewModel/signup_notifier.dart';
 import '../state/image_picker_state.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -10,15 +9,13 @@ final imagePickerServiceProvider = Provider((ref) => ImagePickerService());
 final imagePickerProvider =
     StateNotifierProvider<ImagePickerNotifier, ImagePickerState>((ref) {
   final service = ref.watch(imagePickerServiceProvider);
-  final signUpNotifier = ref.read(signUpProvider.notifier);
-  return ImagePickerNotifier(service, signUpNotifier);
+  return ImagePickerNotifier(service);
 });
 
 class ImagePickerNotifier extends StateNotifier<ImagePickerState> {
   final ImagePickerService _imagePickerService;
-  final SignUpNotifier _signUpNotifier;
 
-  ImagePickerNotifier(this._imagePickerService, this._signUpNotifier)
+  ImagePickerNotifier(this._imagePickerService)
       : super(ImageInitialState());
 
   Future<void> pickImage(ImageSource source) async {

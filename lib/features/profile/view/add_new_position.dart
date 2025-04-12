@@ -13,7 +13,7 @@ import 'package:link_up/features/profile/widgets/subpages_indication.dart';
 import 'package:link_up/features/profile/widgets/subpages_dropdown.dart';
 
 class AddNewPosition extends ConsumerWidget {
-  const AddNewPosition({Key? key}) : super(key: key);
+  const AddNewPosition({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

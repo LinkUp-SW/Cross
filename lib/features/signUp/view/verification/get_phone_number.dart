@@ -17,7 +17,6 @@ class _GetPhoneNumberState extends ConsumerState<GetPhoneNumber> {
   final _formKey = GlobalKey<FormState>();
   String? _countryCode;
   String? _phoneNumber;
-  String? _countryName;
 
   @override
   Widget build(BuildContext context) {
