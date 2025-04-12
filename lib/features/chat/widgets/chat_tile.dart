@@ -31,7 +31,7 @@ class ChatTile extends StatelessWidget {
             backgroundColor: Colors.grey.shade200,
           ),
           if (isBlocked)
-            const Icon(Icons.block, color: Colors.redAccent, size: 18),
+            const Icon(Icons.block, color: Colors.redAccent, size:45),
         ],
       ),
       title: Text(
