@@ -250,6 +250,10 @@ class LinkUpButtonStyles {
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
     );
   }
+
+  jobsPreferencesLight() {}
+
+  jobsPreferencesDark() {}
 }
 
 // The rest of buttons styles should be exist here

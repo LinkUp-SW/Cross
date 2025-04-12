@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/admin_panel/view/statistics_view.dart';
+import 'package:link_up/features/jobs/view/job_categories.dart';
+import 'package:link_up/features/jobs/view/view.dart';
 import 'package:link_up/features/my-network/view/connections_screen.dart';
 import 'package:link_up/core/utils/global_keys.dart';
 import 'package:link_up/features/logIn/view/forgot_pasword_view.dart';
@@ -174,13 +176,23 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               ],
             ),
             StatefulShellBranch(
-              routes: <GoRoute>[
-                GoRoute(
-                    path: "/jobs",
-                    builder: (context, state) =>
-                        const DummyPage(title: 'Jobs')),
-              ],
-            ),
+  routes: <GoRoute>[
+    GoRoute(
+      path: "/jobs",
+      builder: (context, state) => JobsScreen(
+        isDarkMode: Theme.of(context).brightness == Brightness.dark,
+      ),
+      routes: [
+        GoRoute(
+          path: "all", // This becomes /jobs/all
+          builder: (context, state) => JobsCategoriesView(
+            isDarkMode: Theme.of(context).brightness == Brightness.dark,
+          ),
+        ),
+      ],
+    ),
+  ],
+),
             StatefulShellBranch(
               routes: <GoRoute>[
                 GoRoute(
@@ -223,6 +235,24 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                     builder: (context, state) => const ReactionsPage()),
               ],
             ),
+            StatefulShellBranch(
+  routes: <GoRoute>[
+    GoRoute(
+      path: "/jobs",
+      builder: (context, state) => JobsScreen(
+        isDarkMode: Theme.of(context).brightness == Brightness.dark,
+      ),
+      routes: [
+        GoRoute(
+          path: "all", // This becomes /jobs/all
+          builder: (context, state) => JobsCategoriesView(
+            isDarkMode: Theme.of(context).brightness == Brightness.dark,
+          ),
+        ),
+      ],
+    ),
+  ],
+),
           ],
         ),
         GoRoute(path: "/company", builder: (context, state) => Container()),
