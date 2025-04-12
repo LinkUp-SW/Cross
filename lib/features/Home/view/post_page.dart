@@ -73,7 +73,11 @@ class _PostPageState extends ConsumerState<PostPage> {
           IconButton(
             icon: const Icon(Icons.more_horiz),
             onPressed: () {
+<<<<<<< HEAD
               aboutPostBottomSheet(context, isAd: widget.isAd, post: post);
+=======
+              aboutPostBottomSheet(context, isAd: widget.isAd);
+>>>>>>> feature/jobss
             },
           )
         ],

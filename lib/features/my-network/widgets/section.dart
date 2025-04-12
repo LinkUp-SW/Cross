@@ -70,7 +70,13 @@ class Section extends ConsumerWidget {
             ),
             ...cardRows,
             InkWell(
+<<<<<<< HEAD
               onTap: () {},
+=======
+              onTap: () {
+                print("Pressed on $title Show all");
+              },
+>>>>>>> feature/jobss
               child: Text(
                 "Show all",
                 style: TextStyles.font15_700Weight.copyWith(

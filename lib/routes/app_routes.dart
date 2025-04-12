@@ -36,6 +36,11 @@ import 'package:link_up/features/profile/view/edit_contact_info.dart';
 import 'package:link_up/features/profile/view/add_new_position.dart';
 import 'package:link_up/features/profile/view/add_new_education.dart';
 import 'package:link_up/shared/widgets/main_drawer.dart';
+import 'package:link_up/features/profile/view/edit_intro.dart';
+import 'package:link_up/features/profile/view/edit_contact_info.dart';
+import 'package:link_up/features/profile/view/add_new_position.dart';
+import 'package:link_up/features/profile/view/add_new_education.dart';
+import 'package:link_up/shared/widgets/main_drawer.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();

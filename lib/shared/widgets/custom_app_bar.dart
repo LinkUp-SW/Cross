@@ -17,6 +17,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final userData = ref.watch(userDataProvider);
     return AppBar(
       backgroundColor: Theme.of(context).colorScheme.primary,
       leading: GestureDetector(
@@ -40,9 +41,11 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
         )
       ],
       bottom: bottom,
+      bottom: bottom,
     );
   }
 
   @override
   Size get preferredSize => const Size.fromHeight(60);
 }
+

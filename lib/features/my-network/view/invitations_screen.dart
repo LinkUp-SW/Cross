@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+<<<<<<< HEAD
 import 'package:go_router/go_router.dart';
+=======
+>>>>>>> feature/jobss
 import 'package:link_up/features/my-network/view/received_invitations_tab.dart';
 import 'package:link_up/features/my-network/view/sent_invitations_tab.dart';
 import 'package:link_up/shared/themes/colors.dart';
@@ -61,7 +64,11 @@ class InvitationsScreen extends ConsumerWidget {
                   ? AppColors.darkSecondaryText
                   : AppColors.lightSecondaryText,
             ),
+<<<<<<< HEAD
             onPressed: () => context.pop(),
+=======
+            onPressed: () => Navigator.of(context).pop(),
+>>>>>>> feature/jobss
           ),
           actions: [
             IconButton(

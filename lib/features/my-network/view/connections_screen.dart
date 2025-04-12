@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+<<<<<<< HEAD
 import 'package:go_router/go_router.dart';
+=======
+>>>>>>> feature/jobss
 import 'package:link_up/features/my-network/viewModel/connections_screen_view_model.dart';
 import 'package:link_up/features/my-network/viewModel/manage_my_network_screen_view_model.dart';
 import 'package:link_up/features/my-network/widgets/connections_card.dart';
@@ -74,7 +77,11 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                 : AppColors.lightSecondaryText,
           ),
           onPressed: () {
+<<<<<<< HEAD
             context.pop();
+=======
+            Navigator.of(context).pop();
+>>>>>>> feature/jobss
             ref
                 .read(manageMyNetworkScreenViewModelProvider.notifier)
                 .getManageMyNetworkScreenCounts();
@@ -240,7 +247,11 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                                                     connectionsScreenViewModelProvider
                                                         .notifier)
                                                 .sortConnections(0);
+<<<<<<< HEAD
                                             context.pop();
+=======
+                                            Navigator.pop(context);
+>>>>>>> feature/jobss
                                           }
                                         },
                                       ),
@@ -278,7 +289,11 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                                                     connectionsScreenViewModelProvider
                                                         .notifier)
                                                 .sortConnections(1);
+<<<<<<< HEAD
                                             context.pop();
+=======
+                                            Navigator.pop(context);
+>>>>>>> feature/jobss
                                           }
                                         },
                                       ),
@@ -316,7 +331,11 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                                                     connectionsScreenViewModelProvider
                                                         .notifier)
                                                 .sortConnections(2);
+<<<<<<< HEAD
                                             context.pop();
+=======
+                                            Navigator.pop(context);
+>>>>>>> feature/jobss
                                           }
                                         },
                                       ),
@@ -354,7 +373,11 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                                                     connectionsScreenViewModelProvider
                                                         .notifier)
                                                 .sortConnections(3);
+<<<<<<< HEAD
                                             context.pop();
+=======
+                                            Navigator.pop(context);
+>>>>>>> feature/jobss
                                           }
                                         },
                                       ),

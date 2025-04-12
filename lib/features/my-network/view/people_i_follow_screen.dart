@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+<<<<<<< HEAD
 import 'package:go_router/go_router.dart';
+=======
+>>>>>>> feature/jobss
 import 'package:link_up/features/my-network/viewModel/manage_my_network_screen_view_model.dart';
 import 'package:link_up/features/my-network/viewModel/people_i_follow_screen_view_model.dart';
 import 'package:link_up/features/my-network/widgets/following_card.dart';
@@ -72,7 +75,11 @@ class _PeopleIFollowScreenState extends ConsumerState<PeopleIFollowScreen> {
                 : AppColors.lightSecondaryText,
           ),
           onPressed: () {
+<<<<<<< HEAD
             context.pop();
+=======
+            Navigator.of(context).pop();
+>>>>>>> feature/jobss
             ref
                 .read(manageMyNetworkScreenViewModelProvider.notifier)
                 .getManageMyNetworkScreenCounts();
@@ -121,6 +128,7 @@ class _PeopleIFollowScreenState extends ConsumerState<PeopleIFollowScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+<<<<<<< HEAD
                   if (state.isLoading)
                     SizedBox(
                       width: 16.w,
@@ -141,6 +149,16 @@ class _PeopleIFollowScreenState extends ConsumerState<PeopleIFollowScreen> {
                             : AppColors.lightSecondaryText,
                       ),
                     ),
+=======
+                  Text(
+                    '${parseIntegerToCommaSeparatedString(state.followingsCount ?? 0)} people',
+                    style: TextStyles.font18_500Weight.copyWith(
+                      color: widget.isDarkMode
+                          ? AppColors.darkGrey
+                          : AppColors.lightSecondaryText,
+                    ),
+                  ),
+>>>>>>> feature/jobss
                 ],
               ),
             ),

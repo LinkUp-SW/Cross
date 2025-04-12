@@ -33,7 +33,11 @@ class _ReceivedInvitationsTabState
         ref
             .read(receivedInvitationsTabViewModelProvider.notifier)
             .getReceivedInvitations(
+<<<<<<< HEAD
           queryParameters: {
+=======
+          {
+>>>>>>> feature/jobss
             'limit': '${widget.paginationLimit}',
             'cursor': null,
           },
@@ -53,7 +57,11 @@ class _ReceivedInvitationsTabState
           ref
               .read(receivedInvitationsTabViewModelProvider.notifier)
               .loadMoreReceivedInvitations(
+<<<<<<< HEAD
                 widget.paginationLimit,
+=======
+                paginationLimit: widget.paginationLimit,
+>>>>>>> feature/jobss
               );
         }
         return false;
@@ -75,7 +83,11 @@ class _ReceivedInvitationsTabState
                     await ref
                         .read(receivedInvitationsTabViewModelProvider.notifier)
                         .getReceivedInvitations(
+<<<<<<< HEAD
                       queryParameters: {
+=======
+                      {
+>>>>>>> feature/jobss
                         'limit': '${widget.paginationLimit}',
                         'cursor': null,
                       },
