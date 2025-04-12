@@ -33,7 +33,7 @@ class AddNewEducation extends ConsumerWidget {
         child: Column(
           children: [
             SubPagesAppBar(
-              title: "Add new position",
+              title: "Add new education",
               onClosePressed: () {
                 GoRouter.of(context).pop();
               },

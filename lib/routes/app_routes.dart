@@ -39,9 +39,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
 
   return GoRouter(
       navigatorKey: navigatorKey,
-      initialLocation: '/login',
+      initialLocation: '/profile',
       routes: <RouteBase>[
-        GoRoute(path: "/profile", builder: (context, state) => Container()),
+        GoRoute(path: "/profile", builder: (context, state) => ProfilePage()),
         GoRoute(
             path: "/login",
             builder: (context, state) => const LoginPage(),
