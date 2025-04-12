@@ -18,7 +18,6 @@ class CommentRepliesPage extends ConsumerStatefulWidget {
 
 class _CommentRepliesPageState extends ConsumerState<CommentRepliesPage> {
 
-  final TextEditingController _textController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
 
 
@@ -76,7 +75,6 @@ class _CommentRepliesPageState extends ConsumerState<CommentRepliesPage> {
       ),
       bottomNavigationBar: CommentsTextField(
         focusNode: _focusNode,
-        textController: _textController,
         focused: widget.focused,
         showSuggestions: false,
         buttonName: 'Reply',

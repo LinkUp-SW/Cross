@@ -13,7 +13,7 @@ import 'package:link_up/features/profile/widgets/subpages_indication.dart';
 
 
 class EditIntroPage extends ConsumerWidget {
-  const EditIntroPage({Key? key}) : super(key: key);
+  const EditIntroPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

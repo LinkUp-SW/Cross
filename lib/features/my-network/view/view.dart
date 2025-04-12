@@ -7,7 +7,11 @@ import 'package:link_up/shared/widgets/custom_app_bar.dart';
 import 'package:link_up/shared/widgets/custom_search_bar.dart';
 
 class MyNetworkScreen extends ConsumerWidget {
-  const MyNetworkScreen({super.key});
+  final GlobalKey<ScaffoldState> scaffoldKey;
+  const MyNetworkScreen({
+    super.key,
+    required this.scaffoldKey,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -24,7 +28,9 @@ class MyNetworkScreen extends ConsumerWidget {
             children: [
               CustomAppBar(
                 searchBar: const CustomSearchBar(),
-                leadingAction: () {},
+                leadingAction: () {
+                  scaffoldKey.currentState!.openDrawer();
+                },
               ),
               DecoratedBox(
                 decoration: BoxDecoration(

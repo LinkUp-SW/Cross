@@ -10,13 +10,13 @@ class SubPagesCustomDropdownFormField<T> extends StatelessWidget {
   final String? labelText;
 
   const SubPagesCustomDropdownFormField({
-    Key? key,
+    super.key,
     this.value,
     required this.hintText,
     required this.items,
     required this.onChanged,
     this.labelText,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

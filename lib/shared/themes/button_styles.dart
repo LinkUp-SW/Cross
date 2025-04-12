@@ -251,6 +251,6 @@ class LinkUpButtonStyles {
     );
   }
 }
-}
+
 // The rest of buttons styles should be exist here
 

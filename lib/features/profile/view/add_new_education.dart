@@ -12,7 +12,7 @@ import 'package:link_up/features/profile/widgets/subpages_form_labels.dart';
 import 'package:link_up/features/profile/widgets/subpages_indication.dart';
 
 class AddNewEducation extends ConsumerWidget {
-  const AddNewEducation({Key? key}) : super(key: key);
+  const AddNewEducation({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

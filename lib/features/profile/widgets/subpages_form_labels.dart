@@ -6,8 +6,7 @@ class SubPagesFormLabel extends StatelessWidget {
   final String label;
   final bool isRequired;
 
-  const SubPagesFormLabel({Key? key, required this.label, this.isRequired = false})
-      : super(key: key);
+  const SubPagesFormLabel({super.key, required this.label, this.isRequired = false});
 
   @override
   Widget build(BuildContext context) {

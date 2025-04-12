@@ -5,7 +5,7 @@ import 'package:link_up/shared/themes/text_styles.dart';
 class SubPagesSectionHeader extends StatelessWidget {
   final String title;
 
-  const SubPagesSectionHeader({Key? key, required this.title}) : super(key: key);
+  const SubPagesSectionHeader({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {

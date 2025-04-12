@@ -27,7 +27,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final logInNotifier = ref.read(logInProvider.notifier);
-      await logInNotifier.checkStoredCredentials();
+      await logInNotifier.checkStoredCredentials(ref);
     });
   }
 
@@ -162,6 +162,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: const InputDecoration(
+                          label: Text('Email or Phone Number'),
+                          prefixIcon: Icon(Icons.email_outlined),
                           hintText: 'Email or Phone Number'),
                       validator: validateEmail,
                     ),
@@ -173,6 +175,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       controller: _passwordController,
                       obscureText: _obsureText,
                       decoration: InputDecoration(
+                          label: const Text('Password'),
                           hintText: 'Password',
                           suffixIcon: IconButton(
                               key: const Key('togglePasswordVisibilityButton'),
@@ -242,6 +245,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                 logInNotifier.logIn(
                                   _emailController.text,
                                   _passwordController.text,
+                                  ref,
                                 );
                               }
                             },

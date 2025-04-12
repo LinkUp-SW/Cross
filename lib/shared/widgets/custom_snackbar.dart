@@ -5,6 +5,7 @@ import 'package:link_up/core/utils/global_keys.dart';
 openSnackbar({required Widget child,
     Function? onPressed, String? label}) {
   final context = navigatorKey.currentContext!;
+  ScaffoldMessenger.of(context).clearSnackBars();
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       content: child,

@@ -3,10 +3,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:link_up/features/Home/view/saved_posts.dart';
+import 'package:link_up/features/admin_panel/view/statistics_view.dart';
 import 'package:link_up/features/my-network/view/connections_screen.dart';
 import 'package:link_up/core/utils/global_keys.dart';
 import 'package:link_up/features/logIn/view/forgot_pasword_view.dart';
 import 'package:link_up/features/logIn/view/login_view.dart';
+import 'package:link_up/features/profile/view/view.dart';
 import 'package:link_up/features/signUp/view/userInfo/names_view.dart';
 import 'package:link_up/features/signUp/view/userInfo/past_job_details.dart';
 import 'package:link_up/features/signUp/view/userInfo/take_photo.dart';
@@ -25,9 +28,9 @@ import 'package:link_up/features/my-network/view/invitations_screen.dart';
 import 'package:link_up/features/my-network/view/manage_my_network_screen.dart';
 import 'package:link_up/features/my-network/view/people_i_follow_screen.dart';
 import 'package:link_up/features/my-network/view/view.dart';
+import 'package:link_up/features/chat/view/chat_list_page.dart';
 import 'package:link_up/shared/dummy_page.dart';
 import 'package:link_up/shared/widgets/bottom_navigation_bar.dart';
-import 'package:link_up/features/profile/view/view.dart';
 import 'package:link_up/features/profile/view/edit_intro.dart';
 import 'package:link_up/features/profile/view/edit_contact_info.dart';
 import 'package:link_up/features/profile/view/add_new_position.dart';
@@ -41,7 +44,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       navigatorKey: navigatorKey,
       initialLocation: '/login',
       routes: <RouteBase>[
-        GoRoute(path: "/profile", builder: (context, state) => Container()),
+        GoRoute(path: "/profile", builder: (context, state) => ProfilePage()),
         GoRoute(
             path: "/login",
             builder: (context, state) => const LoginPage(),
@@ -50,6 +53,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                   path: "/forgotpassword",
                   builder: (context, state) => const ForgotPasswordView()),
             ]),
+        GoRoute(
+            path: '/statistics',
+            builder: (context, state) => const StatisticsView()),
+        GoRoute(
+            path: '/priv',
+            builder: (context, state) => const DummyPage(title: 'Users')),
         GoRoute(
             path: "/signup",
             builder: (context, state) => const EmailPasswordView(),
@@ -102,23 +111,23 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             title: 'Pages Screen',
           ),
         ),
-         //Profile Page Routes
-          GoRoute(
-            path: "/edit_intro",
-            builder: (context, state) => const EditIntroPage(),
-          ),
-            GoRoute(
-            path: "/edit_contact_info",
-            builder: (context, state) => const EditContactInfo(),
-          ),
-            GoRoute(
-            path: "/add_new_position",
-            builder: (context, state) => const AddNewPosition(),
-          ),
-            GoRoute(
-            path: "/add_new_education",
-            builder: (context, state) => const AddNewEducation(),
-          ),
+        //Profile Page Routes
+        GoRoute(
+          path: "/edit_intro",
+          builder: (context, state) => const EditIntroPage(),
+        ),
+        GoRoute(
+          path: "/edit_contact_info",
+          builder: (context, state) => const EditContactInfo(),
+        ),
+        GoRoute(
+          path: "/add_new_position",
+          builder: (context, state) => const AddNewPosition(),
+        ),
+        GoRoute(
+          path: "/add_new_education",
+          builder: (context, state) => const AddNewEducation(),
+        ),
         StatefulShellRoute.indexedStack(
           builder: (context, state, navigationShell) => Scaffold(
             key: scaffoldKey,
@@ -143,7 +152,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               routes: <GoRoute>[
                 GoRoute(
                   path: "/network",
-                  builder: (context, state) => const MyNetworkScreen(),
+                  builder: (context, state) => MyNetworkScreen(
+                    scaffoldKey: scaffoldKey,
+                  ),
                 ),
               ],
             ),
@@ -159,7 +170,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               routes: <GoRoute>[
                 GoRoute(
                   path: "/notifications",
-                  builder: (context, state) => const NotificationsView(),
+                  builder: (context, state) => NotificationsView(
+                    scaffoldKey: scaffoldKey,
+                  ),
                 )
               ],
             ),
@@ -218,21 +231,27 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         GoRoute(path: "/company", builder: (context, state) => Container()),
         GoRoute(
             path: "/writePost",
-            pageBuilder: (context, state) => CustomTransitionPage(
-                child: const WritePost(),
-                transitionsBuilder:
-                    (context, animation, secondaryAnimation, child) {
-                  return SlideTransition(
-                    position: Tween<Offset>(
-                      begin: const Offset(0, 1.0),
-                      end: Offset.zero,
-                    ).animate(animation),
-                    child: child,
-                  );
-                })),
+            pageBuilder: (context, state) {
+              final text = state.extra as String?;
+              return CustomTransitionPage(
+                  child: WritePost(text: text ?? ''),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return SlideTransition(
+                      position: Tween<Offset>(
+                        begin: const Offset(0, 1.0),
+                        end: Offset.zero,
+                      ).animate(animation),
+                      child: child,
+                    );
+                  });
+            }),
         GoRoute(
-            path: "/messages",
-            builder: (context, state) => const DummyPage(title: "messages")),
+          path: '/savedPosts',
+          builder: (context, state) => SavedPostsPage(),
+        ),
+        GoRoute(
+            path: "/messages", builder: (context, state) => ChatListScreen()),
         GoRoute(path: "/chatpage", builder: (context, state) => Container()),
         GoRoute(path: "/settings", builder: (context, state) => Container()),
       ]);
