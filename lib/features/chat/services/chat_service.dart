@@ -130,7 +130,7 @@ class ChatService {
               type: MessageType.text),
           Message(
               sender: "Emily White",
-              content: "https://www.w3.org/WAI/WCAG21/quickref/files/WCAG21-quickref-2018.pdf",
+              content: "https://www.princexml.com/samples/flyer/flyer.pdf",
               timestamp: DateTime.now().subtract(const Duration(days: 1)),
               type: MessageType.document), // Real document URL
           Message(

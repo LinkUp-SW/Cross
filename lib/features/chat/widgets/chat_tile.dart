@@ -17,6 +17,7 @@ class ChatTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final isBlocked = chat.isBlocked;
 
     return ListTile(
@@ -27,27 +28,31 @@ class ChatTile extends StatelessWidget {
         children: [
           CircleAvatar(
             backgroundImage: NetworkImage(chat.profilePictureUrl),
-            foregroundColor: isBlocked ? Colors.black.withOpacity(0.3) : null,
-            backgroundColor: Colors.grey.shade200,
+            backgroundColor: theme.colorScheme.surface,
+            foregroundColor: isBlocked ? theme.colorScheme.onSurface.withOpacity(0.3) : null,
           ),
           if (isBlocked)
-            const Icon(Icons.block, color: Colors.redAccent, size: 18),
+            const Icon(Icons.block, color: Colors.redAccent, size: 45),
         ],
       ),
       title: Text(
         chat.name,
-        style: TextStyle(
+        style: theme.textTheme.titleMedium?.copyWith(
           fontWeight: chat.isUnread ? FontWeight.bold : FontWeight.normal,
-          color: isBlocked ? Colors.grey : Colors.black,
+          color: isBlocked
+              ? theme.disabledColor
+              : theme.textTheme.titleMedium?.color,
         ),
       ),
       subtitle: Text(
         isBlocked ? "This user is blocked" : chat.lastMessage,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: TextStyle(
+        style: theme.textTheme.bodySmall?.copyWith(
           fontStyle: isBlocked ? FontStyle.italic : FontStyle.normal,
-          color: isBlocked ? Colors.grey : Colors.black,
+          color: isBlocked
+              ? theme.disabledColor
+              : theme.textTheme.bodySmall?.color,
         ),
       ),
       trailing: Row(
@@ -56,23 +61,23 @@ class ChatTile extends StatelessWidget {
           if (!isBlocked && chat.unreadMessageCount > 0)
             Container(
               padding: const EdgeInsets.all(6),
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: Colors.blue,
                 shape: BoxShape.circle,
               ),
               child: Text(
                 chat.unreadMessageCount.toString(),
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: theme.colorScheme.onPrimary,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             )
           else if (!isBlocked && chat.isUnread)
-            const Icon(Icons.circle, color: Colors.blue, size: 20),
+            Icon(Icons.circle, color: Colors.blue, size: 20),
           const SizedBox(width: 8),
           IconButton(
-            icon: const Icon(Icons.more_vert),
+            icon: Icon(Icons.more_vert, color: theme.iconTheme.color),
             onPressed: onThreeDotPressed,
           ),
         ],
