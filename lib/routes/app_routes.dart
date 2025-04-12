@@ -42,7 +42,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
 
   return GoRouter(
       navigatorKey: navigatorKey,
-      initialLocation: '/profile',
+      initialLocation: '/login',
       routes: <RouteBase>[
         GoRoute(path: "/profile", builder: (context, state) => ProfilePage()),
         GoRoute(

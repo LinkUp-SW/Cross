@@ -6,7 +6,7 @@ class InternalEndPoints {
 }
 
 class ExternalEndPoints {
-  static const baseUrl = 'https://linkup-egypt.tech/api/';
+  static const baseUrl = 'http://10.0.2.2:3000/';
   static const receivedConnectionInvitations =
       'v1/user/my-network/invitation-manager/received';
   static const sentConnectionInvitations =
@@ -25,4 +25,7 @@ class ExternalEndPoints {
   static const userId = 'v1/user/my-network/connections/count';
   static const followingsList = 'v1/user/my-network/network-manager/following';
   static const unfollow = 'v1/user/unfollow/:user_id';
+
+  static const addEducation = 'v1/user/profile/education/:user_id'; 
+
 }
