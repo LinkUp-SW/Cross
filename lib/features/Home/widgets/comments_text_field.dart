@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:link_up/core/constants/endpoints.dart';
 import 'package:link_up/features/Home/viewModel/write_comment_vm.dart';
 import 'package:link_up/features/Post/widgets/formatted_input.dart';
-import 'package:link_up/features/logIn/viewModel/user_data_vm.dart';
 import 'package:link_up/shared/themes/colors.dart';
 
 class CommentsTextField extends ConsumerStatefulWidget {
@@ -49,7 +49,6 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
   @override
   Widget build(BuildContext context) {
     final height = widget.showSuggestions ? 120.h : 70.h;
-    final userData = ref.watch(userDataProvider);
     final writeComment = ref.watch(writeCommentProvider);
     return Container(
       decoration: BoxDecoration(
@@ -105,7 +104,7 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                                     writeComment.controller.text
                                         .lastIndexOf('@'),
                                     writeComment.controller.text.length,
-                                    "@User $index:${userData.userId}^ ",
+                                    "@User $index:${InternalEndPoints.userId}^ ",
                                   );
                                   widget.focusNode.requestFocus();
                                   setState(() {
@@ -155,7 +154,7 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                               radius: 20.r,
                               //TODO: Replace with user profile image
                               backgroundImage:
-                                  NetworkImage(userData.profileUrl),
+                                  NetworkImage(InternalEndPoints.profileUrl),
                             ),
                           ),
                           Flexible(
