@@ -1,5 +1,6 @@
 //widgets related to this page only
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -58,6 +59,8 @@ class _AutocompleteSearchInputState
     extends ConsumerState<AutocompleteSearchInput> {
   Timer? _debounce;
   late final SearchController _searchController;
+  final companydata = [];
+  final schooldata = [];
 
   @override
   void initState() {
@@ -66,17 +69,13 @@ class _AutocompleteSearchInputState
     _searchController = SearchController();
   }
 
-  void _onSearchChanged(String query) {
-    if (_debounce?.isActive ?? false) _debounce!.cancel();
-    _debounce = Timer(const Duration(milliseconds: 400), () {
-      if (!mounted) return;
-      final notifier = ref.read(pastJobDetailProvider.notifier);
-      if (widget.searchType == SearchType.school) {
-        notifier.getSchools(query, ref);
-      } else {
-        notifier.getcompany(query, ref);
-      }
-    });
+  Future<void> _onSearchChanged(String query) async {
+    if (!mounted) return;
+    if (widget.searchType == SearchType.school) {
+      await ref.read(pastJobDetailProvider.notifier).getSchools(query, ref);
+    } else {
+      await ref.read(pastJobDetailProvider.notifier).getcompany(query, ref);
+    }
   }
 
   @override
@@ -88,33 +87,78 @@ class _AutocompleteSearchInputState
 
   @override
   Widget build(BuildContext context) {
-    final results = widget.searchType == SearchType.school
-        ? ref.watch(schoolResultsProvider)
-        : ref.watch(companyResultsProvider);
+    final functionstouse = ref.read(pastJobDetailProvider.notifier);
+    ref.listen(companyResultsProvider, (context, state) {
+      if (state.isEmpty) {
+        setState(() {
+          companydata.clear();
+        });
+      } else {
+        setState(() {
+          companydata.clear();
+          companydata.addAll(state);
+        });
+      }
+    });
 
-    return SearchAnchor.bar(
-      searchController: _searchController,
-      barHintText: widget.label,
-      viewLeading: const BackButton(),
-      suggestionsBuilder: (BuildContext context, SearchController controller) {
-        final query = controller.text;
-        _onSearchChanged(query);
+    ref.listen(schoolResultsProvider, (context, state) {
+      if (state.isEmpty) {
+        setState(() {
+          schooldata.clear();
+        });
+      } else {
+        setState(() {
+          schooldata.clear();
+          schooldata.addAll(state);
+        });
+      }
+    });
 
-        final filtered = results
-            .where((name) => name.toLowerCase().contains(query.toLowerCase()))
-            .toList();
-
-        return List<ListTile>.generate(filtered.length, (int index) {
-          final item = filtered[index];
-          return ListTile(
-            title: Text(item),
-            onTap: () {
-              widget.controller.text = item;
-              controller.closeView(item);
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.black, width: 1.0),
+        borderRadius: BorderRadius.circular(8.0),
+      ),
+      child: SearchAnchor.bar(
+        searchController: _searchController,
+        barHintText: widget.label,
+        viewLeading: const BackButton(),
+        onChanged: (value) async {
+          final query = _searchController.text;
+          await _onSearchChanged(query);
+          setState(() {
+            _searchController.text += ' ';
+            _searchController.text = query;
+          });
+        },
+        suggestionsBuilder:
+            (BuildContext context, SearchController controller) {
+          return List<ListTile>.generate(
+            widget.searchType == SearchType.company
+                ? companydata.length
+                : schooldata.length,
+            (int index) {
+              log('ana gowa el builder');
+              final data = widget.searchType == SearchType.company
+                  ? companydata
+                  : schooldata;
+              final item = data[index];
+              return ListTile(
+                title: Text(item['name']),
+                onTap: () {
+                  widget.controller.text = item['name'];
+                  controller.closeView(item['name']);
+                  if (widget.searchType == SearchType.company) {
+                    functionstouse.saveid(item['_id'], false);
+                  } else {
+                    functionstouse.saveid(item['_id'], true);
+                  }
+                },
+              );
             },
           );
-        });
-      },
+        },
+      ),
     );
   }
 }

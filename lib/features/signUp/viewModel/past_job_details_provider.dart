@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/features/signUp/services/past_job_details_service.dart';
@@ -16,16 +18,18 @@ final pastJobDetailProvider =
   return PastJobDetailsNotifier(signUpNotifier, service);
 });
 
-final schoolResultsProvider = StateProvider<List<String>>((ref) => []);
-final companyResultsProvider = StateProvider<List<String>>((ref) => []);
+final schoolResultsProvider =
+    StateProvider<List<Map<String, dynamic>>>((ref) => []);
+final companyResultsProvider =
+    StateProvider<List<Map<String, dynamic>>>((ref) => []);
 
 class PastJobDetailsNotifier extends StateNotifier<PastJobDetailsState> {
   final SignUpNotifier _signUpNotifier;
   final PastJobDetailsService _service;
+  String? selectedCompanyId;
+  String? selectedSchoolId;
 
   DateTime? selectedDate;
-  List<Map<String, dynamic>> schoolResults = [];
-  List<Map<String, dynamic>> companyResults = [];
 
   PastJobDetailsNotifier(this._signUpNotifier, this._service)
       : super(PastJobDetailsInitial());
@@ -35,8 +39,7 @@ class PastJobDetailsNotifier extends StateNotifier<PastJobDetailsState> {
       final result = await _service.geteducation({"query": query});
       if (result['data'] != null) {
         final list = List<Map<String, dynamic>>.from(result['data']);
-        ref.read(schoolResultsProvider.notifier).state =
-            list.map((e) => e['name']?.toString() ?? '').toList();
+        ref.read(schoolResultsProvider.notifier).state = list;
       } else {
         ref.read(schoolResultsProvider.notifier).state = [];
       }
@@ -48,15 +51,25 @@ class PastJobDetailsNotifier extends StateNotifier<PastJobDetailsState> {
   Future<void> getcompany(String query, WidgetRef ref) async {
     try {
       final result = await _service.getcompany({"query": query});
+      log('fuck');
       if (result['data'] != null) {
+        log('fuck dakhlet gowa');
         final list = List<Map<String, dynamic>>.from(result['data']);
-        ref.read(companyResultsProvider.notifier).state =
-            list.map((e) => e['name']?.toString() ?? '').toList();
+        ref.read(companyResultsProvider.notifier).state = list;
+        print(ref.read(companyResultsProvider.notifier).state);
       } else {
         ref.read(companyResultsProvider.notifier).state = [];
       }
     } catch (_) {
       ref.read(companyResultsProvider.notifier).state = [];
+    }
+  }
+
+  void saveid(String id, bool amstudent) {
+    if (amstudent) {
+      selectedSchoolId = id;
+    } else {
+      selectedCompanyId = id;
     }
   }
 
@@ -81,7 +94,7 @@ class PastJobDetailsNotifier extends StateNotifier<PastJobDetailsState> {
         _signUpNotifier.updateUserData(
             country: country,
             city: city,
-            school: school,
+            school: selectedSchoolId,
             startDate: startDate,
             isStudent: true);
       } else {
@@ -89,7 +102,7 @@ class PastJobDetailsNotifier extends StateNotifier<PastJobDetailsState> {
             country: country,
             city: city,
             jobTitle: jobTitle,
-            recentCompany: companyName,
+            recentCompany: selectedCompanyId,
             isStudent: false);
       }
 
@@ -101,7 +114,8 @@ class PastJobDetailsNotifier extends StateNotifier<PastJobDetailsState> {
         state = PastJobDetailsError("Failed to submit data");
       }
     } catch (e) {
-      state = PastJobDetailsError("Failed to submit data");
+      state = PastJobDetailsError("There was an error with the application");
+      print(e.toString());
     }
   }
 }
