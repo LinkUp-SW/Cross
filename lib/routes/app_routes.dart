@@ -1,5 +1,3 @@
-// The route management packages and the class handling it
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -36,6 +34,7 @@ import 'package:link_up/features/profile/view/edit_contact_info.dart';
 import 'package:link_up/features/profile/view/add_new_position.dart';
 import 'package:link_up/features/profile/view/add_new_education.dart';
 import 'package:link_up/shared/widgets/main_drawer.dart';
+import 'package:link_up/features/jobs/view/view.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
@@ -179,9 +178,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             StatefulShellBranch(
               routes: <GoRoute>[
                 GoRoute(
-                    path: "/jobs",
-                    builder: (context, state) =>
-                        const DummyPage(title: 'Jobs')),
+                  path: "/jobs",
+                  builder: (context, state) => JobsScreen(
+                    scaffoldKey: scaffoldKey,
+                  ),
+                ),
               ],
             ),
             StatefulShellBranch(

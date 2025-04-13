@@ -79,9 +79,10 @@ class _PostPageState extends ConsumerState<PostPage> {
         ],
       ),
       bottomNavigationBar: CommentsTextField(
-          focusNode: _focusNode,
-          focused: widget.focused,
-          buttonName: 'Comment',),
+        focusNode: _focusNode,
+        focused: widget.focused,
+        buttonName: 'Comment',
+      ),
       body: Padding(
         padding: EdgeInsets.only(top: 8.h),
         child: Container(

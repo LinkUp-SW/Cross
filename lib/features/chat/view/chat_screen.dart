@@ -22,24 +22,30 @@ class ChatScreen extends ConsumerStatefulWidget {
 }
 
 class _ChatScreenState extends ConsumerState<ChatScreen> {
+  final ScrollController _scrollController = ScrollController();
+  final TextEditingController messageController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final chats = ref.watch(chatViewModelProvider);
     final chat = chats[widget.chatIndex];
-    final messageController = TextEditingController();
 
     return Scaffold(
+      backgroundColor: theme.colorScheme.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: theme.appBarTheme.backgroundColor ?? theme.colorScheme.primary,
+        iconTheme: IconThemeData(color: theme.iconTheme.color),
         title: Text(
           chat.name,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+          style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
       ),
       body: Column(
         children: [
           Expanded(
             child: ListView.builder(
+              controller: _scrollController, // Assign the controller here
               itemCount: chat.messages.length,
               itemBuilder: (context, index) {
                 final message = chat.messages[index];
@@ -67,6 +73,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       MessageType.text,
                     );
                 messageController.clear();
+
+                // Scroll to the bottom after sending a message
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  _scrollToBottom();
+                });
               }
             },
             onAttachmentPressed: () {
@@ -89,6 +100,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   Future<void> _handleVideoMessage(Message message) async {
+    final theme = Theme.of(context);
     if (message.sender != "jumana") {
       // Navigate to VideoPlayerScreen for videos sent by other users
       Navigator.push(
@@ -105,7 +117,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         await OpenFilex.open(message.content); // mediaPath
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Failed to open video: $e")),
+          SnackBar(
+            backgroundColor: theme.colorScheme.error,
+            content: Text(
+              "Failed to open video: $e",
+              style: TextStyle(color: theme.colorScheme.onError),
+            ),
+          ),
         );
       }
     }
@@ -166,32 +184,33 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   void _showImageInFullScreen({required String imagePath}) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) => Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Navigator.of(context).pop(); // Close the image and return to chat
-          },
+    final theme = Theme.of(context);
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => Scaffold(
+        backgroundColor: theme.colorScheme.background,
+        appBar: AppBar(
+          backgroundColor: theme.appBarTheme.backgroundColor ?? theme.colorScheme.surface,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: theme.iconTheme.color),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ),
+        body: Center(
+          child: imagePath.isEmpty
+              ? Text(
+                  "No image available",
+                  style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onBackground),
+                )
+              : imagePath.startsWith('http')
+                  ? Image.network(imagePath, fit: BoxFit.contain)
+                  : Image.file(File(imagePath), fit: BoxFit.contain),
         ),
       ),
-      body: Center(
-        child: imagePath.isEmpty
-            ? const Text(
-                "No image available",
-                style: TextStyle(color: Colors.white),
-              )
-            : imagePath.startsWith('http')
-                ? Image.network(imagePath, fit: BoxFit.contain)
-                : Image.file(File(imagePath), fit: BoxFit.contain),
-      ),
-    ),
-  );
-}
+    );
+  }
 
   void _showAttachmentOptions(BuildContext context, WidgetRef ref, int chatIndex) {
     showModalBottomSheet(
@@ -210,6 +229,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       filePath,
                       MessageType.document,
                     );
+                // Scroll to bottom after sending document
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  _scrollToBottom();
+                });
               }
               Navigator.pop(context);
             },
@@ -233,6 +256,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       pickedFile.path,
                       messageType,
                     );
+                // Scroll to bottom after sending media
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  _scrollToBottom();
+                });
               }
               Navigator.pop(context);
             },
@@ -240,5 +267,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         ],
       ),
     );
+  }
+
+  void _scrollToBottom() {
+    // Ensure the scroll happens to the bottom after the new message
+    if (_scrollController.hasClients) {
+      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+    }
   }
 }

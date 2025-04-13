@@ -3,6 +3,7 @@
 class InternalEndPoints {
   static String userId = "";
   static String email = "";
+  static String profileUrl = "";
 }
 
 class ExternalEndPoints {

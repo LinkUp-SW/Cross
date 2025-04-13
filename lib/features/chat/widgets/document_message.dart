@@ -16,10 +16,13 @@ class DocumentMessageWidget extends StatefulWidget {
 
 class _DocumentMessageWidgetState extends State<DocumentMessageWidget> {
   bool _isDownloading = false;
-  bool _isDownloaded = false; // Track if the file is downloaded
+  bool _isDownloaded = false;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     final filePath = widget.message.content;
     final isUrl = filePath.startsWith('http');
     final fileName = filePath.split('/').last;
@@ -39,12 +42,12 @@ class _DocumentMessageWidgetState extends State<DocumentMessageWidget> {
             try {
               final response = await http.get(uri);
               await localFile.writeAsBytes(response.bodyBytes);
-              setState(() {
-                _isDownloaded = true;
-              });
+              setState(() => _isDownloaded = true);
               await OpenFilex.open(localPath);
             } catch (e) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Download error: $e")));
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text("Download error: $e")),
+              );
             } finally {
               setState(() => _isDownloading = false);
             }
@@ -63,28 +66,29 @@ class _DocumentMessageWidgetState extends State<DocumentMessageWidget> {
       child: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: Colors.grey[200],
+          color: theme.cardColor, // Adaptive background
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
           children: [
-            const Icon(Icons.insert_drive_file, color: Colors.green),
+            Icon(Icons.insert_drive_file, color: colorScheme.primary), // Theme-aware icon color
             const SizedBox(width: 8),
             Expanded(
               child: Text(
                 fileName,
-                style: const TextStyle(fontWeight: FontWeight.w500),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
             const SizedBox(width: 8),
-            _isDownloading
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const SizedBox.shrink(), // No icon if already downloaded
+            if (_isDownloading)
+              const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
           ],
         ),
       ),
