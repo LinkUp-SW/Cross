@@ -5,15 +5,13 @@ import 'package:link_up/shared/themes/colors.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class ReceivedInvitationsLoadingSkeleton extends ConsumerWidget {
-  final bool isDarkMode;
-
   const ReceivedInvitationsLoadingSkeleton({
     super.key,
-    required this.isDarkMode,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Skeletonizer(
       enabled: true,
       child: DecoratedBox(

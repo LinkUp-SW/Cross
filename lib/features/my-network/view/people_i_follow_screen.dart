@@ -13,12 +13,10 @@ import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/shared/utils/my_network_utils.dart';
 
 class PeopleIFollowScreen extends ConsumerStatefulWidget {
-  final bool isDarkMode;
   final int paginationLimit;
 
   const PeopleIFollowScreen({
     super.key,
-    required this.isDarkMode,
     this.paginationLimit = 10,
   });
 
@@ -54,6 +52,7 @@ class _PeopleIFollowScreenState extends ConsumerState<PeopleIFollowScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final state = ref.watch(peopleIFollowScreenViewModelProvider);
 
     return Scaffold(
@@ -67,7 +66,7 @@ class _PeopleIFollowScreenState extends ConsumerState<PeopleIFollowScreen> {
           icon: Icon(
             Icons.arrow_back,
             size: 25.w,
-            color: widget.isDarkMode
+            color: isDarkMode
                 ? AppColors.darkSecondaryText
                 : AppColors.lightSecondaryText,
           ),
@@ -85,14 +84,11 @@ class _PeopleIFollowScreenState extends ConsumerState<PeopleIFollowScreen> {
           Container(
             width: double.infinity,
             decoration: BoxDecoration(
-              color:
-                  widget.isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+              color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
               border: Border(
                 bottom: BorderSide(
                   width: 0.3.w,
-                  color: widget.isDarkMode
-                      ? AppColors.darkGrey
-                      : AppColors.lightGrey,
+                  color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
                 ),
               ),
             ),
@@ -104,14 +100,11 @@ class _PeopleIFollowScreenState extends ConsumerState<PeopleIFollowScreen> {
           ),
           Container(
             decoration: BoxDecoration(
-              color:
-                  widget.isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+              color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
               border: Border(
                 bottom: BorderSide(
                   width: 0.3.w,
-                  color: widget.isDarkMode
-                      ? AppColors.darkGrey
-                      : AppColors.lightGrey,
+                  color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
                 ),
               ),
             ),
@@ -127,7 +120,7 @@ class _PeopleIFollowScreenState extends ConsumerState<PeopleIFollowScreen> {
                       height: 16.w,
                       child: CircularProgressIndicator(
                         strokeWidth: 2.w,
-                        color: widget.isDarkMode
+                        color: isDarkMode
                             ? AppColors.darkGrey
                             : AppColors.lightSecondaryText,
                       ),
@@ -136,7 +129,7 @@ class _PeopleIFollowScreenState extends ConsumerState<PeopleIFollowScreen> {
                     Text(
                       '${parseIntegerToCommaSeparatedString(state.followingsCount ?? 0)} people',
                       style: TextStyles.font18_500Weight.copyWith(
-                        color: widget.isDarkMode
+                        color: isDarkMode
                             ? AppColors.darkGrey
                             : AppColors.lightSecondaryText,
                       ),
@@ -163,12 +156,10 @@ class _PeopleIFollowScreenState extends ConsumerState<PeopleIFollowScreen> {
                         shrinkWrap: true,
                         itemCount: 3,
                         itemBuilder: (context, index) =>
-                            FollowingCardLoadingSkeleton(
-                                isDarkMode: widget.isDarkMode),
+                            FollowingCardLoadingSkeleton(),
                       )
                     : state.isError
                         ? RetryErrorMessage(
-                            isDarkMode: widget.isDarkMode,
                             errorMessage: "Failed to load followings :(",
                             buttonFunctionality: () async {
                               await ref
@@ -183,9 +174,7 @@ class _PeopleIFollowScreenState extends ConsumerState<PeopleIFollowScreen> {
                             },
                           )
                         : state.followings == null || state.followings!.isEmpty
-                            ? StandardEmptyListMessage(
-                                isDarkMode: widget.isDarkMode,
-                                message: 'No followings')
+                            ? StandardEmptyListMessage(message: 'No followings')
                             : ListView.builder(
                                 physics: const AlwaysScrollableScrollPhysics(),
                                 itemCount: state.followings!.length +
@@ -198,7 +187,7 @@ class _PeopleIFollowScreenState extends ConsumerState<PeopleIFollowScreen> {
                                           EdgeInsets.symmetric(vertical: 16.h),
                                       child: Center(
                                         child: CircularProgressIndicator(
-                                          color: widget.isDarkMode
+                                          color: isDarkMode
                                               ? AppColors.darkBlue
                                               : AppColors.lightBlue,
                                         ),
@@ -207,7 +196,6 @@ class _PeopleIFollowScreenState extends ConsumerState<PeopleIFollowScreen> {
                                   }
                                   return FollowingCard(
                                     data: state.followings![index],
-                                    isDarkMode: widget.isDarkMode,
                                   );
                                 },
                               )),

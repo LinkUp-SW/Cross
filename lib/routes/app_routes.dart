@@ -82,15 +82,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             ]),
         GoRoute(
           path: "/invitations",
-          builder: (context, state) => InvitationsScreen(
-            isDarkMode: Theme.of(context).brightness == Brightness.dark,
-          ),
+          builder: (context, state) => InvitationsScreen(),
         ),
         GoRoute(
           path: "/manage-network",
-          builder: (context, state) => ManageMyNetworkScreen(
-            isDarkMode: Theme.of(context).brightness == Brightness.dark,
-          ),
+          builder: (context, state) => ManageMyNetworkScreen(),
         ),
         GoRoute(
           path: "/connections",
@@ -100,9 +96,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         ),
         GoRoute(
           path: "/following",
-          builder: (context, state) => PeopleIFollowScreen(
-            isDarkMode: Theme.of(context).brightness == Brightness.dark,
-          ),
+          builder: (context, state) => PeopleIFollowScreen(),
         ),
         GoRoute(
           path: "/pages",
@@ -241,8 +235,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                   );
                 })),
         GoRoute(
-            path: "/messages",
-            builder: (context, state) => ChatListScreen()),
+            path: "/messages", builder: (context, state) => ChatListScreen()),
         GoRoute(path: "/chatpage", builder: (context, state) => Container()),
         GoRoute(path: "/settings", builder: (context, state) => Container()),
       ]);

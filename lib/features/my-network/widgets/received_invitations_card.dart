@@ -9,15 +9,15 @@ import 'package:link_up/shared/utils/my_network_utils.dart';
 
 class ReceivedInvitationsCard extends ConsumerWidget {
   final InvitationsCardModel data;
-  final bool isDarkMode;
+
   const ReceivedInvitationsCard({
     super.key,
     required this.data,
-    required this.isDarkMode,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return DecoratedBox(
       decoration: BoxDecoration(
         color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
