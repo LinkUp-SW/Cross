@@ -2,17 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/my-network/model/invitations_screen_model.dart';
-import 'package:link_up/features/my-network/viewModel/received_invitations_tab_view_model.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/shared/utils/my_network_utils.dart';
 
 class ReceivedInvitationsCard extends ConsumerWidget {
   final InvitationsCardModel data;
-
+  final Function(String) onAccept;
+  final Function(String) onIgnore;
   const ReceivedInvitationsCard({
     super.key,
     required this.data,
+    required this.onAccept,
+    required this.onIgnore,
   });
 
   @override
@@ -91,12 +93,7 @@ class ReceivedInvitationsCard extends ConsumerWidget {
                   color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
                   child: InkWell(
                     borderRadius: BorderRadius.circular(8.r),
-                    onTap: () {
-                      ref
-                          .read(
-                              receivedInvitationsTabViewModelProvider.notifier)
-                          .acceptInvitation(data.cardId);
-                    },
+                    onTap: () => onAccept(data.cardId),
                     child: Container(
                       padding: EdgeInsets.all(2.r),
                       decoration: BoxDecoration(
@@ -124,12 +121,7 @@ class ReceivedInvitationsCard extends ConsumerWidget {
                   color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
                   child: InkWell(
                     borderRadius: BorderRadius.circular(8.r),
-                    onTap: () {
-                      ref
-                          .read(
-                              receivedInvitationsTabViewModelProvider.notifier)
-                          .ignoreInvitation(data.cardId);
-                    },
+                    onTap: () => onIgnore(data.cardId),
                     child: Container(
                       padding: EdgeInsets.all(2.r),
                       decoration: BoxDecoration(

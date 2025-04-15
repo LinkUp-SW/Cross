@@ -54,24 +54,33 @@ class _GrowTabState extends ConsumerState<GrowTab> {
               title: 'Invitations',
               onTap: () => context.push('/invitations'),
             ),
-            state.isLoading && state.receivedInvitations == null
-                ? ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: 3,
-                    itemBuilder: (context, index) =>
-                        ReceivedInvitationsLoadingSkeleton(),
-                  )
-                : state.receivedInvitations!.isNotEmpty
-                    ? ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: state.receivedInvitations!.length,
-                        itemBuilder: (context, index) {
-                          return ReceivedInvitationsCard(
-                            data: state.receivedInvitations![index],
-                          );
-                        },
-                      )
-                    : SizedBox(),
+            if (state.isLoading && state.receivedInvitations == null)
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: 3,
+                itemBuilder: (context, index) =>
+                    ReceivedInvitationsLoadingSkeleton(),
+              )
+            else if (state.receivedInvitations!.isNotEmpty)
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: state.receivedInvitations!.length,
+                itemBuilder: (context, index) {
+                  return ReceivedInvitationsCard(
+                    data: state.receivedInvitations![index],
+                    onAccept: (userId) {
+                      ref
+                          .read(growTabViewModelProvider.notifier)
+                          .acceptInvitation(userId);
+                    },
+                    onIgnore: (userId) {
+                      ref
+                          .read(growTabViewModelProvider.notifier)
+                          .ignoreInvitation(userId);
+                    },
+                  );
+                },
+              ),
             GrowTabNavigationRow(
               title: 'Manage my network',
               onTap: () => context.push('/manage-network'),

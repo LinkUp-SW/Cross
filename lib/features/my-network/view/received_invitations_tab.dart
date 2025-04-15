@@ -103,6 +103,18 @@ class _ReceivedInvitationsTabState
                         }
                         return ReceivedInvitationsCard(
                           data: state.received![index],
+                          onAccept: (userId) {
+                            ref
+                                .read(receivedInvitationsTabViewModelProvider
+                                    .notifier)
+                                .acceptInvitation(userId);
+                          },
+                          onIgnore: (userId) {
+                            ref
+                                .read(receivedInvitationsTabViewModelProvider
+                                    .notifier)
+                                .ignoreInvitation(userId);
+                          },
                         );
                       },
                     ),
