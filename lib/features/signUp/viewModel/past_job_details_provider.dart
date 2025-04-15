@@ -26,8 +26,8 @@ final companyResultsProvider =
 class PastJobDetailsNotifier extends StateNotifier<PastJobDetailsState> {
   final SignUpNotifier _signUpNotifier;
   final PastJobDetailsService _service;
-  String? selectedCompanyId;
-  String? selectedSchoolId;
+  Map<String, dynamic>? selectedCompanyId;
+  Map<String, dynamic>? selectedSchoolId;
 
   DateTime? selectedDate;
 
@@ -51,12 +51,9 @@ class PastJobDetailsNotifier extends StateNotifier<PastJobDetailsState> {
   Future<void> getcompany(String query, WidgetRef ref) async {
     try {
       final result = await _service.getcompany({"query": query});
-      log('fuck');
       if (result['data'] != null) {
-        log('fuck dakhlet gowa');
         final list = List<Map<String, dynamic>>.from(result['data']);
         ref.read(companyResultsProvider.notifier).state = list;
-        print(ref.read(companyResultsProvider.notifier).state);
       } else {
         ref.read(companyResultsProvider.notifier).state = [];
       }
@@ -65,7 +62,7 @@ class PastJobDetailsNotifier extends StateNotifier<PastJobDetailsState> {
     }
   }
 
-  void saveid(String id, bool amstudent) {
+  void saveid(Map<String, dynamic> id, bool amstudent) {
     if (amstudent) {
       selectedSchoolId = id;
     } else {

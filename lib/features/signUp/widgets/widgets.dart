@@ -149,9 +149,9 @@ class _AutocompleteSearchInputState
                   widget.controller.text = item['name'];
                   controller.closeView(item['name']);
                   if (widget.searchType == SearchType.company) {
-                    functionstouse.saveid(item['_id'], false);
+                    functionstouse.saveid(item, false);
                   } else {
-                    functionstouse.saveid(item['_id'], true);
+                    functionstouse.saveid(item, true);
                   }
                 },
               );
