@@ -5,7 +5,6 @@ import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 
 class ManageMyNetworkScreenNavigationRow extends ConsumerWidget {
-  final bool isDarkMode;
   final IconData icon;
   final String title;
   final int? count;
@@ -14,7 +13,6 @@ class ManageMyNetworkScreenNavigationRow extends ConsumerWidget {
 
   const ManageMyNetworkScreenNavigationRow({
     super.key,
-    required this.isDarkMode,
     required this.icon,
     required this.title,
     this.count = 0,
@@ -24,6 +22,7 @@ class ManageMyNetworkScreenNavigationRow extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Material(
       color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
       child: InkWell(

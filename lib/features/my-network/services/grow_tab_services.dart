@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:link_up/core/services/base_service.dart';
 import 'package:link_up/core/constants/endpoints.dart';
+import 'package:link_up/core/services/base_service.dart';
 
-class ReceivedInvitationsTabServices {
+class GrowTabServices {
   final BaseService _baseService;
 
-  const ReceivedInvitationsTabServices(this._baseService);
+  const GrowTabServices(this._baseService);
 
   Future<Map<String, dynamic>> getReceivedInvitations({
     Map<String, dynamic>? queryParameters,
@@ -56,10 +56,9 @@ class ReceivedInvitationsTabServices {
   }
 }
 
-final receivedInvitationsTabServicesProvider =
-    Provider<ReceivedInvitationsTabServices>(
+final growTabServicesProvider = Provider<GrowTabServices>(
   (ref) {
-    return ReceivedInvitationsTabServices(
+    return GrowTabServices(
       ref.read(baseServiceProvider),
     );
   },
