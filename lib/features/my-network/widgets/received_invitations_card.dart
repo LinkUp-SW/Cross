@@ -5,6 +5,7 @@ import 'package:link_up/features/my-network/model/invitations_screen_model.dart'
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/shared/utils/my_network_utils.dart';
+import 'package:link_up/shared/widgets/custom_snackbar.dart';
 
 class ReceivedInvitationsCard extends ConsumerWidget {
   final InvitationsCardModel data;
@@ -93,7 +94,13 @@ class ReceivedInvitationsCard extends ConsumerWidget {
                   color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
                   child: InkWell(
                     borderRadius: BorderRadius.circular(8.r),
-                    onTap: () => onAccept(data.cardId),
+                    onTap: () {
+                      onAccept(data.cardId);
+                      openSnackbar(
+                        child: Text(
+                            'You have successfuly accepted ${data.firstName} ${data.lastName} connection invitation'),
+                      );
+                    },
                     child: Container(
                       padding: EdgeInsets.all(2.r),
                       decoration: BoxDecoration(
@@ -121,7 +128,13 @@ class ReceivedInvitationsCard extends ConsumerWidget {
                   color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
                   child: InkWell(
                     borderRadius: BorderRadius.circular(8.r),
-                    onTap: () => onIgnore(data.cardId),
+                    onTap: () {
+                      onIgnore(data.cardId);
+                      openSnackbar(
+                        child: Text(
+                            'You have ignored ${data.firstName} ${data.lastName} connection invitation'),
+                      );
+                    },
                     child: Container(
                       padding: EdgeInsets.all(2.r),
                       decoration: BoxDecoration(
