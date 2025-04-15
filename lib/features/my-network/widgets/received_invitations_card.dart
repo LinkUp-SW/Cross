@@ -97,8 +97,27 @@ class ReceivedInvitationsCard extends ConsumerWidget {
                     onTap: () {
                       onAccept(data.cardId);
                       openSnackbar(
-                        child: Text(
-                            'You have successfuly accepted ${data.firstName} ${data.lastName} connection invitation'),
+                        child: Row(
+                          spacing: 10.w,
+                          children: [
+                            Icon(
+                              Icons.add_box_outlined,
+                              size: 25.w,
+                            ),
+                            Flexible(
+                              child: Text(
+                                'You have successfuly accepted ${data.firstName} ${data.lastName} connection invitation',
+                                style: TextStyles.font14_600Weight.copyWith(
+                                  color: isDarkMode
+                                      ? AppColors.darkSecondaryText
+                                      : AppColors.lightTextColor,
+                                ),
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
                       );
                     },
                     child: Container(
@@ -131,8 +150,27 @@ class ReceivedInvitationsCard extends ConsumerWidget {
                     onTap: () {
                       onIgnore(data.cardId);
                       openSnackbar(
-                        child: Text(
-                            'You have ignored ${data.firstName} ${data.lastName} connection invitation'),
+                        child: Row(
+                          spacing: 10.w,
+                          children: [
+                            Icon(
+                              Icons.block_outlined,
+                              size: 25.w,
+                            ),
+                            Flexible(
+                              child: Text(
+                                'You have ignored ${data.firstName} ${data.lastName} connection invitation',
+                                style: TextStyles.font14_600Weight.copyWith(
+                                  color: isDarkMode
+                                      ? AppColors.darkSecondaryText
+                                      : AppColors.lightTextColor,
+                                ),
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
                       );
                     },
                     child: Container(
