@@ -31,8 +31,12 @@ migrate_working_dir/
 .pub/
 /build/
 
-/ios
-android
+
+/android/.gradle/
+/android/gradle/
+/android/local.properties
+
+.metadata
 
 # Symbolication related
 app.*.symbols
@@ -45,3 +49,6 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 /android/app/.cxx
+/android/app/src/main/java/
+/android/app/src/main/res/
+/android/app/src/main/kotlin/

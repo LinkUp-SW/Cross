@@ -4,18 +4,18 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/my-network/view/received_invitations_tab.dart';
 import 'package:link_up/features/my-network/view/sent_invitations_tab.dart';
+import 'package:link_up/features/my-network/viewModel/grow_tab_view_model.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 
 class InvitationsScreen extends ConsumerWidget {
-  final bool isDarkMode;
   const InvitationsScreen({
     super.key,
-    required this.isDarkMode,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -61,7 +61,12 @@ class InvitationsScreen extends ConsumerWidget {
                   ? AppColors.darkSecondaryText
                   : AppColors.lightSecondaryText,
             ),
-            onPressed: () => context.pop(),
+            onPressed: () {
+              ref
+                  .read(growTabViewModelProvider.notifier)
+                  .getReceivedInvitations();
+              context.pop();
+            },
           ),
           actions: [
             IconButton(
@@ -76,8 +81,8 @@ class InvitationsScreen extends ConsumerWidget {
         ),
         body: TabBarView(
           children: [
-            ReceivedInvitationsTab(isDarkMode: isDarkMode),
-            SentInvitationsTab(isDarkMode: isDarkMode),
+            ReceivedInvitationsTab(),
+            SentInvitationsTab(),
           ],
         ),
       ),

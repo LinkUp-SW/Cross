@@ -14,7 +14,10 @@ class ReceivedInvitationsTabViewModel
   Future<void> getReceivedInvitations(
       {Map<String, dynamic>? queryParameters}) async {
     try {
-      state = state.copyWith(isLoading: true, error: false);
+      state = state.copyWith(
+        isLoading: true,
+        error: false,
+      );
       final response = await ref
           .read(receivedInvitationsTabServicesProvider)
           .getReceivedInvitations(
@@ -26,7 +29,10 @@ class ReceivedInvitationsTabViewModel
           (response['receivedConnections'] as List)
               .map((invitation) => InvitationsCardModel.fromJson(invitation))
               .toList();
-      state = state.copyWith(isLoading: false, received: receivedInvitations);
+      state = state.copyWith(
+        isLoading: false,
+        received: receivedInvitations,
+      );
     } catch (e) {
       state = state.copyWith(isLoading: false, error: true);
     }
