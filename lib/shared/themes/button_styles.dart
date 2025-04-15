@@ -3,9 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 
-
 // Need to be revised but for the outlined and text buttons
-
 
 class LinkUpButtonStyles {
   ElevatedButtonThemeData lightElevatedButtonTheme() {
@@ -43,8 +41,6 @@ class LinkUpButtonStyles {
       style: darkTextButtonStyle(),
     );
   }
-
-
 
   ButtonStyle lightTextButtonStyle({
     double elevation = 0.0,
@@ -107,7 +103,6 @@ class LinkUpButtonStyles {
       textStyle: textStyle,
     );
   }
-
 
   ButtonStyle profileOpenToDark({
     double elevation = 0.0,
@@ -188,6 +183,7 @@ class LinkUpButtonStyles {
       textStyle: textStyle,
     );
   }
+
   // Profile buttons
   // Light Theme Button Styles
   ButtonStyle wideBlueElevatedButton() {
@@ -216,7 +212,7 @@ class LinkUpButtonStyles {
         borderRadius: BorderRadius.circular(24.r),
       ),
       side: BorderSide(color: AppColors.lightBlue, width: 1.2.r),
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
     );
   }
 
@@ -247,10 +243,63 @@ class LinkUpButtonStyles {
         borderRadius: BorderRadius.circular(24.r),
       ),
       side: BorderSide(color: AppColors.darkBlue, width: 1.2.r),
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+    );
+  }
+
+  ButtonStyle jobsPreferencesLight({
+    double elevation = 0.0,
+    EdgeInsets? padding,
+    BorderRadius? borderRadius,
+    TextStyle? textStyle,
+  }) {
+    padding ??= EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h);
+    borderRadius ??= BorderRadius.all(Radius.circular(20.r));
+    textStyle ??= TextStyles.font13_700Weight;
+
+    return ButtonStyle(
+      // foregroundColor: WidgetStateProperty.all(AppColors.lightMain),
+      backgroundColor: WidgetStateProperty.all(AppColors.lightMain),
+      elevation: WidgetStateProperty.all(elevation),
+      padding: WidgetStateProperty.all(padding),
+      shape: WidgetStateProperty.all(
+        RoundedRectangleBorder(
+          borderRadius: borderRadius,
+          side: BorderSide(
+            color: AppColors.lightGrey,
+            width: 0.5.w,
+          ),
+        ),
+      ),
+      textStyle: WidgetStateProperty.all(textStyle),
+    );
+  }
+
+  ButtonStyle jobsPreferencesDark({
+    double elevation = 0.0,
+    EdgeInsets? padding,
+    BorderRadius? borderRadius,
+    TextStyle? textStyle,
+  }) {
+    padding ??= EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h);
+    borderRadius ??= BorderRadius.all(Radius.circular(20.r));
+    textStyle ??= TextStyles.font13_700Weight;
+
+    return ButtonStyle(
+      // foregroundColor: WidgetStateProperty.all(AppColors.lightMain),
+      backgroundColor: WidgetStateProperty.all(AppColors.darkMain),
+      elevation: WidgetStateProperty.all(elevation),
+      padding: WidgetStateProperty.all(padding),
+      shape: WidgetStateProperty.all(
+        RoundedRectangleBorder(
+          borderRadius: borderRadius,
+          side: BorderSide(
+            color: AppColors.darkGrey,
+            width: 0.5.w,
+          ),
+        ),
+      ),
+      textStyle: WidgetStateProperty.all(textStyle),
     );
   }
 }
-
-// The rest of buttons styles should be exist here
-

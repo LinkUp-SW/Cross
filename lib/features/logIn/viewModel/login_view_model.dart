@@ -1,10 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/core/constants/endpoints.dart';
+import 'package:link_up/core/services/base_service.dart';
 import 'package:link_up/core/services/storage.dart';
 import 'package:link_up/features/logIn/model/login_model.dart';
 import 'package:link_up/features/logIn/services/login_service.dart';
 import 'package:link_up/features/logIn/state/login_state.dart';
-import 'package:link_up/features/logIn/viewModel/user_data_vm.dart';
 
 final logInServiceProvider = Provider((ref) => LogInService());
 
@@ -29,8 +31,8 @@ class LogInNotifier extends StateNotifier<LogInState> {
       if (success.isNotEmpty) {
         InternalEndPoints.email = email;
         InternalEndPoints.userId = success['user']['id'];
-        ref.read(userDataProvider.notifier).setUserId(success['user']['id']);
-        await ref.read(userDataProvider.notifier).getProfileUrl();
+        InternalEndPoints.profileUrl = await getProfileUrl(InternalEndPoints.userId); 
+
         state = const LogInSuccessState();
       }
     } catch (e) {
@@ -38,6 +40,18 @@ class LogInNotifier extends StateNotifier<LogInState> {
           'There was an error logging in. Please try again.');
     }
   }
+
+  Future<String> getProfileUrl(String userId) async {
+          final BaseService baseService = BaseService();
+          final response = await baseService.get(
+              '/profile/profile-picture/:user_id',
+              routeParameters: {'user_id': userId});
+          if (response.statusCode == 200) {
+            return jsonDecode(response.body)['profilePicture'];
+          } else {
+            return 'https://i.pravatar.cc/300?img=52';
+          }
+        }
 
   Future<void> checkStoredCredentials(WidgetRef ref) async {
     // Check if email and password are stored in secure storage

@@ -73,15 +73,16 @@ class _PostPageState extends ConsumerState<PostPage> {
           IconButton(
             icon: const Icon(Icons.more_horiz),
             onPressed: () {
-              aboutPostBottomSheet(context, isAd: widget.isAd);
+              aboutPostBottomSheet(context, isAd: widget.isAd, post: post);
             },
           )
         ],
       ),
       bottomNavigationBar: CommentsTextField(
-          focusNode: _focusNode,
-          focused: widget.focused,
-          buttonName: 'Comment',),
+        focusNode: _focusNode,
+        focused: widget.focused,
+        buttonName: 'Comment',
+      ),
       body: Padding(
         padding: EdgeInsets.only(top: 8.h),
         child: Container(

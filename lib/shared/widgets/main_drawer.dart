@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:link_up/core/constants/endpoints.dart';
 import 'package:link_up/core/services/storage.dart';
-import 'package:link_up/features/logIn/viewModel/user_data_vm.dart';
 import 'package:link_up/shared/themes/colors.dart';
 
 class MainDrawer extends ConsumerWidget {
@@ -15,7 +15,6 @@ class MainDrawer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userData = ref.watch(userDataProvider);
     return Drawer(
       backgroundColor: Theme.of(context).colorScheme.primary,
       child: Padding(
@@ -27,6 +26,7 @@ class MainDrawer extends ConsumerWidget {
               children: [
                 GestureDetector(
                   onTap: () {
+                    context.pop();
                     context.push('/profile');
                     log('Profile tapped');
                   },
@@ -40,7 +40,7 @@ class MainDrawer extends ConsumerWidget {
                         children: [
                           CircleAvatar(
                             radius: 30.r,
-                            backgroundImage: NetworkImage(userData.profileUrl),
+                            backgroundImage: NetworkImage(InternalEndPoints.profileUrl),
                           ),
                           SizedBox(
                             height: 5.h,
@@ -63,6 +63,7 @@ class MainDrawer extends ConsumerWidget {
                 ListTile(
                   title: const Text('X profile viewers'),
                   onTap: () {
+                    context.pop();
                     context.push('/profileViews');
                   },
                 ),

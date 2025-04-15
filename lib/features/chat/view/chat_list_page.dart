@@ -10,22 +10,23 @@ class ChatListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
     final chats = ref.watch(chatViewModelProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F2F2), // Default LinkedIn-like background
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: theme.appBarTheme.backgroundColor ?? theme.colorScheme.primary,
         elevation: 1,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: theme.iconTheme.color),
           onPressed: () {
-            context.go('/');
+            context.pop();
           },
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.message, color: Colors.black),
+            icon: Icon(Icons.message, color: theme.iconTheme.color),
             onPressed: () {
               // Add new message feature later
             },
@@ -33,24 +34,24 @@ class ChatListScreen extends ConsumerWidget {
         ],
       ),
       body: chats.isEmpty
-          ? const Center(
+          ? Center(
               child: CircularProgressIndicator(
-                color: Color.fromRGBO(16, 131, 224, 0.925),
+                color: theme.colorScheme.primary,
               ),
             )
           : ListView.separated(
               padding: const EdgeInsets.only(top: 8),
               itemCount: chats.length,
-              separatorBuilder: (context, index) => const Divider(
+              separatorBuilder: (context, index) => Divider(
                 height: 1,
                 thickness: 0.6,
-                color: Colors.grey,
+                color: theme.dividerColor,
                 indent: 16,
                 endIndent: 16,
               ),
               itemBuilder: (context, index) {
                 return Container(
-                  color: Colors.white, // Chat tile background white
+                  color: theme.cardColor,
                   padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
                   child: ChatTile(
                     chat: chats[index],
@@ -77,14 +78,23 @@ class ChatListScreen extends ConsumerWidget {
   }
 
   void _showReadUnreadOption(BuildContext context, WidgetRef ref, int index, bool isUnread) {
+    final theme = Theme.of(context);
+
     showModalBottomSheet(
       context: context,
+      backgroundColor: theme.cardColor,
       builder: (_) {
         return Wrap(
           children: [
             ListTile(
-              leading: Icon(isUnread ? Icons.mark_chat_read : Icons.mark_chat_unread),
-              title: Text(isUnread ? "Mark as Read" : "Mark as Unread"),
+              leading: Icon(
+                isUnread ? Icons.mark_chat_read : Icons.mark_chat_unread,
+                color: theme.iconTheme.color,
+              ),
+              title: Text(
+                isUnread ? "Mark as Read" : "Mark as Unread",
+                style: theme.textTheme.bodyMedium,
+              ),
               onTap: () {
                 ref.read(chatViewModelProvider.notifier).markReadUnread(index);
                 Navigator.pop(context);
@@ -97,24 +107,38 @@ class ChatListScreen extends ConsumerWidget {
   }
 
   void _showChatOptions(BuildContext context, WidgetRef ref, int index) {
+    final chat = ref.read(chatViewModelProvider)[index];
+    final theme = Theme.of(context);
+
     showModalBottomSheet(
       context: context,
+      backgroundColor: theme.cardColor,
       builder: (_) {
         return Wrap(
           children: [
             ListTile(
-              leading: const Icon(Icons.delete),
-              title: const Text("Delete Chat"),
+              leading: Icon(Icons.delete, color: theme.iconTheme.color),
+              title: Text("Delete Chat", style: theme.textTheme.bodyMedium),
               onTap: () {
                 ref.read(chatViewModelProvider.notifier).deleteChat(index);
                 Navigator.pop(context);
               },
             ),
             ListTile(
-              leading: const Icon(Icons.block),
-              title: const Text("Block this Person"),
+              leading: Icon(
+                chat.isBlocked ? Icons.lock_open : Icons.block,
+                color: theme.iconTheme.color,
+              ),
+              title: Text(
+                chat.isBlocked ? "Unblock this Person" : "Block this Person",
+                style: theme.textTheme.bodyMedium,
+              ),
               onTap: () {
-                ref.read(chatViewModelProvider.notifier).blockUser(index);
+                if (chat.isBlocked) {
+                  ref.read(chatViewModelProvider.notifier).unblockUser(index);
+                } else {
+                  ref.read(chatViewModelProvider.notifier).blockUser(index);
+                }
                 Navigator.pop(context);
               },
             ),

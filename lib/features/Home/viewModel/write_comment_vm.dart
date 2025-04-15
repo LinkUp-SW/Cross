@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -139,30 +138,8 @@ class WriteCommentProvider extends StateNotifier<WriteCommentVm> {
   Future<String> createComment() async {
     final BaseService service = BaseService();
 
-    final mediaContent = <dynamic>[];
-
-    if (state.media.type == MediaType.image) {
-      // For images or other files
-      if (state.media.file[0] != null) {
-        final path = state.media.file[0]!.path;
-        final bytes = await File(path).readAsBytes();
-
-        // Determine MIME type from file extension
-        String mimeType = '';
-        if (path.toLowerCase().endsWith('.jpg') ||
-            path.toLowerCase().endsWith('.jpeg')) {
-          mimeType = 'image/jpeg';
-        } else if (path.toLowerCase().endsWith('.png')) {
-          mimeType = 'image/png';
-        } else if (path.toLowerCase().endsWith('.gif')) {
-          mimeType = 'image/gif';
-        }
-
-        final uriData = UriData.fromBytes(bytes, mimeType: mimeType);
-        mediaContent.add(uriData.toString());
-      }
-    }
-
+    final mediaContent = state.media.setToUpload();
+    //TODO: change to create comment
     final response = await service.post('api/v1/post/create-post', body: {
       "content": state.controller.text,
       "mediaType": state.media.type.name,
