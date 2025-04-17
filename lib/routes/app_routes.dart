@@ -155,7 +155,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               routes: <GoRoute>[
                 GoRoute(
                   path: "/post",
-                  redirect: (context, state) => "/writePost",
+                  redirect: (context, state) => context.push("/writePost"),
                 ),
               ],
             ),
