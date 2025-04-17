@@ -35,6 +35,7 @@ migrate_working_dir/
 /android/.gradle/
 /android/gradle/
 /android/local.properties
+andriod
 
 .metadata
 

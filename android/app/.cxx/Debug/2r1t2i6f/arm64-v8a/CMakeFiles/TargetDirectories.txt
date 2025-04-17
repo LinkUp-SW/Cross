@@ -1,2 +1,0 @@
-D:/jobsss/Cross/android/app/.cxx/Debug/2r1t2i6f/arm64-v8a/CMakeFiles/edit_cache.dir
-D:/jobsss/Cross/android/app/.cxx/Debug/2r1t2i6f/arm64-v8a/CMakeFiles/rebuild_cache.dir
