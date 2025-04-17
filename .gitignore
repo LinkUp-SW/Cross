@@ -31,17 +31,7 @@ migrate_working_dir/
 .pub/
 /build/
 
-
-/android/app/
-/android/gradle/
-/android/.gitignore
-/android/build.gradle.kts
-/android/local.properties
-/android/gradle-wrapper.jar
-/android/gradle-wrapper.properties
-/android/gradle.properties
-/android/app/build.gradle
-/android/settings.gradle.kts
+/android/
 
 .metadata
 
