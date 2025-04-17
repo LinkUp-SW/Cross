@@ -32,10 +32,16 @@ migrate_working_dir/
 /build/
 
 
-/android/.gradle/
+/android/app/
 /android/gradle/
+/android/.gitignore
+/android/build.gradle.kts
 /android/local.properties
-andriod
+/android/gradle-wrapper.jar
+/android/gradle-wrapper.properties
+/android/gradle.properties
+/android/app/build.gradle
+/android/settings.gradle.kts
 
 .metadata
 
