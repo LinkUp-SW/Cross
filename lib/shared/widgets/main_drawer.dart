@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/core/constants/endpoints.dart';
-import 'package:link_up/core/services/storage.dart';
 import 'package:link_up/shared/themes/colors.dart';
 
 class MainDrawer extends ConsumerWidget {
@@ -104,15 +103,10 @@ class MainDrawer extends ConsumerWidget {
                   },
                 ),
                 ListTile(
+                  leading: const Icon(Icons.settings),
                   title: const Text('Settings'),
                   onTap: () {
                     context.push('/settings');
-                  },
-                ),
-                ListTile(
-                  title: const Text('Logout'),
-                  onTap: () {
-                    logout(context);
                   },
                 ),
               ],
