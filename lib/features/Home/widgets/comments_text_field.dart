@@ -11,13 +11,11 @@ import 'package:link_up/shared/themes/colors.dart';
 
 class CommentsTextField extends ConsumerStatefulWidget {
   final FocusNode focusNode;
-  final bool focused;
   final String buttonName;
   final bool showSuggestions;
   const CommentsTextField(
       {super.key,
       required this.focusNode,
-      required this.focused,
       required this.buttonName,
       this.showSuggestions = true});
 
@@ -32,7 +30,6 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
   @override
   void initState() {
     super.initState();
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(writeCommentProvider.notifier).setController(
         (showTags) {
