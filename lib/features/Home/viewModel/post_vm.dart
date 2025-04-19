@@ -1,4 +1,8 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:link_up/core/services/base_service.dart';
 import 'package:link_up/features/Home/home_enums.dart';
 import 'package:link_up/features/Home/model/header_model.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
@@ -15,10 +19,22 @@ class PostNotifier extends StateNotifier<PostModel> {
     return state.id;
   }
 
-  void fetchPost(String id) {
-    Future.delayed(const Duration(seconds: 2), () {
-      state = PostModel.initial();
+  Future<void> getPost(String id) async {
+    log('getPost called with id: $id');
+    final BaseService service = BaseService();
+    return await service.get('api/v1/post/posts/:postId',routeParameters: {"postId": id}).then((value) {
+      log(value.body);
+      final data = jsonDecode(value.body);
+      state = PostModel.fromJson(data['post']);
+    }).catchError((error) {
+      log('$error');
+      throw Exception(error);
+      
+    }).timeout(const Duration(seconds: 5), onTimeout: () {
+      log('timeout');
+      throw Exception('Request timed out');
     });
+    
   }
 
   Future<Map<String, List<ReactionTileModel>>> fetchReactions() {

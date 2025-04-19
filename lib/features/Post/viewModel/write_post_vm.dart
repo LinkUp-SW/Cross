@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -191,7 +192,7 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
 
     final mediaContent = await state.media.setToUpload();
 
-    final response = await service.put('api/v1/post/edit-post', {
+    final response = await service.put('api/v1/post/posts', {
       "postId": state.postId,
       "content": state.controller.text,
       "mediaType": state.media.type.name,
@@ -205,7 +206,8 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
     log('Response: ${response.statusCode} - ${response.body}');
     if (response.statusCode == 200) {
       log('Post edited successfully: ${response.body}');
-      return 'edited';
+      final body = jsonDecode(response.body);
+      return body['postId'];
     } else {
       log('Failed to edit post');
       return 'error';
@@ -217,7 +219,7 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
 
     final mediaContent = await state.media.setToUpload();
 
-    final response = await service.post('api/v1/post/create-post', body: {
+    final response = await service.post('api/v1/post/posts', body: {
       "content": state.controller.text,
       "mediaType": state.media.type.name,
       "media": mediaContent,
@@ -231,7 +233,8 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
     log('Response: ${response.statusCode} - ${response.body}');
     if (response.statusCode == 200) {
       log('Post created successfully: ${response.body}');
-      return 'created';
+      final body = jsonDecode(response.body);
+      return body['postId'];
       //return jsonDecode(response.body)['postId'];
     } else {
       log('Failed to create post');

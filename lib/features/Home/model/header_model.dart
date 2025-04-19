@@ -24,15 +24,15 @@ class HeaderModel {
   });
 
   HeaderModel.fromJson(Map<String, dynamic> json)
-      : profileImage = json['profileImage'],
-        userId = json['userId'],
-        name = json['name'],
-        connectionDegree = json['connectionDegree'],
-        about = json['about'],
-        timeAgo = DateTime.parse(json['timeAgo']),
+      : profileImage = json['author']['profilePicture'],
+        userId = json['user_id'],
+        name = json['author']['username'],
+        connectionDegree = json['author']['connectionDegree'],
+        about = json['author']['headline'],
+        timeAgo = DateTime.parse(json['date']),
         edited = json['edited'] ?? false,
-        visibilityComments = Visibilities.getVisibility(json['visibilityComment'] ?? 'anyone'),
-        visibilityPost = Visibilities.getVisibility(json['visibilityPost'] ?? 'anyone');
+        visibilityComments = Visibilities.getVisibility(json['comments_disabled'] ?? 'anyone'),
+        visibilityPost = Visibilities.getVisibility(json['public_post'] == false ? 'anyone': 'connectionsOnly');
 
   Map<String, dynamic> toJson() => {
         'profileImage': profileImage,

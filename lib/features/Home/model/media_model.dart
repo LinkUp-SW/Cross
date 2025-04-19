@@ -25,8 +25,8 @@ class Media {
       this.isLocal = false});
 
   Media.fromJson(Map<String, dynamic> json)
-      : type = MediaType.getMediaType(json['type']),
-        urls = List<String>.from(json['urls']),
+      : type = MediaType.getMediaType(json['media_type']),
+        urls = List<String>.from(json['link'] ?? []),
         files = [];
 
   Map<String, dynamic> toJson() => {
