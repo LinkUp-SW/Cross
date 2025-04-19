@@ -1,8 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/core/constants/endpoints.dart';
+import 'package:link_up/core/services/base_service.dart';
 import 'package:link_up/core/services/storage.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/theme_provider.dart';
@@ -203,8 +206,15 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 child: const Text('Cancel'),
                               ),
                               TextButton(
-                                  onPressed: () {
-                                    //TODO: implement delete account functionality
+                                  onPressed: () async {
+                                    final BaseService baseService =
+                                        BaseService();
+                                    final response = await baseService.delete(
+                                        'api/v1/user/delete-account', null);
+                                    log(response.body.toString());
+                                    if (context.mounted && response.statusCode == 200) {
+                                      logout(context);
+                                    }
                                   },
                                   child: const Text(
                                     'Delete',
