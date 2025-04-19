@@ -74,7 +74,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     );
                 messageController.clear();
 
-                // Scroll to the bottom after sending a message
+                
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   _scrollToBottom();
                 });
