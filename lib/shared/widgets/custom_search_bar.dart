@@ -1,8 +1,12 @@
+
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/search/viewModel/search_vm.dart';
+import 'package:link_up/features/search/viewModel/suggestions_vm.dart';
 
 class CustomSearchBar extends ConsumerStatefulWidget {
   const CustomSearchBar({
@@ -16,11 +20,21 @@ class CustomSearchBar extends ConsumerStatefulWidget {
 }
 
 class _CustomSearchBarState extends ConsumerState<CustomSearchBar> {
+
   @override
   Widget build(BuildContext context) {
     final searchController = ref.watch(searchProvider).searchController;
+    final suggestions = ref.watch(suggestionsProvider);
     return SearchAnchor.bar(
       searchController: searchController,
+      onChanged: (value) async {
+        await ref.read(suggestionsProvider.notifier).getSuggestions(value);
+        setState(() {
+          searchController.text += ' ';
+          searchController.text = value;
+        });
+        log(suggestions.toString());
+      },
       onSubmitted: (value) {
         ref.read(searchProvider.notifier).setSearchText(value);
         ref.read(searchProvider.notifier).search();
@@ -30,6 +44,7 @@ class _CustomSearchBarState extends ConsumerState<CustomSearchBar> {
           context.pop();
         }
         searchController.clear();
+        ref.read(suggestionsProvider.notifier).clearSuggestions();
       },
       suggestionsBuilder:
           (BuildContext context, SearchController searchController) {
@@ -50,11 +65,9 @@ class _CustomSearchBarState extends ConsumerState<CustomSearchBar> {
           ),
           ListView.builder(
             shrinkWrap: true,
-            itemCount: 10,
+            itemCount: suggestions.length,
             itemBuilder: (BuildContext context, index) {
-              return ListTile(
-                title: Text('Item $index'),
-              );
+              return suggestions[index].buildSuggestion();
             },
           ),
         ];
@@ -73,6 +86,7 @@ class _CustomSearchBarState extends ConsumerState<CustomSearchBar> {
             ref
                 .read(searchProvider.notifier)
                 .setSearchController(SearchController());
+            ref.read(suggestionsProvider.notifier).clearSuggestions();
             context.pop();
           },
           icon: const Icon(Icons.arrow_back)),
