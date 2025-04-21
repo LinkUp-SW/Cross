@@ -7,14 +7,14 @@ class NotificationState {
   final String? errorMessage;
 
   NotificationState({
-    this.selectedFilter = NotificationFilter.all,
+    this.selectedFilter = NotificationFilter.All,
     this.notifications = const [],
     this.isLoading = false,
     this.errorMessage,
   });
 
   List<NotificationModel> get filteredNotifications {
-    if (selectedFilter == NotificationFilter.all) {
+    if (selectedFilter == NotificationFilter.All) {
       return notifications;
     }
     //  Filter notifications based on type

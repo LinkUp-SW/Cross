@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../model/notification_model.dart';
 
 class NotificationTile extends StatelessWidget {
@@ -41,7 +42,17 @@ class NotificationTile extends StatelessWidget {
         ),
         subtitle: Text(notification.time,
             style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.6))),
-        onTap: onTap, // Trigger read state change when tapped
+        onTap: () {
+  onTap(); // This calls the original onTap callback
+  
+  // Navigation logic based on notification type
+  if (notification.type == NotificationFilter.Posts && notification.postId != null) {
+    context.push('/testpost', extra: notification.postId);
+    
+  } else if (notification.type == NotificationFilter.Connections && notification.userId != null) {
+    context.push('/testprofile', extra: notification.userId);
+  }
+} // Trigger read state change when tapped
       ),
     );
   }
