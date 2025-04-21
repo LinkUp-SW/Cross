@@ -8,15 +8,14 @@ import 'package:link_up/shared/themes/text_styles.dart';
 
 class PeopleCard extends ConsumerWidget {
   final GrowTabPeopleCardsModel data;
-  final bool isDarkMode;
   const PeopleCard({
     super.key,
     required this.data,
-    required this.isDarkMode,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Card(
       shadowColor: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
       elevation: 3.0.r,

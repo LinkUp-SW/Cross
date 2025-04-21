@@ -168,7 +168,7 @@ class _PostsState extends ConsumerState<Posts> {
                     });
                   },
                   child: SizedBox(
-                    width: 55.w,
+                    width: 60.w,
                     child: Column(
                       children: [
                         Reaction.getIcon(widget.post.reaction, 20.r),

@@ -25,6 +25,7 @@ class MyApp extends ConsumerWidget {
           designSize: const Size(360, 690),
           minTextAdapt: true,
           builder: (context, child) {
+            ref.read(themeNotifierProvider.notifier).setInitialTheme();
             final goRouter = ref.watch(goRouterProvider);
             final theme = ref.watch(themeNotifierProvider);
             return GestureDetector(

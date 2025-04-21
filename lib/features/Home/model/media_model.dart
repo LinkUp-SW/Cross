@@ -59,7 +59,7 @@ class Media {
       case MediaType.images:
         return CarouselImages(images: isLocal ? files: urls, network: !isLocal);
       case MediaType.video:
-        return VideoPlayerHome(videoUrl: isLocal ? files[0] : urls[0], network: !isLocal);
+        return VideoPlayerHome(videoUrl: !isLocal ? urls[0] : null, file: isLocal ? files[0] : null , network: !isLocal);
       case MediaType.pdf:
         return PDFViewer(url: isLocal ? files[0] : urls[0], network: !isLocal);
       case MediaType.link:

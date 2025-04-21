@@ -38,4 +38,12 @@ class AppColors {
   static const Color darkGrey = Color(0xffa0a0a0);
   static const Color darkTextColor = Color(0xffc6c7c8);
   static const Color darkSecondaryText = Color(0xffffffff);
+
+  static var darkDivider;
+
+  static var lightDivider;
+
+  static var darkSurface;
+
+  static var lightSurface;
 }

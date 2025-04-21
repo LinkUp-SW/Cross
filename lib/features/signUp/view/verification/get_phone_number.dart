@@ -44,7 +44,7 @@ class _GetPhoneNumberState extends ConsumerState<GetPhoneNumber> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                "Just a quick Security Check",
+                "Just a quick Step",
                 style: TextStyle(
                   fontSize: 25,
                 ),
@@ -54,7 +54,7 @@ class _GetPhoneNumberState extends ConsumerState<GetPhoneNumber> {
                 height: 10,
               ),
               const Text(
-                'As an extra security step, we need to verify your phone number',
+                'we need your phone number to make it easy for opportunities to find you',
                 style: TextStyle(fontSize: 15),
                 textAlign: TextAlign.center,
               ),

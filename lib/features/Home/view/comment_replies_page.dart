@@ -75,7 +75,6 @@ class _CommentRepliesPageState extends ConsumerState<CommentRepliesPage> {
       ),
       bottomNavigationBar: CommentsTextField(
         focusNode: _focusNode,
-        focused: widget.focused,
         showSuggestions: false,
         buttonName: 'Reply',
       ),

@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:link_up/core/constants/endpoints.dart';
 import 'package:link_up/core/utils/global_keys.dart';
 import 'package:link_up/features/Home/home_enums.dart';
 import 'package:link_up/features/Home/model/media_model.dart';
@@ -14,7 +15,6 @@ import 'package:link_up/features/Home/viewModel/post_vm.dart';
 import 'package:link_up/features/Post/viewModel/write_post_vm.dart';
 import 'package:link_up/features/Post/widgets/bottom_sheet.dart';
 import 'package:link_up/features/Post/widgets/formatted_input.dart';
-import 'package:link_up/features/logIn/viewModel/user_data_vm.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/widgets/custom_snackbar.dart';
 
@@ -116,7 +116,6 @@ class _WritePostState extends ConsumerState<WritePost> {
   @override
   Widget build(BuildContext context) {
     final postData = ref.watch(writePostProvider);
-    final userData = ref.read(userDataProvider);
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primary,
       appBar: AppBar(
@@ -182,7 +181,7 @@ class _WritePostState extends ConsumerState<WritePost> {
           children: [
             CircleAvatar(
               radius: 20.r,
-              backgroundImage: NetworkImage(userData.profileUrl),
+              backgroundImage: NetworkImage(InternalEndPoints.profileUrl),
             ),
             SizedBox(
               width: 10.w,

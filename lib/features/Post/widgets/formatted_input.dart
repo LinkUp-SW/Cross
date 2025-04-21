@@ -34,7 +34,6 @@ class FormattedInput extends StatelessWidget {
           isDense: true,
           isCollapsed: true,
         ),
-        autofocus: true,
         cursorColor: Theme.of(context).colorScheme.secondary,
         textCapitalization: TextCapitalization.none,
       ),

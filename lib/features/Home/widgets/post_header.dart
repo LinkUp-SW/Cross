@@ -3,12 +3,12 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:link_up/core/constants/endpoints.dart';
 import 'package:link_up/features/Home/home_enums.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
 import 'package:link_up/features/Home/post_functions.dart';
 import 'package:link_up/features/Home/viewModel/posts_vm.dart';
 import 'package:link_up/features/Home/widgets/bottom_sheets.dart';
-import 'package:link_up/features/logIn/viewModel/user_data_vm.dart';
 import 'package:link_up/shared/themes/colors.dart';
 
 class PostHeader extends ConsumerStatefulWidget {
@@ -27,7 +27,6 @@ class _PostHeaderState extends ConsumerState<PostHeader> {
   
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(userDataProvider);
     return GestureDetector(
       onTap: () {
         //TDOO: navigate to user profile page
@@ -112,7 +111,7 @@ class _PostHeaderState extends ConsumerState<PostHeader> {
           ),
           Flexible(
             flex: 1,
-            child: widget.post.header.userId != user.userId && _isConnected
+            child: widget.post.header.userId != InternalEndPoints.userId && _isConnected
                 ? _showFollow
                     ? TextButton(
                         onPressed: () {
