@@ -9,6 +9,7 @@ class ChatMessageBubble extends StatelessWidget {
   final String currentUserName;
   final String? currentUserProfilePicUrl;
   final String? chatProfilePicUrl;
+  final bool isLastMessage; // Flag to determine if this is the last message sent by the current user
 
   const ChatMessageBubble({
     Key? key,
@@ -16,10 +17,12 @@ class ChatMessageBubble extends StatelessWidget {
     required this.currentUserName,
     this.currentUserProfilePicUrl,
     this.chatProfilePicUrl,
+    required this.isLastMessage, // Receive the flag
   }) : super(key: key);
 
   bool get isCurrentUser => message.sender == currentUserName;
 
+  @override
   Widget build(BuildContext context) {
     final displayName = isCurrentUser ? currentUserName : message.sender;
     final displayPic = isCurrentUser ? currentUserProfilePicUrl : chatProfilePicUrl;
@@ -29,11 +32,11 @@ class ChatMessageBubble extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildProfilePicture(displayName, displayPic),
+          _buildProfilePicture(displayName, displayPic), // Profile picture of the sender
           const SizedBox(width: 10),
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start, // Align message content to the left
               children: [
                 Text(
                   displayName,
@@ -46,12 +49,12 @@ class ChatMessageBubble extends StatelessWidget {
               ],
             ),
           ),
+          if (isCurrentUser && isLastMessage) _buildReadReceipt(), // Show read receipt for the last message
         ],
       ),
     );
   }
 
-  // Build the profile picture based on user data
   Widget _buildProfilePicture(String name, String? url) {
     final imageProvider = _getImageProvider(url);
     return CircleAvatar(
@@ -61,7 +64,6 @@ class ChatMessageBubble extends StatelessWidget {
     );
   }
 
-  // Determine which image provider to use based on the URL or fallback
   ImageProvider _getImageProvider(String? url) {
     if (url == null) {
       return const AssetImage("assets/images/profile.png");
@@ -72,27 +74,21 @@ class ChatMessageBubble extends StatelessWidget {
     }
   }
 
-  // Build the message content based on the message type
   Widget _buildMessageContent() {
     switch (message.type) {
       case MessageType.text:
         return Text(message.content);
-
       case MessageType.image:
         return _buildImageMessage();
-
       case MessageType.video:
         return _buildVideoMessage();
-
       case MessageType.document:
         return DocumentMessageWidget(message: message);
-
       default:
         return const SizedBox.shrink();
     }
   }
 
-  // Helper method to handle image loading
   Widget _buildImageMessage() {
     final isNetworkImage = message.content.startsWith('http');
     return isNetworkImage
@@ -105,14 +101,15 @@ class ChatMessageBubble extends StatelessWidget {
             errorBuilder: (context, error, stackTrace) => _errorWidget("Failed to load image"),
           );
   }
-    Widget _buildVideoMessage() {
-    bool isNetworkVideo = message.content.startsWith('http'); // Check if the video path is a URL
+
+  Widget _buildVideoMessage() {
+    bool isNetworkVideo = message.content.startsWith('http');
     return VideoPlayerWidget(
       mediaPath: message.content,
       isNetwork: isNetworkVideo,
     );
   }
-  // Display the timestamp of the message
+
   Widget _buildTimestamp() {
     final timestamp = message.timestamp;
     return Text(
@@ -121,7 +118,37 @@ class ChatMessageBubble extends StatelessWidget {
     );
   }
 
-  // Error widget for when an image or content fails to load
+  Widget _buildReadReceipt() {
+    return Align(
+      alignment: Alignment.centerRight, // Align the read receipt to the extreme right
+      child: _getReadReceiptIcon(message.deliveryStatus),
+    );
+  }
+
+  Widget _getReadReceiptIcon(DeliveryStatus status) {
+    switch (status) {
+      case DeliveryStatus.sent:
+        return const Icon(Icons.check, size: 16, color: Colors.grey);
+      case DeliveryStatus.delivered:
+        return Container(
+          padding: const EdgeInsets.all(2),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.blue,
+          ),
+          child: const Icon(Icons.check, size: 12, color: Colors.white),
+        );
+      case DeliveryStatus.read:
+        // Display the profile picture of the other user for "read" status
+        return CircleAvatar(
+          radius: 8,
+          backgroundImage: _getImageProvider(chatProfilePicUrl),
+        );
+      default:
+        return const SizedBox.shrink();
+    }
+  }
+
   Widget _errorWidget(String message) {
     return Column(
       mainAxisSize: MainAxisSize.min,

@@ -1,5 +1,5 @@
-enum MessageType { text, image, video, document, sticker }
-
+enum MessageType { text, image, video, document }
+enum DeliveryStatus { sent, delivered, read }
 class Chat {
   final String name;
   final String profilePictureUrl;
@@ -61,32 +61,31 @@ class Message {
   final String content;
   final DateTime timestamp;
   final MessageType type;
+  final DeliveryStatus deliveryStatus; 
 
   Message({
     required this.sender,
     required this.content,
     required this.timestamp,
     required this.type,
+    required this.deliveryStatus,
   });
-
-  factory Message.fromJson(Map<String, dynamic> json) {
+   Message copyWith({
+    String? sender,
+    String? content,
+    DateTime? timestamp,
+    MessageType? type,
+    DeliveryStatus? deliveryStatus,
+   
+  }) {
     return Message(
-      sender: json['sender'],
-      content: json['content'],
-      timestamp: DateTime.parse(json['timestamp']),
-      type: MessageType.values.firstWhere(
-        (e) => e.toString() == 'MessageType.${json['type']}',
-        orElse: () => MessageType.text,
-      ),
+      sender: sender ?? this.sender,
+      content: content ?? this.content,
+      timestamp: timestamp ?? this.timestamp,
+      type: type ?? this.type,
+      deliveryStatus: deliveryStatus ?? this.deliveryStatus,
+      
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'sender': sender,
-      'content': content,
-      'timestamp': timestamp.toIso8601String(),
-      'type': type.toString().split('.').last,
-    };
-  }
 }
