@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
 import 'package:link_up/features/my-network/viewModel/connections_screen_view_model.dart';
 import 'package:link_up/features/my-network/viewModel/manage_my_network_screen_view_model.dart';
 import 'package:link_up/features/my-network/widgets/connections_card.dart';
@@ -13,12 +12,10 @@ import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/shared/utils/my_network_utils.dart';
 
 class ConnectionsScreen extends ConsumerStatefulWidget {
-  final bool isDarkMode;
   final int paginationLimit;
 
   const ConnectionsScreen({
     super.key,
-    required this.isDarkMode,
     this.paginationLimit = 10,
   });
 
@@ -75,7 +72,7 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                 : AppColors.lightSecondaryText,
           ),
           onPressed: () {
-            context.pop();
+            Navigator.of(context).pop();
             ref
                 .read(manageMyNetworkScreenViewModelProvider.notifier)
                 .getManageMyNetworkScreenCounts();
@@ -235,7 +232,7 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                                                     connectionsScreenViewModelProvider
                                                         .notifier)
                                                 .sortConnections(0);
-                                            context.pop();
+                                            Navigator.pop(context);
                                           }
                                         },
                                       ),
@@ -273,7 +270,7 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                                                     connectionsScreenViewModelProvider
                                                         .notifier)
                                                 .sortConnections(1);
-                                            context.pop();
+                                            Navigator.pop(context);
                                           }
                                         },
                                       ),
@@ -311,7 +308,7 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                                                     connectionsScreenViewModelProvider
                                                         .notifier)
                                                 .sortConnections(2);
-                                            context.pop();
+                                            Navigator.pop(context);
                                           }
                                         },
                                       ),
@@ -349,7 +346,7 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                                                     connectionsScreenViewModelProvider
                                                         .notifier)
                                                 .sortConnections(3);
-                                            context.pop();
+                                            Navigator.pop(context);
                                           }
                                         },
                                       ),
@@ -392,10 +389,11 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                       shrinkWrap: true,
                       itemCount: 3,
                       itemBuilder: (context, index) =>
-                          ConnectionsLoadingSkeleton(),
+                          ConnectionsLoadingSkeleton(isDarkMode: isDarkMode),
                     )
                   : state.isError
                       ? RetryErrorMessage(
+                          isDarkMode: isDarkMode,
                           errorMessage: "Failed to load connections :(",
                           buttonFunctionality: () async {
                             await ref
@@ -410,7 +408,8 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                           },
                         )
                       : state.connections == null || state.connections!.isEmpty
-                          ? StandardEmptyListMessage(message: 'No connections')
+                          ? StandardEmptyListMessage(
+                              isDarkMode: isDarkMode, message: 'No connections')
                           : ListView.builder(
                               physics: const AlwaysScrollableScrollPhysics(),
                               itemCount: state.connections!.length +
@@ -432,6 +431,7 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                                 }
                                 return ConnectionsCard(
                                   data: state.connections![index],
+                                  isDarkMode: isDarkMode,
                                 );
                               },
                             ),

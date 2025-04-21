@@ -60,10 +60,13 @@ class _SentInvitationsTabState extends ConsumerState<SentInvitationsTab> {
           ? ListView.builder(
               shrinkWrap: true,
               itemCount: 3,
-              itemBuilder: (context, index) => SentInvitationsLoadingSkeleton(),
+              itemBuilder: (context, index) => SentInvitationsLoadingSkeleton(
+                isDarkMode: isDarkMode,
+              ),
             )
           : state.error
               ? RetryErrorMessage(
+                  isDarkMode: isDarkMode,
                   errorMessage: "Failed to load sent connection invitations :(",
                   buttonFunctionality: () async {
                     await ref
@@ -78,6 +81,7 @@ class _SentInvitationsTabState extends ConsumerState<SentInvitationsTab> {
                 )
               : state.sent == null || state.sent!.isEmpty
                   ? StandardEmptyListMessage(
+                      isDarkMode: isDarkMode,
                       message: 'No sent connection invitations',
                     )
                   : ListView.builder(
@@ -100,6 +104,7 @@ class _SentInvitationsTabState extends ConsumerState<SentInvitationsTab> {
                         }
                         return SentInvitationsCard(
                           data: state.sent![index],
+                          isDarkMode: isDarkMode,
                         );
                       },
                     ),

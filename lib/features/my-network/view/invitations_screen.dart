@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
 import 'package:link_up/features/my-network/view/received_invitations_tab.dart';
 import 'package:link_up/features/my-network/view/sent_invitations_tab.dart';
-import 'package:link_up/features/my-network/viewModel/grow_tab_view_model.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 
@@ -61,12 +59,7 @@ class InvitationsScreen extends ConsumerWidget {
                   ? AppColors.darkSecondaryText
                   : AppColors.lightSecondaryText,
             ),
-            onPressed: () {
-              ref
-                  .read(growTabViewModelProvider.notifier)
-                  .getReceivedInvitations();
-              context.pop();
-            },
+            onPressed: () => Navigator.of(context).pop(),
           ),
           actions: [
             IconButton(

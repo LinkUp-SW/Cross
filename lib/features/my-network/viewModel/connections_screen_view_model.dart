@@ -1,22 +1,23 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:link_up/core/constants/endpoints.dart';
 import 'package:link_up/features/my-network/model/connections_screen_model.dart';
 import 'package:link_up/features/my-network/services/connections_screen_services.dart';
 import 'package:link_up/features/my-network/state/connections_screen_state.dart';
 
-class ConnectionsScreenViewModel extends Notifier<ConnectionsScreenState> {
-  @override
-  ConnectionsScreenState build() {
-    return ConnectionsScreenState.initial();
-  }
+class ConnectionsScreenViewModel extends StateNotifier<ConnectionsScreenState> {
+  final ConnectionsScreenServices _connectionsScreenServices;
+
+  ConnectionsScreenViewModel(
+    this._connectionsScreenServices,
+  ) : super(
+          ConnectionsScreenState.initial(),
+        );
 
   Future<void> getConnectionsCount() async {
     state = state.copyWith(isLoading: true, isError: false);
 
     try {
-      final connectionsCount = await ref
-          .read(connectionsScreenServicesProvider)
-          .getConnectionsCount();
+      final connectionsCount =
+          await _connectionsScreenServices.getConnectionsCount();
 
       state = state.copyWith(
         isLoading: false,
@@ -33,9 +34,8 @@ class ConnectionsScreenViewModel extends Notifier<ConnectionsScreenState> {
     state = state.copyWith(isLoading: true, isError: false);
 
     try {
-      final userId = InternalEndPoints.userId;
-      final response =
-          await ref.read(connectionsScreenServicesProvider).getConnectionsList(
+      final userId = await _connectionsScreenServices.getUserId();
+      final response = await _connectionsScreenServices.getConnectionsList(
         queryParameters: queryParameters,
         routeParameters: {'user_id': userId},
       );
@@ -65,9 +65,8 @@ class ConnectionsScreenViewModel extends Notifier<ConnectionsScreenState> {
     state = currentState.copyWith(isLoadingMore: true);
 
     try {
-      final userId = InternalEndPoints.userId;
-      final response =
-          await ref.read(connectionsScreenServicesProvider).getConnectionsList(
+      final userId = await _connectionsScreenServices.getUserId();
+      final response = await _connectionsScreenServices.getConnectionsList(
         queryParameters: {
           'limit': '$paginationLimit',
           'cursor': currentState.nextCursor,
@@ -123,9 +122,7 @@ class ConnectionsScreenViewModel extends Notifier<ConnectionsScreenState> {
   Future<void> removeConnection(String userId) async {
     state = state.copyWith(isLoading: true, isError: false);
     try {
-      await ref
-          .read(connectionsScreenServicesProvider)
-          .removeConnection(userId);
+      await _connectionsScreenServices.removeConnection(userId);
 
       // Remove the connection from the connections list
       if (state.connections != null) {
@@ -158,21 +155,17 @@ class ConnectionsScreenViewModel extends Notifier<ConnectionsScreenState> {
       });
     }
 
-    // Ascending order by name
+    // Ascending order by first name
     else if (sortingType == 2) {
       connectionsList.sort((a, b) {
-        String nameOne = a.firstName + a.lastName;
-        String nameTwo = b.firstName + b.lastName;
-        return nameOne.compareTo(nameTwo);
+        return a.firstName.compareTo(b.firstName);
       });
     }
 
-    // Descending order byname
+    // Descending order by first name
     else if (sortingType == 3) {
       connectionsList.sort((a, b) {
-        String nameOne = a.firstName + a.lastName;
-        String nameTwo = b.firstName + b.lastName;
-        return nameTwo.compareTo(nameOne);
+        return b.firstName.compareTo(a.firstName);
       });
     }
 
@@ -192,8 +185,10 @@ class ConnectionsScreenViewModel extends Notifier<ConnectionsScreenState> {
 }
 
 final connectionsScreenViewModelProvider =
-    NotifierProvider<ConnectionsScreenViewModel, ConnectionsScreenState>(
-  () {
-    return ConnectionsScreenViewModel();
+    StateNotifierProvider<ConnectionsScreenViewModel, ConnectionsScreenState>(
+  (ref) {
+    return ConnectionsScreenViewModel(
+      ref.read(connectionsScreenServicesProvider),
+    );
   },
 );

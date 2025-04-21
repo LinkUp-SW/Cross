@@ -2,25 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/my-network/model/invitations_screen_model.dart';
+import 'package:link_up/features/my-network/viewModel/received_invitations_tab_view_model.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/shared/utils/my_network_utils.dart';
-import 'package:link_up/shared/widgets/custom_snackbar.dart';
 
 class ReceivedInvitationsCard extends ConsumerWidget {
   final InvitationsCardModel data;
-  final Function(String) onAccept;
-  final Function(String) onIgnore;
+  final bool isDarkMode;
   const ReceivedInvitationsCard({
     super.key,
     required this.data,
-    required this.onAccept,
-    required this.onIgnore,
+    required this.isDarkMode,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return DecoratedBox(
       decoration: BoxDecoration(
         color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
@@ -95,30 +92,10 @@ class ReceivedInvitationsCard extends ConsumerWidget {
                   child: InkWell(
                     borderRadius: BorderRadius.circular(8.r),
                     onTap: () {
-                      onAccept(data.cardId);
-                      openSnackbar(
-                        child: Row(
-                          spacing: 10.w,
-                          children: [
-                            Icon(
-                              Icons.add_box_outlined,
-                              size: 25.w,
-                            ),
-                            Flexible(
-                              child: Text(
-                                'You have successfuly accepted ${data.firstName} ${data.lastName} connection invitation',
-                                style: TextStyles.font14_600Weight.copyWith(
-                                  color: isDarkMode
-                                      ? AppColors.darkSecondaryText
-                                      : AppColors.lightTextColor,
-                                ),
-                                maxLines: 3,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
+                      ref
+                          .read(
+                              receivedInvitationsTabViewModelProvider.notifier)
+                          .acceptInvitation(data.cardId);
                     },
                     child: Container(
                       padding: EdgeInsets.all(2.r),
@@ -148,30 +125,10 @@ class ReceivedInvitationsCard extends ConsumerWidget {
                   child: InkWell(
                     borderRadius: BorderRadius.circular(8.r),
                     onTap: () {
-                      onIgnore(data.cardId);
-                      openSnackbar(
-                        child: Row(
-                          spacing: 10.w,
-                          children: [
-                            Icon(
-                              Icons.block_outlined,
-                              size: 25.w,
-                            ),
-                            Flexible(
-                              child: Text(
-                                'You have ignored ${data.firstName} ${data.lastName} connection invitation',
-                                style: TextStyles.font14_600Weight.copyWith(
-                                  color: isDarkMode
-                                      ? AppColors.darkSecondaryText
-                                      : AppColors.lightTextColor,
-                                ),
-                                maxLines: 3,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
+                      ref
+                          .read(
+                              receivedInvitationsTabViewModelProvider.notifier)
+                          .ignoreInvitation(data.cardId);
                     },
                     child: Container(
                       padding: EdgeInsets.all(2.r),

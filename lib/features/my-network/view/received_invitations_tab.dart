@@ -31,7 +31,7 @@ class _ReceivedInvitationsTabState
         ref
             .read(receivedInvitationsTabViewModelProvider.notifier)
             .getReceivedInvitations(
-          queryParameters: {
+          {
             'limit': '${widget.paginationLimit}',
             'cursor': null,
           },
@@ -52,7 +52,7 @@ class _ReceivedInvitationsTabState
           ref
               .read(receivedInvitationsTabViewModelProvider.notifier)
               .loadMoreReceivedInvitations(
-                widget.paginationLimit,
+                paginationLimit: widget.paginationLimit,
               );
         }
         return false;
@@ -62,17 +62,18 @@ class _ReceivedInvitationsTabState
               shrinkWrap: true,
               itemCount: 3,
               itemBuilder: (context, index) =>
-                  ReceivedInvitationsLoadingSkeleton(),
+                  ReceivedInvitationsLoadingSkeleton(isDarkMode: isDarkMode),
             )
           : state.error
               ? RetryErrorMessage(
+                  isDarkMode: isDarkMode,
                   errorMessage:
                       "Failed to load received connection invitations :(",
                   buttonFunctionality: () async {
                     await ref
                         .read(receivedInvitationsTabViewModelProvider.notifier)
                         .getReceivedInvitations(
-                      queryParameters: {
+                      {
                         'limit': '${widget.paginationLimit}',
                         'cursor': null,
                       },
@@ -81,6 +82,7 @@ class _ReceivedInvitationsTabState
                 )
               : state.received == null || state.received!.isEmpty
                   ? StandardEmptyListMessage(
+                      isDarkMode: isDarkMode,
                       message: 'No received connection invitations',
                     )
                   : ListView.builder(
@@ -103,18 +105,7 @@ class _ReceivedInvitationsTabState
                         }
                         return ReceivedInvitationsCard(
                           data: state.received![index],
-                          onAccept: (userId) {
-                            ref
-                                .read(receivedInvitationsTabViewModelProvider
-                                    .notifier)
-                                .acceptInvitation(userId);
-                          },
-                          onIgnore: (userId) {
-                            ref
-                                .read(receivedInvitationsTabViewModelProvider
-                                    .notifier)
-                                .ignoreInvitation(userId);
-                          },
+                          isDarkMode: isDarkMode,
                         );
                       },
                     ),
