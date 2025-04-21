@@ -14,117 +14,60 @@ class ChatViewModel extends StateNotifier<List<Chat>> {
     state = await _chatService.fetchChats();
   }
 
-  void sendMessage(int chatIndex, String messageContent, MessageType type) {
-    final chat = state[chatIndex];
+ void sendMessage(int chatIndex, String messageContent, MessageType type) {
+  final chat = state[chatIndex];
 
-    // Prevent sending if the user is blocked
-    if (chat.isBlocked) return;
+  final newMessage = Message(
+    sender: "Me", 
+    content: messageContent, // Content is the text or the media URL
+    timestamp: DateTime.now(),
+    type: type, // Pass the message type (text, image, video, document)
+  );
 
-    final newMessage = Message(
-      sender: "jumana",
-      content: messageContent,
-      timestamp: DateTime.now(),
-      type: type,
-    );
-
-    state = [
-      for (int i = 0; i < state.length; i++)
-        if (i == chatIndex)
-          state[i].copyWith(
-            messages: [...chat.messages, newMessage],
-            lastMessage: messageContent,
-            lastMessageTimestamp: DateTime.now(),
-            isUnread: false,
-            unreadMessageCount: 0,
-          )
-        else
-          state[i],
-    ];
-  }
-
-  void sendMediaAttachment(int chatIndex, String mediaUrl, MessageType type) {
-    final chat = state[chatIndex];
-
-    // Prevent sending if the user is blocked
-    if (chat.isBlocked) return;
-
-    final newMessage = Message(
-      sender: "jumana",
-      content: mediaUrl,
-      timestamp: DateTime.now(),
-      type: type,
-    );
-
-    state = [
-      for (int i = 0; i < state.length; i++)
-        if (i == chatIndex)
-          state[i].copyWith(
-            messages: [...chat.messages, newMessage],
-            lastMessage: "📎 Media Attachment",
-            lastMessageTimestamp: DateTime.now(),
-            isUnread: false,
-            unreadMessageCount: 0,
-          )
-        else
-          state[i],
-    ];
-  }
-
-  // Delete a chat from the list
+  state = [
+    for (int i = 0; i < state.length; i++)
+      if (i == chatIndex)
+        state[i].copyWith(
+          messages: [...chat.messages, newMessage], // Add new message
+          lastMessage: messageContent, // Update last message
+          lastMessageTimestamp: DateTime.now(), // Update timestamp
+          isUnread: false, // Mark chat as read when you send a message
+          unreadMessageCount: 0, // Reset unread count
+        )
+      else
+        state[i], // Keep other chats unchanged
+  ];
+ }
+ 
+ // Delete a chat from the list
   void deleteChat(int index) {
     state.removeAt(index);
-    state = [...state]; // Trigger rebuild
+    state = [...state]; // Trigger a rebuild of the list
   }
 
-  // Block a user → clear messages and mark as blocked
+  // Block a user by marking the chat as blocked
   void blockUser(int index) {
-    final chat = state[index];
-    final updatedChat = chat.copyWith(
-      isBlocked: true,
-      messages: [],
-      lastMessage: "You blocked this user.",
-      lastMessageTimestamp: DateTime.now(),
-      unreadMessageCount: 0,
-      isUnread: false,
-    );
-
-    state = [
-      for (int i = 0; i < state.length; i++)
-        if (i == index) updatedChat else state[i],
-    ];
-  }
-
-  // Optional: Unblock a user (restores ability to chat)
-  void unblockUser(int index) {
-    final chat = state[index];
-    final updatedChat = chat.copyWith(
-      isBlocked: false,
-      lastMessage: "User unblocked. Start messaging again.",
-      lastMessageTimestamp: DateTime.now(),
-    );
-
-    state = [
-      for (int i = 0; i < state.length; i++)
-        if (i == index) updatedChat else state[i],
-    ];
+    state[index] = state[index].copyWith(isBlocked: true);
+    state = [...state]; // Trigger a rebuild of the list
   }
 
   // Toggle read/unread status (Only marks as read when tapped)
   void toggleReadUnreadStatus(int index) {
     final chat = state[index];
 
+    // Only mark as read if currently unread
     if (chat.isUnread) {
       state = [
         for (int i = 0; i < state.length; i++)
           if (i == index)
-            state[i].copyWith(isUnread: false, unreadMessageCount: 0)
+            state[i].copyWith(isUnread: false, unreadMessageCount: 0) // Mark as read
           else
-            state[i],
+            state[i], // Keep other chats unchanged
       ];
     }
   }
 
-  // Long press toggle
+  // Mark chat as read or unread via long press
   void markReadUnread(int index) {
     final chat = state[index];
 
@@ -132,15 +75,42 @@ class ChatViewModel extends StateNotifier<List<Chat>> {
       for (int i = 0; i < state.length; i++)
         if (i == index)
           state[i].copyWith(
-            isUnread: !state[i].isUnread,
-            unreadMessageCount: chat.isUnread ? 0 : -1,
+            isUnread: !state[i].isUnread, // Toggle unread status
+            unreadMessageCount: chat.isUnread ? 0 : -1, // If currently unread → set count to 0 (mark as read), else set to -1 (show blue dot only)
           )
         else
-          state[i],
+          state[i], // Keep other chats unchanged
     ];
   }
+  void sendMediaAttachment(int chatIndex, String mediaUrl, MessageType type) {
+  final chat = state[chatIndex];
+
+  final newMessage = Message(
+    sender: "Me",
+    content: mediaUrl, // Media URL (image, video, doc)
+    timestamp: DateTime.now(),
+    type: type,
+  );
+
+  state = [
+    for (int i = 0; i < state.length; i++)
+      if (i == chatIndex)
+        state[i].copyWith(
+          messages: [...chat.messages, newMessage],
+          lastMessage: "📎 Media Attachment",
+          lastMessageTimestamp: DateTime.now(),
+          isUnread: false,
+          unreadMessageCount: 0,
+        )
+      else
+        state[i],
+  ];
 }
 
-final chatViewModelProvider = StateNotifierProvider<ChatViewModel, List<Chat>>((ref) {
+}
+
+
+final chatViewModelProvider =
+    StateNotifierProvider<ChatViewModel, List<Chat>>((ref) {
   return ChatViewModel(ChatService());
 });

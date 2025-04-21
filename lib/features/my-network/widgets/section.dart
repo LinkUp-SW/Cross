@@ -8,16 +8,16 @@ import 'package:link_up/shared/themes/text_styles.dart';
 class Section extends ConsumerWidget {
   final String title;
   final List<PeopleCard> cards;
+  final bool isDarkMode;
 
-  const Section({
-    super.key,
-    required this.title,
-    required this.cards,
-  });
+  const Section(
+      {super.key,
+      required this.title,
+      required this.cards,
+      required this.isDarkMode});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     // Create rows of cards (2 cards per row)
     List<Widget> cardRows = [];
 
@@ -70,7 +70,9 @@ class Section extends ConsumerWidget {
             ),
             ...cardRows,
             InkWell(
-              onTap: () {},
+              onTap: () {
+                print("Pressed on $title Show all");
+              },
               child: Text(
                 "Show all",
                 style: TextStyles.font15_700Weight.copyWith(

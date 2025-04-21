@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:link_up/features/my-network/viewModel/grow_tab_view_model.dart';
 import 'package:link_up/features/my-network/viewModel/manage_my_network_screen_view_model.dart';
 import 'package:link_up/features/my-network/widgets/manage_my_network_screen_navigation_row.dart';
 import 'package:link_up/features/my-network/widgets/retry_error_message.dart';
@@ -11,8 +10,11 @@ import 'package:link_up/shared/themes/text_styles.dart';
 
 // Change to StatefulConsumerWidget to handle async initialization
 class ManageMyNetworkScreen extends ConsumerStatefulWidget {
+  final bool isDarkMode;
+
   const ManageMyNetworkScreen({
     super.key,
+    required this.isDarkMode,
   });
 
   @override
@@ -34,7 +36,6 @@ class _ManageMyNetworkScreenState extends ConsumerState<ManageMyNetworkScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     // Watch the state to react to changes
     final state = ref.watch(manageMyNetworkScreenViewModelProvider);
 
@@ -44,23 +45,20 @@ class _ManageMyNetworkScreenState extends ConsumerState<ManageMyNetworkScreen> {
         title: Text(
           'Manage my network',
           style: TextStyles.font20_700Weight.copyWith(
-            color: isDarkMode ? AppColors.darkGrey : AppColors.lightTextColor,
+            color: widget.isDarkMode
+                ? AppColors.darkGrey
+                : AppColors.lightTextColor,
           ),
         ),
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back,
             size: 25.w,
-            color: isDarkMode
+            color: widget.isDarkMode
                 ? AppColors.darkSecondaryText
                 : AppColors.lightSecondaryText,
           ),
-          onPressed: () {
-            ref
-                .read(growTabViewModelProvider.notifier)
-                .getReceivedInvitations();
-            context.pop();
-          },
+          onPressed: () => Navigator.of(context).pop(),
         ),
       ),
       body: Column(
@@ -68,11 +66,14 @@ class _ManageMyNetworkScreenState extends ConsumerState<ManageMyNetworkScreen> {
         children: [
           Container(
             decoration: BoxDecoration(
-              color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+              color:
+                  widget.isDarkMode ? AppColors.darkMain : AppColors.lightMain,
               border: Border(
                 bottom: BorderSide(
                   width: 0.3.w,
-                  color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
+                  color: widget.isDarkMode
+                      ? AppColors.darkGrey
+                      : AppColors.lightGrey,
                 ),
               ),
             ),
@@ -86,7 +87,7 @@ class _ManageMyNetworkScreenState extends ConsumerState<ManageMyNetworkScreen> {
                   Text(
                     'Manage my network',
                     style: TextStyles.font18_700Weight.copyWith(
-                      color: isDarkMode
+                      color: widget.isDarkMode
                           ? AppColors.darkSecondaryText
                           : AppColors.lightTextColor,
                     ),
@@ -96,13 +97,16 @@ class _ManageMyNetworkScreenState extends ConsumerState<ManageMyNetworkScreen> {
             ),
           ),
           ManageMyNetworkScreenNavigationRow(
+            isDarkMode: widget.isDarkMode,
             icon: Icons.people,
             title: 'Connections',
             onTap: () => context.push('/connections'),
+            // Use the count from state, show loading indicator if still loading
             count: state.isLoading ? 0 : state.connectionsCount,
             isLoading: state.isLoading,
           ),
           ManageMyNetworkScreenNavigationRow(
+            isDarkMode: widget.isDarkMode,
             icon: Icons.person,
             title: 'People I follow',
             onTap: () => context.push('/following'),
@@ -110,6 +114,7 @@ class _ManageMyNetworkScreenState extends ConsumerState<ManageMyNetworkScreen> {
             isLoading: state.isLoading,
           ),
           ManageMyNetworkScreenNavigationRow(
+            isDarkMode: widget.isDarkMode,
             icon: Icons.business,
             title: 'Pages',
             onTap: () => context.push('/pages'),
@@ -122,6 +127,7 @@ class _ManageMyNetworkScreenState extends ConsumerState<ManageMyNetworkScreen> {
           // Show retry button if there was an error
           if (state.error)
             RetryErrorMessage(
+              isDarkMode: widget.isDarkMode,
               errorMessage: 'Failed to load counts :(',
               buttonFunctionality: () async {
                 ref

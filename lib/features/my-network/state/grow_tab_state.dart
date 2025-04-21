@@ -1,5 +1,4 @@
 import 'package:link_up/features/my-network/model/grow_tab_model.dart';
-import 'package:link_up/features/my-network/model/invitations_screen_model.dart';
 
 class GrowTabState {
   final List<GrowTabPeopleCardsModel>? fromCurrentPosition;
@@ -9,8 +8,6 @@ class GrowTabState {
   final List<GrowTabNewsletterCardsModel>? yourCommunityFollow;
   final List<GrowTabPeopleCardsModel>? becauseYouFollow;
   final List<GrowTabPeopleCardsModel>? moreSuggestions;
-  final List<InvitationsCardModel>? receivedInvitations;
-  final int? receivedInvitationsCount;
   final bool isLoading;
   final bool error;
 
@@ -22,8 +19,6 @@ class GrowTabState {
     this.yourCommunityFollow,
     this.becauseYouFollow,
     this.moreSuggestions,
-    this.receivedInvitations,
-    this.receivedInvitationsCount,
     required this.isLoading,
     required this.error,
   });
@@ -37,8 +32,6 @@ class GrowTabState {
       yourCommunityFollow: null,
       becauseYouFollow: null,
       moreSuggestions: null,
-      receivedInvitations: null,
-      receivedInvitationsCount: null,
       isLoading: true,
       error: false,
     );
@@ -52,8 +45,6 @@ class GrowTabState {
     List<GrowTabNewsletterCardsModel>? yourCommunityFollow,
     List<GrowTabPeopleCardsModel>? becauseYouFollow,
     List<GrowTabPeopleCardsModel>? moreSuggestions,
-    List<InvitationsCardModel>? receivedInvitations,
-    int? receivedInvitationsCount,
     bool? isLoading,
     bool? error,
   }) {
@@ -65,9 +56,6 @@ class GrowTabState {
       yourCommunityFollow: yourCommunityFollow ?? this.yourCommunityFollow,
       becauseYouFollow: becauseYouFollow ?? this.becauseYouFollow,
       moreSuggestions: moreSuggestions ?? this.moreSuggestions,
-      receivedInvitations: receivedInvitations ?? this.receivedInvitations,
-      receivedInvitationsCount:
-          receivedInvitationsCount ?? this.receivedInvitationsCount,
       isLoading: isLoading ?? this.isLoading,
       error: error ?? this.error,
     );

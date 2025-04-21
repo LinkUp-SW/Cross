@@ -7,6 +7,7 @@ import 'package:link_up/shared/themes/text_styles.dart';
 class ConfirmationPopUp extends ConsumerWidget {
   final String title;
   final String content;
+  final bool isDarkMode;
   final String buttonText;
   final VoidCallback buttonFunctionality;
 
@@ -14,13 +15,13 @@ class ConfirmationPopUp extends ConsumerWidget {
     super.key,
     required this.title,
     required this.content,
+    required this.isDarkMode,
     required this.buttonText,
     required this.buttonFunctionality,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Dialog(
       backgroundColor: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
       shape: RoundedRectangleBorder(

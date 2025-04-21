@@ -8,8 +8,6 @@ class SubPagesCustomTextField extends StatelessWidget {
   final int? maxLines;
   final Widget? suffixIcon;
   final VoidCallback? onTap;
-  final FocusNode? focusNode; // Added FocusNode parameter
-  final bool? enabled;       // Added enabled parameter
 
   const SubPagesCustomTextField({
     super.key,
@@ -18,8 +16,6 @@ class SubPagesCustomTextField extends StatelessWidget {
     this.maxLines,
     this.suffixIcon,
     this.onTap,
-    this.focusNode, 
-    this.enabled,   
   });
 
   @override
@@ -28,12 +24,10 @@ class SubPagesCustomTextField extends StatelessWidget {
 
     return TextField(
       controller: controller,
-      focusNode: focusNode,
-      enabled: enabled,    
       style: TextStyles.font14_400Weight.copyWith(
         color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
       ),
-      cursorColor: isDarkMode ? AppColors.darkBlue : AppColors.lightBlue, 
+      cursorColor: Colors.black,
       maxLines: maxLines,
       decoration: InputDecoration(
         hintText: hintText,
@@ -49,9 +43,6 @@ class SubPagesCustomTextField extends StatelessWidget {
         ),
         focusedBorder: UnderlineInputBorder(
           borderSide: BorderSide(color: AppColors.lightBlue),
-        ),
-        disabledBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: AppColors.lightGrey),
         ),
       ),
       onTap: onTap,

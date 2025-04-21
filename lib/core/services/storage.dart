@@ -44,19 +44,3 @@ Future<void> logout(BuildContext context) async {
   await secureStorage.delete(key: "password");
   (navigatorKey.currentContext ?? context).go('/login');
 }
-
-
-Future<void> saveThemeToStorage(ThemeMode theme) async {
-  await secureStorage.write(key: "theme", value: theme.toString());
-}
-
-Future<ThemeMode> getThemeFromStorage() async {
-  final themeString = await secureStorage.read(key: "theme");
-  if (themeString == ThemeMode.dark.toString()) {
-    return ThemeMode.dark;
-  } else if (themeString == ThemeMode.light.toString()) {
-    return ThemeMode.light;
-  } else {
-    return ThemeMode.system; // Default to system theme
-  }   
-}

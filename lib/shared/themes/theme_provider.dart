@@ -2,20 +2,21 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:link_up/core/services/storage.dart';
 
 class ThemeNotifier extends Notifier<ThemeMode> {
   ThemeNotifier() : super();
 
-  void setTheme(ThemeMode theme) async {
-    state = theme;
-    await saveThemeToStorage(theme);
+  void toggleTheme() {
+    if(state == ThemeMode.system){
+      state = ThemeMode.light;
   }
-
-  void setInitialTheme() async {
-    final theme = await getThemeFromStorage();
-    state = theme;
+  else if(state == ThemeMode.light){
+    state = ThemeMode.dark;
   }
+  else{
+    state = ThemeMode.system;
+  }
+}
 
   @override
   ThemeMode build() {

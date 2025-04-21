@@ -9,15 +9,16 @@ import 'package:link_up/shared/utils/my_network_utils.dart';
 
 class NewsletterCard extends ConsumerWidget {
   final GrowTabNewsletterCardsModel data;
+  final bool isDarkMode;
 
   const NewsletterCard({
     super.key,
     required this.data,
+    required this.isDarkMode,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Card(
       shadowColor: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
       elevation: 3.0.r,
@@ -88,7 +89,9 @@ class NewsletterCard extends ConsumerWidget {
                     maxHeight: 40.h,
                   ),
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      print("Pressed on ${data.newsletterName} Subscribe");
+                    },
                     style: isDarkMode
                         ? LinkUpButtonStyles().myNetworkScreenConnectDark(
                             padding: EdgeInsets.symmetric(
@@ -111,7 +114,9 @@ class NewsletterCard extends ConsumerWidget {
                 top: 5.h,
                 right: 5.w,
                 child: InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    print("Pressed on ${data.newsletterName} cancel");
+                  },
                   child: Container(
                     padding: EdgeInsets.all(2.r),
                     decoration: const BoxDecoration(

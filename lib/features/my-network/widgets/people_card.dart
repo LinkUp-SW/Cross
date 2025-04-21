@@ -8,14 +8,15 @@ import 'package:link_up/shared/themes/text_styles.dart';
 
 class PeopleCard extends ConsumerWidget {
   final GrowTabPeopleCardsModel data;
+  final bool isDarkMode;
   const PeopleCard({
     super.key,
     required this.data,
+    required this.isDarkMode,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Card(
       shadowColor: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
       elevation: 3.0.r,
@@ -62,7 +63,10 @@ class PeopleCard extends ConsumerWidget {
                 top: 5.h,
                 right: 3.w,
                 child: InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    print(
+                        "Pressed on ${data.firstName} ${data.lastName} cancel");
+                  },
                   child: Container(
                     padding: EdgeInsets.all(2.r),
                     decoration: const BoxDecoration(
@@ -138,7 +142,10 @@ class PeopleCard extends ConsumerWidget {
                   horizontal: 6.w,
                 ),
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    print(
+                        "Pressed on ${data.firstName} ${data.lastName} connect");
+                  },
                   style: isDarkMode
                       ? LinkUpButtonStyles().myNetworkScreenConnectDark()
                       : LinkUpButtonStyles().myNetworkScreenConnectLight(),

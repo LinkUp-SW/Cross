@@ -6,16 +6,17 @@ import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 
 class StandardEmptyListMessage extends ConsumerWidget {
+  final bool isDarkMode;
   final String message;
 
   const StandardEmptyListMessage({
     super.key,
+    required this.isDarkMode,
     required this.message,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: 10.w,
