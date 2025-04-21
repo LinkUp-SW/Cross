@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:link_up/features/my-network/viewModel/connections_screen_view_model.dart';
 import 'package:link_up/features/my-network/viewModel/manage_my_network_screen_view_model.dart';
 import 'package:link_up/features/my-network/widgets/connections_card.dart';
@@ -55,6 +56,7 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final state = ref.watch(connectionsScreenViewModelProvider);
 
     return Scaffold(
@@ -68,12 +70,12 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
           icon: Icon(
             Icons.arrow_back,
             size: 25.w,
-            color: widget.isDarkMode
+            color: isDarkMode
                 ? AppColors.darkSecondaryText
                 : AppColors.lightSecondaryText,
           ),
           onPressed: () {
-            Navigator.of(context).pop();
+            context.pop();
             ref
                 .read(manageMyNetworkScreenViewModelProvider.notifier)
                 .getManageMyNetworkScreenCounts();
@@ -86,14 +88,11 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
           Container(
             width: double.infinity,
             decoration: BoxDecoration(
-              color:
-                  widget.isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+              color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
               border: Border(
                 bottom: BorderSide(
                   width: 0.3.w,
-                  color: widget.isDarkMode
-                      ? AppColors.darkGrey
-                      : AppColors.lightGrey,
+                  color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
                 ),
               ),
             ),
@@ -105,14 +104,11 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
           ),
           Container(
             decoration: BoxDecoration(
-              color:
-                  widget.isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+              color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
               border: Border(
                 bottom: BorderSide(
                   width: 0.3.w,
-                  color: widget.isDarkMode
-                      ? AppColors.darkGrey
-                      : AppColors.lightGrey,
+                  color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
                 ),
               ),
             ),
@@ -128,7 +124,7 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                       height: 16.w,
                       child: CircularProgressIndicator(
                         strokeWidth: 2.w,
-                        color: widget.isDarkMode
+                        color: isDarkMode
                             ? AppColors.darkGrey
                             : AppColors.lightSecondaryText,
                       ),
@@ -137,7 +133,7 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                     Text(
                       '${parseIntegerToCommaSeparatedString(state.connectionsCount ?? 0)} connections',
                       style: TextStyles.font18_500Weight.copyWith(
-                        color: widget.isDarkMode
+                        color: isDarkMode
                             ? AppColors.darkGrey
                             : AppColors.lightSecondaryText,
                       ),
@@ -149,7 +145,7 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                         icon: Icon(
                           Icons.search,
                           size: 25.r,
-                          color: widget.isDarkMode
+                          color: isDarkMode
                               ? AppColors.darkTextColor
                               : AppColors.lightTextColor,
                         ),
@@ -166,13 +162,13 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                                 Container(
                                   width: double.infinity,
                                   decoration: BoxDecoration(
-                                    color: widget.isDarkMode
+                                    color: isDarkMode
                                         ? AppColors.darkMain
                                         : AppColors.lightMain,
                                     border: Border(
                                       bottom: BorderSide(
                                         width: 1.w,
-                                        color: widget.isDarkMode
+                                        color: isDarkMode
                                             ? AppColors.darkGrey
                                             : AppColors.lightGrey,
                                       ),
@@ -186,7 +182,7 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                                       'Sort By',
                                       style:
                                           TextStyles.font18_500Weight.copyWith(
-                                        color: widget.isDarkMode
+                                        color: isDarkMode
                                             ? AppColors.darkSecondaryText
                                             : AppColors.lightTextColor,
                                       ),
@@ -206,10 +202,10 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                                       // Newest First
                                       FilterChip(
                                         selected: _selectedSortOption == 0,
-                                        backgroundColor: widget.isDarkMode
+                                        backgroundColor: isDarkMode
                                             ? AppColors.darkMain
                                             : AppColors.lightMain,
-                                        selectedColor: widget.isDarkMode
+                                        selectedColor: isDarkMode
                                             ? AppColors.darkGreen
                                             : AppColors.lightGreen,
                                         label: Text(
@@ -218,12 +214,12 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                                               .copyWith(
                                                   color: _selectedSortOption ==
                                                           0
-                                                      ? widget.isDarkMode
+                                                      ? isDarkMode
                                                           ? AppColors
                                                               .darkBackground
                                                           : AppColors
                                                               .lightBackground
-                                                      : widget.isDarkMode
+                                                      : isDarkMode
                                                           ? AppColors
                                                               .darkTextColor
                                                           : AppColors
@@ -239,7 +235,7 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                                                     connectionsScreenViewModelProvider
                                                         .notifier)
                                                 .sortConnections(0);
-                                            Navigator.pop(context);
+                                            context.pop();
                                           }
                                         },
                                       ),
@@ -247,10 +243,10 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                                       // Oldest First
                                       FilterChip(
                                         selected: _selectedSortOption == 1,
-                                        backgroundColor: widget.isDarkMode
+                                        backgroundColor: isDarkMode
                                             ? AppColors.darkMain
                                             : AppColors.lightMain,
-                                        selectedColor: widget.isDarkMode
+                                        selectedColor: isDarkMode
                                             ? AppColors.darkGreen
                                             : AppColors.lightGreen,
                                         label: Text(
@@ -258,10 +254,10 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                                           style: TextStyles.font14_500Weight
                                               .copyWith(
                                             color: _selectedSortOption == 1
-                                                ? widget.isDarkMode
+                                                ? isDarkMode
                                                     ? AppColors.darkBackground
                                                     : AppColors.lightBackground
-                                                : widget.isDarkMode
+                                                : isDarkMode
                                                     ? AppColors.darkTextColor
                                                     : AppColors
                                                         .lightSecondaryText,
@@ -277,7 +273,7 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                                                     connectionsScreenViewModelProvider
                                                         .notifier)
                                                 .sortConnections(1);
-                                            Navigator.pop(context);
+                                            context.pop();
                                           }
                                         },
                                       ),
@@ -285,10 +281,10 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                                       // Name A-Z
                                       FilterChip(
                                         selected: _selectedSortOption == 2,
-                                        backgroundColor: widget.isDarkMode
+                                        backgroundColor: isDarkMode
                                             ? AppColors.darkMain
                                             : AppColors.lightMain,
-                                        selectedColor: widget.isDarkMode
+                                        selectedColor: isDarkMode
                                             ? AppColors.darkGreen
                                             : AppColors.lightGreen,
                                         label: Text(
@@ -296,10 +292,10 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                                           style: TextStyles.font14_500Weight
                                               .copyWith(
                                             color: _selectedSortOption == 2
-                                                ? widget.isDarkMode
+                                                ? isDarkMode
                                                     ? AppColors.darkBackground
                                                     : AppColors.lightBackground
-                                                : widget.isDarkMode
+                                                : isDarkMode
                                                     ? AppColors.darkTextColor
                                                     : AppColors
                                                         .lightSecondaryText,
@@ -315,7 +311,7 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                                                     connectionsScreenViewModelProvider
                                                         .notifier)
                                                 .sortConnections(2);
-                                            Navigator.pop(context);
+                                            context.pop();
                                           }
                                         },
                                       ),
@@ -323,10 +319,10 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                                       // Name Z-A
                                       FilterChip(
                                         selected: _selectedSortOption == 3,
-                                        backgroundColor: widget.isDarkMode
+                                        backgroundColor: isDarkMode
                                             ? AppColors.darkMain
                                             : AppColors.lightMain,
-                                        selectedColor: widget.isDarkMode
+                                        selectedColor: isDarkMode
                                             ? AppColors.darkGreen
                                             : AppColors.lightGreen,
                                         label: Text(
@@ -334,10 +330,10 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                                           style: TextStyles.font14_500Weight
                                               .copyWith(
                                             color: _selectedSortOption == 3
-                                                ? widget.isDarkMode
+                                                ? isDarkMode
                                                     ? AppColors.darkBackground
                                                     : AppColors.lightBackground
-                                                : widget.isDarkMode
+                                                : isDarkMode
                                                     ? AppColors.darkTextColor
                                                     : AppColors
                                                         .lightSecondaryText,
@@ -353,7 +349,7 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                                                     connectionsScreenViewModelProvider
                                                         .notifier)
                                                 .sortConnections(3);
-                                            Navigator.pop(context);
+                                            context.pop();
                                           }
                                         },
                                       ),
@@ -367,7 +363,7 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                         icon: Icon(
                           Icons.tune,
                           size: 25.r,
-                          color: widget.isDarkMode
+                          color: isDarkMode
                               ? AppColors.darkTextColor
                               : AppColors.lightTextColor,
                         ),
@@ -396,12 +392,10 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                       shrinkWrap: true,
                       itemCount: 3,
                       itemBuilder: (context, index) =>
-                          ConnectionsLoadingSkeleton(
-                              isDarkMode: widget.isDarkMode),
+                          ConnectionsLoadingSkeleton(),
                     )
                   : state.isError
                       ? RetryErrorMessage(
-                          isDarkMode: widget.isDarkMode,
                           errorMessage: "Failed to load connections :(",
                           buttonFunctionality: () async {
                             await ref
@@ -416,9 +410,7 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                           },
                         )
                       : state.connections == null || state.connections!.isEmpty
-                          ? StandardEmptyListMessage(
-                              isDarkMode: widget.isDarkMode,
-                              message: 'No connections')
+                          ? StandardEmptyListMessage(message: 'No connections')
                           : ListView.builder(
                               physics: const AlwaysScrollableScrollPhysics(),
                               itemCount: state.connections!.length +
@@ -431,7 +423,7 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                                         EdgeInsets.symmetric(vertical: 16.h),
                                     child: Center(
                                       child: CircularProgressIndicator(
-                                        color: widget.isDarkMode
+                                        color: isDarkMode
                                             ? AppColors.darkBlue
                                             : AppColors.lightBlue,
                                       ),
@@ -440,7 +432,6 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                                 }
                                 return ConnectionsCard(
                                   data: state.connections![index],
-                                  isDarkMode: widget.isDarkMode,
                                 );
                               },
                             ),

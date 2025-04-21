@@ -1,38 +1,73 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:link_up/features/signUp/services/past_job_details_service.dart';
 import 'package:link_up/features/signUp/state/past_job_details_state.dart';
 import 'package:link_up/features/signUp/viewModel/signup_notifier.dart';
 
+pastjobdetailsserviceprovider() {
+  return Provider((ref) => PastJobDetailsService());
+}
+
 final pastJobDetailProvider =
     StateNotifierProvider<PastJobDetailsNotifier, PastJobDetailsState>((ref) {
+  final service = ref.watch(pastjobdetailsserviceprovider());
   final signUpNotifier =
       ref.read(signUpProvider.notifier); // Access the global signup instance
-  return PastJobDetailsNotifier(signUpNotifier);
+  return PastJobDetailsNotifier(signUpNotifier, service);
 });
+
+final schoolResultsProvider =
+    StateProvider<List<Map<String, dynamic>>>((ref) => []);
+final companyResultsProvider =
+    StateProvider<List<Map<String, dynamic>>>((ref) => []);
 
 class PastJobDetailsNotifier extends StateNotifier<PastJobDetailsState> {
   final SignUpNotifier _signUpNotifier;
+  final PastJobDetailsService _service;
+  Map<String, dynamic>? selectedCompanyId;
+  Map<String, dynamic>? selectedSchoolId;
+
   DateTime? selectedDate;
 
-  String? validateJobTitle(String? value) {
-    if (value == null || value.isEmpty || value.length < 3) {
-      return 'Please enter a valid job title';
+  PastJobDetailsNotifier(this._signUpNotifier, this._service)
+      : super(PastJobDetailsInitial());
+
+  Future<void> getSchools(String query, WidgetRef ref) async {
+    try {
+      final result = await _service.geteducation({"query": query});
+      if (result['data'] != null) {
+        final list = List<Map<String, dynamic>>.from(result['data']);
+        ref.read(schoolResultsProvider.notifier).state = list;
+      } else {
+        ref.read(schoolResultsProvider.notifier).state = [];
+      }
+    } catch (_) {
+      ref.read(schoolResultsProvider.notifier).state = [];
     }
-    return null;
   }
 
-  String? validateCompanyName(String? value) {
-    if (value == null || value.isEmpty || value.length < 3) {
-      return 'Please enter a valid company name';
+  Future<void> getcompany(String query, WidgetRef ref) async {
+    try {
+      final result = await _service.getcompany({"query": query});
+      if (result['data'] != null) {
+        final list = List<Map<String, dynamic>>.from(result['data']);
+        ref.read(companyResultsProvider.notifier).state = list;
+      } else {
+        ref.read(companyResultsProvider.notifier).state = [];
+      }
+    } catch (_) {
+      ref.read(companyResultsProvider.notifier).state = [];
     }
-    return null;
   }
 
-  String? validateJobDescription(String? value) {
-    if (value == null || value.isEmpty || value.length < 10) {
-      return 'Please enter a valid job description';
+  void saveid(Map<String, dynamic> id, bool amstudent) {
+    if (amstudent) {
+      selectedSchoolId = id;
+    } else {
+      selectedCompanyId = id;
     }
-    return null;
   }
 
   Future<void> pickDate(context) async {
@@ -42,45 +77,32 @@ class PastJobDetailsNotifier extends StateNotifier<PastJobDetailsState> {
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
     );
-
     if (pickedDate != null && pickedDate != selectedDate) {
       selectedDate = pickedDate;
     }
   }
 
-  PastJobDetailsNotifier(this._signUpNotifier) : super(Job());
-
-  void toggleStudentStatus() {
-    if (state is Student) {
-      state = Job();
-    } else {
-      state = Student();
-    }
-  }
-
-  void setData(String country, String city, String jobTitle, String companyName,
-      String school, String startDate) async {
-    if (state is Job) {
-      _signUpNotifier.updateUserData(
-        country: country,
-        city: city,
-        jobTitle: jobTitle,
-        recentCompany: companyName,
-        isStudent: false,
-      );
-      print(
-          "${_signUpNotifier.state.firstName} ${_signUpNotifier.state.lastName}");
-    } else {
-      _signUpNotifier.updateUserData(
-          country: country,
-          city: city,
-          school: school,
-          startDate: startDate,
-          isStudent: true);
-    }
-
+  void setData(bool amStudent, String country, String city, String jobTitle,
+      String companyName, String school, String startDate) async {
     try {
       state = PastJobDetailsLoading();
+
+      if (amStudent) {
+        _signUpNotifier.updateUserData(
+            country: country,
+            city: city,
+            school: selectedSchoolId,
+            startDate: startDate,
+            isStudent: true);
+      } else {
+        _signUpNotifier.updateUserData(
+            country: country,
+            city: city,
+            jobTitle: jobTitle,
+            recentCompany: selectedCompanyId,
+            isStudent: false);
+      }
+
       final success = await _signUpNotifier.submitSignUp();
 
       if (success) {
@@ -89,7 +111,8 @@ class PastJobDetailsNotifier extends StateNotifier<PastJobDetailsState> {
         state = PastJobDetailsError("Failed to submit data");
       }
     } catch (e) {
-      state = PastJobDetailsError("Failed to submit data");
+      state = PastJobDetailsError("There was an error with the application");
+      print(e.toString());
     }
   }
 }

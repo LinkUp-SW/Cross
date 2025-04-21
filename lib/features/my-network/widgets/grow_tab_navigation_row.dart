@@ -6,18 +6,17 @@ import 'package:link_up/shared/themes/text_styles.dart';
 
 class GrowTabNavigationRow extends ConsumerWidget {
   final String title;
-  final bool isDarkMode;
   final VoidCallback? onTap;
 
   const GrowTabNavigationRow({
     super.key,
     required this.title,
-    required this.isDarkMode,
     this.onTap,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Material(
       color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
       child: InkWell(

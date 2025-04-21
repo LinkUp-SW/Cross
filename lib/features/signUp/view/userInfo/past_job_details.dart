@@ -2,19 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:link_up/core/constants/constantvariables.dart';
 import 'package:link_up/features/signUp/viewModel/past_job_details_provider.dart';
 import 'package:country_state_city_pro/country_state_city_pro.dart';
 import 'package:link_up/features/signUp/state/past_job_details_state.dart';
+import 'package:link_up/features/signUp/widgets/widgets.dart';
 
-class PastJobDetails extends ConsumerWidget {
+class PastJobDetails extends ConsumerStatefulWidget {
   const PastJobDetails({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<PastJobDetails> createState() => _PastJobDetailsState();
+}
+
+class _PastJobDetailsState extends ConsumerState<PastJobDetails> {
+  bool amStudent = true;
+
+  @override
+  Widget build(BuildContext context) {
     final schoolController = TextEditingController();
     final startDateController = TextEditingController();
     final pastJobTitleController = TextEditingController();
-    final pastJobTitleFocusNode = FocusNode();
     final pastJobCompanyController = TextEditingController();
     final formKey = GlobalKey<FormState>();
     final countryController = TextEditingController();
@@ -22,7 +30,6 @@ class PastJobDetails extends ConsumerWidget {
     final cityController = TextEditingController();
     final pastJobDetailsState = ref.watch(pastJobDetailProvider);
     final pastJobDetailsNotifier = ref.read(pastJobDetailProvider.notifier);
-    bool amStudent = pastJobDetailsState is Student;
 
     ref.listen<PastJobDetailsState>(pastJobDetailProvider, (previous, next) {
       if (next is PastJobDetailsSuccess) {
@@ -30,14 +37,6 @@ class PastJobDetails extends ConsumerWidget {
       } else if (next is PastJobDetailsError) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text(next.error)));
-      }
-    });
-
-    ref.listen<PastJobDetailsState>(pastJobDetailProvider, (previous, next) {
-      if (next is Job) {
-        amStudent = false;
-      } else if (next is Student) {
-        amStudent = true;
       }
     });
 
@@ -56,7 +55,7 @@ class PastJobDetails extends ConsumerWidget {
               ),
               const Text(
                 "Your Profile helps you discover new people and opportunities",
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
               SizedBox(
@@ -76,15 +75,17 @@ class PastJobDetails extends ConsumerWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        if (amStudent) const Text('Yes') else const Text('No'),
+                        Text(amStudent ? 'Yes' : 'No'),
                         SizedBox(
                           width: 10.w,
                         ),
                         Switch(
                           key: const Key('studentSwitch'),
-                          value: pastJobDetailsState is Student,
+                          value: amStudent,
                           onChanged: (value) {
-                            pastJobDetailsNotifier.toggleStudentStatus();
+                            setState(() {
+                              amStudent = value;
+                            });
                           },
                           activeColor: Colors.blue,
                           activeTrackColor: Colors.blue,
@@ -116,20 +117,16 @@ class PastJobDetails extends ConsumerWidget {
                           fontSize: 15,
                         ),
                       ),
+                      dialogColor: Theme.of(context).colorScheme.primary,
                     ),
                     if (amStudent) ...[
                       SizedBox(
                         height: 15.h,
                       ),
-                      TextFormField(
-                        key: const Key('schoolTextField'),
+                      AutocompleteSearchInput(
                         controller: schoolController,
-                        decoration: const InputDecoration(
-                          labelText: 'School/University',
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide(),
-                          ),
-                        ),
+                        label: 'School',
+                        searchType: SearchType.school,
                       ),
                       SizedBox(
                         height: 20.h,
@@ -157,33 +154,35 @@ class PastJobDetails extends ConsumerWidget {
                       SizedBox(
                         height: 15.h,
                       ),
-                      TextFormField(
-                        key: const Key('pastJobTitleTextField'),
-                        controller: pastJobTitleController,
-                        focusNode: pastJobTitleFocusNode,
+                      DropdownButtonFormField<String>(
+                        key: const Key('pastJobTitleDropdown'),
                         decoration: const InputDecoration(
-                          labelText: 'Past Job Title',
+                          labelText: 'Past Job Type',
                           border: OutlineInputBorder(
                             borderSide: BorderSide(),
                           ),
                         ),
+                        items: jobTypes.map((title) {
+                          return DropdownMenuItem<String>(
+                            value: title,
+                            child: Text(title),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          pastJobTitleController.text = value ?? '';
+                        },
                       ),
                       SizedBox(
                         height: 20.h,
                       ),
-                      TextFormField(
-                        key: const Key('pastJobCompanyTextField'),
+                      AutocompleteSearchInput(
                         controller: pastJobCompanyController,
-                        decoration: const InputDecoration(
-                          labelText: 'Past Job Company',
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide(),
-                          ),
-                        ),
+                        label: 'Past Job Company',
+                        searchType: SearchType.company,
                       ),
                     ],
                     SizedBox(
-                      height: 190.h,
+                      height: 100.h,
                     ),
                     ElevatedButton(
                       key: const Key('continueButton'),
@@ -191,6 +190,7 @@ class PastJobDetails extends ConsumerWidget {
                           ? null
                           : () {
                               pastJobDetailsNotifier.setData(
+                                amStudent,
                                 countryController.text,
                                 cityController.text,
                                 pastJobTitleController.text,

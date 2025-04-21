@@ -206,3 +206,13 @@ final Map<String, String> countryCodeToName = {
   '+996': 'Kyrgyzstan',
   '+998': 'Uzbekistan',
 };
+
+const List<String> jobTypes = [
+  "Full-time",
+  "Part-time",
+  "Contract",
+  "Temporary",
+  "Other",
+  "Volunteer",
+  "Internship",
+];

@@ -7,17 +7,16 @@ import 'package:link_up/shared/themes/text_styles.dart';
 class WideSection extends ConsumerWidget {
   final String title;
   final List<Widget> cards;
-  final bool isDarkMode;
 
   const WideSection({
     super.key,
     required this.title,
     required this.cards,
-    required this.isDarkMode,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Material(
       color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
       child: Padding(
@@ -53,9 +52,7 @@ class WideSection extends ConsumerWidget {
               ),
             ),
             InkWell(
-              onTap: () {
-                print("Pressed on $title Show all");
-              },
+              onTap: () {},
               child: Text(
                 "Show all",
                 style: TextStyles.font15_700Weight.copyWith(

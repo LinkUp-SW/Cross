@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -32,6 +33,7 @@ class _PostPageState extends ConsumerState<PostPage> {
   @override
   void initState() {
     super.initState();
+    widget.focused ? _focusNode.requestFocus() : _focusNode.unfocus();
     _scrollController = ScrollController()..addListener(scrollListener);
     postId = ref.read(postProvider.notifier).getPostId();
     ref.read(commentsProvider.notifier).fetchComments(postId).then((value) {
@@ -73,15 +75,15 @@ class _PostPageState extends ConsumerState<PostPage> {
           IconButton(
             icon: const Icon(Icons.more_horiz),
             onPressed: () {
-              aboutPostBottomSheet(context, isAd: widget.isAd);
+              aboutPostBottomSheet(context, isAd: widget.isAd, post: post);
             },
           )
         ],
       ),
       bottomNavigationBar: CommentsTextField(
-          focusNode: _focusNode,
-          focused: widget.focused,
-          buttonName: 'Comment',),
+        focusNode: _focusNode,
+        buttonName: 'Comment',
+      ),
       body: Padding(
         padding: EdgeInsets.only(top: 8.h),
         child: Container(

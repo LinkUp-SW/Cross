@@ -9,12 +9,10 @@ import 'package:link_up/features/my-network/widgets/standard_empty_list_message.
 import 'package:link_up/shared/themes/colors.dart';
 
 class ReceivedInvitationsTab extends ConsumerStatefulWidget {
-  final bool isDarkMode;
   final int paginationLimit;
 
   const ReceivedInvitationsTab({
     super.key,
-    required this.isDarkMode,
     this.paginationLimit = 10,
   });
 
@@ -33,7 +31,7 @@ class _ReceivedInvitationsTabState
         ref
             .read(receivedInvitationsTabViewModelProvider.notifier)
             .getReceivedInvitations(
-          {
+          queryParameters: {
             'limit': '${widget.paginationLimit}',
             'cursor': null,
           },
@@ -44,6 +42,7 @@ class _ReceivedInvitationsTabState
 
   @override
   Widget build(BuildContext context) {
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final state = ref.watch(receivedInvitationsTabViewModelProvider);
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
@@ -53,7 +52,7 @@ class _ReceivedInvitationsTabState
           ref
               .read(receivedInvitationsTabViewModelProvider.notifier)
               .loadMoreReceivedInvitations(
-                paginationLimit: widget.paginationLimit,
+                widget.paginationLimit,
               );
         }
         return false;
@@ -63,19 +62,17 @@ class _ReceivedInvitationsTabState
               shrinkWrap: true,
               itemCount: 3,
               itemBuilder: (context, index) =>
-                  ReceivedInvitationsLoadingSkeleton(
-                      isDarkMode: widget.isDarkMode),
+                  ReceivedInvitationsLoadingSkeleton(),
             )
           : state.error
               ? RetryErrorMessage(
-                  isDarkMode: widget.isDarkMode,
                   errorMessage:
                       "Failed to load received connection invitations :(",
                   buttonFunctionality: () async {
                     await ref
                         .read(receivedInvitationsTabViewModelProvider.notifier)
                         .getReceivedInvitations(
-                      {
+                      queryParameters: {
                         'limit': '${widget.paginationLimit}',
                         'cursor': null,
                       },
@@ -84,7 +81,6 @@ class _ReceivedInvitationsTabState
                 )
               : state.received == null || state.received!.isEmpty
                   ? StandardEmptyListMessage(
-                      isDarkMode: widget.isDarkMode,
                       message: 'No received connection invitations',
                     )
                   : ListView.builder(
@@ -98,7 +94,7 @@ class _ReceivedInvitationsTabState
                             padding: EdgeInsets.symmetric(vertical: 16.h),
                             child: Center(
                               child: CircularProgressIndicator(
-                                color: widget.isDarkMode
+                                color: isDarkMode
                                     ? AppColors.darkBlue
                                     : AppColors.lightBlue,
                               ),
@@ -107,7 +103,18 @@ class _ReceivedInvitationsTabState
                         }
                         return ReceivedInvitationsCard(
                           data: state.received![index],
-                          isDarkMode: widget.isDarkMode,
+                          onAccept: (userId) {
+                            ref
+                                .read(receivedInvitationsTabViewModelProvider
+                                    .notifier)
+                                .acceptInvitation(userId);
+                          },
+                          onIgnore: (userId) {
+                            ref
+                                .read(receivedInvitationsTabViewModelProvider
+                                    .notifier)
+                                .ignoreInvitation(userId);
+                          },
                         );
                       },
                     ),

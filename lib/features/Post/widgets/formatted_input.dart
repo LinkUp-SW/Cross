@@ -8,10 +8,12 @@ class FormattedInput extends StatelessWidget {
   const FormattedInput({super.key,
     required this.focusNode,
     required this.controller,
+    required this.onChanged,
   });
 
   final TextEditingController controller;
   final FocusNode focusNode;
+  final Function(String) onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +22,9 @@ class FormattedInput extends StatelessWidget {
       child: TextField(
         controller: controller,
         focusNode: focusNode,
+        onChanged: (value) {
+          onChanged(value);
+        },
         autocorrect: false,
         enableSuggestions: false,
         maxLines: null,
@@ -29,7 +34,6 @@ class FormattedInput extends StatelessWidget {
           isDense: true,
           isCollapsed: true,
         ),
-        autofocus: true,
         cursorColor: Theme.of(context).colorScheme.secondary,
         textCapitalization: TextCapitalization.none,
       ),

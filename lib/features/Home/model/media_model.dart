@@ -13,19 +13,21 @@ import 'package:link_up/shared/themes/colors.dart';
 class Media {
   MediaType type;
   List<String> urls;
-  List<dynamic> file;
+  List<dynamic> files;
   PostModel? post;
+  bool isLocal = false;
 
   Media(
       {required this.type,
       required this.urls,
-      this.file = const [],
-      this.post});
+      this.files = const [],
+      this.post,
+      this.isLocal = false});
 
   Media.fromJson(Map<String, dynamic> json)
       : type = MediaType.getMediaType(json['type']),
         urls = List<String>.from(json['urls']),
-        file = [];
+        files = [];
 
   Map<String, dynamic> toJson() => {
         'type': type.toString(),
@@ -35,31 +37,31 @@ class Media {
   Media copyWith(
       {MediaType? type,
       List<String>? urls,
-      List<dynamic>? file,
+      List<dynamic>? files,
       PostModel? post}) {
     return Media(
         type: type ?? this.type,
         urls: urls ?? this.urls,
-        file: file ?? this.file,
+        files: files ?? this.files,
         post: post ?? this.post);
   }
 
   Media.initial()
       : type = MediaType.none,
         urls = [],
-        file = [],
+        files = [],
         post = null;
 
   Widget getMedia() {
     switch (type) {
       case MediaType.image:
-        return Image.network(urls[0]);
+        return isLocal ? Image.file(File(files[0].path)) : Image.network(urls[0]);
       case MediaType.images:
-        return CarouselImages(images: urls);
+        return CarouselImages(images: isLocal ? files: urls, network: !isLocal);
       case MediaType.video:
-        return VideoPlayerHome(videoUrl: urls[0]);
+        return VideoPlayerHome(videoUrl: !isLocal ? urls[0] : null, file: isLocal ? files[0] : null , network: !isLocal);
       case MediaType.pdf:
-        return PDFViewer(url: urls[0]);
+        return PDFViewer(url: isLocal ? files[0] : urls[0], network: !isLocal);
       case MediaType.link:
         return AnyLinkPreview(
           link: urls[0],
@@ -83,45 +85,44 @@ class Media {
     }
   }
 
-  Widget getMediaLocal() {
-    switch (type) {
-      case MediaType.image:
-        return Image.file(File(file[0].path));
-      case MediaType.images:
-        return CarouselImages(
-          images: file,
-          network: false,
-        );
-      case MediaType.video:
-        return VideoPlayerHome(
-          network: false,
-          file: file[0],
-        );
-      case MediaType.pdf:
-        return PDFViewer(
-          url: file[0],
-          network: false,
-        );
-      case MediaType.link:
-        return AnyLinkPreview(
-          link: urls[0],
-          displayDirection: UIDirection.uiDirectionHorizontal,
-          backgroundColor: AppColors.fineLinesGrey,
-          titleStyle: const TextStyle(color: AppColors.darkSecondaryText),
-        );
-      case MediaType.post:
-        return Card(
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(20)),
-              side: BorderSide(color: AppColors.blueHue, width: 0),
-            ),
-            child: Posts(
-              post: post!,
-              showBottom: false,
-              showTop: false,
-            ));
-      default:
-        return const SizedBox();
+  Future<List<dynamic>> setToUpload() async {
+    final mediaContent = <dynamic>[];
+
+    if (type == MediaType.post) {
+      mediaContent.add(post!.id);
+    } else if (!isLocal) {
+      mediaContent.addAll(urls);
+    } else if (type == MediaType.pdf) {
+      // For PDF files
+      final bytes = await File(files[0]!.path).readAsBytes();
+      // Explicitly set mime type for PDF
+      final uriData = UriData.fromBytes(bytes, mimeType: 'application/pdf');
+      mediaContent.add(uriData.toString());
+    } else if (files.isNotEmpty) {
+      // For images or other files
+      for (int i = 0; i < files.length; i++) {
+        if (files[i] != null) {
+          final path = files[i]!.path;
+          final bytes = await File(path).readAsBytes();
+
+          // Determine MIME type from file extension
+          String mimeType = '';
+          if (path.toLowerCase().endsWith('.jpg') ||
+              path.toLowerCase().endsWith('.jpeg')) {
+            mimeType = 'image/jpeg';
+          } else if (path.toLowerCase().endsWith('.png')) {
+            mimeType = 'image/png';
+          } else if (path.toLowerCase().endsWith('.gif')) {
+            mimeType = 'image/gif';
+          } else if (path.toLowerCase().endsWith('.mp4')) {
+            mimeType = 'video/mp4';
+          }
+
+          final uriData = UriData.fromBytes(bytes, mimeType: mimeType);
+          mediaContent.add(uriData.toString());
+        }
+      }
     }
+    return mediaContent;
   }
 }

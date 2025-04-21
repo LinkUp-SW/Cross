@@ -1,14 +1,15 @@
-// The route management packages and the class handling it
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:link_up/features/Home/view/saved_posts.dart';
 import 'package:link_up/features/admin_panel/view/statistics_view.dart';
 import 'package:link_up/features/my-network/view/connections_screen.dart';
 import 'package:link_up/core/utils/global_keys.dart';
 import 'package:link_up/features/logIn/view/forgot_pasword_view.dart';
 import 'package:link_up/features/logIn/view/login_view.dart';
 import 'package:link_up/features/profile/view/view.dart';
+import 'package:link_up/features/search/view/search_page.dart';
+import 'package:link_up/features/settings/view/settings.dart';
 import 'package:link_up/features/signUp/view/userInfo/names_view.dart';
 import 'package:link_up/features/signUp/view/userInfo/past_job_details.dart';
 import 'package:link_up/features/signUp/view/userInfo/take_photo.dart';
@@ -35,6 +36,7 @@ import 'package:link_up/features/profile/view/edit_contact_info.dart';
 import 'package:link_up/features/profile/view/add_new_position.dart';
 import 'package:link_up/features/profile/view/add_new_education.dart';
 import 'package:link_up/shared/widgets/main_drawer.dart';
+import 'package:link_up/features/jobs/view/view.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
@@ -82,15 +84,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             ]),
         GoRoute(
           path: "/invitations",
-          builder: (context, state) => InvitationsScreen(
-            isDarkMode: Theme.of(context).brightness == Brightness.dark,
-          ),
+          builder: (context, state) => InvitationsScreen(),
         ),
         GoRoute(
           path: "/manage-network",
-          builder: (context, state) => ManageMyNetworkScreen(
-            isDarkMode: Theme.of(context).brightness == Brightness.dark,
-          ),
+          builder: (context, state) => ManageMyNetworkScreen(),
         ),
         GoRoute(
           path: "/connections",
@@ -100,9 +98,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         ),
         GoRoute(
           path: "/following",
-          builder: (context, state) => PeopleIFollowScreen(
-            isDarkMode: Theme.of(context).brightness == Brightness.dark,
-          ),
+          builder: (context, state) => PeopleIFollowScreen(),
         ),
         GoRoute(
           path: "/pages",
@@ -161,7 +157,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               routes: <GoRoute>[
                 GoRoute(
                   path: "/post",
-                  redirect: (context, state) => "/writePost",
+                  redirect: (context, state) => context.push("/writePost"),
                 ),
               ],
             ),
@@ -169,16 +165,20 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               routes: <GoRoute>[
                 GoRoute(
                   path: "/notifications",
-                  builder: (context, state) => const NotificationsView(),
+                  builder: (context, state) => NotificationsView(
+                    scaffoldKey: scaffoldKey,
+                  ),
                 )
               ],
             ),
             StatefulShellBranch(
               routes: <GoRoute>[
                 GoRoute(
-                    path: "/jobs",
-                    builder: (context, state) =>
-                        const DummyPage(title: 'Jobs')),
+                  path: "/jobs",
+                  builder: (context, state) => JobsScreen(
+                    scaffoldKey: scaffoldKey,
+                  ),
+                ),
               ],
             ),
             StatefulShellBranch(
@@ -228,22 +228,29 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         GoRoute(path: "/company", builder: (context, state) => Container()),
         GoRoute(
             path: "/writePost",
-            pageBuilder: (context, state) => CustomTransitionPage(
-                child: const WritePost(),
-                transitionsBuilder:
-                    (context, animation, secondaryAnimation, child) {
-                  return SlideTransition(
-                    position: Tween<Offset>(
-                      begin: const Offset(0, 1.0),
-                      end: Offset.zero,
-                    ).animate(animation),
-                    child: child,
-                  );
-                })),
+            pageBuilder: (context, state) {
+              final text = state.extra as String?;
+              return CustomTransitionPage(
+                  child: WritePost(text: text ?? ''),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return SlideTransition(
+                      position: Tween<Offset>(
+                        begin: const Offset(0, 1.0),
+                        end: Offset.zero,
+                      ).animate(animation),
+                      child: child,
+                    );
+                  });
+            }),
         GoRoute(
-            path: "/messages",
-            builder: (context, state) => ChatListScreen()),
+          path: '/savedPosts',
+          builder: (context, state) => SavedPostsPage(),
+        ),
+        GoRoute(
+            path: "/messages", builder: (context, state) => ChatListScreen()),
         GoRoute(path: "/chatpage", builder: (context, state) => Container()),
-        GoRoute(path: "/settings", builder: (context, state) => Container()),
+        GoRoute(path: "/search", builder: (context, state) => SearchPage()),
+        GoRoute(path: "/settings", builder: (context, state) => SettingsPage()),
       ]);
 });
