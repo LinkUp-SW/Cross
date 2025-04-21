@@ -11,14 +11,15 @@ import 'dart:math' show pi;
 
 class ConnectionsCard extends ConsumerWidget {
   final ConnectionsCardModel data;
+  final bool isDarkMode;
   const ConnectionsCard({
     super.key,
     required this.data,
+    required this.isDarkMode,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return DecoratedBox(
       decoration: BoxDecoration(
         color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
@@ -89,6 +90,7 @@ class ConnectionsCard extends ConsumerWidget {
                         title: 'Remove connection',
                         content:
                             'Are you sure you want to remove your connection with ${data.firstName} ${data.lastName}?',
+                        isDarkMode: isDarkMode,
                         buttonText: 'Remove',
                         buttonFunctionality: () {
                           Navigator.of(context).pop();

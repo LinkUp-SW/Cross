@@ -8,8 +8,8 @@ class SignUpModel {
   String? country;
   String? city;
   String? jobTitle;
-  Map<String, dynamic>? recentCompany;
-  Map<String, dynamic>? school;
+  String? recentCompany;
+  String? school;
   String? startDate;
   String? location;
   String? address;
@@ -27,8 +27,8 @@ class SignUpModel {
     this.country = '',
     this.city = '',
     this.jobTitle = '',
-    this.recentCompany = null,
-    this.school = null,
+    this.recentCompany = '',
+    this.school = '',
     this.startDate = '',
     this.location = '',
     this.address = '',

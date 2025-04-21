@@ -7,7 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:link_up/core/constants/endpoints.dart';
 import 'package:link_up/core/utils/global_keys.dart';
 import 'package:link_up/features/Home/home_enums.dart';
 import 'package:link_up/features/Home/model/media_model.dart';
@@ -15,12 +14,12 @@ import 'package:link_up/features/Home/viewModel/post_vm.dart';
 import 'package:link_up/features/Post/viewModel/write_post_vm.dart';
 import 'package:link_up/features/Post/widgets/bottom_sheet.dart';
 import 'package:link_up/features/Post/widgets/formatted_input.dart';
+import 'package:link_up/features/logIn/viewModel/user_data_vm.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/widgets/custom_snackbar.dart';
 
 class WritePost extends ConsumerStatefulWidget {
-  const WritePost({super.key,required this.text});
-  final String text;
+  const WritePost({super.key});
 
   @override
   ConsumerState<WritePost> createState() => _WritePostState();
@@ -80,18 +79,18 @@ class _WritePostState extends ConsumerState<WritePost> {
       });
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(writePostProvider.notifier).setController((showTags) {
-        if (_showTags != showTags) {
-          setState(() {
-            _showTags = showTags;
-          });
-        }
-      }, (media) {
-        ref.read(writePostProvider.notifier).setMedia(media);
-      },
-      text: widget.text,
-      );
-    });
+    ref.read(writePostProvider.notifier).setController((showTags) {
+      if (_showTags != showTags) {
+        setState(() {
+          _showTags = showTags;
+        });
+      }
+    },
+    (media) {
+      ref.read(writePostProvider.notifier).setMedia(media);
+    }
+    );
+  });
   }
 
   // Add this utility function to your code
@@ -116,6 +115,7 @@ class _WritePostState extends ConsumerState<WritePost> {
   @override
   Widget build(BuildContext context) {
     final postData = ref.watch(writePostProvider);
+    final userData = ref.read(userDataProvider);
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primary,
       appBar: AppBar(
@@ -125,7 +125,7 @@ class _WritePostState extends ConsumerState<WritePost> {
           icon: const Icon(Icons.close),
           onPressed: () {
             if (postData.controller.text.isEmpty &&
-                postData.media.type == MediaType.none) {
+                postData.media.file.isEmpty) {
               context.pop();
             } else {
               showDialog(
@@ -181,7 +181,7 @@ class _WritePostState extends ConsumerState<WritePost> {
           children: [
             CircleAvatar(
               radius: 20.r,
-              backgroundImage: NetworkImage(InternalEndPoints.profileUrl),
+              backgroundImage: NetworkImage(userData.profileUrl),
             ),
             SizedBox(
               width: 10.w,
@@ -239,7 +239,7 @@ class _WritePostState extends ConsumerState<WritePost> {
               disabledForegroundColor: AppColors.grey,
             ),
             onPressed: postData.controller.text.isEmpty &&
-                        postData.media.type == MediaType.none || 
+                        postData.media.file.isEmpty ||
                     _sending == true
                 ? null
                 : () {
@@ -251,7 +251,7 @@ class _WritePostState extends ConsumerState<WritePost> {
                     });
                     ref
                         .read(writePostProvider.notifier)
-                        .post()
+                        .createPost()
                         .then((value) {
                       if (value == 'error') {
                         setState(() {
@@ -325,7 +325,6 @@ class _WritePostState extends ConsumerState<WritePost> {
                 FormattedInput(
                   controller: postData.controller,
                   focusNode: _focusNode,
-                  onChanged: (value){setState(() {});},
                 ),
                 if (postData.media.type != MediaType.none)
                   Column(
@@ -352,7 +351,7 @@ class _WritePostState extends ConsumerState<WritePost> {
                         borderRadius: BorderRadius.circular(20.r),
                         child: Padding(
                           padding: EdgeInsets.all(5.r),
-                          child: postData.media.getMedia(),
+                          child: postData.media.getMediaLocal(),
                         ),
                       ),
                       SizedBox(
@@ -411,16 +410,15 @@ class _WritePostState extends ConsumerState<WritePost> {
                 IconButton(
                   onPressed: () async {
                     final ImagePicker picker = ImagePicker();
-                    // Pick multiple images or a single image.
+                    // Pick multiple images and videos.
                     final tempImages = await picker.pickMultiImage();
                     setState(() {
                       ref.read(writePostProvider.notifier).setMedia(Media(
-                          isLocal: true,
                           type: tempImages.length > 1
                               ? MediaType.images
                               : MediaType.image,
                           urls: [],
-                          files: [...tempImages]));
+                          file: [...tempImages]));
                     });
                   },
                   icon: Icon(
@@ -437,10 +435,7 @@ class _WritePostState extends ConsumerState<WritePost> {
                     setState(() {
                       if (video != null) {
                         ref.read(writePostProvider.notifier).setMedia(Media(
-                            isLocal: true,
-                            type: MediaType.video,
-                            urls: [],
-                            files: [video]));
+                            type: MediaType.video, urls: [], file: [video]));
                       } else {
                         throw Exception('Could not add video');
                       }
@@ -460,10 +455,9 @@ class _WritePostState extends ConsumerState<WritePost> {
                     setState(() {
                       if (pdf != null) {
                         ref.read(writePostProvider.notifier).setMedia(Media(
-                            isLocal: true,
                             type: MediaType.pdf,
                             urls: [],
-                            files: [pdf.paths[0]!]));
+                            file: [pdf.paths[0]!]));
                       } else {
                         throw Exception('Could not add pdf');
                       }

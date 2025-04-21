@@ -8,6 +8,7 @@ class ReceivedInvitationsTabServices {
 
   const ReceivedInvitationsTabServices(this._baseService);
 
+  // Get all received invitations
   Future<Map<String, dynamic>> getReceivedInvitations({
     Map<String, dynamic>? queryParameters,
   }) async {
@@ -26,6 +27,7 @@ class ReceivedInvitationsTabServices {
     }
   }
 
+  // Accept an invitation
   Future<Map<String, dynamic>> acceptInvitation(String userId) async {
     try {
       final response = await _baseService.post(
@@ -41,6 +43,7 @@ class ReceivedInvitationsTabServices {
     }
   }
 
+  // Ignore an invitation
   Future<Map<String, dynamic>> ignoreInvitation(String userId) async {
     try {
       final response = await _baseService.delete(
@@ -57,10 +60,6 @@ class ReceivedInvitationsTabServices {
 }
 
 final receivedInvitationsTabServicesProvider =
-    Provider<ReceivedInvitationsTabServices>(
-  (ref) {
-    return ReceivedInvitationsTabServices(
-      ref.read(baseServiceProvider),
-    );
-  },
-);
+    Provider<ReceivedInvitationsTabServices>((ref) {
+  return ReceivedInvitationsTabServices(ref.read(baseServiceProvider));
+});

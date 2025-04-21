@@ -10,6 +10,9 @@ class LogInService extends BaseService {
       "auth/login",
       body: {"email": logInModel.email, "password": logInModel.password},
     );
+
+    print(response.statusCode);
+
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {

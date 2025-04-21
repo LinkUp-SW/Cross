@@ -10,14 +10,15 @@ import 'package:link_up/shared/utils/my_network_utils.dart';
 
 class SentInvitationsCard extends ConsumerWidget {
   final InvitationsCardModel data;
+  final bool isDarkMode;
   const SentInvitationsCard({
     super.key,
     required this.data,
+    required this.isDarkMode,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return DecoratedBox(
       decoration: BoxDecoration(
         color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
@@ -85,6 +86,7 @@ class SentInvitationsCard extends ConsumerWidget {
                       title: 'Withdraw invitation',
                       content:
                           'Are you sure you want to withdraw your connection invitation to ${data.firstName} ${data.lastName}?',
+                      isDarkMode: isDarkMode,
                       buttonText: 'Withdraw',
                       buttonFunctionality: () {
                         Navigator.of(context).pop();

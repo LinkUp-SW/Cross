@@ -9,14 +9,15 @@ import 'package:link_up/shared/themes/text_styles.dart';
 
 class FollowingCard extends ConsumerWidget {
   final FollowingCardModel data;
+  final bool isDarkMode;
   const FollowingCard({
     super.key,
     required this.data,
+    required this.isDarkMode,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return DecoratedBox(
       decoration: BoxDecoration(
         color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
@@ -80,6 +81,7 @@ class FollowingCard extends ConsumerWidget {
                       title: 'Unfollowing',
                       content:
                           'Are you sure you want to unfollow ${data.firstName} ${data.lastName}?',
+                      isDarkMode: isDarkMode,
                       buttonText: 'Unfollow',
                       buttonFunctionality: () {
                         Navigator.of(context).pop();

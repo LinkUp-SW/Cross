@@ -9,10 +9,12 @@ import 'package:link_up/features/my-network/widgets/standard_empty_list_message.
 import 'package:link_up/shared/themes/colors.dart';
 
 class SentInvitationsTab extends ConsumerStatefulWidget {
+  final bool isDarkMode;
   final int paginationLimit;
 
   const SentInvitationsTab({
     super.key,
+    required this.isDarkMode,
     this.paginationLimit = 10,
   });
 
@@ -41,7 +43,6 @@ class _SentInvitationsTabState extends ConsumerState<SentInvitationsTab> {
 
   @override
   Widget build(BuildContext context) {
-    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final state = ref.watch(sentInvitationsTabViewModelProvider);
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
@@ -60,10 +61,13 @@ class _SentInvitationsTabState extends ConsumerState<SentInvitationsTab> {
           ? ListView.builder(
               shrinkWrap: true,
               itemCount: 3,
-              itemBuilder: (context, index) => SentInvitationsLoadingSkeleton(),
+              itemBuilder: (context, index) => SentInvitationsLoadingSkeleton(
+                isDarkMode: widget.isDarkMode,
+              ),
             )
           : state.error
               ? RetryErrorMessage(
+                  isDarkMode: widget.isDarkMode,
                   errorMessage: "Failed to load sent connection invitations :(",
                   buttonFunctionality: () async {
                     await ref
@@ -78,6 +82,7 @@ class _SentInvitationsTabState extends ConsumerState<SentInvitationsTab> {
                 )
               : state.sent == null || state.sent!.isEmpty
                   ? StandardEmptyListMessage(
+                      isDarkMode: widget.isDarkMode,
                       message: 'No sent connection invitations',
                     )
                   : ListView.builder(
@@ -91,7 +96,7 @@ class _SentInvitationsTabState extends ConsumerState<SentInvitationsTab> {
                             padding: EdgeInsets.symmetric(vertical: 16.h),
                             child: Center(
                               child: CircularProgressIndicator(
-                                color: isDarkMode
+                                color: widget.isDarkMode
                                     ? AppColors.darkBlue
                                     : AppColors.lightBlue,
                               ),
@@ -100,6 +105,7 @@ class _SentInvitationsTabState extends ConsumerState<SentInvitationsTab> {
                         }
                         return SentInvitationsCard(
                           data: state.sent![index],
+                          isDarkMode: widget.isDarkMode,
                         );
                       },
                     ),

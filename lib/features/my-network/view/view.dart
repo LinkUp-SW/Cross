@@ -15,7 +15,7 @@ class MyNetworkScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return DefaultTabController(
       initialIndex: 0,
       length: 2,
@@ -48,7 +48,7 @@ class MyNetworkScreen extends ConsumerWidget {
         ),
         body: TabBarView(
           children: [
-            GrowTab(),
+            GrowTab(isDarkMode: isDarkMode),
             const Center(child: Text("Catch Tab")),
           ],
         ),

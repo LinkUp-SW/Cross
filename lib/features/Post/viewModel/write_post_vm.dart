@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,21 +20,21 @@ class WritePostVm {
   //bool brandPartnerships = false;
   TextEditingController controller;
   Media media;
+  bool isEdited = false;
   List<dynamic> taggedUsers = [];
-  String postId = 'noId';
 
   WritePostVm({
     required this.visbilityPost,
     required this.visibilityComment,
     required this.media,
     required this.controller,
-    this.postId = 'noId',
-    this.taggedUsers = const [],
+    this.isEdited = false,
   });
 
   WritePostVm.initial()
       : visbilityPost = Visibilities.anyone,
         visibilityComment = Visibilities.anyone,
+        isEdited = false,
         media = Media.initial(),
         controller = TextEditingController(); // Use basic controller initially
 
@@ -134,6 +135,7 @@ class WritePostVm {
         visbilityPost: visbilityPost ?? this.visbilityPost,
         visibilityComment: visibilityComment ?? this.visibilityComment,
         media: media ?? this.media,
+        isEdited: isEdited ?? this.isEdited,
         controller: controller ?? this.controller);
   }
 }
@@ -143,9 +145,8 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
     state.initController(context, () {}, () {});
   }
 
-  void setController(Function updateTags, Function setMedia,{String? text}) {
+  void setController(Function updateTags, Function setMedia) {
     state.initController(context, updateTags, setMedia);
-    state.controller.text = text ?? '';
   }
 
   void setVisibilityPost(Visibilities visibility) {
@@ -166,56 +167,55 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
   }
 
   void setPost(PostModel post, bool isEdited) {
-    state.controller.text = post.text;
     state = WritePostVm(
-      taggedUsers: post.taggedUsers,
-      postId: post.id,
+      isEdited: isEdited,
       visbilityPost: post.header.visibilityPost,
       visibilityComment: post.header.visibilityComments,
       media: post.media,
-      controller: state.controller,
+      controller: TextEditingController(text: post.text),
     );
-    
-  }
-
-  Future<String> post() async {
-    if (state.postId != 'noId') {
-      return await editPost();
-    } else {
-      return await createPost();
-    }
-  }
-
-  Future<String> editPost() async {
-    final BaseService service = BaseService();
-
-    final mediaContent = await state.media.setToUpload();
-
-    final response = await service.put('api/v1/post/edit-post', {
-      "postId": state.postId,
-      "content": state.controller.text,
-      "mediaType": state.media.type.name,
-      "media": mediaContent,
-      "commentsDisabled":
-          Visibilities.getVisibilityString(state.visibilityComment),
-      "publicPost": state.visbilityPost == Visibilities.anyone ? true : false,
-      "taggedUsers": state.taggedUsers,
-    });
-
-    log('Response: ${response.statusCode} - ${response.body}');
-    if (response.statusCode == 200) {
-      log('Post edited successfully: ${response.body}');
-      return 'edited';
-    } else {
-      log('Failed to edit post');
-      return 'error';
-    }
   }
 
   Future<String> createPost() async {
     final BaseService service = BaseService();
 
-    final mediaContent = await state.media.setToUpload();
+    final mediaContent = <dynamic>[];
+
+    if (state.media.type == MediaType.link) {
+      mediaContent.addAll(state.media.urls);
+    } else if (state.media.type == MediaType.post) {
+      mediaContent.add(state.media.post!.id);
+    } else if (state.media.type == MediaType.pdf) {
+      // For PDF files
+      final bytes = await File(state.media.file[0]!.path).readAsBytes();
+      // Explicitly set mime type for PDF
+      final uriData = UriData.fromBytes(bytes, mimeType: 'application/pdf');
+      mediaContent.add(uriData.toString());
+    } else if (state.media.file.isNotEmpty) {
+      // For images or other files
+      for (int i = 0; i < state.media.file.length; i++) {
+        if (state.media.file[i] != null) {
+          final path = state.media.file[i]!.path;
+          final bytes = await File(path).readAsBytes();
+
+          // Determine MIME type from file extension
+          String mimeType = '';
+          if (path.toLowerCase().endsWith('.jpg') ||
+              path.toLowerCase().endsWith('.jpeg')) {
+            mimeType = 'image/jpeg';
+          } else if (path.toLowerCase().endsWith('.png')) {
+            mimeType = 'image/png';
+          } else if (path.toLowerCase().endsWith('.gif')) {
+            mimeType = 'image/gif';
+          } else if (path.toLowerCase().endsWith('.mp4')) {
+            mimeType = 'video/mp4';
+          }
+
+          final uriData = UriData.fromBytes(bytes, mimeType: mimeType);
+          mediaContent.add(uriData.toString());
+        }
+      }
+    }
 
     final response = await service.post('api/v1/post/create-post', body: {
       "content": state.controller.text,
