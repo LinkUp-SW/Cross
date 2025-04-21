@@ -5,12 +5,13 @@ import 'package:link_up/features/profile/model/education_model.dart';
 import 'package:link_up/features/profile/services/profile_services.dart';
 import 'package:link_up/features/profile/state/add_education_state.dart';
 
-// ViewModel (StateNotifier) for the Add Education Form
 class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
   final ProfileService _profileService;
-  final int maxWordCount = 200; // Define the word limit
 
-  // Keep controllers internally managed by the ViewModel
+  // --- Define Max Character Limits ---
+  final int maxDescriptionChars = 2000;
+  final int maxActivitiesChars = 500;
+
   final TextEditingController _schoolController = TextEditingController();
   final TextEditingController _degreeController = TextEditingController();
   final TextEditingController _fieldOfStudyController = TextEditingController();
@@ -109,30 +110,27 @@ class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
      _updateFormDataState();
   }
 
-  // Helper function to count words
-  int _countWords(String text) {
-    text = text.trim();
-    if (text.isEmpty) {
-      return 0;
-    }
-    // Use RegExp to split by one or more whitespace characters
-    return text.split(RegExp(r'\s+')).length;
-  }
-
-  // Validate form data including word count
-  String? validateForm() { // Return error message string or null
+  String? validateForm() {
     if (_schoolController.text.isEmpty) return "School is required.";
     if (_degreeController.text.isEmpty) return "Degree is required.";
     if (_fieldOfStudyController.text.isEmpty) return "Field of Study is required.";
     if (_startDateController.text.isEmpty) return "Start date is required.";
     if (!_isEndDatePresent && _endDateController.text.isEmpty) return "End date is required (or check 'currently studying').";
 
-    int wordCount = _countWords(_descriptionController.text);
-    if (wordCount > maxWordCount) {
-      return "Description cannot exceed $maxWordCount words (currently $wordCount).";
+    if (!_isEndDatePresent && _selectedStartDate != null && _selectedEndDate != null) {
+      if (_selectedEndDate!.isBefore(_selectedStartDate!)) {
+        return "End date cannot be before start date.";
+      }
     }
 
-    return null; // No errors
+    if (_descriptionController.text.length > maxDescriptionChars) {
+      return "Description cannot exceed $maxDescriptionChars characters (currently ${_descriptionController.text.length}).";
+    }
+    if (_activitiesController.text.length > maxActivitiesChars) {
+       return "Activities cannot exceed $maxActivitiesChars characters (currently ${_activitiesController.text.length}).";
+    }
+
+    return null;
   }
 
   Future<void> saveEducation() async {
@@ -143,6 +141,7 @@ class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
           : null;
 
      if (currentFormData == null) return;
+
 
     final validationError = validateForm();
     if (validationError != null) {
@@ -167,7 +166,7 @@ class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
       final success = await _profileService.addEducation(educationModel);
       if (success) {
         state = const AddEducationSuccess();
-        // _resetFormFields(); // Optionally reset form
+         resetForm();
       } else {
         state = AddEducationFailure(currentFormData, "Failed to save education. Server returned false.");
       }
@@ -176,7 +175,7 @@ class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
     }
   }
 
-  void _resetFormFields() {
+  void resetForm() {
     _schoolController.clear();
     _degreeController.clear();
     _fieldOfStudyController.clear();
@@ -203,6 +202,7 @@ class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
      ));
   }
 
+
   @override
   void dispose() {
     _schoolController.dispose();
@@ -217,7 +217,6 @@ class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
   }
 }
 
-// Provider remains the same
 final addEducationViewModelProvider =
     StateNotifierProvider<AddEducationViewModel, AddEducationFormState>((ref) {
   final profileService = ref.watch(profileServiceProvider);

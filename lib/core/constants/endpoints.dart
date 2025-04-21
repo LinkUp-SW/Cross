@@ -26,6 +26,6 @@ class ExternalEndPoints {
   static const followingsList = 'v1/user/my-network/network-manager/following';
   static const unfollow = 'v1/user/unfollow/:user_id';
 
-  static const addEducation = 'v1/user/profile/education/:user_id'; 
+  static const addEducation = 'api/v1/user/add-education'; 
 
 }
