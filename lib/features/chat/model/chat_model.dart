@@ -9,6 +9,9 @@ class Chat {
   final List<Message> messages;
   final DateTime lastMessageTimestamp;
   final bool isBlocked;
+  bool isTyping = false; 
+   final String? typingUser;
+  
 
   Chat({
     required this.name,
@@ -19,6 +22,9 @@ class Chat {
     required this.messages,
     required this.lastMessageTimestamp,
     this.isBlocked = false,  // Default value is false (not blocked)
+    this.isTyping = false, 
+    this.typingUser, // 
+    
   });
 
   Chat copyWith({
@@ -30,8 +36,12 @@ class Chat {
     List<Message>? messages,
     DateTime? lastMessageTimestamp,
      bool? isBlocked, 
+    bool? isTyping,
+    String? typingUser, //
+     
   }) {
     return Chat(
+     
       name: name ?? this.name,
       profilePictureUrl: profilePictureUrl ?? this.profilePictureUrl,
       lastMessage: lastMessage ?? this.lastMessage,
@@ -40,7 +50,9 @@ class Chat {
       messages: messages ?? this.messages,
       lastMessageTimestamp: lastMessageTimestamp ?? this.lastMessageTimestamp,
       isBlocked: isBlocked ?? this.isBlocked,  
-    );
+      isTyping: isTyping ?? this.isTyping, 
+         typingUser: typingUser ?? this.typingUser, );
+      
   }
 }
 

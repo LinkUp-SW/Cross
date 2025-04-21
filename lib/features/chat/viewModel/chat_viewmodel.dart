@@ -1,23 +1,67 @@
+import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:link_up/features/chat/services/chat_service.dart';
+import 'package:link_up/features/chat/services/mock_service.dart';
 import '../model/chat_model.dart';
-import '../services/chat_service.dart';
 
 class ChatViewModel extends StateNotifier<List<Chat>> {
   final ChatService _chatService;
+  Timer? _typingTimer;
 
   ChatViewModel(this._chatService) : super([]) {
     _fetchChats();
   }
 
-  // Fetch chats from the service
   void _fetchChats() async {
     state = await _chatService.fetchChats();
   }
 
+  void updateTypingStatus(int chatIndex, bool isTyping) {
+    final chat = state[chatIndex];
+    final updatedChat = chat.copyWith(
+      isTyping: isTyping,
+      typingUser: isTyping ? "jumana" : null,
+    );
+
+    state = [
+      for (int i = 0; i < state.length; i++)
+        if (i == chatIndex) updatedChat else state[i],
+    ];
+
+    _typingTimer?.cancel();
+
+    if (isTyping) {
+      _typingTimer = Timer(const Duration(seconds: 5), () {
+        updateTypingStatus(chatIndex, false);
+      });
+    }
+  }
+
+  void simulateOtherUserTyping(int chatIndex) {
+    final chat = state[chatIndex];
+  final otherUserName = chat.name; // Dynamically get other user's name
+
+    state = [
+      for (int i = 0; i < state.length; i++)
+        if (i == chatIndex)
+          state[i].copyWith(isTyping: true, typingUser: otherUserName)
+        else
+          state[i]
+    ];
+
+    Future.delayed(const Duration(seconds: 3), () {
+      state = [
+        for (int i = 0; i < state.length; i++)
+          if (i == chatIndex)
+            state[i].copyWith(isTyping: false, typingUser: null)
+          else
+            state[i]
+      ];
+    });
+  }
+
   void sendMessage(int chatIndex, String messageContent, MessageType type) {
     final chat = state[chatIndex];
-
-    // Prevent sending if the user is blocked
     if (chat.isBlocked) return;
 
     final newMessage = Message(
@@ -40,12 +84,14 @@ class ChatViewModel extends StateNotifier<List<Chat>> {
         else
           state[i],
     ];
+
+    Future.delayed(const Duration(seconds: 1), () {
+      simulateOtherUserTyping(chatIndex,);
+    });
   }
 
   void sendMediaAttachment(int chatIndex, String mediaUrl, MessageType type) {
     final chat = state[chatIndex];
-
-    // Prevent sending if the user is blocked
     if (chat.isBlocked) return;
 
     final newMessage = Message(
@@ -70,13 +116,11 @@ class ChatViewModel extends StateNotifier<List<Chat>> {
     ];
   }
 
-  // Delete a chat from the list
   void deleteChat(int index) {
     state.removeAt(index);
-    state = [...state]; // Trigger rebuild
+    state = [...state];
   }
 
-  // Block a user → clear messages and mark as blocked
   void blockUser(int index) {
     final chat = state[index];
     final updatedChat = chat.copyWith(
@@ -94,7 +138,6 @@ class ChatViewModel extends StateNotifier<List<Chat>> {
     ];
   }
 
-  // Optional: Unblock a user (restores ability to chat)
   void unblockUser(int index) {
     final chat = state[index];
     final updatedChat = chat.copyWith(
@@ -109,10 +152,8 @@ class ChatViewModel extends StateNotifier<List<Chat>> {
     ];
   }
 
-  // Toggle read/unread status (Only marks as read when tapped)
   void toggleReadUnreadStatus(int index) {
     final chat = state[index];
-
     if (chat.isUnread) {
       state = [
         for (int i = 0; i < state.length; i++)
@@ -124,10 +165,8 @@ class ChatViewModel extends StateNotifier<List<Chat>> {
     }
   }
 
-  // Long press toggle
   void markReadUnread(int index) {
     final chat = state[index];
-
     state = [
       for (int i = 0; i < state.length; i++)
         if (i == index)
@@ -139,8 +178,19 @@ class ChatViewModel extends StateNotifier<List<Chat>> {
           state[i],
     ];
   }
+
+  @override
+  void dispose() {
+    _typingTimer?.cancel();
+    super.dispose();
+  }
 }
 
+final chatServiceProvider = Provider<ChatService>((ref) {
+  return MockChatService();
+});
+
 final chatViewModelProvider = StateNotifierProvider<ChatViewModel, List<Chat>>((ref) {
-  return ChatViewModel(ChatService());
+  final chatService = ref.read(chatServiceProvider);
+  return ChatViewModel(chatService);
 });

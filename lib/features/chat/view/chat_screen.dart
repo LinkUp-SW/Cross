@@ -43,26 +43,58 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       ),
       body: Column(
         children: [
+          // Chat messages and typing indicator section
           Expanded(
-            child: ListView.builder(
-              controller: _scrollController, // Assign the controller here
-              itemCount: chat.messages.length,
-              itemBuilder: (context, index) {
-                final message = chat.messages[index];
-                return GestureDetector(
-                  onTap: () async {
-                    await _handleMessageTap(message);
-                  },
-                  child: ChatMessageBubble(
-                    message: message,
-                    currentUserName: "jumana",
-                    currentUserProfilePicUrl: "assets/images/profile.png",
-                    chatProfilePicUrl: chat.profilePictureUrl,
+            child: Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    itemCount: chat.messages.length,
+                    itemBuilder: (context, index) {
+                      final message = chat.messages[index];
+                      return GestureDetector(
+                        onTap: () async {
+                          await _handleMessageTap(message);
+                        },
+                        child: ChatMessageBubble(
+                          message: message,
+                          currentUserName: "jumana",
+                          currentUserProfilePicUrl: "assets/images/profile.png",
+                          chatProfilePicUrl: chat.profilePictureUrl,
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
+                ),
+
+                // Typing indicator UI (appears inside chat screen above the input field)
+                if (chat.isTyping && chat.typingUser != "jumana")
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.access_time,
+                          size: 18,
+                          color: theme.colorScheme.onBackground.withOpacity(0.5),
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'User is typing...',
+                          style: TextStyle(
+                            color: theme.colorScheme.onBackground.withOpacity(0.5),
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
             ),
           ),
+
+          // Chat input field (Message sending section)
           ChatInputField(
             messageController: messageController,
             onSendPressed: () {
@@ -83,6 +115,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             onAttachmentPressed: () {
               _showAttachmentOptions(context, ref, widget.chatIndex);
             },
+            
           ),
         ],
       ),
@@ -102,19 +135,17 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   Future<void> _handleVideoMessage(Message message) async {
     final theme = Theme.of(context);
     if (message.sender != "jumana") {
-      // Navigate to VideoPlayerScreen for videos sent by other users
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => VideoPlayerScreen(
-            videoPath: message.content, // Pass the video file path or URL
+            videoPath: message.content,
           ),
         ),
       );
     } else {
-      // Open video directly using OpenFilex for videos sent by the current user
       try {
-        await OpenFilex.open(message.content); // mediaPath
+        await OpenFilex.open(message.content);
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
