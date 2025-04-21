@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:link_up/features/chat/widgets/typing_indicator.dart';
 import 'package:link_up/features/chat/widgets/video_player_screen.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
@@ -29,6 +30,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final chats = ref.watch(chatViewModelProvider);
+    final messages = chats[widget.chatIndex].messages;
     final chat = chats[widget.chatIndex];
 
     return Scaffold(
@@ -53,6 +55,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     itemCount: chat.messages.length,
                     itemBuilder: (context, index) {
                       final message = chat.messages[index];
+                      final isLastMessage = index == messages.length - 1 && message.sender == "jumana";
                       return GestureDetector(
                         onTap: () async {
                           await _handleMessageTap(message);
@@ -62,6 +65,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                           currentUserName: "jumana",
                           currentUserProfilePicUrl: "assets/images/profile.png",
                           chatProfilePicUrl: chat.profilePictureUrl,
+                          isLastMessage: isLastMessage,
                         ),
                       );
                     },
@@ -69,31 +73,17 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 ),
 
                 // Typing indicator UI (appears inside chat screen above the input field)
-                if (chat.isTyping && chat.typingUser != "jumana")
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.access_time,
-                          size: 18,
-                          color: theme.colorScheme.onBackground.withOpacity(0.5),
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          'User is typing...',
-                          style: TextStyle(
-                            color: theme.colorScheme.onBackground.withOpacity(0.5),
-                            fontStyle: FontStyle.italic,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+               
               ],
             ),
           ),
-
+            if (chat.isTyping && chat.typingUser != "jumana")
+                  TypingIndicator(
+                    isTyping: chat.isTyping,
+                    typingUser: chat.typingUser ?? '',
+                    currentUser: 'jumana', // Or dynamically get the current user's name
+                    theme: theme, 
+                  ),
           // Chat input field (Message sending section)
           ChatInputField(
             messageController: messageController,
@@ -115,7 +105,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             onAttachmentPressed: () {
               _showAttachmentOptions(context, ref, widget.chatIndex);
             },
-            
           ),
         ],
       ),
