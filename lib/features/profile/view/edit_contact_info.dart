@@ -1,11 +1,10 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter/services.dart'; 
-import 'package:intl/intl.dart'; 
-import 'package:link_up/core/constants/endpoints.dart'; 
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
+import 'package:link_up/core/constants/endpoints.dart';
 import 'package:link_up/features/profile/state/contact_info_state.dart';
 import 'package:link_up/features/profile/viewModel/contact_info_view_model.dart';
 import 'package:link_up/shared/themes/colors.dart';
@@ -70,7 +69,7 @@ class _EditContactInfoState extends ConsumerState<EditContactInfo> {
          currentBirthday = currentState.previousContactInfo!.birthday;
       }
 
-     initialDate = currentBirthday ?? DateTime(DateTime.now().year - 20); 
+     initialDate = currentBirthday ?? DateTime(DateTime.now().year - 20);
 
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -132,24 +131,23 @@ class _EditContactInfoState extends ConsumerState<EditContactInfo> {
                          backgroundColor: Colors.green,
                       ),
                    );
-
                 }
              });
         }
      });
-
 
     TextEditingController phoneNumberController = viewModel.phoneNumberController;
     TextEditingController addressController = viewModel.addressController;
     TextEditingController birthdayController = viewModel.birthdayController;
     TextEditingController websiteController = viewModel.websiteController;
     String? selectedPhoneType = viewModel.selectedPhoneType;
+
     final String profileUrl = InternalEndPoints.profileUrl.isNotEmpty
       ? InternalEndPoints.profileUrl
-      : "https://www.linkedin.com/in/firstname-familyname-userid/"; 
+      : "https://www.linkedin.com/in/firstname-familyname-userid/";
     final String email = InternalEndPoints.email.isNotEmpty
        ? InternalEndPoints.email
-       : "email@example.com"; 
+       : "email@example.com";
 
     bool isLoading = state is EditContactInfoLoading;
     bool isSaving = state is EditContactInfoSaving;
@@ -227,7 +225,6 @@ class _EditContactInfoState extends ConsumerState<EditContactInfo> {
                               controller: phoneNumberController,
                               focusNode: _phoneFocusNode,
                               enabled: !isSaving,
-
                             ),
                             SizedBox(height: 20.h),
 
@@ -236,7 +233,7 @@ class _EditContactInfoState extends ConsumerState<EditContactInfo> {
                             SubPagesCustomDropdownFormField<String>(
                               value: selectedPhoneType,
                               hintText: "Please select",
-                              items: const [ 
+                              items: const [
                                 DropdownMenuItem(value: "mobile", child: Text("Mobile")),
                                 DropdownMenuItem(value: "home", child: Text("Home")),
                                 DropdownMenuItem(value: "work", child: Text("Work")),
@@ -251,16 +248,16 @@ class _EditContactInfoState extends ConsumerState<EditContactInfo> {
                               controller: addressController,
                               focusNode: _addressFocusNode,
                               enabled: !isSaving,
+                              maxLines: 3,
+                              maxLength: 220,
                             ),
-                            SizedBox(height: 10.h),
-                           
                             SizedBox(height: 20.h),
 
                             SubPagesFormLabel(label: "Birthday"),
                             SizedBox(height: 2.h),
                              InkWell(
                                 onTap: isSaving ? null : () => _selectBirthday(context),
-                                child: AbsorbPointer( 
+                                child: AbsorbPointer(
                                   child: SubPagesCustomTextField(
                                       controller: birthdayController,
                                       hintText: "Select birthday",
@@ -282,7 +279,6 @@ class _EditContactInfoState extends ConsumerState<EditContactInfo> {
                               controller: websiteController,
                               focusNode: _websiteFocusNode,
                               enabled: !isSaving,
-                             
                             ),
                             SizedBox(height: 20.h),
                           ],
