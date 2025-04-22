@@ -248,9 +248,8 @@ class _EditContactInfoState extends ConsumerState<EditContactInfo> {
                               controller: addressController,
                               focusNode: _addressFocusNode,
                               enabled: !isSaving,
-                              maxLines: 3,
                               maxLength: 220,
-                            ),
+                            ), 
                             SizedBox(height: 20.h),
 
                             SubPagesFormLabel(label: "Birthday"),
