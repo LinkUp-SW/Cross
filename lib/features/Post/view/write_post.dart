@@ -1,8 +1,8 @@
+
 import 'dart:developer';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -31,43 +31,7 @@ class _WritePostState extends ConsumerState<WritePost> {
   bool _showTags = false;
   final FocusNode _focusNode = FocusNode();
 
-  final List<dynamic> _listtiles = [
-    {
-      'name': 'This is title',
-      'id': '1',
-      'profile':
-          'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
-      'subtitle': 'This is subtitle',
-    },
-    {
-      'name': 'This is title',
-      'id': '2',
-      'profile':
-          'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
-      'subtitle': 'This is subtitle',
-    },
-    {
-      'name': 'This is title',
-      'id': '3',
-      'profile':
-          'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
-      'subtitle': 'This is subtitle',
-    },
-    {
-      'name': 'This is title',
-      'id': '4',
-      'profile':
-          'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
-      'subtitle': 'This is subtitle',
-    },
-    {
-      'name': 'This is title',
-      'id': '5',
-      'profile':
-          'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
-      'subtitle': 'This is subtitle',
-    },
-  ];
+  final List<dynamic> _listtiles = [];
 
   @override
   void initState() {
@@ -80,10 +44,13 @@ class _WritePostState extends ConsumerState<WritePost> {
       });
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(writePostProvider.notifier).setController((showTags) {
+      ref.read(writePostProvider.notifier).setController((showTags,users) {
         if (_showTags != showTags) {
           setState(() {
             _showTags = showTags;
+            _listtiles.clear();
+            _listtiles.addAll(users);
+            log(_listtiles.toString());
           });
         }
       }, (media) {
@@ -92,25 +59,6 @@ class _WritePostState extends ConsumerState<WritePost> {
       text: widget.text,
       );
     });
-  }
-
-  // Add this utility function to your code
-  Future<bool> isAccessibleUrl(String url) async {
-    try {
-      // First check if the URL format is valid
-      final uri = Uri.parse(url);
-      if (uri.scheme != 'http' && uri.scheme != 'https') {
-        return false;
-      }
-
-      // Then try to check if the URL is accessible
-      // Using a HEAD request to minimize data transfer
-      final response = await http.head(uri);
-      return response.statusCode >= 200 && response.statusCode < 400;
-    } catch (e) {
-      log('Error checking URL accessibility: $e');
-      return false;
-    }
   }
 
   @override
@@ -365,7 +313,14 @@ class _WritePostState extends ConsumerState<WritePost> {
           ),
         ),
         if (_showTags && _focusNode.hasFocus)
-          SizedBox(
+          Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20.r),
+                topRight: Radius.circular(20.r),
+              ),
+            ),
             height: 200.h,
             child: ListView.separated(
               shrinkWrap: true,
@@ -375,11 +330,11 @@ class _WritePostState extends ConsumerState<WritePost> {
                 return ListTile(
                   leading: CircleAvatar(
                     radius: 20.r,
-                    backgroundImage: NetworkImage(_listtiles[index]['profile']),
+                    backgroundImage: NetworkImage(_listtiles[index]['profile_photo']),
                   ),
                   title: Text(_listtiles[index]['name'],
                       style: Theme.of(context).textTheme.bodyLarge),
-                  subtitle: Text(_listtiles[index]['subtitle'],
+                  subtitle: Text(_listtiles[index]['headline'] ?? '',
                       style: Theme.of(context).textTheme.bodySmall!.copyWith(
                             color: AppColors.grey,
                           )),
@@ -388,8 +343,9 @@ class _WritePostState extends ConsumerState<WritePost> {
                         postData.controller.text.replaceRange(
                       postData.controller.text.lastIndexOf('@'),
                       postData.controller.text.length,
-                      "@${_listtiles[index]['name']}:${_listtiles[index]['id']}^ ",
+                      "@${_listtiles[index]['name']}:${_listtiles[index]['user_id']}^ ",
                     );
+                    ref.read(writePostProvider.notifier).tagUser(_listtiles[index]);
                     setState(() {
                       _showTags = false;
                     });

@@ -102,18 +102,36 @@ class WritePostVm {
             },
           ),
           TextPartStyleDefinition(
-            pattern: r'@[\w ]*',
+            pattern: r'@[\w ^:]*$',
             style: TextStyle(),
-            onDetected: (p0) {
-              log('Mention detected: $p0');
+            onDetected: (p0) async{
               if (p0.length > 1) {
-                updateTags(true);
+                final query = p0.substring(1);
+                final BaseService baseService = BaseService();
+                await baseService.get(
+                  'api/v1/search/users?query=$query&limit=25&page=1').then((value) {
+                  if (value.statusCode == 200) {
+                    final body = jsonDecode(value.body);
+                    updateTags(false,[]);
+                    final List<dynamic> users = body['people'];
+                    users.removeWhere((user) {
+                      return taggedUsers.any((taggedUser) =>
+                          taggedUser['user_id'] == user['user_id']);
+                    });
+                    log('Fetched users: $users');
+                    updateTags(true, users);
+                  } else {
+                    log('Failed to fetch users');
+                  }
+                }).catchError((error) {
+                  log('Error fetching users: $error');
+                });
               }
             },
             preventPartialDeletion: true,
             onDelete: (p0) {
               log('Mention deleted: $p0');
-              updateTags(false);
+              updateTags(false,[]);
             },
           ),
           FormattingTextStyles.boldStyle,
@@ -144,7 +162,7 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
     state.initController(context, () {}, () {});
   }
 
-  void setController(Function updateTags, Function setMedia,{String? text}) {
+  void setController(Function updateTags, Function setMedia, {String? text}) {
     state.initController(context, updateTags, setMedia);
     state.controller.text = text ?? '';
   }
@@ -159,6 +177,10 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
 
   void setMedia(Media media) {
     state = state.copyWith(media: media);
+  }
+
+  void tagUser(Map<String, dynamic> user) {
+    state.taggedUsers.add(user);
   }
 
   void clearWritePost() {
@@ -176,7 +198,6 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
       media: post.media,
       controller: state.controller,
     );
-    
   }
 
   Future<String> post() async {

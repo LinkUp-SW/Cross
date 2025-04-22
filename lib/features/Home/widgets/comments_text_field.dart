@@ -33,16 +33,19 @@ class CommentsTextField extends ConsumerStatefulWidget {
 class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
   bool _showTags = false;
   bool _sending = false;
+  List<dynamic> users = [];
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(writeCommentProvider.notifier).setController(
-        (showTags) {
+        (showTags, data) {
           if (_showTags != showTags) {
             setState(() {
               _showTags = showTags;
+              users.clear();
+              users.addAll(data);
             });
           }
         },
@@ -80,22 +83,31 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                   child: Column(
                     children: [
                       if (_showTags) ...[
-                        SizedBox(
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.surface,
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(20.r),
+                              topRight: Radius.circular(20.r),
+                            ),
+                          ),
                           height: 200.h,
                           child: ListView.separated(
                             shrinkWrap: true,
                             physics: const ClampingScrollPhysics(),
-                            itemCount: 10,
+                            itemCount: users.length,
                             itemBuilder: (context, index) {
                               return ListTile(
                                 leading: CircleAvatar(
                                   radius: 20.r,
-                                  backgroundImage: const NetworkImage(
-                                    'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
-                                  ),
+                                  backgroundImage: NetworkImage(
+                                      users[index]['profile_photo']),
                                 ),
-                                title: Text("User $index"),
-                                subtitle: Text("user $index",
+                                title: Text(users[index]['name'],
+                                    style:
+                                        Theme.of(context).textTheme.bodyLarge),
+                                subtitle: Text(
+                                    users[index]['headline'] ?? '',
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodySmall!
@@ -105,12 +117,13 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                                 onTap: () {
                                   writeComment.controller.text =
                                       writeComment.controller.text.replaceRange(
-                                    writeComment.controller.text
-                                        .lastIndexOf('@'),
+                                    writeComment.controller.text.lastIndexOf('@'),
                                     writeComment.controller.text.length,
-                                    "@User $index:${InternalEndPoints.userId}^ ",
+                                    "@${users[index]['name']}:${users[index]['user_id']}^ ",
                                   );
-                                  widget.focusNode.requestFocus();
+                                  ref
+                                      .read(writeCommentProvider.notifier)
+                                      .tagUser(users[index]);
                                   setState(() {
                                     _showTags = false;
                                   });
@@ -256,17 +269,24 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                                             .clearWritePost();
                                         setState(() {
                                           _sending = false;
-                                          ref.read(commentsProvider.notifier).fetchComments(widget.postId).then((value) {
-                                            ref.read(commentsProvider.notifier).addComments(value);
+                                          ref
+                                              .read(commentsProvider.notifier)
+                                              .fetchComments(widget.postId)
+                                              .then((value) {
+                                            ref
+                                                .read(commentsProvider.notifier)
+                                                .addComments(value);
                                           });
                                         });
                                       },
-                                      icon:_sending ? CircularProgressIndicator() : Icon(
-                                        Icons.arrow_upward,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .surface,
-                                      ),
+                                      icon: _sending
+                                          ? CircularProgressIndicator()
+                                          : Icon(
+                                              Icons.arrow_upward,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .surface,
+                                            ),
                                       style: IconButton.styleFrom(
                                         backgroundColor: Theme.of(context)
                                             .colorScheme
@@ -344,21 +364,28 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                                       });
                                       await ref
                                           .read(writeCommentProvider.notifier)
-                                          .createComment(widget.postId,
-                                              widget.commentId);
+                                          .createComment(
+                                              widget.postId, widget.commentId);
                                       widget.focusNode.unfocus();
                                       ref
                                           .read(writeCommentProvider.notifier)
                                           .clearWritePost();
                                       setState(() {
                                         _sending = false;
-                                        ref.read(commentsProvider.notifier).fetchComments(widget.postId).then((value) {
-                                            ref.read(commentsProvider.notifier).addComments(value);
+                                        ref
+                                            .read(commentsProvider.notifier)
+                                            .fetchComments(widget.postId)
+                                            .then((value) {
+                                          ref
+                                              .read(commentsProvider.notifier)
+                                              .addComments(value);
                                         });
                                       });
                                       setState(() {});
                                     },
-                                    child: _sending ? CircularProgressIndicator(): Text(widget.buttonName),
+                                    child: _sending
+                                        ? CircularProgressIndicator()
+                                        : Text(widget.buttonName),
                                   ),
                                 ],
                               ),
