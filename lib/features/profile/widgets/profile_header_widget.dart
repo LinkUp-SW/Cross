@@ -1,40 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:link_up/features/profile/model/profile_model.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/shared/themes/button_styles.dart';
-import 'package:go_router/go_router.dart';
 import 'package:link_up/features/profile/widgets/bottom_sheet.dart';
 
-
-
-
 class ProfileHeaderWidget extends ConsumerWidget {
-  const ProfileHeaderWidget({super.key});
+  final UserProfile userProfile;
+
+  const ProfileHeaderWidget({
+    super.key,
+    required this.userProfile,
+  });
 
   void _handleProfilePicTap(BuildContext context) {
     final options = [
       ReusableBottomSheetOption(
         icon: Icons.camera_alt_outlined,
         title: 'Take a photo',
-        onTap: () {
-          // TODO: Implement take photo logic
-        },
+        onTap: () {},
       ),
       ReusableBottomSheetOption(
         icon: Icons.arrow_upward,
         title: 'Upload from photos',
-        onTap: () {
-          // TODO: Implement upload photo logic
-        },
+        onTap: () {},
       ),
        ReusableBottomSheetOption(
-        icon: Icons.delete_outline, 
-        title: 'Delete profile picture', 
-        onTap: () {
-          // TODO: Implement view logic
-        },
+        icon: Icons.delete_outline,
+        title: 'Delete profile picture',
+        onTap: () {},
       ),
     ];
     showReusableBottomSheet(context: context, options: options);
@@ -45,49 +42,48 @@ class ProfileHeaderWidget extends ConsumerWidget {
       ReusableBottomSheetOption(
         icon: Icons.arrow_upward,
         title: 'Upload background photo',
-        onTap: () {
-          // TODO: Implement upload background photo logic
-        },
-      ),  
+        onTap: () {},
+      ),
        ReusableBottomSheetOption(
-        icon: Icons.delete_outline, 
-        title: 'Delete background photo', 
-        onTap: () {
-          // TODO: Implement delete background photo logic
-        },
+        icon: Icons.delete_outline,
+        title: 'Delete background photo',
+        onTap: () {},
       ),
     ];
     showReusableBottomSheet(context: context, options: options);
   }
 
   void _handleOpenToTap(BuildContext context) {
-    final options = [
+     final options = [
       ReusableBottomSheetOption(
         title: 'Finding a new job',
         subtitle: 'Show recruiters and others that you\'re open to work',
-        onTap: () {
-          print("Finding a new job Tapped");
-          // TODO: Implement action for Finding a new job
-        },
+        onTap: () {},
       ),
       ReusableBottomSheetOption(
         title: 'Hiring',
         subtitle: 'Share that you\'re hiring and attract qualified candidates',
-        onTap: () {
-          print("Hiring Tapped");
-          // TODO: Implement action for Hiring
-        },
+        onTap: () {},
       ),
     ];
     showReusableBottomSheet(context: context, options: options);
   }
-
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final buttonStyles = LinkUpButtonStyles();
     final double backgroundHeight = 70.h;
+
+    String locationString = '';
+    if (userProfile.city != null && userProfile.countryRegion != null) {
+      locationString = '${userProfile.city}, ${userProfile.countryRegion}';
+    } else if (userProfile.city != null) {
+      locationString = userProfile.city!;
+    } else if (userProfile.countryRegion != null) {
+      locationString = userProfile.countryRegion!;
+    }
+
 
     return Container(
       width: double.infinity,
@@ -101,30 +97,34 @@ class ProfileHeaderWidget extends ConsumerWidget {
             clipBehavior: Clip.none,
             children: [
               GestureDetector(
-                onTap: () => _handleBackgroundPicTap(context), 
+                onTap: () => _handleBackgroundPicTap(context),
                 child: Container(
                   height: backgroundHeight,
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: AppColors.lightGrey,
-                    image: DecorationImage(
-                      image: AssetImage('assets/images/background.png'),
-                      fit: BoxFit.cover,
-                    ),
+                    image: userProfile.coverPhotoUrl.isNotEmpty
+                        ? DecorationImage(
+                            image: NetworkImage(userProfile.coverPhotoUrl),
+                            fit: BoxFit.cover,
+                          )
+                        : null,
                   ),
-                  child: Align(
-                    alignment: Alignment.topRight,
-                    child: IconButton(
-                      icon: Icon(Icons.camera_alt_rounded, color: Colors.white),
-                       onPressed: () => _handleBackgroundPicTap(context), 
-                    ),
-                  ),
+                  child: userProfile.coverPhotoUrl.isEmpty
+                      ? const Center(child: Text(''))
+                      : Align(
+                          alignment: Alignment.topRight,
+                          child: IconButton(
+                            icon: const Icon(Icons.camera_alt_rounded, color: Colors.white),
+                            onPressed: () => _handleBackgroundPicTap(context),
+                          ),
+                        ),
                 ),
               ),
               Padding(
                 padding: EdgeInsets.only(top: 30.h, left: 16.w),
                 child: GestureDetector(
-                  onTap: () => _handleProfilePicTap(context), 
+                  onTap: () => _handleProfilePicTap(context),
                   child: Stack(
                     clipBehavior: Clip.none,
                     children: [
@@ -133,7 +133,10 @@ class ProfileHeaderWidget extends ConsumerWidget {
                         backgroundColor: Colors.white,
                         child: CircleAvatar(
                           radius: 48.r,
-                          backgroundImage: AssetImage('assets/images/uploadProfilePic.png'),
+                          backgroundImage: userProfile.profilePhotoUrl.isNotEmpty
+                              ? NetworkImage(userProfile.profilePhotoUrl)
+                              : const AssetImage('assets/images/default-profile-picture.jpg') as ImageProvider,
+                          backgroundColor: Colors.grey[300],
                         ),
                       ),
                       Positioned(
@@ -176,29 +179,31 @@ class ProfileHeaderWidget extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Amr Safwat",
+                  '${userProfile.firstName} ${userProfile.lastName}',
                   style: TextStyles.font25_700Weight.copyWith(
                     color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
                   ),
                 ),
                 Text(
-                  "Student at Cairo University",
+                  userProfile.headline,
                   style: TextStyles.font18_500Weight.copyWith(
                     color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightTextColor,
                   ),
                 ),
                 SizedBox(height: 5.h),
-                Text(
-                  "Cairo University",
-                  style: TextStyles.font14_400Weight.copyWith(color: AppColors.lightGrey),
-                ),
-                Text(
-                  "Giza, Al Jizah, Egypt",
-                  style: TextStyles.font13_400Weight.copyWith(color: AppColors.lightGrey),
-                ),
+                 if (userProfile.education.isNotEmpty)
+                   Text(
+                     userProfile.education.first,
+                     style: TextStyles.font14_400Weight.copyWith(color: AppColors.lightGrey),
+                   ),
+                if (locationString.isNotEmpty)
+                  Text(
+                    locationString,
+                    style: TextStyles.font13_400Weight.copyWith(color: AppColors.lightGrey),
+                  ),
                 SizedBox(height: 10.h),
                 Text(
-                  "0 connections",
+                  '${userProfile.numberOfConnections} connections',
                   style: TextStyles.font14_400Weight.copyWith(color: AppColors.lightGrey),
                 ),
                 SizedBox(height: 8.h),
@@ -215,7 +220,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
                     Expanded(
                       flex: 4,
                       child: ElevatedButton(
-                        onPressed: () => _handleOpenToTap(context), 
+                        onPressed: () => _handleOpenToTap(context),
                         style: isDarkMode
                             ? buttonStyles.wideBlueElevatedButtonDark()
                             : buttonStyles.wideBlueElevatedButton(),
@@ -231,7 +236,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
                     Expanded(
                       flex: 4,
                       child: OutlinedButton(
-                        onPressed: () {}, 
+                        onPressed: () {},
                         style: isDarkMode
                             ? buttonStyles.blueOutlinedButtonDark()
                             : buttonStyles.blueOutlinedButton(),
@@ -248,7 +253,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
                       width: 30.r,
                       height: 35.r,
                       child: OutlinedButton(
-                        onPressed: () {}, 
+                        onPressed: () {},
                         style: isDarkMode
                             ? buttonStyles.circularButtonDark()
                             : buttonStyles.circularButton(),
@@ -264,7 +269,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton(
-                    onPressed: () {}, 
+                    onPressed: () {},
                     style: isDarkMode
                         ? buttonStyles.blueOutlinedButtonDark()
                         : buttonStyles.blueOutlinedButton(),

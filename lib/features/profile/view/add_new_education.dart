@@ -13,6 +13,10 @@ import 'package:link_up/shared/themes/button_styles.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 
+import 'package:link_up/shared/widgets/autocomplete_search_input.dart';
+import 'package:link_up/features/signUp/viewModel/past_job_details_provider.dart';
+
+
 class AddNewEducation extends ConsumerStatefulWidget {
   const AddNewEducation({super.key});
 
@@ -23,12 +27,15 @@ class AddNewEducation extends ConsumerStatefulWidget {
 class _AddNewEducationState extends ConsumerState<AddNewEducation> {
   final FocusNode _startDateFocusNode = FocusNode();
   final FocusNode _endDateFocusNode = FocusNode();
+  final FocusNode _schoolFocusNode = FocusNode();
 
   int _descriptionCharCount = 0;
   final int _maxDescriptionChars = 2000;
 
   int _activitiesCharCount = 0;
   final int _maxActivitiesChars = 500;
+
+  Map<String, dynamic>? _selectedSchoolData;
 
   @override
   void initState() {
@@ -91,7 +98,14 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
 
     _startDateFocusNode.dispose();
     _endDateFocusNode.dispose();
+    _schoolFocusNode.dispose();
     super.dispose();
+  }
+
+  Future<List<Map<String, dynamic>>> _searchSchoolsProfile(String query) async {
+    final notifier = ref.read(pastJobDetailProvider.notifier);
+    await notifier.getSchools(query, ref);
+    return ref.read(schoolResultsProvider);
   }
 
   Future<void> _selectDate(BuildContext context, bool isStartDate) async {
@@ -108,22 +122,38 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
             currentFormData.selectedStartDate ??
             DateTime.now();
     final firstDate = DateTime(1900);
-    final lastDate = DateTime.now().add(const Duration(days: 365 * 10));
+    final lastDate = DateTime.now().add(const Duration(days: 365 * 10)); 
 
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: initialDate,
       firstDate: firstDate,
       lastDate: lastDate,
+       builder: (context, child) {
+         final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+         return Theme(
+           data: ThemeData(
+             colorScheme: isDarkMode ? const ColorScheme.dark(
+                 primary: AppColors.darkBlue,
+                 onPrimary: AppColors.darkMain,
+                 surface: AppColors.darkMain,
+                 onSurface: AppColors.darkTextColor,
+             ) : const ColorScheme.light(
+                 primary: AppColors.lightBlue,
+                 onPrimary: AppColors.lightMain,
+                 surface: AppColors.lightMain,
+                 onSurface: AppColors.lightTextColor,
+             ),
+              dialogBackgroundColor: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+           ),
+           child: child!,
+         );
+       },
     );
 
     if (picked != null) viewModel.setDate(picked, isStartDate);
 
-    if (isStartDate) {
-      _startDateFocusNode.unfocus();
-    } else {
-      _endDateFocusNode.unfocus();
-    }
+
   }
 
 
@@ -177,9 +207,18 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                             SubPagesFormLabel(
                                 label: "School", isRequired: true),
                             SizedBox(height: 2.h),
-                            SubPagesCustomTextField(
-                              controller: formData.schoolController,
-                              hintText: "Ex: Cairo University",
+
+                            AutocompleteSearchInput(
+                                controller: formData.schoolController,
+                                label: "Ex: Cairo University", 
+                                searchFunction: _searchSchoolsProfile, 
+                                onSelected: (selectedItem) {
+                                  
+                                   setState(() {
+                                      _selectedSchoolData = selectedItem;
+                                   });
+                                    print("Selected School (Profile): $selectedItem");
+                                },
                             ),
                             SizedBox(height: 20.h),
                             SubPagesFormLabel(
@@ -200,9 +239,9 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                             SizedBox(height: 20.h),
                             SubPagesFormLabel(
                                 label: "Start date", isRequired: true),
-                            InkWell(
+                            InkWell( 
                               onTap: () => _selectDate(context, true),
-                              child: AbsorbPointer(
+                              child: AbsorbPointer( 
                                 child: SubPagesCustomTextField(
                                   controller: formData.startDateController,
                                   hintText: "Select start date",
@@ -221,9 +260,9 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                             SubPagesFormLabel(
                                 label: "End date or expected",
                                 isRequired: true),
-                            InkWell(
+                            InkWell( 
                               onTap: formData.isEndDatePresent
-                                  ? null
+                                  ? null 
                                   : () => _selectDate(context, false),
                               child: AbsorbPointer(
                                 child: SubPagesCustomTextField(
@@ -236,7 +275,7 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                                   suffixIcon: Icon(
                                     Icons.calendar_today,
                                     color: formData.isEndDatePresent
-                                          ? AppColors.lightGrey
+                                          ? AppColors.lightGrey 
                                           : (isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor),
                                     size: 15.sp,
                                   ),
@@ -250,8 +289,13 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                                   onChanged: (value) {
                                     if (value != null) {
                                       viewModel.setIsEndDatePresent(value);
+
                                        if (!value && formData.endDateController.text == "Present") {
-                                          formData.endDateController.clear();
+                                          formData.endDateController.clear(); 
+                              
+                                          if (formData.selectedEndDate != null) {
+                                             viewModel.setDate(formData.selectedEndDate!, false);
+                                          }
                                        }
                                     }
                                   },
@@ -281,7 +325,7 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                             SubPagesCustomTextField(
                               controller: formData.activitiesController,
                               hintText: "Ex: IEEE, Debate Club",
-                              maxLines: null,
+                              maxLines: null, 
                             ),
                              Padding(
                               padding: EdgeInsets.only(top: 4.h, right: 8.w),
@@ -336,7 +380,9 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                             ),
                             SizedBox(height: 10.h),
                             ElevatedButton(
-                              onPressed: () { },
+                              onPressed: () {
+                                 // TODO: Implement Add Skill functionality
+                                },
                               style: isDarkMode
                                   ? buttonStyles.blueOutlinedButtonDark()
                                   : buttonStyles.blueOutlinedButton(),
@@ -359,7 +405,9 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                             ),
                              SizedBox(height: 10.h),
                             ElevatedButton(
-                              onPressed: () { },
+                              onPressed: () {
+                                // TODO: Implement Add Media functionality
+                                },
                               style: isDarkMode
                                   ? buttonStyles.blueOutlinedButtonDark()
                                   : buttonStyles.blueOutlinedButton(),
@@ -380,10 +428,11 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
+                   style: buttonStyles.wideBlueElevatedButton().copyWith(
+                       minimumSize: WidgetStateProperty.all(Size.fromHeight(50))),
                   onPressed: state is AddEducationLoading
                       ? null
-                      : () => viewModel.saveEducation(),
-                  style: buttonStyles.wideBlueElevatedButton(),
+                      : () => viewModel.saveEducation(), 
                   child: state is AddEducationLoading
                       ? const SizedBox(
                           height: 20,
