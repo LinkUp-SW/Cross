@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/my-network/model/grow_tab_model.dart';
+import 'package:link_up/features/my-network/viewModel/grow_tab_view_model.dart';
 import 'package:link_up/features/my-network/widgets/grow_tab_navigation_row.dart';
 import 'package:link_up/features/my-network/widgets/newsletter_card.dart';
 import 'package:link_up/features/my-network/widgets/people_card.dart';
@@ -10,14 +11,44 @@ import 'package:link_up/features/my-network/widgets/section.dart';
 import 'package:link_up/features/my-network/widgets/wide_people_card.dart';
 import 'package:link_up/features/my-network/widgets/wide_section.dart';
 
-class GrowTab extends ConsumerWidget {
+class GrowTab extends ConsumerStatefulWidget {
   const GrowTab({
     super.key,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() => _GrowTabState();
+}
+
+class _GrowTabState extends ConsumerState<GrowTab> {
+  final int paginationLimit = 4;
+  @override
+  void initState() {
+    super.initState();
+
+    Future.microtask(() {
+      ref.read(growTabViewModelProvider.notifier).getPeopleYouMayKnow(
+          queryParameters: {
+            "cursor": null,
+            "limit": '$paginationLimit',
+            "context": "education"
+          });
+    });
+
+    Future.microtask(() {
+      ref.read(growTabViewModelProvider.notifier).getPeopleYouMayKnow(
+          queryParameters: {
+            "cursor": null,
+            "limit": '$paginationLimit',
+            "context": "work_experience"
+          });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final state = ref.watch(growTabViewModelProvider);
     return ListView(
       children: [
         GrowTabNavigationRow(
@@ -36,28 +67,29 @@ class GrowTab extends ConsumerWidget {
         SizedBox(
           height: 10.h,
         ),
-        Section(
-          title: "People you may know based on your recent activity",
-          cards: [
-            PeopleCard(
-              data: GrowTabPeopleCardsModel.initial(),
-              isDarkMode: isDarkMode,
-            ),
-            PeopleCard(
-              data: GrowTabPeopleCardsModel.initial(),
-              isDarkMode: isDarkMode,
-            ),
-            PeopleCard(
-              data: GrowTabPeopleCardsModel.initial(),
-              isDarkMode: isDarkMode,
-            ),
-            PeopleCard(
-              data: GrowTabPeopleCardsModel.initial(),
-              isDarkMode: isDarkMode,
-            ),
-          ],
-          isDarkMode: isDarkMode,
-        ),
+        if (state.workTitle != null)
+          Section(
+            title: "People you may know from ${state.workTitle}",
+            cards: state.peopleYouMayKnowFromEducation != null &&
+                    state.peopleYouMayKnowFromEducation!.isNotEmpty
+                ? state.peopleYouMayKnowFromEducation!
+                    .map((person) => PeopleCard(
+                          data: person,
+                          isDarkMode: isDarkMode,
+                        ))
+                    .toList()
+                : [
+                    PeopleCard(
+                      data: GrowTabPeopleCardsModel.initial(),
+                      isDarkMode: isDarkMode,
+                    ),
+                    PeopleCard(
+                      data: GrowTabPeopleCardsModel.initial(),
+                      isDarkMode: isDarkMode,
+                    ),
+                  ],
+            isDarkMode: isDarkMode,
+          ),
         SizedBox(
           height: 10.h,
         ),

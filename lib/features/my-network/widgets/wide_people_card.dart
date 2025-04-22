@@ -176,18 +176,18 @@ class WidePeopleCard extends ConsumerWidget {
                     ),
                   ],
                 ),
-                Flexible(
-                  child: Text(
-                    "${data.firstMutualConnectionFirstName}, ${data.secondMutualConnectionFirstName} and ${data.mutualConnectionsNumber} others you know followed",
-                    style: TextStyles.font13_400Weight.copyWith(
-                      color: isDarkMode
-                          ? AppColors.darkTextColor
-                          : AppColors.lightSecondaryText,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 2,
-                  ),
-                ),
+                // Flexible(
+                //   child: Text(
+                //     "${data.firstMutualConnectionFirstName}, ${data.secondMutualConnectionFirstName} and ${data.mutualConnectionsNumber} others you know followed",
+                //     style: TextStyles.font13_400Weight.copyWith(
+                //       color: isDarkMode
+                //           ? AppColors.darkTextColor
+                //           : AppColors.lightSecondaryText,
+                //     ),
+                //     overflow: TextOverflow.ellipsis,
+                //     maxLines: 2,
+                //   ),
+                // ),
               ],
             ),
           ),

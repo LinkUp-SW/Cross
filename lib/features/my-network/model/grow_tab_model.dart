@@ -1,59 +1,63 @@
 class GrowTabPeopleCardsModel {
+  final String cardId;
   final String profilePicture;
   final String coverPicture;
   final String firstName;
   final String lastName;
   final String title;
-  final String firstMutualConnectionProfilePicture;
-  final String firstMutualConnectionFirstName;
-  final String? secondMutualConnectionProfilePicture;
-  final String? secondMutualConnectionFirstName;
-  final int mutualConnectionsNumber;
+  // final String firstMutualConnectionProfilePicture;
+  // final String firstMutualConnectionFirstName;
+  // final String? secondMutualConnectionProfilePicture;
+  // final String? secondMutualConnectionFirstName;
+  // final int mutualConnectionsNumber;
 
   const GrowTabPeopleCardsModel({
+    required this.cardId,
     required this.profilePicture,
     required this.coverPicture,
     required this.firstName,
     required this.lastName,
     required this.title,
-    required this.firstMutualConnectionProfilePicture,
-    required this.firstMutualConnectionFirstName,
-    this.secondMutualConnectionProfilePicture,
-    this.secondMutualConnectionFirstName,
-    required this.mutualConnectionsNumber,
+    // required this.firstMutualConnectionProfilePicture,
+    // required this.firstMutualConnectionFirstName,
+    // this.secondMutualConnectionProfilePicture,
+    // this.secondMutualConnectionFirstName,
+    // required this.mutualConnectionsNumber,
   });
 
   factory GrowTabPeopleCardsModel.fromJson(Map<String, dynamic> json) {
     return GrowTabPeopleCardsModel(
-      profilePicture: json['profilePicture'],
-      coverPicture: json['coverPicture'],
-      firstName: json['firstName'],
-      lastName: json['lastName'],
-      title: json['title'],
-      firstMutualConnectionProfilePicture:
-          json['firstMutualConnectionProfilePicture'],
-      firstMutualConnectionFirstName: json['firstMutualConnectionFirstName'],
-      secondMutualConnectionProfilePicture:
-          json['secondMutualConnectionProfilePicture'],
-      secondMutualConnectionFirstName: json['secondMutualConnectionFirstName'],
-      mutualConnectionsNumber: json['mutualConnectionsNumber'],
+      cardId: json['user_id'],
+      profilePicture: json['profile_photo'],
+      coverPicture: json['cover_photo'],
+      firstName: json['first_name'],
+      lastName: json['last_name'],
+      title: json['bio']['headline'],
+      // firstMutualConnectionProfilePicture:
+      //     json['firstMutualConnectionProfilePicture'],
+      // firstMutualConnectionFirstName: json['firstMutualConnectionFirstName'],
+      // secondMutualConnectionProfilePicture:
+      //     json['secondMutualConnectionProfilePicture'],
+      // secondMutualConnectionFirstName: json['secondMutualConnectionFirstName'],
+      // mutualConnectionsNumber: json['mutualConnectionsNumber'],
     );
   }
 
   factory GrowTabPeopleCardsModel.initial() {
     return const GrowTabPeopleCardsModel(
+      cardId: '1',
       profilePicture: "assets/images/profile.png",
       coverPicture: "assets/images/default-cover-picture.png",
       firstName: "Amanda",
       lastName: "Williams",
       title:
           "Teaching Assistant @ Cairo University Faculty of Biomedical and Healthcare Data Engineering",
-      firstMutualConnectionProfilePicture: "assets/images/profile.png",
-      firstMutualConnectionFirstName: "Sarah",
-      secondMutualConnectionFirstName: "Jean",
-      secondMutualConnectionProfilePicture:
-          "assets/images/default-profile-picture.jpg",
-      mutualConnectionsNumber: 64,
+      // firstMutualConnectionProfilePicture: "assets/images/profile.png",
+      // firstMutualConnectionFirstName: "Sarah",
+      // secondMutualConnectionFirstName: "Jean",
+      // secondMutualConnectionProfilePicture:
+      //     "assets/images/default-profile-picture.jpg",
+      // mutualConnectionsNumber: 64,
     );
   }
 }

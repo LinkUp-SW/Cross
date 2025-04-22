@@ -31,8 +31,6 @@ migrate_working_dir/
 .pub/
 /build/
 
-/android/
-
 .metadata
 
 # Symbolication related

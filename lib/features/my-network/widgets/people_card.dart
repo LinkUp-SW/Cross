@@ -42,7 +42,7 @@ class PeopleCard extends ConsumerWidget {
                   topRight: Radius.circular(6.r),
                 ),
                 child: Image(
-                  image: AssetImage(data.coverPicture),
+                  image: NetworkImage(data.coverPicture),
                   width: double.infinity,
                   height: 60.h,
                   fit: BoxFit.cover,
@@ -55,7 +55,7 @@ class PeopleCard extends ConsumerWidget {
                 right: 32.w,
                 child: CircleAvatar(
                   radius: 45.r,
-                  foregroundImage: AssetImage(data.profilePicture),
+                  foregroundImage: NetworkImage(data.profilePicture),
                 ),
               ),
               // Cancel Button
@@ -63,10 +63,7 @@ class PeopleCard extends ConsumerWidget {
                 top: 5.h,
                 right: 3.w,
                 child: InkWell(
-                  onTap: () {
-                    print(
-                        "Pressed on ${data.firstName} ${data.lastName} cancel");
-                  },
+                  onTap: () {},
                   child: Container(
                     padding: EdgeInsets.all(2.r),
                     decoration: const BoxDecoration(
@@ -105,38 +102,6 @@ class PeopleCard extends ConsumerWidget {
                   maxLines: 2,
                 ),
               ),
-            ],
-          ),
-          Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 6.w,
-                ),
-                child: Row(
-                  spacing: 5.w,
-                  children: [
-                    CircleAvatar(
-                      radius: 10.r,
-                      backgroundImage:
-                          AssetImage(data.firstMutualConnectionProfilePicture),
-                    ),
-                    Flexible(
-                      // Add Flexible to allow text to shrink
-                      child: Text(
-                        "${data.firstMutualConnectionFirstName} and ${data.mutualConnectionsNumber} other mutual connections",
-                        style: TextStyles.font13_500Weight.copyWith(
-                          color: isDarkMode
-                              ? AppColors.darkGrey
-                              : AppColors.lightSecondaryText,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 2,
-                      ),
-                    )
-                  ],
-                ),
-              ),
               Padding(
                 padding: EdgeInsets.symmetric(
                   horizontal: 6.w,
@@ -154,6 +119,38 @@ class PeopleCard extends ConsumerWidget {
               ),
             ],
           ),
+          // Column(
+          //   children: [
+          // Padding(
+          //   padding: EdgeInsets.symmetric(
+          //     horizontal: 6.w,
+          //   ),
+          // child: Row(
+          //   spacing: 5.w,
+          //   children: [
+          //     CircleAvatar(
+          //       radius: 10.r,
+          //       backgroundImage:
+          //           AssetImage(data.firstMutualConnectionProfilePicture),
+          //     ),
+          //     Flexible(
+          //       // Add Flexible to allow text to shrink
+          //       child: Text(
+          //         "${data.firstMutualConnectionFirstName} and ${data.mutualConnectionsNumber} other mutual connections",
+          //         style: TextStyles.font13_500Weight.copyWith(
+          //           color: isDarkMode
+          //               ? AppColors.darkGrey
+          //               : AppColors.lightSecondaryText,
+          //         ),
+          //         overflow: TextOverflow.ellipsis,
+          //         maxLines: 2,
+          //       ),
+          //     )
+          //   ],
+          // ),
+          // ),
+          //   ],
+          // ),
         ],
       ),
     );

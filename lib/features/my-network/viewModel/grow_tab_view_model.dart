@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:link_up/features/my-network/model/grow_tab_model.dart';
 import 'package:link_up/features/my-network/model/invitations_screen_model.dart';
 import 'package:link_up/features/my-network/services/grow_tab_services.dart';
 import 'package:link_up/features/my-network/state/grow_tab_state.dart';
@@ -74,6 +75,44 @@ class GrowTabViewModel extends Notifier<GrowTabState> {
           receivedInvitations: updatedInvitations,
           receivedInvitationsCount: updatedInvitations.length,
         );
+      }
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: true);
+    }
+  }
+
+  Future<void> getPeopleYouMayKnow(
+      {Map<String, dynamic>? queryParameters}) async {
+    try {
+      state = state.copyWith(isLoading: true, error: false);
+      final response =
+          await ref.read(growTabServicesProvider).getPeopleYouMayKnow(
+                queryParameters: queryParameters,
+              );
+      if (queryParameters!['context'] == 'education') {
+        // Parse the received invitations from the response
+        final List<GrowTabPeopleCardsModel> peopleYouMayKnowFromEducation =
+            (response['people'] as List)
+                .map((person) => GrowTabPeopleCardsModel.fromJson(person))
+                .toList();
+        state = state.copyWith(
+            isLoading: false,
+            peopleYouMayKnowFromEducation: peopleYouMayKnowFromEducation,
+            educationTitle: peopleYouMayKnowFromEducation.isNotEmpty
+                ? response['institutionName']
+                : null);
+      } else {
+        // Parse the received invitations from the response
+        final List<GrowTabPeopleCardsModel> peopleYouMayKnowFromWork =
+            (response['people'] as List)
+                .map((person) => GrowTabPeopleCardsModel.fromJson(person))
+                .toList();
+        state = state.copyWith(
+            isLoading: false,
+            peopleYouMayKnowFromWork: peopleYouMayKnowFromWork,
+            workTitle: peopleYouMayKnowFromWork.isNotEmpty
+                ? response['institutionName']
+                : null);
       }
     } catch (e) {
       state = state.copyWith(isLoading: false, error: true);

@@ -2,26 +2,20 @@ import 'package:link_up/features/my-network/model/grow_tab_model.dart';
 import 'package:link_up/features/my-network/model/invitations_screen_model.dart';
 
 class GrowTabState {
-  final List<GrowTabPeopleCardsModel>? fromCurrentPosition;
-  final List<GrowTabPeopleCardsModel>? recentActivity;
-  final List<GrowTabPeopleCardsModel>? followThesePeople;
-  final List<GrowTabPeopleCardsModel>? topEmergingCreators;
-  final List<GrowTabNewsletterCardsModel>? yourCommunityFollow;
-  final List<GrowTabPeopleCardsModel>? becauseYouFollow;
-  final List<GrowTabPeopleCardsModel>? moreSuggestions;
+  final String? educationTitle;
+  final String? workTitle;
+  final List<GrowTabPeopleCardsModel>? peopleYouMayKnowFromWork;
+  final List<GrowTabPeopleCardsModel>? peopleYouMayKnowFromEducation;
   final List<InvitationsCardModel>? receivedInvitations;
   final int? receivedInvitationsCount;
   final bool isLoading;
   final bool error;
 
   const GrowTabState({
-    this.fromCurrentPosition,
-    this.recentActivity,
-    this.followThesePeople,
-    this.topEmergingCreators,
-    this.yourCommunityFollow,
-    this.becauseYouFollow,
-    this.moreSuggestions,
+    this.educationTitle,
+    this.workTitle,
+    this.peopleYouMayKnowFromWork,
+    this.peopleYouMayKnowFromEducation,
     this.receivedInvitations,
     this.receivedInvitationsCount,
     required this.isLoading,
@@ -30,13 +24,10 @@ class GrowTabState {
 
   factory GrowTabState.initial() {
     return const GrowTabState(
-      fromCurrentPosition: null,
-      recentActivity: null,
-      followThesePeople: null,
-      topEmergingCreators: null,
-      yourCommunityFollow: null,
-      becauseYouFollow: null,
-      moreSuggestions: null,
+      educationTitle: null,
+      workTitle: null,
+      peopleYouMayKnowFromWork: null,
+      peopleYouMayKnowFromEducation: null,
       receivedInvitations: null,
       receivedInvitationsCount: null,
       isLoading: true,
@@ -45,27 +36,22 @@ class GrowTabState {
   }
 
   GrowTabState copyWith({
-    List<GrowTabPeopleCardsModel>? fromCurrentPosition,
-    List<GrowTabPeopleCardsModel>? recentActivity,
-    List<GrowTabPeopleCardsModel>? followThesePeople,
-    List<GrowTabPeopleCardsModel>? topEmergingCreators,
-    List<GrowTabNewsletterCardsModel>? yourCommunityFollow,
-    List<GrowTabPeopleCardsModel>? becauseYouFollow,
-    List<GrowTabPeopleCardsModel>? moreSuggestions,
+    String? educationTitle,
+    String? workTitle,
+    List<GrowTabPeopleCardsModel>? peopleYouMayKnowFromWork,
+    List<GrowTabPeopleCardsModel>? peopleYouMayKnowFromEducation,
     List<InvitationsCardModel>? receivedInvitations,
     int? receivedInvitationsCount,
     bool? isLoading,
     bool? error,
   }) {
     return GrowTabState(
-      fromCurrentPosition: fromCurrentPosition ?? this.fromCurrentPosition,
-      recentActivity: recentActivity ?? this.recentActivity,
-      followThesePeople: followThesePeople ?? this.followThesePeople,
-      topEmergingCreators: topEmergingCreators ?? this.topEmergingCreators,
-      yourCommunityFollow: yourCommunityFollow ?? this.yourCommunityFollow,
-      becauseYouFollow: becauseYouFollow ?? this.becauseYouFollow,
-      moreSuggestions: moreSuggestions ?? this.moreSuggestions,
-      receivedInvitations: receivedInvitations ?? this.receivedInvitations,
+      workTitle: workTitle ?? this.workTitle,
+      educationTitle: educationTitle ?? this.educationTitle,
+      peopleYouMayKnowFromWork:
+          peopleYouMayKnowFromWork ?? this.peopleYouMayKnowFromWork,
+      peopleYouMayKnowFromEducation:
+          peopleYouMayKnowFromEducation ?? this.peopleYouMayKnowFromEducation,
       receivedInvitationsCount:
           receivedInvitationsCount ?? this.receivedInvitationsCount,
       isLoading: isLoading ?? this.isLoading,
