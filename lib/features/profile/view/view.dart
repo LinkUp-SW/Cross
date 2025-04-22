@@ -1,47 +1,109 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:link_up/features/profile/viewModel/profile_view_model.dart';
 import 'package:link_up/features/profile/widgets/profile_app_bar_widget.dart';
-import 'package:link_up/features/profile/widgets/profile_header_widget.dart'; // Import the header widget
+import 'package:link_up/features/profile/widgets/profile_header_widget.dart';
 import 'package:link_up/features/profile/widgets/section_widget.dart';
+import 'package:link_up/features/profile/state/profile_state.dart';
 
-class ProfilePage extends ConsumerWidget {
+
+class ProfilePage extends ConsumerStatefulWidget {
   const ProfilePage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends ConsumerState<ProfilePage> {
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      // Call fetchUserProfile without arguments to fetch the logged-in user's profile
+      ref.read(profileViewModelProvider.notifier).fetchUserProfile();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final profileState = ref.watch(profileViewModelProvider);
+
     return Scaffold(
       appBar: const ProfileAppBar(),
-      body: SingleChildScrollView(  
-        child: Column(
-          children: [
-             ProfileHeaderWidget(), 
-            SectionWidget(
-              title: "Education",
+      body: RefreshIndicator(
+        onRefresh: () async {
+           // Call fetchUserProfile without arguments on refresh
+           await ref.read(profileViewModelProvider.notifier).fetchUserProfile();
+        },
+        child: switch (profileState) {
+          ProfileLoading() => const Center(child: CircularProgressIndicator()),
+
+          ProfileError(:final message) => Center(
+              child: Padding(
+                padding: EdgeInsets.all(16.w),
+                child: Column(
+                   mainAxisAlignment: MainAxisAlignment.center,
+                   children: [
+                      Text('Error: $message', textAlign: TextAlign.center),
+                      SizedBox(height: 10.h),
+                      ElevatedButton(
+                        // Call fetchUserProfile without arguments on retry
+                        onPressed: () => ref.read(profileViewModelProvider.notifier).fetchUserProfile(),
+                        child: const Text('Retry'),
+                      )
+                   ],
+                ),
+              ),
+            ),
+
+          ProfileLoaded(:final userProfile) => SingleChildScrollView(
               child: Column(
                 children: [
-                  Row(
-                    children: [
-                      Icon(Icons.school, size: 20.sp, color: Colors.blue),
-                      SizedBox(width: 8.w),
-                      Text("Cairo University", style: TextStyle(fontSize: 14.sp)),
-                    ],
+                  ProfileHeaderWidget(userProfile: userProfile),
+                  SectionWidget(
+                    title: "Education",
+                    child: userProfile.education.isEmpty
+                      ? const Text("No education added yet.")
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: userProfile.education.map((edu) {
+                            return ListTile(
+                              leading: Icon(Icons.school, size: 20.sp, color: Colors.blue),
+                              title: Text(edu, style: TextStyle(fontSize: 14.sp)),
+                            );
+                          }).toList(),
+                        ),
                   ),
-                  SizedBox(height: 4.h),
-                  Text("2025", style: TextStyle(fontSize: 12.sp, color: Colors.grey)),
+                   SectionWidget(
+                    title: "Experience",
+                     child: userProfile.experience.isEmpty
+                      ? const Text("No experience added yet.")
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: userProfile.experience.map((exp) {
+                            return ListTile(
+                               leading: Icon(Icons.work, size: 20.sp, color: Colors.green),
+                               title: Text(exp, style: TextStyle(fontSize: 14.sp)),
+                            );
+                          }).toList(),
+                        ),
+                  ),
+                   SectionWidget(
+                     title: "Skills",
+                     child: Column(
+                       children: [
+                         Text("Flutter, Dart, Riverpod", style: TextStyle(fontSize: 14.sp)),
+                       ],
+                     ),
+                   ),
                 ],
               ),
             ),
-            SectionWidget(
-              title: "Skills",
-              child: Column(
-                children: [
-                  Text("Flutter, Dart, Riverpod", style: TextStyle(fontSize: 14.sp)),
-                ],
-              ),
-            ),
-          ],
-        ),
+
+          ProfileInitial() => const Center(child: CircularProgressIndicator()),
+        },
       ),
     );
   }
