@@ -3,6 +3,7 @@ import 'package:link_up/features/my-network/model/grow_tab_model.dart';
 import 'package:link_up/features/my-network/model/invitations_screen_model.dart';
 import 'package:link_up/features/my-network/services/grow_tab_services.dart';
 import 'package:link_up/features/my-network/state/grow_tab_state.dart';
+import 'dart:developer';
 
 class GrowTabViewModel extends Notifier<GrowTabState> {
   @override
@@ -114,7 +115,9 @@ class GrowTabViewModel extends Notifier<GrowTabState> {
                 ? response['institutionName']
                 : null);
       }
+      log("Response: $response");
     } catch (e) {
+      log("Error in getPeopleYouMayKnow: $e");
       state = state.copyWith(isLoading: false, error: true);
     }
   }

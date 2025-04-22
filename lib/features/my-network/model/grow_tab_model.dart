@@ -1,10 +1,10 @@
 class GrowTabPeopleCardsModel {
   final String cardId;
-  final String profilePicture;
-  final String coverPicture;
+  final String? profilePicture;
+  final String? coverPicture;
   final String firstName;
   final String lastName;
-  final String title;
+  final String? title;
   final String whoCanSendMeInvitation;
 
   const GrowTabPeopleCardsModel({
@@ -13,7 +13,7 @@ class GrowTabPeopleCardsModel {
     required this.coverPicture,
     required this.firstName,
     required this.lastName,
-    required this.title,
+    this.title,
     required this.whoCanSendMeInvitation,
   });
 
@@ -25,7 +25,8 @@ class GrowTabPeopleCardsModel {
       firstName: json['bio']['first_name'],
       lastName: json['bio']['last_name'],
       title: json['bio']['headline'],
-      whoCanSendMeInvitation: json['flag_who_can_send_you_invitations'],
+      whoCanSendMeInvitation: json['privacy_settings']
+          ['flag_who_can_send_you_invitations'],
     );
   }
 }

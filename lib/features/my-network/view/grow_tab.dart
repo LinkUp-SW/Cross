@@ -5,7 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:link_up/features/my-network/viewModel/grow_tab_view_model.dart';
 import 'package:link_up/features/my-network/widgets/grow_tab_navigation_row.dart';
 import 'package:link_up/features/my-network/widgets/grow_tab_people_card.dart';
+import 'package:link_up/features/my-network/widgets/grow_tab_people_card_loading_skeleton.dart';
 import 'package:link_up/features/my-network/widgets/grow_tab_section.dart';
+import 'dart:developer';
 
 class GrowTab extends ConsumerStatefulWidget {
   const GrowTab({
@@ -27,16 +29,17 @@ class _GrowTabState extends ConsumerState<GrowTab> {
           queryParameters: {
             "cursor": null,
             "limit": '$paginationLimit',
-            "context": "education"
+            "context": "work_experience"
           });
     });
 
     Future.microtask(() {
+      log("Entered grow tab microtask");
       ref.read(growTabViewModelProvider.notifier).getPeopleYouMayKnow(
           queryParameters: {
             "cursor": null,
             "limit": '$paginationLimit',
-            "context": "work_experience"
+            "context": "education"
           });
     });
   }
@@ -65,15 +68,44 @@ class _GrowTabState extends ConsumerState<GrowTab> {
         ),
         if (state.isLoading == false &&
             state.error == false &&
-            state.educationTitle != null &&
-            state.peopleYouMayKnowFromEducation!.isNotEmpty)
+            state.workTitle != null &&
+            state.peopleYouMayKnowFromWork!.isNotEmpty)
           Section(
-              title: "Peope you may know from ${state.educationTitle}",
-              cards: state.peopleYouMayKnowFromEducation!
+              title: "Peope you may know from ${state.workTitle}",
+              cards: state.peopleYouMayKnowFromWork!
                   .map((person) => PeopleCard(
                         data: person,
                       ))
-                  .toList())
+                  .toList()),
+        if (state.isLoading == false &&
+            state.error == false &&
+            state.educationTitle != null &&
+            state.peopleYouMayKnowFromEducation!.isNotEmpty)
+          Section(
+            title: "Peope you may know from ${state.educationTitle}",
+            cards: state.peopleYouMayKnowFromEducation!
+                .map(
+                  (person) => PeopleCard(
+                    data: person,
+                  ),
+                )
+                .toList(),
+          ),
+        if (state.isLoading == false &&
+            state.error == false &&
+            state.workTitle != null &&
+            state.peopleYouMayKnowFromWork!.isNotEmpty)
+          Section(
+            title: "Peope you may know from ${state.workTitle}",
+            cards: state.peopleYouMayKnowFromWork!
+                .map(
+                  (person) => PeopleCard(
+                    data: person,
+                  ),
+                )
+                .toList(),
+          ),
+        GrowTabPeopleCardLoadingSkeleton(isDarkMode: isDarkMode)
       ],
     );
   }

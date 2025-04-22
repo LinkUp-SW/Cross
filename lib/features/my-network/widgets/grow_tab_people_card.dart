@@ -49,7 +49,7 @@ class _PeopleCardState extends ConsumerState<PeopleCard> {
                   topRight: Radius.circular(6.r),
                 ),
                 child: Image(
-                  image: NetworkImage(widget.data.coverPicture),
+                  image: NetworkImage(widget.data.coverPicture!),
                   width: double.infinity,
                   height: 60.h,
                   fit: BoxFit.cover,
@@ -62,7 +62,7 @@ class _PeopleCardState extends ConsumerState<PeopleCard> {
                 right: 32.w,
                 child: CircleAvatar(
                   radius: 45.r,
-                  foregroundImage: NetworkImage(widget.data.profilePicture),
+                  foregroundImage: NetworkImage(widget.data.profilePicture!),
                 ),
               ),
               // Cancel Button
@@ -99,7 +99,7 @@ class _PeopleCardState extends ConsumerState<PeopleCard> {
                   horizontal: 6.0.w,
                 ),
                 child: Text(
-                  widget.data.title,
+                  widget.data.title!,
                   style: TextStyles.font15_500Weight.copyWith(
                     color: isDarkMode
                         ? AppColors.darkGrey
