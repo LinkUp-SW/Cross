@@ -16,12 +16,14 @@ class WriteCommentVm {
   TextEditingController controller;
   Media media;
   bool isEdited = false;
+  bool isReply = false;
   List<dynamic> taggedUsers = [];
 
   WriteCommentVm({
     required this.media,
     required this.controller,
     this.isEdited = false,
+    this.isReply = false,
   });
 
   WriteCommentVm.initial()
@@ -135,22 +137,27 @@ class WriteCommentProvider extends StateNotifier<WriteCommentVm> {
     );
   }
 
-  Future<String> createComment() async {
+  Future<String> createComment(String postId,String? commentId) async {
     final BaseService service = BaseService();
+    log('Creating comment with postId: $postId, commentId: $commentId');
 
-    final mediaContent = state.media.setToUpload();
-    //TODO: change to create comment
-    final response = await service.post('api/v1/post/create-post', body: {
+    final mediaContent = await state.media.setToUpload();
+    final response = await service.post('api/v1/post/comment', body: {
+      "post_id": postId,
+      "comment_id": commentId,
       "content": state.controller.text,
-      "mediaType": state.media.type.name,
       "media": mediaContent,
-      "taggedUsers": []
+      "tagged_users": state.taggedUsers,
+    }).catchError((error) {
+      log('Error creating comment: $error');
+      throw Exception(error);
+    }).timeout(const Duration(seconds: 5), onTimeout: () {
+      log('Request timed out');
+      throw Exception('Request timed out');
     });
-
-    // Rest of the function remains the same
-    log('Response: ${response.statusCode} - ${response.body}');
+    log('Response status code: ${response.statusCode}');
     if (response.statusCode == 200) {
-      log('Post created successfully: ${response.body}');
+      log('Comment created successfully: ${response.body}');
       return 'created';
       //return jsonDecode(response.body)['postId'];
     } else {

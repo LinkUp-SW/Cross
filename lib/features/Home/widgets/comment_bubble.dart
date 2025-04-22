@@ -6,8 +6,10 @@ import 'package:link_up/features/Home/home_enums.dart';
 import 'package:link_up/features/Home/model/comment_model.dart';
 import 'package:link_up/features/Home/viewModel/comment_vm.dart';
 import 'package:link_up/features/Home/widgets/reactions.dart';
+import 'package:link_up/features/Post/widgets/formatted_richtext.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/widgets/bottom_sheet.dart';
+
 //TODO: handle child comment replay calling
 class CommentBubble extends ConsumerStatefulWidget {
   const CommentBubble({
@@ -27,7 +29,6 @@ class CommentBubble extends ConsumerStatefulWidget {
 }
 
 class _CommentBubbleState extends ConsumerState<CommentBubble> {
-
   Reaction _reaction = Reaction.none;
   @override
   Widget build(BuildContext context) {
@@ -123,8 +124,8 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                                                     onTap: () {
                                                       //TODO: report comment
                                                     },
-                                                    leading:
-                                                        const Icon(Icons.report),
+                                                    leading: const Icon(
+                                                        Icons.report),
                                                     title: const Text("Report"),
                                                   ),
                                                 ],
@@ -137,12 +138,23 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                             ),
                           ],
                         ),
-                        Text.rich(
-                          TextSpan(
-                            text: widget.comment.text,
-                            style: TextStyle(fontSize: 12.r),
-                          ),
+                        FormattedRichText(
+                          text: widget.comment.text,
+                          defaultStyle: TextStyle(fontSize: 12.r),
                         ),
+                        if (widget.comment.media.type != MediaType.none) ...[
+                          SizedBox(
+                            height: 10.h,
+                          ),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10.r),
+                            child: Image.network(
+                              widget.comment.media.urls[0],
+                              fit: BoxFit.fitHeight,
+                              height: 120.h,
+                            ),
+                          ),
+                        ]
                       ],
                     ),
                   ),
@@ -164,24 +176,43 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                         _reaction = reaction;
                       });
                     },
-                    child: Text(Reaction.getReactionString(_reaction), style: TextStyle(color: _reaction == Reaction.none ? AppColors.grey : Reaction.getColor(_reaction))),
+                    child: Text(Reaction.getReactionString(_reaction),
+                        style: TextStyle(
+                            color: _reaction == Reaction.none
+                                ? AppColors.grey
+                                : Reaction.getColor(_reaction))),
                   ),
-                  if (widget.comment.likes > 0) Text("  •  ${widget.comment.likes} likes", style: const TextStyle(color: AppColors.grey)),
-                  const Text("  |  ", style: TextStyle(color: AppColors.grey)),
-                  GestureDetector(
+                  if (widget.comment.likes > 0)
+                    Text("  •  ${widget.comment.likes} likes",
+                        style: const TextStyle(color: AppColors.grey)),
+                  if (!widget.isReply) ...[
+                    const Text("  |  ",
+                        style: TextStyle(color: AppColors.grey)),
+                    GestureDetector(
                       onTap: () {
-                        ref.read(commentProvider.notifier).setComment(widget.comment);
+                        ref
+                            .read(commentProvider.notifier)
+                            .setComment(widget.comment);
                         context.push("/commentReplies");
-                      }
-                    ,child: const Text("Reply ", style: TextStyle(color: AppColors.grey))),
+                      },
+                      child: const Text(
+                        "Reply ",
+                        style: TextStyle(color: AppColors.grey),
+                      ),
+                    ),
+                  ],
                   if (widget.comment.replies > 0)
                     GestureDetector(
                         onTap: () {
-                          ref.read(commentProvider.notifier).setComment(widget.comment);
+                          ref
+                              .read(commentProvider.notifier)
+                              .setComment(widget.comment);
                           context.push("/commentReplies");
                         },
                         child: Text(
-                            " •  ${widget.comment.replies}  ${widget.comment.replies > 1 ? "replies" : "reply"}",style: const TextStyle(color: AppColors.grey),)),
+                          " •  ${widget.comment.replies}  ${widget.comment.replies > 1 ? "replies" : "reply"}",
+                          style: const TextStyle(color: AppColors.grey),
+                        )),
                 ],
               ),
               SizedBox(
@@ -189,30 +220,32 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
               ),
               if (!widget.isReply) ...[
                 if (!widget.allRelies) ...[
-                  if (widget.comment.replies > 1)
+                  if (widget.comment.repliesList.length > 1)
                     TextButton(
                         onPressed: () {
-                          ref.read(commentProvider.notifier).setComment(widget.comment);
+                          ref
+                              .read(commentProvider.notifier)
+                              .setComment(widget.comment);
                           context.push("/commentReplies");
                         },
                         child: Text(
                           "Show ${widget.comment.replies - 1} more ${widget.comment.replies > 2 ? "replies" : "reply"}",
                         )),
-                  if (widget.comment.replies > 0 && !widget.isReply)
+                  if (widget.comment.repliesList.isNotEmpty && !widget.isReply)
                     CommentBubble(
                       isReply: true,
-                      comment: widget.comment,
+                      comment: widget.comment.repliesList[0],
                     ),
                 ],
                 if (widget.allRelies)
                   Column(
                     children: List.generate(
-                      widget.comment.replies,
+                      widget.comment.repliesList.length,
                       (index) => Column(
                         children: [
                           CommentBubble(
                             isReply: true,
-                            comment: widget.comment,
+                            comment: widget.comment.repliesList[index],
                           ),
                           SizedBox(
                             height: 10.h,

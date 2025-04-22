@@ -26,11 +26,11 @@ class HeaderModel {
   HeaderModel.fromJson(Map<String, dynamic> json)
       : profileImage = json['author']['profilePicture'],
         userId = json['user_id'],
-        name = json['author']['username'],
+        name = '${json['author']['firstName']}  ${json['author']['lastName']}',
         connectionDegree = json['author']['connectionDegree'],
         about = json['author']['headline'],
-        timeAgo = DateTime.parse(json['date']),
-        edited = json['edited'] ?? false,
+        timeAgo = DateTime.fromMillisecondsSinceEpoch(json['date']*1000,),
+        edited = json['is_edited'] ?? false,
         visibilityComments = Visibilities.getVisibility(json['comments_disabled'] ?? 'anyone'),
         visibilityPost = Visibilities.getVisibility(json['public_post'] == false ? 'anyone': 'connectionsOnly');
 
