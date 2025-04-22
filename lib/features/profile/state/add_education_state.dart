@@ -17,7 +17,7 @@ class AddEducationFormData extends AddEducationFormState {
   final TextEditingController descriptionController;
   final DateTime? selectedStartDate;
   final DateTime? selectedEndDate;
-  final bool isEndDatePresent; // Manages the 'Present' checkbox
+  final bool isEndDatePresent; 
 
   const AddEducationFormData({
     required this.schoolController,
@@ -33,7 +33,6 @@ class AddEducationFormData extends AddEducationFormState {
     this.isEndDatePresent = false,
   });
 
-  // copyWith method to easily create new states with updated data
   AddEducationFormData copyWith({
     TextEditingController? schoolController,
     TextEditingController? degreeController,
@@ -43,7 +42,6 @@ class AddEducationFormData extends AddEducationFormState {
     TextEditingController? gradeController,
     TextEditingController? activitiesController,
     TextEditingController? descriptionController,
-    // Use Object() trick to allow explicitly setting dates to null
     Object? selectedStartDate = const Object(),
     Object? selectedEndDate = const Object(),
     bool? isEndDatePresent,
@@ -71,13 +69,13 @@ sealed class AddEducationStatusState extends AddEducationFormState {
 
 // The form is ready for input or has returned from a loading/error state
 class AddEducationIdle extends AddEducationStatusState {
-  final AddEducationFormData formData; // Holds the current form data
+  final AddEducationFormData formData; 
   const AddEducationIdle(this.formData);
 }
 
 // Currently attempting to save the data via the service
 class AddEducationLoading extends AddEducationStatusState {
-    final AddEducationFormData formData; // Keep form data to display while loading
+    final AddEducationFormData formData; 
     const AddEducationLoading(this.formData);
 }
 
@@ -88,7 +86,7 @@ class AddEducationSuccess extends AddEducationStatusState {
 
 // An error occurred during the save operation
 class AddEducationFailure extends AddEducationStatusState {
-  final AddEducationFormData formData; // Keep form data to allow user to retry
+  final AddEducationFormData formData;
   final String message;
   const AddEducationFailure(this.formData, this.message);
 }
