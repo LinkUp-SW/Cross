@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/my-network/viewModel/connections_screen_view_model.dart';
 import 'package:link_up/features/my-network/viewModel/manage_my_network_screen_view_model.dart';
 import 'package:link_up/features/my-network/widgets/connections_card.dart';
-import 'package:link_up/features/my-network/widgets/connections_loading_skeleton.dart';
+import 'package:link_up/features/my-network/widgets/connections_card_loading_skeleton.dart';
 import 'package:link_up/features/my-network/widgets/retry_error_message.dart';
 import 'package:link_up/features/my-network/widgets/standard_empty_list_message.dart';
 import 'package:link_up/shared/themes/colors.dart';
@@ -389,7 +389,8 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                       shrinkWrap: true,
                       itemCount: 3,
                       itemBuilder: (context, index) =>
-                          ConnectionsLoadingSkeleton(isDarkMode: isDarkMode),
+                          ConnectionsCardLoadingSkeleton(
+                              isDarkMode: isDarkMode),
                     )
                   : state.isError
                       ? RetryErrorMessage(

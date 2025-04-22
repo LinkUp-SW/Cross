@@ -4,16 +4,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class SentInvitationsLoadingSkeleton extends ConsumerWidget {
-  final bool isDarkMode;
-
-  const SentInvitationsLoadingSkeleton({
+class ReceivedInvitationsCardLoadingSkeleton extends ConsumerWidget {
+  const ReceivedInvitationsCardLoadingSkeleton({
     super.key,
-    required this.isDarkMode,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Skeletonizer(
       enabled: true,
       child: DecoratedBox(
@@ -38,7 +36,7 @@ class SentInvitationsLoadingSkeleton extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 spacing: 8.w,
                 children: [
-                  // Profile picture placeholder
+                  // Profile picture
                   CircleAvatar(
                     radius: 30.r,
                     foregroundImage: const AssetImage(
@@ -60,6 +58,12 @@ class SentInvitationsLoadingSkeleton extends ConsumerWidget {
                           "Professional title of the person",
                         ),
                       ),
+                      // Mutual connections
+                      SizedBox(
+                        child: Text(
+                          "64 mutual connections",
+                        ),
+                      ),
                       // Date
                       SizedBox(
                         child: Text(
@@ -70,9 +74,19 @@ class SentInvitationsLoadingSkeleton extends ConsumerWidget {
                   ),
                 ],
               ),
-              // Withdraw button
-              const Text(
-                "Withdraw",
+              // Accept & ignore buttons
+              Row(
+                spacing: 8.w,
+                children: [
+                  Icon(
+                    Icons.circle,
+                    size: 30.r,
+                  ),
+                  Icon(
+                    Icons.circle,
+                    size: 30.r,
+                  ),
+                ],
               ),
             ],
           ),

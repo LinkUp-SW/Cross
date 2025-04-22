@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/my-network/viewModel/received_invitations_tab_view_model.dart';
 import 'package:link_up/features/my-network/widgets/received_invitations_card.dart';
-import 'package:link_up/features/my-network/widgets/received_invitations_loading_skeleton.dart';
+import 'package:link_up/features/my-network/widgets/received_invitations_card_loading_skeleton.dart';
 import 'package:link_up/features/my-network/widgets/retry_error_message.dart';
 import 'package:link_up/features/my-network/widgets/standard_empty_list_message.dart';
 import 'package:link_up/shared/themes/colors.dart';
@@ -62,7 +62,7 @@ class _ReceivedInvitationsTabState
               shrinkWrap: true,
               itemCount: 3,
               itemBuilder: (context, index) =>
-                  ReceivedInvitationsLoadingSkeleton(isDarkMode: isDarkMode),
+                  ReceivedInvitationsCardLoadingSkeleton(),
             )
           : state.error
               ? RetryErrorMessage(

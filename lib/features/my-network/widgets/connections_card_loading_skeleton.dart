@@ -4,10 +4,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class ConnectionsLoadingSkeleton extends ConsumerWidget {
+class ConnectionsCardLoadingSkeleton extends ConsumerWidget {
   final bool isDarkMode;
 
-  const ConnectionsLoadingSkeleton({
+  const ConnectionsCardLoadingSkeleton({
     super.key,
     required this.isDarkMode,
   });

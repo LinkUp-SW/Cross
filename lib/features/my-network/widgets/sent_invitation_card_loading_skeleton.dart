@@ -4,16 +4,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class ReceivedInvitationsLoadingSkeleton extends ConsumerWidget {
-  final bool isDarkMode;
-
-  const ReceivedInvitationsLoadingSkeleton({
+class SentInvitationsCardLoadingSkeleton extends ConsumerWidget {
+  const SentInvitationsCardLoadingSkeleton({
     super.key,
-    required this.isDarkMode,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Skeletonizer(
       enabled: true,
       child: DecoratedBox(
@@ -38,7 +36,7 @@ class ReceivedInvitationsLoadingSkeleton extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 spacing: 8.w,
                 children: [
-                  // Profile picture
+                  // Profile picture placeholder
                   CircleAvatar(
                     radius: 30.r,
                     foregroundImage: const AssetImage(
@@ -60,12 +58,6 @@ class ReceivedInvitationsLoadingSkeleton extends ConsumerWidget {
                           "Professional title of the person",
                         ),
                       ),
-                      // Mutual connections
-                      SizedBox(
-                        child: Text(
-                          "64 mutual connections",
-                        ),
-                      ),
                       // Date
                       SizedBox(
                         child: Text(
@@ -76,19 +68,9 @@ class ReceivedInvitationsLoadingSkeleton extends ConsumerWidget {
                   ),
                 ],
               ),
-              // Accept & ignore buttons
-              Row(
-                spacing: 8.w,
-                children: [
-                  Icon(
-                    Icons.circle,
-                    size: 30.r,
-                  ),
-                  Icon(
-                    Icons.circle,
-                    size: 30.r,
-                  ),
-                ],
+              // Withdraw button
+              const Text(
+                "Withdraw",
               ),
             ],
           ),

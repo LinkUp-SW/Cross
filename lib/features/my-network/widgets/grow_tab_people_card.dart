@@ -6,17 +6,24 @@ import 'package:link_up/shared/themes/button_styles.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 
-class PeopleCard extends ConsumerWidget {
+class PeopleCard extends ConsumerStatefulWidget {
   final GrowTabPeopleCardsModel data;
-  final bool isDarkMode;
+
   const PeopleCard({
     super.key,
     required this.data,
-    required this.isDarkMode,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<PeopleCard> createState() => _PeopleCardState();
+}
+
+class _PeopleCardState extends ConsumerState<PeopleCard> {
+  bool isConnecting = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Card(
       shadowColor: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
       elevation: 3.0.r,
@@ -42,7 +49,7 @@ class PeopleCard extends ConsumerWidget {
                   topRight: Radius.circular(6.r),
                 ),
                 child: Image(
-                  image: NetworkImage(data.coverPicture),
+                  image: NetworkImage(widget.data.coverPicture),
                   width: double.infinity,
                   height: 60.h,
                   fit: BoxFit.cover,
@@ -55,7 +62,7 @@ class PeopleCard extends ConsumerWidget {
                 right: 32.w,
                 child: CircleAvatar(
                   radius: 45.r,
-                  foregroundImage: NetworkImage(data.profilePicture),
+                  foregroundImage: NetworkImage(widget.data.profilePicture),
                 ),
               ),
               // Cancel Button
@@ -84,7 +91,7 @@ class PeopleCard extends ConsumerWidget {
           Column(
             children: [
               Text(
-                "${data.firstName} ${data.lastName}",
+                "${widget.data.firstName} ${widget.data.lastName}",
                 style: TextStyles.font15_700Weight,
               ),
               Padding(
@@ -92,7 +99,7 @@ class PeopleCard extends ConsumerWidget {
                   horizontal: 6.0.w,
                 ),
                 child: Text(
-                  data.title,
+                  widget.data.title,
                   style: TextStyles.font15_500Weight.copyWith(
                     color: isDarkMode
                         ? AppColors.darkGrey
@@ -108,49 +115,21 @@ class PeopleCard extends ConsumerWidget {
                 ),
                 child: ElevatedButton(
                   onPressed: () {
-                    print(
-                        "Pressed on ${data.firstName} ${data.lastName} connect");
+                    if (widget.data.whoCanSendMeInvitation == "Everyone") {
+                      setState(() {
+                        isConnecting = !isConnecting;
+                      });
+                      // Add your connection logic here
+                    }
                   },
                   style: isDarkMode
                       ? LinkUpButtonStyles().myNetworkScreenConnectDark()
                       : LinkUpButtonStyles().myNetworkScreenConnectLight(),
-                  child: const Text("Connect"),
+                  child: Text(isConnecting ? "Pending" : "Connect"),
                 ),
               ),
             ],
           ),
-          // Column(
-          //   children: [
-          // Padding(
-          //   padding: EdgeInsets.symmetric(
-          //     horizontal: 6.w,
-          //   ),
-          // child: Row(
-          //   spacing: 5.w,
-          //   children: [
-          //     CircleAvatar(
-          //       radius: 10.r,
-          //       backgroundImage:
-          //           AssetImage(data.firstMutualConnectionProfilePicture),
-          //     ),
-          //     Flexible(
-          //       // Add Flexible to allow text to shrink
-          //       child: Text(
-          //         "${data.firstMutualConnectionFirstName} and ${data.mutualConnectionsNumber} other mutual connections",
-          //         style: TextStyles.font13_500Weight.copyWith(
-          //           color: isDarkMode
-          //               ? AppColors.darkGrey
-          //               : AppColors.lightSecondaryText,
-          //         ),
-          //         overflow: TextOverflow.ellipsis,
-          //         maxLines: 2,
-          //       ),
-          //     )
-          //   ],
-          // ),
-          // ),
-          //   ],
-          // ),
         ],
       ),
     );
