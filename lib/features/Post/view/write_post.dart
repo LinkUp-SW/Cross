@@ -297,8 +297,8 @@ class _WritePostState extends ConsumerState<WritePost> {
                                           .bodyLarge!
                                           .color)),
                             ]),
-                            onPressed: () {
-                              tempRef.getPost(value);
+                            onPressed: () async {
+                              await tempRef.getPost(value);
                               navigatorKey.currentContext!.push('/postPage');
                             },
                             label: 'View',
