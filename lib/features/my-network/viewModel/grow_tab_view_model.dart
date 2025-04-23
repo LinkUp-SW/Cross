@@ -115,7 +115,6 @@ class GrowTabViewModel extends Notifier<GrowTabState> {
                 ? response['institutionName']
                 : null);
       }
-      log("Response: $response");
     } catch (e) {
       log("Error in getPeopleYouMayKnow: $e");
       state = state.copyWith(isLoading: false, error: true);
