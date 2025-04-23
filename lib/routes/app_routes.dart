@@ -38,6 +38,8 @@ import 'package:link_up/features/profile/view/add_new_education.dart';
 import 'package:link_up/shared/widgets/main_drawer.dart';
 import 'package:link_up/features/jobs/view/view.dart';
 import 'package:link_up/features/profile/view/search_school_page.dart';
+import 'package:link_up/features/profile/view/search_organization.dart'; 
+
 
 final goRouterProvider = Provider<GoRouter>((ref) {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
@@ -109,16 +111,26 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         ),
         //Profile Page Routes
           GoRoute(
-            path: "/search_school", 
+            path: "/search_school",
             pageBuilder: (context, state) {
               final initialQuery = state.extra as String?;
-              return MaterialPage( 
-                  fullscreenDialog: true, 
+              return MaterialPage(
+                  fullscreenDialog: true,
                   child: SearchSchoolPage(initialQuery: initialQuery),
               );
             }
           ),
-  
+           GoRoute(
+             path: "/search_organization",
+             pageBuilder: (context, state) {
+               final initialQuery = state.extra as String?;
+               return MaterialPage(
+                   fullscreenDialog: true, 
+                   child: SearchOrganizationPage(initialQuery: initialQuery),
+               );
+             }
+           ),
+
         GoRoute(
           path: "/edit_intro",
           builder: (context, state) => const EditIntroPage(),
@@ -139,7 +151,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           builder: (context, state, navigationShell) => Scaffold(
             key: scaffoldKey,
             drawer: const MainDrawer(),
-            body: navigationShell, // The body displays the current screen
+            body: navigationShell, 
             bottomNavigationBar: CustomBottomNavigationBar(
               navigationShell: navigationShell,
             ),
