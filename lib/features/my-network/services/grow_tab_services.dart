@@ -72,6 +72,35 @@ class GrowTabServices {
       rethrow;
     }
   }
+
+  // Withdraw an invitation
+  Future<Map<String, dynamic>> withdrawInvitation(String userId) async {
+    try {
+      final response = await _baseService.delete(
+          ExternalEndPoints.withdrawConnectionInvitation, {'user_id': userId});
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+      throw Exception(
+          'Failed to withdraw sent connection invitation: ${response.statusCode}');
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> sendConnectionRequest(String userId) async {
+    try {
+      final response = await _baseService.post(ExternalEndPoints.connect,
+          routeParameters: {'user_id': userId});
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+      throw Exception(
+          'Failed to send connection request: ${response.statusCode}');
+    } catch (e) {
+      rethrow;
+    }
+  }
 }
 
 final growTabServicesProvider = Provider<GrowTabServices>(

@@ -120,6 +120,23 @@ class GrowTabViewModel extends Notifier<GrowTabState> {
       state = state.copyWith(isLoading: false, error: true);
     }
   }
+
+  // Withdraw an invitation
+  Future<void> withdrawInvitation(String userId) async {
+    try {
+      await ref.read(growTabServicesProvider).withdrawInvitation(userId);
+    } catch (e) {
+      log('Error withdrawing connection request: $e');
+    }
+  }
+
+  Future<void> sendConnectionReques(String userId) async {
+    try {
+      await ref.read(growTabServicesProvider).acceptInvitation(userId);
+    } catch (e) {
+      log('Error sending connection request: $e');
+    }
+  }
 }
 
 final growTabViewModelProvider =

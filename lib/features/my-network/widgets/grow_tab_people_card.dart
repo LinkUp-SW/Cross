@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/my-network/model/grow_tab_model.dart';
+import 'package:link_up/features/my-network/viewModel/grow_tab_view_model.dart';
 import 'package:link_up/shared/themes/button_styles.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
@@ -116,15 +117,96 @@ class _PeopleCardState extends ConsumerState<PeopleCard> {
                 child: ElevatedButton(
                   onPressed: () {
                     if (widget.data.whoCanSendMeInvitation == "Everyone") {
-                      setState(() {
-                        isConnecting = !isConnecting;
-                      });
-                      // Add your connection logic here
+                      if (isConnecting)
+                        // ?
+                        showModalBottomSheet(
+                          context: context,
+                          useRootNavigator: true,
+                          builder: (context) => Container(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: isDarkMode
+                                  ? AppColors.darkMain
+                                  : AppColors.lightMain,
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              spacing: 5.h,
+                              children: [
+                                Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 10.w),
+                                  child: Text(
+                                    'Withdraw Invitation',
+                                    style: TextStyles.font15_700Weight.copyWith(
+                                      color: isDarkMode
+                                          ? AppColors.darkSecondaryText
+                                          : AppColors.lightTextColor,
+                                    ),
+                                  ),
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 10.w, vertical: 5.h),
+                                        child: ElevatedButton(
+                                          onPressed: () {},
+                                          child: Text('Cancel'),
+                                          style: isDarkMode
+                                              ? LinkUpButtonStyles()
+                                                  .myNetworkScreenConnectDark()
+                                              : LinkUpButtonStyles()
+                                                  .myNetworkScreenConnectLight(),
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 10.w, vertical: 5.h),
+                                        child: ElevatedButton(
+                                          onPressed: () {},
+                                          child: Text('Withdraw'),
+                                          style: isDarkMode
+                                              ? LinkUpButtonStyles()
+                                                  .profileOpenToDark()
+                                              : LinkUpButtonStyles()
+                                                  .profileOpenToLight(),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
+                          ),
+                        );
+                      // :
+                      // ref
+                      //     .read(growTabViewModelProvider.notifier)
+                      //     .sendConnectionReques(widget.data.cardId);
+                      setState(
+                        () {
+                          isConnecting = !isConnecting;
+                        },
+                      );
                     }
                   },
                   style: isDarkMode
-                      ? LinkUpButtonStyles().myNetworkScreenConnectDark()
-                      : LinkUpButtonStyles().myNetworkScreenConnectLight(),
+                      ? isConnecting
+                          ? LinkUpButtonStyles()
+                              .myNetworkScreenConnectDarkPressed()
+                          : LinkUpButtonStyles().myNetworkScreenConnectDark()
+                      : isConnecting
+                          ? LinkUpButtonStyles()
+                              .myNetworkScreenConnectLightPressed()
+                          : LinkUpButtonStyles()
+                              .myNetworkScreenConnectLightPressed(),
                   child: Text(isConnecting ? "Pending" : "Connect"),
                 ),
               ),
