@@ -1,3 +1,5 @@
+// File: lib/features/profile/widgets/profile_header_widget.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,9 +8,11 @@ import 'package:link_up/features/profile/model/profile_model.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/shared/themes/button_styles.dart';
-import 'package:link_up/features/profile/widgets/bottom_sheet.dart';
+import 'package:link_up/features/profile/widgets/bottom_sheet.dart'; // Assuming this is reusable
 import 'package:link_up/features/profile/state/profile_photo_state.dart';
 import 'package:link_up/features/profile/viewModel/profile_photo_view_model.dart';
+import 'package:link_up/features/profile/state/cover_photo_state.dart'; // Import new state
+import 'package:link_up/features/profile/viewModel/cover_photo_view_model.dart'; // Import new VM
 import 'package:link_up/features/profile/state/profile_state.dart';
 import 'package:link_up/features/profile/viewModel/profile_view_model.dart';
 import 'package:image_picker/image_picker.dart';
@@ -24,30 +28,29 @@ class ProfileHeaderWidget extends ConsumerWidget {
 
   void _handleProfilePicTap(BuildContext context, WidgetRef ref) {
      final ProfileState currentMainState = ref.read(profileViewModelProvider);
-     String currentPhotoUrl = ""; 
+     String currentPhotoUrl = "";
 
      if (currentMainState is ProfileLoaded) {
        currentPhotoUrl = currentMainState.userProfile.profilePhotoUrl;
      }
 
-
-
      final options = [
        ReusableBottomSheetOption(
          icon: Icons.camera_alt_outlined,
          title: 'Take a photo',
-         onTap: () => ref.read(profilePhotoViewModelProvider.notifier).pickProfilePhoto(ImageSource.camera),
+         onTap: () { Navigator.pop(context); ref.read(profilePhotoViewModelProvider.notifier).pickProfilePhoto(ImageSource.camera); },
        ),
        ReusableBottomSheetOption(
          icon: Icons.arrow_upward,
          title: 'Upload from photos',
-         onTap: () => ref.read(profilePhotoViewModelProvider.notifier).pickProfilePhoto(ImageSource.gallery),
+         onTap: () { Navigator.pop(context); ref.read(profilePhotoViewModelProvider.notifier).pickProfilePhoto(ImageSource.gallery); },
        ),
        if (currentPhotoUrl.isNotEmpty)
           ReusableBottomSheetOption(
             icon: Icons.delete_outline,
             title: 'Delete profile picture',
             onTap: () {
+               Navigator.pop(context); // Close bottom sheet first
                showDialog(
                  context: context,
                  builder: (ctx) => AlertDialog(
@@ -71,23 +74,28 @@ class ProfileHeaderWidget extends ConsumerWidget {
             },
           ),
      ];
-     showReusableBottomSheet(context: context, options: options);
+
+     // Use generic bottom sheet - adjust if needed
+      showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return SafeArea(
+            child: Wrap(
+              children: options.map((option) => ListTile(
+                 leading: Icon(option.icon),
+                 title: Text(option.title),
+                 subtitle: option.subtitle != null ? Text(option.subtitle!) : null,
+                 onTap: option.onTap,
+              )).toList(),
+            ),
+          );
+        },
+      );
   }
 
-  void _handleBackgroundPicTap(BuildContext context) {
-    final options = [
-      ReusableBottomSheetOption(
-        icon: Icons.arrow_upward,
-        title: 'Upload background photo',
-        onTap: () {},
-      ),
-       ReusableBottomSheetOption(
-        icon: Icons.delete_outline,
-        title: 'Delete background photo',
-        onTap: () {},
-      ),
-    ];
-    showReusableBottomSheet(context: context, options: options);
+  // Updated handler for cover photo
+  void _handleBackgroundPicTap(BuildContext context, WidgetRef ref) {
+      ref.read(coverPhotoViewModelProvider.notifier).showCoverPhotoSourceDialog(context);
   }
 
   void _handleOpenToTap(BuildContext context) {
@@ -122,15 +130,17 @@ class ProfileHeaderWidget extends ConsumerWidget {
       locationString = userProfile.countryRegion!;
     }
 
+     // Listener for Profile Photo
      ref.listen<ProfilePhotoState>(profilePhotoViewModelProvider, (previous, next) {
        if (next is ProfilePhotoUploading || next is ProfilePhotoDeleting) {
+          // Using Snackbars for simplicity, could use overlays
           ScaffoldMessenger.of(context).showSnackBar(
-             SnackBar(content: Text(next is ProfilePhotoUploading ? "Uploading photo..." : "Deleting photo..."), duration: Duration(seconds: 1)),
+             SnackBar(content: Text(next is ProfilePhotoUploading ? "Updating profile photo..." : "Deleting profile photo..."), duration: Duration(seconds: 1)),
           );
        } else if (next is ProfilePhotoError) {
            ScaffoldMessenger.of(context).removeCurrentSnackBar();
            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Operation failed: ${next.message}"), backgroundColor: Colors.red),
+              SnackBar(content: Text("Profile photo error: ${next.message}"), backgroundColor: Colors.red),
            );
        } else if (next is ProfilePhotoSuccess) {
            ScaffoldMessenger.of(context).removeCurrentSnackBar();
@@ -141,6 +151,28 @@ class ProfileHeaderWidget extends ConsumerWidget {
              ScaffoldMessenger.of(context).removeCurrentSnackBar();
        }
     });
+
+     // Listener for Cover Photo
+     ref.listen<CoverPhotoState>(coverPhotoViewModelProvider, (previous, next) {
+       if (next is CoverPhotoUploading || next is CoverPhotoDeleting) {
+          ScaffoldMessenger.of(context).showSnackBar(
+             SnackBar(content: Text(next is CoverPhotoUploading ? "Updating cover photo..." : "Deleting cover photo..."), duration: Duration(seconds: 1)),
+          );
+       } else if (next is CoverPhotoError) {
+           ScaffoldMessenger.of(context).removeCurrentSnackBar();
+           ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("Cover photo error: ${next.message}"), backgroundColor: Colors.red),
+           );
+       } else if (next is CoverPhotoSuccess) {
+           ScaffoldMessenger.of(context).removeCurrentSnackBar();
+           ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(next.newImageUrl.isEmpty ? "Cover photo deleted!" : "Cover photo updated!"), backgroundColor: Colors.green),
+           );
+       } else if ((previous is CoverPhotoUploading || previous is CoverPhotoDeleting) && next is CoverPhotoInitial) {
+             ScaffoldMessenger.of(context).removeCurrentSnackBar();
+       }
+    });
+
 
     return Container(
       width: double.infinity,
@@ -153,31 +185,66 @@ class ProfileHeaderWidget extends ConsumerWidget {
           Stack(
             clipBehavior: Clip.none,
             children: [
+              // Updated GestureDetector for Cover Photo
               GestureDetector(
-                onTap: () => _handleBackgroundPicTap(context),
-                child: Container(
-                  height: backgroundHeight,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: AppColors.lightGrey,
-                    image: userProfile.coverPhotoUrl.isNotEmpty
-                        ? DecorationImage(
-                            image: NetworkImage(userProfile.coverPhotoUrl),
-                            fit: BoxFit.cover,
-                          )
-                        : null,
-                  ),
-                  child: userProfile.coverPhotoUrl.isEmpty
-                      ? const Center(child: Text(''))
-                      : Align(
-                          alignment: Alignment.topRight,
-                          child: IconButton(
-                            icon: const Icon(Icons.camera_alt_rounded, color: Colors.white),
-                            onPressed: () => _handleBackgroundPicTap(context),
-                          ),
+                onTap: () => _handleBackgroundPicTap(context, ref), // Pass ref
+                child: Consumer( // Add Consumer to watch Cover Photo state
+                   builder: (context, ref, _) {
+                      final coverState = ref.watch(coverPhotoViewModelProvider);
+                      bool isCoverProcessing = coverState is CoverPhotoUploading || coverState is CoverPhotoDeleting;
+                      bool hasCoverUrl = userProfile.coverPhotoUrl.isNotEmpty;
+
+                      return Container(
+                        height: backgroundHeight,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300], // Default background if no image
+                          image: hasCoverUrl
+                              ? DecorationImage(
+                                  image: NetworkImage(userProfile.coverPhotoUrl),
+                                  fit: BoxFit.cover,
+                                  // Optional: Add errorBuilder for cover photo
+                                  // onError: (err, stack) => log("Error loading cover: $err"),
+                                )
+                              : null,
                         ),
+                        child: Stack( // Stack for overlay and icon
+                          children: [
+                              // Only show edit icon if NOT processing
+                              if (!isCoverProcessing)
+                                Align(
+                                   alignment: Alignment.topRight,
+                                   child: Padding(
+                                     padding: const EdgeInsets.all(4.0),
+                                     child: CircleAvatar(
+                                        radius: 12.r,
+                                        backgroundColor: Colors.black.withOpacity(0.4),
+                                        child: Icon(
+                                          Icons.camera_alt_rounded,
+                                          color: Colors.white,
+                                          size: 14.sp,
+                                        ),
+                                      ),
+                                   ),
+                                ),
+                              // Processing Overlay
+                              if (isCoverProcessing)
+                                Container(
+                                  color: Colors.black.withOpacity(0.5),
+                                  child: const Center(
+                                    child: CircularProgressIndicator(
+                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                      strokeWidth: 2.0,
+                                    ),
+                                  ),
+                                ),
+                          ],
+                        ),
+                      );
+                   }
                 ),
               ),
+              // Profile Picture Section (no changes needed here)
               Padding(
                 padding: EdgeInsets.only(top: 30.h, left: 16.w),
                 child: GestureDetector(
@@ -185,36 +252,59 @@ class ProfileHeaderWidget extends ConsumerWidget {
                   child: Stack(
                     clipBehavior: Clip.none,
                     children: [
-                       Consumer(
-                         builder: (context, ref, _) {
-                           final photoState = ref.watch(profilePhotoViewModelProvider);
-                           bool isProcessing = photoState is ProfilePhotoUploading || photoState is ProfilePhotoDeleting;
-                           return CircleAvatar(
-                             radius: 50.r,
-                             backgroundColor: Colors.white,
-                             child: CircleAvatar(
+                       CircleAvatar(
+                         radius: 50.r,
+                         backgroundColor: Colors.white,
+                         child: Consumer(
+                           builder: (context, ref, _) {
+                             final photoState = ref.watch(profilePhotoViewModelProvider);
+                             bool isProcessing = photoState is ProfilePhotoUploading || photoState is ProfilePhotoDeleting;
+                             bool hasUrl = userProfile.profilePhotoUrl.isNotEmpty;
+
+                             return CircleAvatar(
                                radius: 48.r,
-                               backgroundImage: userProfile.profilePhotoUrl.isNotEmpty
-                                   ? NetworkImage(userProfile.profilePhotoUrl)
-                                   : const AssetImage('assets/images/default-profile-picture.jpg') as ImageProvider,
                                backgroundColor: Colors.grey[300],
-                               child: isProcessing
-                                   ? Container(
-                                       decoration: BoxDecoration(
-                                          color: Colors.black.withOpacity(0.5),
-                                          shape: BoxShape.circle,
-                                       ),
-                                       child: const Center(
-                                          child: CircularProgressIndicator(
-                                             valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                             strokeWidth: 2.0,
-                                          ),
-                                       ),
-                                    )
-                                   : null,
-                             ),
-                           );
-                         }
+                               child: hasUrl
+                                 ? ClipOval(
+                                     child: Stack(
+                                       fit: StackFit.expand,
+                                       children: [
+                                         Image(
+                                           image: NetworkImage(userProfile.profilePhotoUrl),
+                                           fit: BoxFit.cover,
+                                           errorBuilder: (context, error, stackTrace) => Center(
+                                             child: Icon(
+                                               Icons.person_outline,
+                                               size: 48.r,
+                                               color: Colors.grey[600],
+                                             ),
+                                           ),
+                                         ),
+                                         if (isProcessing)
+                                           Container(
+                                             decoration: BoxDecoration(
+                                                color: Colors.black.withOpacity(0.5),
+                                             ),
+                                             child: const Center(
+                                                child: CircularProgressIndicator(
+                                                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                                   strokeWidth: 2.0,
+                                                ),
+                                             ),
+                                           ),
+                                       ],
+                                     ),
+                                   )
+                                 : Center(
+                                    child: Icon(
+                                      Icons.person,
+                                      size: 48.r,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                             );
+                           }
+                         ),
                        ),
                       Positioned(
                         bottom: 0,

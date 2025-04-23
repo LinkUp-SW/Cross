@@ -235,6 +235,125 @@ class ProfileService extends BaseService {
     }
   }
 
+  Future<bool> updateCoverPhoto(XFile imageFile) async {
+    const String endpoint = 'api/v1/user/profile/cover-photo';
+    final Uri uri = Uri.parse('${ExternalEndPoints.baseUrl}$endpoint');
+    final String? token = await getToken();
+
+    if (token == null || token.isEmpty) {
+      throw Exception("Authentication token not found.");
+    }
+
+    log('ProfileService: Uploading cover photo: ${imageFile.path} to $uri');
+
+    try {
+      var request = http.MultipartRequest('PUT', uri);
+      request.headers['Authorization'] = 'Bearer $token';
+
+      String? mimeType = lookupMimeType(imageFile.path);
+      MediaType? contentType;
+      if (mimeType != null) {
+        final parts = mimeType.split('/');
+        if (parts.length == 2) {
+           contentType = MediaType(parts[0], parts[1]);
+        }
+      }
+
+      request.files.add(await http.MultipartFile.fromPath(
+         'coverPhoto',
+         imageFile.path,
+         contentType: contentType,
+      ));
+
+      log('ProfileService: Sending cover photo multipart request...');
+      var streamedResponse = await request.send().timeout(const Duration(seconds: 45));
+      var response = await http.Response.fromStream(streamedResponse);
+
+      log('ProfileService: Upload Cover API Response Status Code: ${response.statusCode}');
+      log('ProfileService: Upload Cover API Response Body: ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 201 || response.statusCode == 204) {
+          log('ProfileService: Cover photo upload successful (status code check).');
+          return true;
+      } else {
+         String errorMessage = 'Failed to upload cover photo';
+          try {
+             final errorJson = jsonDecode(response.body);
+             errorMessage = errorJson['message'] ?? '$errorMessage (Status: ${response.statusCode})';
+          } catch (_) {
+             errorMessage = '$errorMessage (Status: ${response.statusCode})';
+          }
+         throw Exception(errorMessage);
+      }
+    } on TimeoutException {
+       log('ProfileService: Cover photo upload request timed out.');
+       throw Exception('Cover photo upload timed out. Please try again.');
+    } catch (e) {
+       log('ProfileService: Error uploading cover photo: $e');
+       rethrow;
+    }
+  }
+
+  Future<String> getCoverPhotoUrl(String userId) async {
+     final String endpointTemplate = 'api/v1/user/profile/cover-photo/$userId';
+     log('ProfileService: Fetching cover photo URL for user ID: $userId from $endpointTemplate');
+
+     try {
+        final response = await get(endpointTemplate.replaceFirst('{user_id}', userId));
+
+        log('ProfileService: Get Cover URL API Response Status Code: ${response.statusCode}');
+        log('ProfileService: Get Cover URL API Response Body: ${response.body}');
+
+        if (response.statusCode == 200) {
+           final responseData = jsonDecode(response.body);
+           final imageUrl = responseData['coverPhoto'] as String?; // CONFIRM THIS KEY!
+
+           if (imageUrl != null && imageUrl.isNotEmpty) {
+              log('ProfileService: Fetched cover photo URL successfully: $imageUrl');
+              return imageUrl;
+           } else {
+              log('ProfileService: Cover photo URL key not found or empty in response.');
+              return "";
+           }
+        } else {
+           log('ProfileService: Failed to fetch cover photo URL (Status: ${response.statusCode})');
+           return "";
+        }
+     } catch (e) {
+        log('ProfileService: Error fetching cover photo URL: $e');
+        rethrow;
+     }
+  }
+
+  Future<bool> deleteCoverPhoto() async {
+    const String endpoint = 'api/v1/user/profile/cover-photo';
+    log('ProfileService: Deleting cover photo via $endpoint');
+
+    try {
+      final response = await delete(endpoint, null);
+
+      log('ProfileService: Delete Cover Photo API Response Status Code: ${response.statusCode}');
+      log('ProfileService: Delete Cover Photo API Response Body: ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        log('ProfileService: Cover photo deleted successfully.');
+        return true;
+      } else {
+        String errorMessage = 'Failed to delete cover photo';
+        try {
+          final errorJson = jsonDecode(response.body);
+          errorMessage = errorJson['message'] ?? '$errorMessage (Status: ${response.statusCode})';
+        } catch (_) {
+          errorMessage = '$errorMessage (Status: ${response.statusCode})';
+        }
+        throw Exception(errorMessage);
+      }
+    } catch (e) {
+      log('ProfileService: Error deleting cover photo: $e');
+      rethrow;
+    }
+  }
+
 
   Future<bool> addEducation(EducationModel education) async {
     final String userId = InternalEndPoints.userId;

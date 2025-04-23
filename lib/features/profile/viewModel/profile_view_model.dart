@@ -1,3 +1,4 @@
+
 import 'dart:developer';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/features/profile/services/profile_services.dart';
@@ -28,12 +29,10 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
     try {
       final userProfile = await _profileService.getUserProfile(idToFetch);
       if (mounted) {
-        // Handle empty profilePhotoUrl explicitly
         if (userProfile.profilePhotoUrl.isNotEmpty) {
           InternalEndPoints.profileUrl = userProfile.profilePhotoUrl;
            log("ProfileViewModel: Updated InternalEndPoints.profileUrl with fetched URL.");
         } else {
-          // If fetched URL is empty, set the static variable to empty
           InternalEndPoints.profileUrl = '';
           log("ProfileViewModel: Fetched profilePhotoUrl is empty, setting InternalEndPoints.profileUrl to empty.");
         }
@@ -48,9 +47,10 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
   }
 
   void updateProfilePhotoUrl(String newUrl) {
-     if (state is ProfileLoaded) {
-        final currentProfile = (state as ProfileLoaded).userProfile;
-        final updatedProfile = UserProfile(
+     final ProfileState currentState = state;
+     if (currentState is ProfileLoaded) {
+        final UserProfile currentProfile = currentState.userProfile;
+        final UserProfile updatedProfile = UserProfile(
            isMe: currentProfile.isMe,
            firstName: currentProfile.firstName,
            lastName: currentProfile.lastName,
@@ -63,11 +63,37 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
            coverPhotoUrl: currentProfile.coverPhotoUrl,
            numberOfConnections: currentProfile.numberOfConnections,
         );
+        final ProfileLoaded newState = ProfileLoaded(updatedProfile);
+        state = newState;
+        log("ProfileViewModel: Updated profilePhotoUrl in state.");
         InternalEndPoints.profileUrl = newUrl;
-        state = ProfileLoaded(updatedProfile);
-        log("ProfileViewModel: Updated profilePhotoUrl in state and InternalEndPoints.");
      } else {
-        log("ProfileViewModel: Cannot update photo URL, state is not ProfileLoaded.");
+        log("ProfileViewModel: Cannot update profile photo URL, state is not ProfileLoaded. Current state: $currentState");
+     }
+  }
+
+  void updateCoverPhotoUrl(String newUrl) {
+     final ProfileState currentState = state;
+     if (currentState is ProfileLoaded) {
+        final UserProfile currentProfile = currentState.userProfile;
+        final UserProfile updatedProfile = UserProfile(
+           isMe: currentProfile.isMe,
+           firstName: currentProfile.firstName,
+           lastName: currentProfile.lastName,
+           headline: currentProfile.headline,
+           countryRegion: currentProfile.countryRegion,
+           city: currentProfile.city,
+           experience: currentProfile.experience,
+           education: currentProfile.education,
+           profilePhotoUrl: currentProfile.profilePhotoUrl,
+           coverPhotoUrl: newUrl,
+           numberOfConnections: currentProfile.numberOfConnections,
+        );
+        final ProfileLoaded newState = ProfileLoaded(updatedProfile);
+        state = newState;
+        log("ProfileViewModel: Updated coverPhotoUrl in state.");
+     } else {
+        log("ProfileViewModel: Cannot update cover photo URL, state is not ProfileLoaded. Current state: $currentState");
      }
   }
 }
