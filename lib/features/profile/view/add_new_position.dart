@@ -114,8 +114,10 @@ class _AddNewPositionState extends ConsumerState<AddNewPosition> {
       }
     });
 
-    final descriptionCharCount = formData?.descriptionController.text.length ?? 0;
     final maxDescriptionChars = viewModel.maxDescriptionChars;
+    final descriptionCharCount = ref.watch(addPositionViewModelProvider.select(
+        (s) => _getFormDataFromState(s)?.descriptionController.text.length ?? 0
+    ));
 
 
     return Scaffold(
@@ -264,6 +266,7 @@ class _AddNewPositionState extends ConsumerState<AddNewPosition> {
                               controller: formData.descriptionController,
                               hintText: "Add details about your role...",
                               maxLines: null,
+                              maxLength: maxDescriptionChars,
                             ),
                             Padding(
                               padding: EdgeInsets.only(top: 4.h, right: 8.w),
@@ -295,7 +298,7 @@ class _AddNewPositionState extends ConsumerState<AddNewPosition> {
                             SizedBox(height: 10.h),
                             ElevatedButton(
                               onPressed: () {
-                                // TODO: Implement skill selection/adding logic
+
                               },
                               style: isDarkMode
                                   ? buttonStyles.blueOutlinedButtonDark()
