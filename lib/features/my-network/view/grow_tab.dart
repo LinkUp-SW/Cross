@@ -70,10 +70,11 @@ class _GrowTabState extends ConsumerState<GrowTab> {
             : state.workTitle != null &&
                     state.peopleYouMayKnowFromWork!.isNotEmpty
                 ? Section(
-                    title: "Peope you may know from ${state.workTitle}",
+                    title: "People you may know from ${state.workTitle}",
                     cards: state.peopleYouMayKnowFromWork!
                         .map((person) => PeopleCard(
                               data: person,
+                              isEducationCard: false,
                             ))
                         .toList())
                 : SizedBox(
@@ -85,10 +86,11 @@ class _GrowTabState extends ConsumerState<GrowTab> {
             : state.educationTitle != null &&
                     state.peopleYouMayKnowFromEducation!.isNotEmpty
                 ? Section(
-                    title: "Peope you may know from ${state.educationTitle}",
+                    title: "People you may know from ${state.educationTitle}",
                     cards: state.peopleYouMayKnowFromEducation!
                         .map((person) => PeopleCard(
                               data: person,
+                              isEducationCard: true,
                             ))
                         .toList())
                 : SizedBox(

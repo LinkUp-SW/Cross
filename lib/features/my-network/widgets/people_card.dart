@@ -4,16 +4,20 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/my-network/model/people_card_model.dart';
 import 'package:link_up/features/my-network/viewModel/grow_tab_view_model.dart';
+import 'package:link_up/features/my-network/widgets/snackbar_content.dart';
 import 'package:link_up/shared/themes/button_styles.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
+import 'package:link_up/shared/widgets/custom_snackbar.dart';
 
 class PeopleCard extends ConsumerStatefulWidget {
   final PeopleCardsModel data;
+  final bool? isEducationCard;
 
   const PeopleCard({
     super.key,
     required this.data,
+    this.isEducationCard,
   });
 
   @override
@@ -77,7 +81,20 @@ class _PeopleCardState extends ConsumerState<PeopleCard> {
                 top: 5.h,
                 right: 3.w,
                 child: InkWell(
-                  onTap: () {},
+                  onTap: () async {
+                    final isEducationCard = widget.isEducationCard ?? false;
+                    final foundReplacement = await ref
+                        .read(growTabViewModelProvider.notifier)
+                        .getReplacementPerson(widget.data.cardId,
+                            isEducationCard ? 'education' : 'work_experience');
+
+                    if (!foundReplacement) {
+                      openSnackbar(
+                          child: SnackbarContent(
+                              message: 'No more people you may know available',
+                              icon: Icons.info));
+                    }
+                  },
                   child: Container(
                     padding: EdgeInsets.all(2.r),
                     decoration: const BoxDecoration(

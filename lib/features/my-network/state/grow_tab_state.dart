@@ -2,28 +2,32 @@ import 'package:link_up/features/my-network/model/people_card_model.dart';
 import 'package:link_up/features/my-network/model/invitations_screen_model.dart';
 
 class GrowTabState {
-  final String? educationTitle;
-  final String? workTitle;
-  final List<PeopleCardsModel>? peopleYouMayKnowFromWork;
-  final List<PeopleCardsModel>? peopleYouMayKnowFromEducation;
-  final List<InvitationsCardModel>? receivedInvitations;
-  final int? receivedInvitationsCount;
   final bool isLoading;
   final bool error;
+  final String? educationTitle;
+  final String? workTitle;
+  final String? educationNextCursor;
+  final String? workNextCursor;
+  final Set<PeopleCardsModel>? peopleYouMayKnowFromEducation;
+  final Set<PeopleCardsModel>? peopleYouMayKnowFromWork;
+  final Set<InvitationsCardModel>? receivedInvitations;
+  final int? receivedInvitationsCount;
 
-  const GrowTabState({
+  GrowTabState({
+    this.isLoading = false,
+    this.error = false,
     this.educationTitle,
     this.workTitle,
-    this.peopleYouMayKnowFromWork,
+    this.educationNextCursor,
+    this.workNextCursor,
     this.peopleYouMayKnowFromEducation,
+    this.peopleYouMayKnowFromWork,
     this.receivedInvitations,
     this.receivedInvitationsCount,
-    required this.isLoading,
-    required this.error,
   });
 
   factory GrowTabState.initial() {
-    return const GrowTabState(
+    return GrowTabState(
       educationTitle: null,
       workTitle: null,
       peopleYouMayKnowFromWork: null,
@@ -35,27 +39,33 @@ class GrowTabState {
     );
   }
 
+  // Update copyWith
   GrowTabState copyWith({
-    String? educationTitle,
-    String? workTitle,
-    List<PeopleCardsModel>? peopleYouMayKnowFromWork,
-    List<PeopleCardsModel>? peopleYouMayKnowFromEducation,
-    List<InvitationsCardModel>? receivedInvitations,
-    int? receivedInvitationsCount,
     bool? isLoading,
     bool? error,
+    String? educationTitle,
+    String? workTitle,
+    String? educationNextCursor,
+    String? workNextCursor,
+    Set<PeopleCardsModel>? peopleYouMayKnowFromEducation,
+    Set<PeopleCardsModel>? peopleYouMayKnowFromWork,
+    Set<InvitationsCardModel>? receivedInvitations,
+    int? receivedInvitationsCount,
   }) {
     return GrowTabState(
-      workTitle: workTitle ?? this.workTitle,
-      educationTitle: educationTitle ?? this.educationTitle,
-      peopleYouMayKnowFromWork:
-          peopleYouMayKnowFromWork ?? this.peopleYouMayKnowFromWork,
-      peopleYouMayKnowFromEducation:
-          peopleYouMayKnowFromEducation ?? this.peopleYouMayKnowFromEducation,
-      receivedInvitationsCount:
-          receivedInvitationsCount ?? this.receivedInvitationsCount,
       isLoading: isLoading ?? this.isLoading,
       error: error ?? this.error,
+      educationTitle: educationTitle ?? this.educationTitle,
+      workTitle: workTitle ?? this.workTitle,
+      educationNextCursor: educationNextCursor ?? this.educationNextCursor,
+      workNextCursor: workNextCursor ?? this.workNextCursor,
+      peopleYouMayKnowFromEducation:
+          peopleYouMayKnowFromEducation ?? this.peopleYouMayKnowFromEducation,
+      peopleYouMayKnowFromWork:
+          peopleYouMayKnowFromWork ?? this.peopleYouMayKnowFromWork,
+      receivedInvitations: receivedInvitations ?? this.receivedInvitations,
+      receivedInvitationsCount:
+          receivedInvitationsCount ?? this.receivedInvitationsCount,
     );
   }
 }

@@ -28,7 +28,7 @@ class GrowTabViewModel extends Notifier<GrowTabState> {
               .toList();
       state = state.copyWith(
         isLoading: false,
-        receivedInvitations: receivedInvitations,
+        receivedInvitations: receivedInvitations.toSet(),
         receivedInvitationsCount: receivedInvitations.length,
       );
     } catch (e) {
@@ -46,7 +46,7 @@ class GrowTabViewModel extends Notifier<GrowTabState> {
       if (state.receivedInvitations != null) {
         final updatedInvitations = state.receivedInvitations!
             .where((invitation) => invitation.cardId != userId)
-            .toList();
+            .toSet();
 
         state = state.copyWith(
           isLoading: false,
@@ -69,7 +69,7 @@ class GrowTabViewModel extends Notifier<GrowTabState> {
       if (state.receivedInvitations != null) {
         final updatedInvitations = state.receivedInvitations!
             .where((invitation) => invitation.cardId != userId)
-            .toList();
+            .toSet();
 
         state = state.copyWith(
           isLoading: false,
@@ -92,28 +92,30 @@ class GrowTabViewModel extends Notifier<GrowTabState> {
               );
       if (queryParameters!['context'] == 'education') {
         // Parse the received invitations from the response
-        final List<PeopleCardsModel> peopleYouMayKnowFromEducation =
+        final Set<PeopleCardsModel> peopleYouMayKnowFromEducation =
             (response['people'] as List)
                 .map((person) => PeopleCardsModel.fromJson(person))
-                .toList();
+                .toSet();
         state = state.copyWith(
             isLoading: false,
             peopleYouMayKnowFromEducation: peopleYouMayKnowFromEducation,
             educationTitle: peopleYouMayKnowFromEducation.isNotEmpty
                 ? response['institutionName']
-                : null);
+                : null,
+            educationNextCursor: response['nextCursor']); // Add this
       } else {
         // Parse the received invitations from the response
-        final List<PeopleCardsModel> peopleYouMayKnowFromWork =
+        final Set<PeopleCardsModel> peopleYouMayKnowFromWork =
             (response['people'] as List)
                 .map((person) => PeopleCardsModel.fromJson(person))
-                .toList();
+                .toSet();
         state = state.copyWith(
             isLoading: false,
             peopleYouMayKnowFromWork: peopleYouMayKnowFromWork,
             workTitle: peopleYouMayKnowFromWork.isNotEmpty
                 ? response['institutionName']
-                : null);
+                : null,
+            workNextCursor: response['nextCursor']); // Add this
       }
     } catch (e) {
       log("Error in getPeopleYouMayKnow: $e");
@@ -135,6 +137,75 @@ class GrowTabViewModel extends Notifier<GrowTabState> {
       await ref.read(growTabServicesProvider).sendConnectionRequest(userId);
     } catch (e) {
       log('Error sending connection request: $e');
+    }
+  }
+
+  Future<bool> getReplacementPerson(String cardId, String context) async {
+    try {
+      final response =
+          await ref.read(growTabServicesProvider).getPeopleYouMayKnow(
+        queryParameters: {
+          "cursor": context == 'education'
+              ? state.educationNextCursor
+              : state.workNextCursor,
+          "limit": "1",
+          "context": context,
+        },
+      );
+
+      if (response['nextCursor'] != null) {
+        final newPerson = PeopleCardsModel.fromJson(response['people'][0]);
+
+        // Check if this person already exists in our list
+        bool isDuplicate = false;
+        if (context == 'education') {
+          isDuplicate = state.peopleYouMayKnowFromEducation!.any((person) =>
+              person.cardId == newPerson.cardId && person.cardId != cardId);
+        } else {
+          isDuplicate = state.peopleYouMayKnowFromWork!.any((person) =>
+              person.cardId == newPerson.cardId && person.cardId != cardId);
+        }
+
+        if (isDuplicate) {
+          log("Duplicate person found, no more unique recommendations");
+          return false;
+        }
+
+        // Update the appropriate list based on context
+        if (context == 'education') {
+          // Your existing code for education list updates
+          final updatedList = [...state.peopleYouMayKnowFromEducation!];
+          final index =
+              updatedList.indexWhere((person) => person.cardId == cardId);
+          if (index != -1) {
+            updatedList[index] = newPerson;
+          }
+
+          state = state.copyWith(
+            peopleYouMayKnowFromEducation: updatedList.toSet(),
+            educationNextCursor: response['nextCursor'],
+          );
+        } else {
+          // Your existing code for work list updates
+        }
+
+        log("Replaced card $cardId with new person");
+        return true;
+      } else {
+        // No replacement available - refresh the entire list
+        await getPeopleYouMayKnow(
+          queryParameters: {
+            "cursor": null,
+            "limit": "4",
+            "context": context,
+          },
+        );
+        log("No replacement found, refreshed the entire list");
+        return false;
+      }
+    } catch (e) {
+      log("Error fetching replacement person: $e");
+      return false;
     }
   }
 }
