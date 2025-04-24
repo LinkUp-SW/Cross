@@ -1,11 +1,11 @@
-import 'package:link_up/features/my-network/model/grow_tab_model.dart';
+import 'package:link_up/features/my-network/model/people_card_model.dart';
 import 'package:link_up/features/my-network/model/invitations_screen_model.dart';
 
 class GrowTabState {
   final String? educationTitle;
   final String? workTitle;
-  final List<GrowTabPeopleCardsModel>? peopleYouMayKnowFromWork;
-  final List<GrowTabPeopleCardsModel>? peopleYouMayKnowFromEducation;
+  final List<PeopleCardsModel>? peopleYouMayKnowFromWork;
+  final List<PeopleCardsModel>? peopleYouMayKnowFromEducation;
   final List<InvitationsCardModel>? receivedInvitations;
   final int? receivedInvitationsCount;
   final bool isLoading;
@@ -38,8 +38,8 @@ class GrowTabState {
   GrowTabState copyWith({
     String? educationTitle,
     String? workTitle,
-    List<GrowTabPeopleCardsModel>? peopleYouMayKnowFromWork,
-    List<GrowTabPeopleCardsModel>? peopleYouMayKnowFromEducation,
+    List<PeopleCardsModel>? peopleYouMayKnowFromWork,
+    List<PeopleCardsModel>? peopleYouMayKnowFromEducation,
     List<InvitationsCardModel>? receivedInvitations,
     int? receivedInvitationsCount,
     bool? isLoading,

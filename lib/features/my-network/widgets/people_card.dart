@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:link_up/features/my-network/model/grow_tab_model.dart';
+import 'package:go_router/go_router.dart';
+import 'package:link_up/features/my-network/model/people_card_model.dart';
 import 'package:link_up/features/my-network/viewModel/grow_tab_view_model.dart';
 import 'package:link_up/shared/themes/button_styles.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 
 class PeopleCard extends ConsumerStatefulWidget {
-  final GrowTabPeopleCardsModel data;
+  final PeopleCardsModel data;
 
   const PeopleCard({
     super.key,
@@ -21,7 +22,6 @@ class PeopleCard extends ConsumerStatefulWidget {
 
 class _PeopleCardState extends ConsumerState<PeopleCard> {
   bool isConnecting = false;
-
   @override
   Widget build(BuildContext context) {
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
@@ -50,7 +50,10 @@ class _PeopleCardState extends ConsumerState<PeopleCard> {
                   topRight: Radius.circular(6.r),
                 ),
                 child: Image(
-                  image: NetworkImage(widget.data.coverPicture!),
+                  image: widget.data.coverPicture != null
+                      ? NetworkImage(widget.data.coverPicture!)
+                      : AssetImage('assets/images/default-cover-picture.png')
+                          as ImageProvider,
                   width: double.infinity,
                   height: 60.h,
                   fit: BoxFit.cover,
@@ -63,7 +66,10 @@ class _PeopleCardState extends ConsumerState<PeopleCard> {
                 right: 32.w,
                 child: CircleAvatar(
                   radius: 45.r,
-                  foregroundImage: NetworkImage(widget.data.profilePicture!),
+                  foregroundImage: widget.data.profilePicture != null
+                      ? NetworkImage(widget.data.profilePicture!)
+                      : AssetImage('assets/images/default-profile-picture.jpg')
+                          as ImageProvider,
                 ),
               ),
               // Cancel Button
@@ -100,7 +106,7 @@ class _PeopleCardState extends ConsumerState<PeopleCard> {
                   horizontal: 6.0.w,
                 ),
                 child: Text(
-                  widget.data.title!,
+                  widget.data.title ?? '',
                   style: TextStyles.font15_500Weight.copyWith(
                     color: isDarkMode
                         ? AppColors.darkGrey
@@ -117,8 +123,7 @@ class _PeopleCardState extends ConsumerState<PeopleCard> {
                 child: ElevatedButton(
                   onPressed: () {
                     if (widget.data.whoCanSendMeInvitation == "Everyone") {
-                      if (isConnecting)
-                        // ?
+                      if (isConnecting) {
                         showModalBottomSheet(
                           context: context,
                           useRootNavigator: true,
@@ -146,6 +151,18 @@ class _PeopleCardState extends ConsumerState<PeopleCard> {
                                     ),
                                   ),
                                 ),
+                                Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 10.w),
+                                  child: Text(
+                                    "If you withdraw now, you won't be able to resend to ${widget.data.firstName} ${widget.data.lastName} for up to 3 weeks",
+                                    style: TextStyles.font13_500Weight.copyWith(
+                                      color: isDarkMode
+                                          ? AppColors.darkSecondaryText
+                                          : AppColors.lightTextColor,
+                                    ),
+                                  ),
+                                ),
                                 Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
@@ -155,13 +172,15 @@ class _PeopleCardState extends ConsumerState<PeopleCard> {
                                         padding: EdgeInsets.symmetric(
                                             horizontal: 10.w, vertical: 5.h),
                                         child: ElevatedButton(
-                                          onPressed: () {},
-                                          child: Text('Cancel'),
+                                          onPressed: () {
+                                            context.pop();
+                                          },
                                           style: isDarkMode
                                               ? LinkUpButtonStyles()
                                                   .myNetworkScreenConnectDark()
                                               : LinkUpButtonStyles()
                                                   .myNetworkScreenConnectLight(),
+                                          child: Text('Cancel'),
                                         ),
                                       ),
                                     ),
@@ -170,13 +189,26 @@ class _PeopleCardState extends ConsumerState<PeopleCard> {
                                         padding: EdgeInsets.symmetric(
                                             horizontal: 10.w, vertical: 5.h),
                                         child: ElevatedButton(
-                                          onPressed: () {},
-                                          child: Text('Withdraw'),
+                                          onPressed: () {
+                                            ref
+                                                .read(growTabViewModelProvider
+                                                    .notifier)
+                                                .withdrawInvitation(
+                                                  widget.data.cardId,
+                                                );
+                                            setState(
+                                              () {
+                                                isConnecting = !isConnecting;
+                                              },
+                                            );
+                                            context.pop();
+                                          },
                                           style: isDarkMode
                                               ? LinkUpButtonStyles()
                                                   .profileOpenToDark()
                                               : LinkUpButtonStyles()
                                                   .profileOpenToLight(),
+                                          child: Text('Withdraw'),
                                         ),
                                       ),
                                     ),
@@ -186,15 +218,16 @@ class _PeopleCardState extends ConsumerState<PeopleCard> {
                             ),
                           ),
                         );
-                      // :
-                      // ref
-                      //     .read(growTabViewModelProvider.notifier)
-                      //     .sendConnectionReques(widget.data.cardId);
-                      setState(
-                        () {
-                          isConnecting = !isConnecting;
-                        },
-                      );
+                      } else {
+                        ref
+                            .read(growTabViewModelProvider.notifier)
+                            .sendConnectionRequest(widget.data.cardId);
+                        setState(
+                          () {
+                            isConnecting = !isConnecting;
+                          },
+                        );
+                      }
                     }
                   },
                   style: isDarkMode

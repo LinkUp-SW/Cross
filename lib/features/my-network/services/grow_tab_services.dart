@@ -82,7 +82,7 @@ class GrowTabServices {
         return jsonDecode(response.body);
       }
       throw Exception(
-          'Failed to withdraw sent connection invitation: ${response.statusCode}');
+          'Failed to withdraw sent connection invitation: ${response.body} , status code: ${response.statusCode}');
     } catch (e) {
       rethrow;
     }
@@ -96,7 +96,7 @@ class GrowTabServices {
         return jsonDecode(response.body);
       }
       throw Exception(
-          'Failed to send connection request: ${response.statusCode}');
+          'Failed to send connection request: ${response.body} , status code: ${response.statusCode}');
     } catch (e) {
       rethrow;
     }

@@ -1,4 +1,4 @@
-class GrowTabPeopleCardsModel {
+class PeopleCardsModel {
   final String cardId;
   final String? profilePicture;
   final String? coverPicture;
@@ -7,7 +7,7 @@ class GrowTabPeopleCardsModel {
   final String? title;
   final String whoCanSendMeInvitation;
 
-  const GrowTabPeopleCardsModel({
+  const PeopleCardsModel({
     required this.cardId,
     required this.profilePicture,
     required this.coverPicture,
@@ -17,8 +17,8 @@ class GrowTabPeopleCardsModel {
     required this.whoCanSendMeInvitation,
   });
 
-  factory GrowTabPeopleCardsModel.fromJson(Map<String, dynamic> json) {
-    return GrowTabPeopleCardsModel(
+  factory PeopleCardsModel.fromJson(Map<String, dynamic> json) {
+    return PeopleCardsModel(
       cardId: json['user_id'],
       profilePicture: json['profile_photo'],
       coverPicture: json['cover_photo'],

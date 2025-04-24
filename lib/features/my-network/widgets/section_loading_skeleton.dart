@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:link_up/features/my-network/widgets/grow_tab_people_card_loading_skeleton.dart';
+import 'package:link_up/features/my-network/widgets/people_card_loading_skeleton.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:skeletonizer/skeletonizer.dart';

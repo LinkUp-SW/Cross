@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:link_up/features/my-network/widgets/grow_tab_people_card.dart';
+import 'package:link_up/features/my-network/widgets/people_card.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 
@@ -23,24 +23,32 @@ class Section extends ConsumerWidget {
     List<Widget> cardRows = [];
 
     for (int i = 0; i < cards.length; i += 2) {
-      List<Widget> rowCards = [];
-
-      // First card
-      rowCards.add(Expanded(child: cards[i]));
-
-      // Second card
-      if (i + 1 < cards.length) {
-        rowCards.add(Expanded(child: cards[i + 1]));
+      // If this is the last card and it's an odd count
+      if (i + 1 == cards.length) {
+        // Add a centered single card row
+        cardRows.add(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(child: cards[i]),
+              Expanded(child: SizedBox()),
+            ],
+          ),
+        );
+      } else {
+        // Regular row with two cards
+        cardRows.add(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(child: cards[i]),
+              Expanded(child: cards[i + 1]),
+            ],
+          ),
+        );
       }
-
-      // Add the row
-      cardRows.add(
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: rowCards,
-        ),
-      );
     }
     return Material(
       color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,

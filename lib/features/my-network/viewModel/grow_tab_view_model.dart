@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:link_up/features/my-network/model/grow_tab_model.dart';
+import 'package:link_up/features/my-network/model/people_card_model.dart';
 import 'package:link_up/features/my-network/model/invitations_screen_model.dart';
 import 'package:link_up/features/my-network/services/grow_tab_services.dart';
 import 'package:link_up/features/my-network/state/grow_tab_state.dart';
@@ -92,9 +92,9 @@ class GrowTabViewModel extends Notifier<GrowTabState> {
               );
       if (queryParameters!['context'] == 'education') {
         // Parse the received invitations from the response
-        final List<GrowTabPeopleCardsModel> peopleYouMayKnowFromEducation =
+        final List<PeopleCardsModel> peopleYouMayKnowFromEducation =
             (response['people'] as List)
-                .map((person) => GrowTabPeopleCardsModel.fromJson(person))
+                .map((person) => PeopleCardsModel.fromJson(person))
                 .toList();
         state = state.copyWith(
             isLoading: false,
@@ -104,9 +104,9 @@ class GrowTabViewModel extends Notifier<GrowTabState> {
                 : null);
       } else {
         // Parse the received invitations from the response
-        final List<GrowTabPeopleCardsModel> peopleYouMayKnowFromWork =
+        final List<PeopleCardsModel> peopleYouMayKnowFromWork =
             (response['people'] as List)
-                .map((person) => GrowTabPeopleCardsModel.fromJson(person))
+                .map((person) => PeopleCardsModel.fromJson(person))
                 .toList();
         state = state.copyWith(
             isLoading: false,
@@ -130,9 +130,9 @@ class GrowTabViewModel extends Notifier<GrowTabState> {
     }
   }
 
-  Future<void> sendConnectionReques(String userId) async {
+  Future<void> sendConnectionRequest(String userId) async {
     try {
-      await ref.read(growTabServicesProvider).acceptInvitation(userId);
+      await ref.read(growTabServicesProvider).sendConnectionRequest(userId);
     } catch (e) {
       log('Error sending connection request: $e');
     }

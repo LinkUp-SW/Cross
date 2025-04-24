@@ -4,12 +4,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/my-network/viewModel/grow_tab_view_model.dart';
 import 'package:link_up/features/my-network/widgets/grow_tab_navigation_row.dart';
-import 'package:link_up/features/my-network/widgets/grow_tab_people_card.dart';
-import 'package:link_up/features/my-network/widgets/grow_tab_section.dart';
-import 'dart:developer';
-
-import 'package:link_up/features/my-network/widgets/grow_tab_section_loading_skeleton.dart';
-import 'package:link_up/features/my-network/widgets/retry_error_message.dart';
+import 'package:link_up/features/my-network/widgets/people_card.dart';
+import 'package:link_up/features/my-network/widgets/section.dart';
+import 'package:link_up/features/my-network/widgets/section_loading_skeleton.dart';
 
 class GrowTab extends ConsumerStatefulWidget {
   const GrowTab({
@@ -36,7 +33,6 @@ class _GrowTabState extends ConsumerState<GrowTab> {
     });
 
     Future.microtask(() {
-      log("Entered grow tab microtask");
       ref.read(growTabViewModelProvider.notifier).getPeopleYouMayKnow(
           queryParameters: {
             "cursor": null,
