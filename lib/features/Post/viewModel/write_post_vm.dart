@@ -221,7 +221,7 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
       "commentsDisabled":
           Visibilities.getVisibilityString(state.visibilityComment),
       "publicPost": state.visbilityPost == Visibilities.anyone ? true : false,
-      "taggedUsers": state.taggedUsers,
+      "taggedUsers": state.taggedUsers.map((user) {return user['user_id'];}).toList(),
     });
 
     log('Response: ${response.statusCode} - ${response.body}');
@@ -239,7 +239,8 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
     final BaseService service = BaseService();
 
     final mediaContent = await state.media.setToUpload();
-
+    
+    log('${state.taggedUsers.map((user) {return user['user_id'];}).toList()}');
     final response = await service.post('api/v1/post/posts', body: {
       "content": state.controller.text,
       "mediaType": state.media.type.name,
@@ -247,7 +248,7 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
       "commentsDisabled":
           Visibilities.getVisibilityString(state.visibilityComment),
       "publicPost": state.visbilityPost == Visibilities.anyone ? true : false,
-      "taggedUsers": state.taggedUsers,
+      "taggedUsers": state.taggedUsers.map((user) {return user['user_id'];}).toList(),
     });
 
     // Rest of the function remains the same

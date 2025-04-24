@@ -170,7 +170,7 @@ class WriteCommentProvider extends StateNotifier<WriteCommentVm> {
       "comment_id": commentId,
       "content": state.controller.text,
       "media": mediaContent,
-      "tagged_users": state.taggedUsers,
+      "tagged_users": state.taggedUsers.map((user) {return user['user_id'];}).toList(),
     }).catchError((error) {
       log('Error creating comment: $error');
       throw Exception(error);
