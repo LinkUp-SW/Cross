@@ -6,6 +6,8 @@ import 'package:link_up/core/constants/endpoints.dart';
 import 'package:link_up/features/profile/model/contact_info_model.dart';
 import 'package:link_up/features/profile/services/profile_services.dart';
 import 'package:link_up/features/profile/state/contact_info_state.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
+
 
 class ContactInfoViewModel extends StateNotifier<EditContactInfoState> {
   final ProfileService _profileService;
