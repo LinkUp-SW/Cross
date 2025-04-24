@@ -37,6 +37,7 @@ import 'package:link_up/features/profile/view/add_new_position.dart';
 import 'package:link_up/features/profile/view/add_new_education.dart';
 import 'package:link_up/shared/widgets/main_drawer.dart';
 import 'package:link_up/features/jobs/view/view.dart';
+import 'package:link_up/features/jobs/view/job_details.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
@@ -178,6 +179,15 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                   builder: (context, state) => JobsScreen(
                     scaffoldKey: scaffoldKey,
                   ),
+                  routes: [
+                    GoRoute(
+                      path: "details/:jobId",
+                      builder: (context, state) {
+                        final String jobId = state.pathParameters['jobId']!;
+                        return JobDetailsPage(jobId: jobId);
+                      },
+                    ),
+                  ],
                 ),
               ],
             ),

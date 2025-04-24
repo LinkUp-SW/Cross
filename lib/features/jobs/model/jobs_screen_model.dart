@@ -1,43 +1,38 @@
 class JobsCardModel {
+  final String cardId;
   final String jobTitle;
   final String companyName;
-  final String country;
-  final String city;
+  final String location;
   final String workType;
   final String companyPicture;
   final String postDate;
+  final String timeAgo;
+  final String? experienceLevel;
 
   const JobsCardModel({
+    required this.cardId,
     required this.jobTitle,
     required this.companyName,
-    required this.country,
-    required this.city,
+    required this.location,
     required this.workType,
     required this.companyPicture,
     required this.postDate,
+    required this.timeAgo,
+    this.experienceLevel,
   });
 
   factory JobsCardModel.fromJson(Map<String, dynamic> json) {
+    final organization = json['organization'] as Map<String, dynamic>;
     return JobsCardModel(
-      jobTitle: json['jobTitle'],
-      companyName: json['companyName'],
-      country: json['country'],
-      city: json['city'],
-      workType: json['workType'],
-      companyPicture: json['companyPicture'],
-      postDate: json['postDate'],
-    );
-  }
-
-  factory JobsCardModel.initial() {
-    return JobsCardModel(
-      jobTitle: 'AI Engineer',
-      companyName: 'Open AI',
-      country: 'Egypt',
-      city: 'Cairo',
-      workType: 'Hybrid',
-      companyPicture: 'assets/images/default-company-picture.png',
-      postDate: DateTime.now().toIso8601String(),
+      cardId: json['_id'],
+      jobTitle: json['job_title'],
+      companyName: organization['name'],
+      location: json['location'],
+      workType: json['workplace_type'],
+      companyPicture: organization['logo'],
+      postDate: json['posted_time'],
+      timeAgo: json['timeAgo'],
+      experienceLevel: json['experience_level'],
     );
   }
 }
