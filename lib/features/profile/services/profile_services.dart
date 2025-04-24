@@ -11,6 +11,7 @@ import 'package:link_up/core/services/storage.dart';
 import 'package:link_up/features/profile/model/contact_info_model.dart';
 import 'package:link_up/features/profile/model/education_model.dart';
 import 'package:link_up/features/profile/model/profile_model.dart';
+import 'package:link_up/features/profile/model/position_model.dart'; 
 import 'package:mime/mime.dart';
 
 class ProfileService extends BaseService {
@@ -354,7 +355,6 @@ class ProfileService extends BaseService {
     }
   }
 
-
   Future<bool> addEducation(EducationModel education) async {
     final String userId = InternalEndPoints.userId;
     if (userId.isEmpty) {
@@ -379,6 +379,41 @@ class ProfileService extends BaseService {
       rethrow;
     }
   }
+
+  Future<bool> addPosition(PositionModel position) async {
+     final String userId = InternalEndPoints.userId;
+     if (userId.isEmpty) {
+       throw Exception("User ID not available. Please log in again.");
+     }
+     const String positionEndpoint = 'api/v1/user/add-work-experience'; 
+     log('ProfileService: Adding position for user ID: $userId');
+     log('ProfileService: Position data to send: ${jsonEncode(position.toJson())}');
+     try {
+       final response = await post(
+         positionEndpoint,
+         body: position.toJson(), 
+
+       );
+       log('ProfileService: addPosition API Response Status Code: ${response.statusCode}');
+       log('ProfileService: addPosition API Response Body: ${response.body}');
+
+       if (response.statusCode == 200 || response.statusCode == 201) {
+         log('ProfileService: Position added successfully.');
+         return true;
+       } else {
+         log('ProfileService: Add Position Error: Status Code ${response.statusCode}, Body: ${response.body}');
+         String errorMessage = 'Failed to add position (Status code: ${response.statusCode})';
+         try {
+            final errorJson = jsonDecode(response.body);
+            errorMessage = errorJson['message'] ?? errorMessage;
+         } catch (_) {}
+         throw Exception(errorMessage);
+       }
+     } catch (e) {
+       log('ProfileService: Error adding position: $e');
+       rethrow;
+     }
+   }
 }
 
 final profileServiceProvider = Provider<ProfileService>((ref) {
