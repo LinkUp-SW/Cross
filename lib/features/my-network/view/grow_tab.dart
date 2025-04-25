@@ -81,7 +81,6 @@ class _GrowTabState extends ConsumerState<GrowTab> {
           children: [
             GrowTabNavigationRow(
               title: 'Invitations',
-              isDarkMode: isDarkMode,
               onTap: () => context.push('/invitations'),
             ),
             if (state.isLoading && state.receivedInvitations == null)
@@ -116,7 +115,6 @@ class _GrowTabState extends ConsumerState<GrowTab> {
               ),
             GrowTabNavigationRow(
               title: 'Manage my network',
-              isDarkMode: isDarkMode,
               onTap: () => context.push('/manage-network'),
             ),
             state.isLoading && state.workTitle == null

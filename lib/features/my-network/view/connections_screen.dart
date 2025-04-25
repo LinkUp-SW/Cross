@@ -389,12 +389,10 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                       shrinkWrap: true,
                       itemCount: 3,
                       itemBuilder: (context, index) =>
-                          ConnectionsCardLoadingSkeleton(
-                              isDarkMode: isDarkMode),
+                          ConnectionsCardLoadingSkeleton(),
                     )
                   : state.isError
                       ? RetryErrorMessage(
-                          isDarkMode: isDarkMode,
                           errorMessage: "Failed to load connections :(",
                           buttonFunctionality: () async {
                             await ref
@@ -409,8 +407,7 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                           },
                         )
                       : state.connections == null || state.connections!.isEmpty
-                          ? StandardEmptyListMessage(
-                              isDarkMode: isDarkMode, message: 'No connections')
+                          ? StandardEmptyListMessage(message: 'No connections')
                           : ListView.builder(
                               physics: const AlwaysScrollableScrollPhysics(),
                               itemCount: state.connections!.length +
@@ -432,7 +429,6 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                                 }
                                 return ConnectionsCard(
                                   data: state.connections![index],
-                                  isDarkMode: isDarkMode,
                                 );
                               },
                             ),

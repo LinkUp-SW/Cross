@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:link_up/core/constants/endpoints.dart';
 import 'package:link_up/features/my-network/model/connections_screen_model.dart';
 import 'package:link_up/features/my-network/services/connections_screen_services.dart';
 import 'package:link_up/features/my-network/state/connections_screen_state.dart';
@@ -34,7 +35,7 @@ class ConnectionsScreenViewModel extends StateNotifier<ConnectionsScreenState> {
     state = state.copyWith(isLoading: true, isError: false);
 
     try {
-      final userId = await _connectionsScreenServices.getUserId();
+      final userId = InternalEndPoints.userId;
       final response = await _connectionsScreenServices.getConnectionsList(
         queryParameters: queryParameters,
         routeParameters: {'user_id': userId},
@@ -65,7 +66,7 @@ class ConnectionsScreenViewModel extends StateNotifier<ConnectionsScreenState> {
     state = currentState.copyWith(isLoadingMore: true);
 
     try {
-      final userId = await _connectionsScreenServices.getUserId();
+      final userId = InternalEndPoints.userId;
       final response = await _connectionsScreenServices.getConnectionsList(
         queryParameters: {
           'limit': '$paginationLimit',

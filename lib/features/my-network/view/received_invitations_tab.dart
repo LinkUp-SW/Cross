@@ -66,7 +66,6 @@ class _ReceivedInvitationsTabState
             )
           : state.error
               ? RetryErrorMessage(
-                  isDarkMode: isDarkMode,
                   errorMessage:
                       "Failed to load received connection invitations :(",
                   buttonFunctionality: () async {
@@ -82,7 +81,6 @@ class _ReceivedInvitationsTabState
                 )
               : state.received == null || state.received!.isEmpty
                   ? StandardEmptyListMessage(
-                      isDarkMode: isDarkMode,
                       message: 'No received connection invitations',
                     )
                   : ListView.builder(

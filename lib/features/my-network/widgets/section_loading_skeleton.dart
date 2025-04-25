@@ -51,12 +51,10 @@ class SectionLoadingSkeleton extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
-                    child: GrowTabPeopleCardLoadingSkeleton(
-                        isDarkMode: isDarkMode),
+                    child: GrowTabPeopleCardLoadingSkeleton(),
                   ),
                   Expanded(
-                    child: GrowTabPeopleCardLoadingSkeleton(
-                        isDarkMode: isDarkMode),
+                    child: GrowTabPeopleCardLoadingSkeleton(),
                   ),
                 ],
               ),
@@ -65,12 +63,10 @@ class SectionLoadingSkeleton extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
-                    child: GrowTabPeopleCardLoadingSkeleton(
-                        isDarkMode: isDarkMode),
+                    child: GrowTabPeopleCardLoadingSkeleton(),
                   ),
                   Expanded(
-                    child: GrowTabPeopleCardLoadingSkeleton(
-                        isDarkMode: isDarkMode),
+                    child: GrowTabPeopleCardLoadingSkeleton(),
                   ),
                 ],
               ),

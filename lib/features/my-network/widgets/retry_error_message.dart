@@ -6,18 +6,17 @@ import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 
 class RetryErrorMessage extends ConsumerWidget {
-  final bool isDarkMode;
   final String errorMessage;
   final VoidCallback buttonFunctionality;
 
   const RetryErrorMessage(
       {super.key,
-      required this.isDarkMode,
       required this.errorMessage,
       required this.buttonFunctionality});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: 10.w,

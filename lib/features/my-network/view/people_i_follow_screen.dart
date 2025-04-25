@@ -143,12 +143,10 @@ class _PeopleIFollowScreenState extends ConsumerState<PeopleIFollowScreen> {
                         shrinkWrap: true,
                         itemCount: 3,
                         itemBuilder: (context, index) =>
-                            FollowingCardLoadingSkeleton(
-                                isDarkMode: isDarkMode),
+                            FollowingCardLoadingSkeleton(),
                       )
                     : state.isError
                         ? RetryErrorMessage(
-                            isDarkMode: isDarkMode,
                             errorMessage: "Failed to load followings :(",
                             buttonFunctionality: () async {
                               await ref
@@ -163,9 +161,7 @@ class _PeopleIFollowScreenState extends ConsumerState<PeopleIFollowScreen> {
                             },
                           )
                         : state.followings == null || state.followings!.isEmpty
-                            ? StandardEmptyListMessage(
-                                isDarkMode: isDarkMode,
-                                message: 'No followings')
+                            ? StandardEmptyListMessage(message: 'No followings')
                             : ListView.builder(
                                 physics: const AlwaysScrollableScrollPhysics(),
                                 itemCount: state.followings!.length +
@@ -187,7 +183,6 @@ class _PeopleIFollowScreenState extends ConsumerState<PeopleIFollowScreen> {
                                   }
                                   return FollowingCard(
                                     data: state.followings![index],
-                                    isDarkMode: isDarkMode,
                                   );
                                 },
                               )),

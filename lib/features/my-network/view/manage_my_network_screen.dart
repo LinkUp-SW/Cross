@@ -90,7 +90,6 @@ class _ManageMyNetworkScreenState extends ConsumerState<ManageMyNetworkScreen> {
             ),
           ),
           ManageMyNetworkScreenNavigationRow(
-            isDarkMode: isDarkMode,
             icon: Icons.people,
             title: 'Connections',
             onTap: () => context.push('/connections'),
@@ -99,7 +98,6 @@ class _ManageMyNetworkScreenState extends ConsumerState<ManageMyNetworkScreen> {
             isLoading: state.isLoading,
           ),
           ManageMyNetworkScreenNavigationRow(
-            isDarkMode: isDarkMode,
             icon: Icons.person,
             title: 'People I follow',
             onTap: () => context.push('/following'),
@@ -107,7 +105,6 @@ class _ManageMyNetworkScreenState extends ConsumerState<ManageMyNetworkScreen> {
             isLoading: state.isLoading,
           ),
           ManageMyNetworkScreenNavigationRow(
-            isDarkMode: isDarkMode,
             icon: Icons.business,
             title: 'Pages',
             onTap: () => context.push('/pages'),
@@ -120,7 +117,6 @@ class _ManageMyNetworkScreenState extends ConsumerState<ManageMyNetworkScreen> {
           // Show retry button if there was an error
           if (state.error)
             RetryErrorMessage(
-              isDarkMode: isDarkMode,
               errorMessage: 'Failed to load counts :(',
               buttonFunctionality: () async {
                 ref
