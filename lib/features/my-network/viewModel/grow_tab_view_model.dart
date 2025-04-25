@@ -22,13 +22,13 @@ class GrowTabViewModel extends Notifier<GrowTabState> {
               );
 
       // Parse the received invitations from the response
-      final List<InvitationsCardModel> receivedInvitations =
+      final Set<InvitationsCardModel> receivedInvitations =
           (response['receivedConnections'] as List)
               .map((invitation) => InvitationsCardModel.fromJson(invitation))
-              .toList();
+              .toSet();
       state = state.copyWith(
         isLoading: false,
-        receivedInvitations: receivedInvitations.toSet(),
+        receivedInvitations: receivedInvitations,
         receivedInvitationsCount: receivedInvitations.length,
       );
     } catch (e) {
