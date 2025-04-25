@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:link_up/features/chat/model/chat_model.dart';
 import 'package:link_up/features/chat/services/chat_service.dart';
+import 'package:link_up/features/chat/model/message_model.dart';
 
 class MockChatService implements ChatService {
   @override
@@ -9,6 +10,7 @@ class MockChatService implements ChatService {
 
     var chats = [
       Chat(
+        userId:"1" ,
         name: "John Doe",
         profilePictureUrl: "https://www.w3schools.com/w3images/avatar2.png",
         lastMessage: "I'm good, thanks!",
@@ -45,6 +47,7 @@ class MockChatService implements ChatService {
         isTyping: false,
       ),
       Chat(
+        userId: "2",   
         name: "Jane Smith",
         profilePictureUrl: "https://www.w3schools.com/w3images/avatar6.png",
         lastMessage: "Are we still on for tomorrow?",
@@ -66,6 +69,7 @@ class MockChatService implements ChatService {
         isTyping: false,
       ),
       Chat(
+        userId: "3",
         name: "Sam Green",
         profilePictureUrl: "https://www.w3schools.com/w3images/avatar5.png",
         lastMessage: "Did you finish the report?",
@@ -97,6 +101,7 @@ class MockChatService implements ChatService {
         isTyping: false,
       ),
       Chat(
+        userId: "4",
          name: "Alex Blue",
         profilePictureUrl: "https://www.w3schools.com/w3images/avatar4.png", // Real profile picture URL
         lastMessage: "Here's a cool image!",
@@ -124,6 +129,7 @@ class MockChatService implements ChatService {
 
       ),
       Chat(
+        userId: "5",
        name: "Emily White",
         profilePictureUrl: "https://www.w3schools.com/w3images/avatar3.png", // Real profile picture URL
         lastMessage: "Check out this document",

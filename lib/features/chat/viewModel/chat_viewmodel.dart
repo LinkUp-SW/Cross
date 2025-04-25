@@ -2,7 +2,9 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/features/chat/services/chat_service.dart';
 import 'package:link_up/features/chat/services/mock_service.dart';
+import 'package:link_up/features/my-network/model/connections_screen_model.dart';
 import '../model/chat_model.dart';
+import '../model/message_model.dart';
 
 class ChatViewModel extends StateNotifier<List<Chat>> {
   final ChatService _chatService;
@@ -99,6 +101,29 @@ class ChatViewModel extends StateNotifier<List<Chat>> {
   Future.delayed(const Duration(seconds: 1), () {
     simulateOtherUserTyping(chatIndex);
   });
+}
+int startNewOrOpenExistingChat(ConnectionsCardModel connection) {
+  final existingIndex = state.indexWhere((chat) => chat.userId == connection.cardId);
+  if (existingIndex != -1) {
+    return existingIndex;
+  }
+
+  final newChat = Chat(
+
+    userId: connection.cardId,
+    name: '${connection.firstName} ${connection.lastName}',
+    profilePictureUrl: connection.profilePicture, 
+    messages: [],
+    isUnread: false,
+    isTyping: false,
+    isBlocked: false,
+    lastMessage: "",
+    lastMessageTimestamp: DateTime.now(),
+    unreadMessageCount: 0,
+  );
+
+  state = [...state, newChat];
+  return state.length - 1;
 }
 
 

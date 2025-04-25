@@ -8,10 +8,11 @@ import 'package:link_up/features/chat/widgets/typing_indicator.dart';
 import 'package:link_up/features/chat/widgets/video_player_screen.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
-import '../model/chat_model.dart';
+
 import '../viewModel/chat_viewmodel.dart';
 import '../widgets/chat_message_bubble.dart';
 import '../widgets/chat_input_field.dart';
+import '../model/message_model.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   final int chatIndex;

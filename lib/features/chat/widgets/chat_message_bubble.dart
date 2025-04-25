@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:link_up/features/chat/widgets/document_message.dart';
-import '../model/chat_model.dart';
+import '../model/message_model.dart';
 import 'dart:io'; 
 import '../widgets/video_player.dart';
 

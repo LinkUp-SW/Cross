@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/chat/view/chat_screen.dart';
+import 'package:link_up/features/chat/view/new_chat_screen.dart';
 import '../viewModel/chat_viewmodel.dart';
 import '../widgets/chat_tile.dart';
 
@@ -27,9 +28,12 @@ class ChatListScreen extends ConsumerWidget {
         actions: [
           IconButton(
             icon: Icon(Icons.message, color: theme.iconTheme.color),
-            onPressed: () {
-              // Add new message feature later
-            },
+             onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const NewChatScreen()),
+    );
+  },
           ),
         ],
       ),

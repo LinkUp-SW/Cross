@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:link_up/features/chat/model/chat_model.dart';
+import 'package:link_up/features/chat/model/message_model.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
