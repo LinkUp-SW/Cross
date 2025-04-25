@@ -7,14 +7,13 @@ import 'package:link_up/shared/themes/app_themes.dart';
 import 'shared/themes/theme_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:link_up/features/notifications/services/push_notification_service.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  final notificationSettings = await FirebaseMessaging.instance.requestPermission(provisional: true);
- 
-  await SystemChrome.setPreferredOrientations([
+
+  SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]).then((_) {
     runApp(const ProviderScope(child: MyApp()));
@@ -26,8 +25,7 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    //Initialize the push notification service
-    PushNotificationService.init(context);
+  PushNotificationService().initNotifications(context);
     return SafeArea(
       child: ScreenUtilInit(
           designSize: const Size(360, 690),
