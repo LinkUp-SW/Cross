@@ -95,9 +95,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         ),
         GoRoute(
           path: "/connections",
-          builder: (context, state) => ConnectionsScreen(
-            isDarkMode: Theme.of(context).brightness == Brightness.dark,
-          ),
+          builder: (context, state) => ConnectionsScreen(),
         ),
         GoRoute(
           path: "/following",

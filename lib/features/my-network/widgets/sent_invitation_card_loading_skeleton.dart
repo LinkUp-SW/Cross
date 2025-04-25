@@ -4,8 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class SentInvitationsLoadingSkeleton extends ConsumerWidget {
-  const SentInvitationsLoadingSkeleton({
+class SentInvitationsCardLoadingSkeleton extends ConsumerWidget {
+  const SentInvitationsCardLoadingSkeleton({
     super.key,
   });
 

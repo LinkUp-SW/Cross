@@ -3,19 +3,22 @@ import 'package:link_up/features/my-network/model/people_i_follow_screen_model.d
 import 'package:link_up/features/my-network/services/people_i_follow_screen_services.dart';
 import 'package:link_up/features/my-network/state/people_i_follow_screen_state.dart';
 
-class PeopleIFollowScreenViewModel extends Notifier<PeopleIFollowScreenState> {
-  @override
-  PeopleIFollowScreenState build() {
-    return PeopleIFollowScreenState.initial();
-  }
+class PeopleIFollowScreenViewModel
+    extends StateNotifier<PeopleIFollowScreenState> {
+  final PeopleIFollowScreenServices _peopleIFollowScreenServices;
+
+  PeopleIFollowScreenViewModel(
+    this._peopleIFollowScreenServices,
+  ) : super(
+          PeopleIFollowScreenState.initial(),
+        );
 
   Future<void> getFollowingsCount() async {
     state = state.copyWith(isLoading: true, isError: false);
 
     try {
-      final followingsCount = await ref
-          .read(peopleIFollowScreenServicesProvider)
-          .getFollowingsCount();
+      final followingsCount =
+          await _peopleIFollowScreenServices.getFollowingsCount();
 
       state = state.copyWith(
         isLoading: false,
@@ -32,10 +35,9 @@ class PeopleIFollowScreenViewModel extends Notifier<PeopleIFollowScreenState> {
     state = state.copyWith(isLoading: true, isError: false);
 
     try {
-      final response =
-          await ref.read(peopleIFollowScreenServicesProvider).getFollowingsList(
-                queryParameters: queryParameters,
-              );
+      final response = await _peopleIFollowScreenServices.getFollowingsList(
+        queryParameters: queryParameters,
+      );
 
       // Parse the connections from the response
       final List<FollowingCardModel> followings =
@@ -61,8 +63,7 @@ class PeopleIFollowScreenViewModel extends Notifier<PeopleIFollowScreenState> {
     state = currentState.copyWith(isLoadingMore: true);
 
     try {
-      final response =
-          await ref.read(peopleIFollowScreenServicesProvider).getFollowingsList(
+      final response = await _peopleIFollowScreenServices.getFollowingsList(
         queryParameters: {
           'limit': '$paginationLimit',
           'cursor': currentState.nextCursor,
@@ -116,20 +117,18 @@ class PeopleIFollowScreenViewModel extends Notifier<PeopleIFollowScreenState> {
   Future<void> unfollow(String userId) async {
     state = state.copyWith(isLoading: true, isError: false);
     try {
-      await ref.read(peopleIFollowScreenServicesProvider).unfollow(userId);
+      await _peopleIFollowScreenServices.unfollow(userId);
 
       // Remove the connection from the connections list
       if (state.followings != null) {
         final updatedFollowings = state.followings!
             .where((following) => following.cardId != userId)
             .toList();
-        final updatedFollowingsCount = await ref
-            .read(peopleIFollowScreenServicesProvider)
-            .getFollowingsCount();
+
         state = state.copyWith(
           isLoading: false,
           followings: updatedFollowings,
-          followingsCount: updatedFollowingsCount,
+          followingsCount: updatedFollowings.length,
         );
       }
     } catch (e) {
@@ -138,9 +137,11 @@ class PeopleIFollowScreenViewModel extends Notifier<PeopleIFollowScreenState> {
   }
 }
 
-final peopleIFollowScreenViewModelProvider =
-    NotifierProvider<PeopleIFollowScreenViewModel, PeopleIFollowScreenState>(
-  () {
-    return PeopleIFollowScreenViewModel();
+final peopleIFollowScreenViewModelProvider = StateNotifierProvider<
+    PeopleIFollowScreenViewModel, PeopleIFollowScreenState>(
+  (ref) {
+    return PeopleIFollowScreenViewModel(
+      ref.read(peopleIFollowScreenServicesProvider),
+    );
   },
 );
