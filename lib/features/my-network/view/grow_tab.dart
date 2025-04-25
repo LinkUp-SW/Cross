@@ -130,7 +130,7 @@ class _GrowTabState extends ConsumerState<GrowTab> {
                                   data: person,
                                   isEducationCard: false,
                                 ))
-                            .toList())
+                            .toSet())
                     : SizedBox(),
             state.isLoading && state.educationTitle == null
                 ? SectionLoadingSkeleton(
@@ -146,7 +146,7 @@ class _GrowTabState extends ConsumerState<GrowTab> {
                                   data: person,
                                   isEducationCard: true,
                                 ))
-                            .toList())
+                            .toSet())
                     : SizedBox()
           ],
         ),

@@ -7,7 +7,7 @@ import 'package:link_up/shared/themes/text_styles.dart';
 
 class Section extends ConsumerWidget {
   final String title;
-  final List<PeopleCard> cards;
+  final Set<PeopleCard> cards;
 
   const Section({
     super.key,
@@ -31,7 +31,7 @@ class Section extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(child: cards[i]),
+              Expanded(child: cards.elementAt(i)),
               Expanded(child: SizedBox()),
             ],
           ),
@@ -43,8 +43,8 @@ class Section extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(child: cards[i]),
-              Expanded(child: cards[i + 1]),
+              Expanded(child: cards.elementAt(i)),
+              Expanded(child: cards.elementAt(i + 1)),
             ],
           ),
         );
