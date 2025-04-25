@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter/services.dart'; // For Clipboard
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
+import 'package:link_up/core/constants/endpoints.dart';
+import 'package:link_up/features/profile/state/contact_info_state.dart';
+import 'package:link_up/features/profile/viewModel/contact_info_view_model.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/shared/themes/button_styles.dart';
@@ -12,14 +16,30 @@ import 'package:link_up/features/profile/widgets/subpages_dropdown.dart';
 import 'package:link_up/features/profile/widgets/subpages_form_labels.dart';
 import 'package:link_up/features/profile/widgets/subpages_indication.dart';
 
-// Providers for state management
-final phoneTypeProvider = StateProvider<String?>((ref) => null);
-final addressLengthProvider = StateProvider<int>((ref) => 0);
-
-class EditContactInfo extends ConsumerWidget {
+class EditContactInfo extends ConsumerStatefulWidget {
   const EditContactInfo({super.key});
 
+  @override
+  ConsumerState<EditContactInfo> createState() => _EditContactInfoState();
+}
+
+class _EditContactInfoState extends ConsumerState<EditContactInfo> {
+  final FocusNode _addressFocusNode = FocusNode();
+  final FocusNode _birthdayFocusNode = FocusNode();
+  final FocusNode _websiteFocusNode = FocusNode();
+  final FocusNode _phoneFocusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _addressFocusNode.dispose();
+    _birthdayFocusNode.dispose();
+    _websiteFocusNode.dispose();
+    _phoneFocusNode.dispose();
+    super.dispose();
+  }
+
   void _copyToClipboard(BuildContext context, String text) {
+    if (text.isEmpty) return;
     Clipboard.setData(ClipboardData(text: text));
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -35,194 +55,261 @@ class EditContactInfo extends ConsumerWidget {
     );
   }
 
+  Future<void> _selectBirthday(BuildContext context) async {
+     final viewModel = ref.read(contactInfoViewModelProvider.notifier);
+     final currentState = ref.read(contactInfoViewModelProvider);
+     DateTime initialDate = DateTime.now();
+     DateTime? currentBirthday;
+
+      if (currentState is EditContactInfoLoaded) {
+         currentBirthday = currentState.contactInfo.birthday;
+      } else if (currentState is EditContactInfoSaving) {
+         currentBirthday = currentState.contactInfo.birthday;
+      } else if (currentState is EditContactInfoError && currentState.previousContactInfo != null) {
+         currentBirthday = currentState.previousContactInfo!.birthday;
+      }
+
+     initialDate = currentBirthday ?? DateTime(DateTime.now().year - 20);
+
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+       builder: (context, child) {
+         final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+         return Theme(
+           data: ThemeData(
+             colorScheme: isDarkMode ? const ColorScheme.dark(
+                 primary: AppColors.darkBlue,
+                 onPrimary: AppColors.darkMain,
+                 surface: AppColors.darkMain,
+                 onSurface: AppColors.darkTextColor,
+             ) : const ColorScheme.light(
+                 primary: AppColors.lightBlue,
+                 onPrimary: AppColors.lightMain,
+                 surface: AppColors.lightMain,
+                 onSurface: AppColors.lightTextColor,
+             ),
+              dialogBackgroundColor: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+           ),
+           child: child!,
+         );
+       },
+    );
+    if (picked != null) {
+      viewModel.setBirthday(picked);
+    }
+  }
+
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final buttonStyles = LinkUpButtonStyles();
+    final state = ref.watch(contactInfoViewModelProvider);
+    final viewModel = ref.read(contactInfoViewModelProvider.notifier);
 
-    // Controllers for text fields
-    final phoneNumberController = TextEditingController();
-    final addressController = TextEditingController();
-    final birthdayController = TextEditingController();
-    final websiteController = TextEditingController();
+     ref.listen<EditContactInfoState>(contactInfoViewModelProvider, (previous, next) {
+        if (previous is! EditContactInfoError && next is EditContactInfoError) {
+           WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                 ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                       content: Text('Error: ${next.message}'),
+                       backgroundColor: Colors.red,
+                    ),
+                 );
+              }
+           });
+        } else if (previous is! EditContactInfoSuccess && next is EditContactInfoSuccess) {
+             WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) {
+                   ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                         content: Text('Contact info saved successfully!'),
+                         backgroundColor: Colors.green,
+                      ),
+                   );
+                }
+             });
+        }
+     });
 
-    // Predefined values for Profile URL and Email (not editable)
-    const profileUrl = "https://www.linkedin.com/in/amr-safwat-433536357";
-    const email = "amrosafwat23@hotmail.com";
+    TextEditingController phoneNumberController = viewModel.phoneNumberController;
+    TextEditingController addressController = viewModel.addressController;
+    TextEditingController birthdayController = viewModel.birthdayController;
+    TextEditingController websiteController = viewModel.websiteController;
+    String? selectedPhoneType = viewModel.selectedPhoneType;
 
-    // Update character counter for address
-    addressController.addListener(() {
-      ref.read(addressLengthProvider.notifier).state =
-          addressController.text.length;
-    });
+    final String profileUrl = InternalEndPoints.profileUrl.isNotEmpty
+      ? InternalEndPoints.profileUrl
+      : "https://www.linkedin.com/in/firstname-familyname-userid/";
+    final String email = InternalEndPoints.email.isNotEmpty
+       ? InternalEndPoints.email
+       : "email@example.com";
+
+    bool isLoading = state is EditContactInfoLoading;
+    bool isSaving = state is EditContactInfoSaving;
 
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
-            // Fixed header
             SubPagesAppBar(
               title: "Edit contact info",
               onClosePressed: () {
                 GoRouter.of(context).pop();
               },
             ),
-            // Scrollable content
             Expanded(
               child: Container(
-                color: AppColors.lightMain,
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SubPagesIndicatesRequiredLabel(),
-                      SizedBox(height: 10.h),
-                      // Profile URL (non-editable link)
-                      SubPagesFormLabel(label: "Profile URL"),
-                      SizedBox(height: 2.h),
-                      GestureDetector(
-                        onTap: () => _copyToClipboard(context, profileUrl),
-                        child: Row(
+                color: isDarkMode ? AppColors.darkBackground : AppColors.lightBackground,
+                 child: isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : SingleChildScrollView(
+                       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Expanded(
-                              child: Text(
-                                profileUrl,
-                                style: TextStyles.font14_400Weight.copyWith(
-                                  color: AppColors.lightBlue,
-                                  decoration: TextDecoration.underline,
-                                ),
+                            const SubPagesIndicatesRequiredLabel(),
+                            SizedBox(height: 10.h),
+
+                            SubPagesFormLabel(label: "Profile URL"),
+                            SizedBox(height: 2.h),
+                            GestureDetector(
+                              onTap: () => _copyToClipboard(context, profileUrl),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      profileUrl,
+                                      style: TextStyles.font14_400Weight.copyWith(
+                                        color: AppColors.lightBlue,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  Icon(Icons.open_in_new, color: AppColors.lightBlue, size: 20.sp),
+                                ],
                               ),
                             ),
-                            Icon(
-                              Icons.open_in_new,
-                              color: AppColors.lightBlue,
-                              size: 20.sp,
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 20.h),
-                      // Email (non-editable link)
-                      SubPagesFormLabel(label: "Email"),
-                      SizedBox(height: 2.h),
-                      GestureDetector(
-                        onTap: () => _copyToClipboard(context, email),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                email,
-                                style: TextStyles.font14_400Weight.copyWith(
-                                  color: AppColors.lightBlue,
-                                  decoration: TextDecoration.underline,
-                                ),
+                            SizedBox(height: 20.h),
+
+                            SubPagesFormLabel(label: "Email"),
+                            SizedBox(height: 2.h),
+                            GestureDetector(
+                              onTap: () => _copyToClipboard(context, email),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      email,
+                                      style: TextStyles.font14_400Weight.copyWith(
+                                        color: AppColors.lightBlue,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  Icon(Icons.open_in_new, color: AppColors.lightBlue, size: 20.sp),
+                                ],
                               ),
                             ),
-                            Icon(
-                              Icons.open_in_new,
-                              color: AppColors.lightBlue,
-                              size: 20.sp,
+                            SizedBox(height: 20.h),
+
+                            SubPagesFormLabel(label: "Phone number"),
+                            SizedBox(height: 2.h),
+                            SubPagesCustomTextField(
+                              controller: phoneNumberController,
+                              focusNode: _phoneFocusNode,
+                              enabled: !isSaving,
                             ),
+                            SizedBox(height: 20.h),
+
+                            SubPagesFormLabel(label: "Phone type"),
+                            SizedBox(height: 2.h),
+                            SubPagesCustomDropdownFormField<String>(
+                              value: selectedPhoneType,
+                              hintText: "Please select",
+                              items: const [
+                                DropdownMenuItem(value: "mobile", child: Text("Mobile")),
+                                DropdownMenuItem(value: "home", child: Text("Home")),
+                                DropdownMenuItem(value: "work", child: Text("Work")),
+                              ],
+                              onChanged: isSaving ? null : (value) => viewModel.setPhoneType(value),
+                            ),
+                            SizedBox(height: 20.h),
+
+                            SubPagesFormLabel(label: "Address"),
+                            SizedBox(height: 2.h),
+                            SubPagesCustomTextField(
+                              controller: addressController,
+                              focusNode: _addressFocusNode,
+                              enabled: !isSaving,
+                              maxLength: 220,
+                            ), 
+                            SizedBox(height: 20.h),
+
+                            SubPagesFormLabel(label: "Birthday"),
+                            SizedBox(height: 2.h),
+                             InkWell(
+                                onTap: isSaving ? null : () => _selectBirthday(context),
+                                child: AbsorbPointer(
+                                  child: SubPagesCustomTextField(
+                                      controller: birthdayController,
+                                      hintText: "Select birthday",
+                                      focusNode: _birthdayFocusNode,
+                                      enabled: !isSaving,
+                                      suffixIcon: Icon(
+                                         Icons.calendar_today,
+                                         color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+                                         size: 20.sp,
+                                      ),
+                                  ),
+                                ),
+                             ),
+                            SizedBox(height: 20.h),
+
+                            SubPagesFormLabel(label: "Website"),
+                            SizedBox(height: 2.h),
+                            SubPagesCustomTextField(
+                              controller: websiteController,
+                              focusNode: _websiteFocusNode,
+                              enabled: !isSaving,
+                            ),
+                            SizedBox(height: 20.h),
                           ],
                         ),
-                      ),
-                      SizedBox(height: 20.h),
-                      // Phone number
-                      SubPagesFormLabel(label: "Phone number"),
-                      SizedBox(height: 2.h),
-                      SubPagesCustomTextField(
-                        controller: phoneNumberController,
-                      ),
-                      SizedBox(height: 20.h),
-                      // Phone type
-                      SubPagesFormLabel(label: "Phone type"),
-                      SizedBox(height: 2.h),
-                      SubPagesCustomDropdownFormField<String>(
-                        value: ref.watch(phoneTypeProvider),
-                        hintText: "Please select",
-                        
-                        items: [
-                          DropdownMenuItem(
-                              value: "Mobile", child: Text("Mobile")),
-                          DropdownMenuItem(value: "Home", child: Text("Home")),
-                          DropdownMenuItem(value: "Work", child: Text("Work")),
-                        ],
-                        onChanged: (value) {
-                          ref.read(phoneTypeProvider.notifier).state = value;
-                        },
-                      ),
-                      SizedBox(height: 20.h),
-                      // Address
-                      SubPagesFormLabel(label: "Address"),
-                      SizedBox(height: 2.h),
-                      SubPagesCustomTextField(
-                        controller: addressController,
-                        maxLines: 3,
-                      ),
-                      SizedBox(height: 10.h),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Text(
-                            "${ref.watch(addressLengthProvider)}/220",
-                            style: TextStyles.font14_400Weight.copyWith(
-                              color: AppColors.lightGrey,
+                    ),
+                ),
+            ),
+            if (!isLoading)
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: isSaving ? null : () => viewModel.saveContactInfo(),
+                    style: isDarkMode
+                        ? buttonStyles.wideBlueElevatedButtonDark()
+                        : buttonStyles.wideBlueElevatedButton(),
+                    child: isSaving
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.0),
+                         )
+                        : Text(
+                            "Save",
+                            style: TextStyles.font15_500Weight.copyWith(
+                              color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
                             ),
                           ),
-                        ],
-                      ),
-                      SizedBox(height: 20.h),
-                      // Birthday
-                      SubPagesFormLabel(label: "Birthday"),
-                      SizedBox(height: 2.h),
-                      SubPagesCustomTextField(
-                        controller: birthdayController,
-                        suffixIcon: Icon(
-                          Icons.calendar_today,
-                          color: isDarkMode
-                              ? AppColors.darkTextColor
-                              : AppColors.lightTextColor,
-                          size: 20.sp,
-                        ),
-                        onTap: () {
-                          // Handle date picker
-                        },
-                      ),
-                      SizedBox(height: 20.h),
-                      // Website
-                      SubPagesFormLabel(label: "Website"),
-                      SizedBox(height: 2.h),
-                      SubPagesCustomTextField(
-                        controller: websiteController,
-                      ),
-                      SizedBox(height: 20.h),
-                    ],
                   ),
                 ),
               ),
-            ),
-            // Save button
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    GoRouter.of(context).pop();
-                  },
-                  style: isDarkMode
-                      ? buttonStyles.wideBlueElevatedButtonDark()
-                      : buttonStyles.wideBlueElevatedButton(),
-                  child: Text(
-                    "Save",
-                    style: TextStyles.font15_500Weight.copyWith(
-                      color: AppColors.lightMain,
-                    ),
-                  ),
-                ),
-              ),
-            ),
           ],
         ),
       ),

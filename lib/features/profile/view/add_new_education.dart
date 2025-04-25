@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:link_up/features/profile/state/add_education_state.dart';
 import 'package:link_up/features/profile/viewModel/add_education_view_model.dart';
 import 'package:link_up/features/profile/widgets/subpages_app_bar.dart';
@@ -12,10 +15,6 @@ import 'package:link_up/features/profile/widgets/subpages_text_field.dart';
 import 'package:link_up/shared/themes/button_styles.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
-
-import 'package:link_up/shared/widgets/autocomplete_search_input.dart';
-import 'package:link_up/features/signUp/viewModel/past_job_details_provider.dart';
-
 
 class AddNewEducation extends ConsumerStatefulWidget {
   const AddNewEducation({super.key});
@@ -29,11 +28,7 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
   final FocusNode _endDateFocusNode = FocusNode();
   final FocusNode _schoolFocusNode = FocusNode();
 
-  int _descriptionCharCount = 0;
-  final int _maxDescriptionChars = 2000;
 
-  int _activitiesCharCount = 0;
-  final int _maxActivitiesChars = 500;
 
   Map<String, dynamic>? _selectedSchoolData;
 
@@ -43,13 +38,6 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final currentViewModelState = ref.read(addEducationViewModelProvider);
       final formData = _getFormDataFromState(currentViewModelState);
-
-      if (formData != null) {
-        formData.descriptionController.addListener(_updateDescriptionCharCount);
-        formData.activitiesController.addListener(_updateActivitiesCharCount);
-        _updateDescriptionCharCount();
-        _updateActivitiesCharCount();
-      }
     });
   }
 
@@ -64,48 +52,16 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
     return null;
   }
 
-  void _updateDescriptionCharCount() {
-    final formData = _getFormDataFromState(ref.read(addEducationViewModelProvider));
-    if (mounted && formData != null) {
-      final currentCount = formData.descriptionController.text.length;
-      if (_descriptionCharCount != currentCount) {
-        setState(() {
-          _descriptionCharCount = currentCount;
-        });
-      }
-    }
-  }
-
-  void _updateActivitiesCharCount() {
-    final formData = _getFormDataFromState(ref.read(addEducationViewModelProvider));
-    if (mounted && formData != null) {
-       final currentCount = formData.activitiesController.text.length;
-       if (_activitiesCharCount != currentCount) {
-         setState(() {
-           _activitiesCharCount = currentCount;
-         });
-       }
-    }
-  }
+  
 
   @override
   void dispose() {
-     final formData = _getFormDataFromState(ref.read(addEducationViewModelProvider));
-     if (formData != null) {
-        formData.descriptionController.removeListener(_updateDescriptionCharCount);
-        formData.activitiesController.removeListener(_updateActivitiesCharCount);
-     }
+    
 
     _startDateFocusNode.dispose();
     _endDateFocusNode.dispose();
     _schoolFocusNode.dispose();
     super.dispose();
-  }
-
-  Future<List<Map<String, dynamic>>> _searchSchoolsProfile(String query) async {
-    final notifier = ref.read(pastJobDetailProvider.notifier);
-    await notifier.getSchools(query, ref);
-    return ref.read(schoolResultsProvider);
   }
 
   Future<void> _selectDate(BuildContext context, bool isStartDate) async {
@@ -122,7 +78,7 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
             currentFormData.selectedStartDate ??
             DateTime.now();
     final firstDate = DateTime(1900);
-    final lastDate = DateTime.now().add(const Duration(days: 365 * 10)); 
+    final lastDate = DateTime.now().add(const Duration(days: 365 * 10));
 
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -152,8 +108,6 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
     );
 
     if (picked != null) viewModel.setDate(picked, isStartDate);
-
-
   }
 
 
@@ -180,7 +134,13 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
     final state = ref.watch(addEducationViewModelProvider);
     final viewModel = ref.read(addEducationViewModelProvider.notifier);
     final formData = _getFormDataFromState(state);
+    // Define max lengths here or get from constants/ViewModel
+   final maxDescriptionChars = 2000;
+   final maxActivitiesChars = 500;
 
+   // ---> CALCULATE COUNTS HERE <---
+   final descriptionCharCount = formData?.descriptionController.text.length ?? 0;
+   final activitiesCharCount = formData?.activitiesController.text.length ?? 0;
 
     return Scaffold(
       backgroundColor: isDarkMode ? AppColors.darkBackground : AppColors.lightBackground,
@@ -207,18 +167,35 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                             SubPagesFormLabel(
                                 label: "School", isRequired: true),
                             SizedBox(height: 2.h),
+                            GestureDetector(
+                              onTap: () async {
+                                final selectedSchool = await GoRouter.of(context).push<Map<String, dynamic>>(
+                                  '/search_school',
+                                  extra: formData.schoolController.text,
+                                );
 
-                            AutocompleteSearchInput(
-                                controller: formData.schoolController,
-                                label: "Ex: Cairo University", 
-                                searchFunction: _searchSchoolsProfile, 
-                                onSelected: (selectedItem) {
-                                  
-                                   setState(() {
-                                      _selectedSchoolData = selectedItem;
-                                   });
-                                    print("Selected School (Profile): $selectedItem");
-                                },
+                                if (selectedSchool != null && selectedSchool.containsKey('name')) {
+                                  if (mounted) {
+                                      setState(() {
+                                        formData.schoolController.text = selectedSchool['name'];
+                                        _selectedSchoolData = selectedSchool;
+                                        log("Selected School updated: $_selectedSchoolData");
+                                      });
+                                  }
+                                }
+                              },
+                              child: AbsorbPointer(
+                                child: SubPagesCustomTextField(
+                                  controller: formData.schoolController,
+                                  hintText: "Ex: Cairo University",
+                                  focusNode: _schoolFocusNode,
+                                  suffixIcon: Icon(
+                                    Icons.search,
+                                    color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
+                                    size: 20.sp,
+                                  ),
+                                ),
+                              ),
                             ),
                             SizedBox(height: 20.h),
                             SubPagesFormLabel(
@@ -239,9 +216,9 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                             SizedBox(height: 20.h),
                             SubPagesFormLabel(
                                 label: "Start date", isRequired: true),
-                            InkWell( 
+                            InkWell(
                               onTap: () => _selectDate(context, true),
-                              child: AbsorbPointer( 
+                              child: AbsorbPointer(
                                 child: SubPagesCustomTextField(
                                   controller: formData.startDateController,
                                   hintText: "Select start date",
@@ -260,9 +237,9 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                             SubPagesFormLabel(
                                 label: "End date or expected",
                                 isRequired: true),
-                            InkWell( 
+                            InkWell(
                               onTap: formData.isEndDatePresent
-                                  ? null 
+                                  ? null
                                   : () => _selectDate(context, false),
                               child: AbsorbPointer(
                                 child: SubPagesCustomTextField(
@@ -275,7 +252,7 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                                   suffixIcon: Icon(
                                     Icons.calendar_today,
                                     color: formData.isEndDatePresent
-                                          ? AppColors.lightGrey 
+                                          ? AppColors.lightGrey
                                           : (isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor),
                                     size: 15.sp,
                                   ),
@@ -291,8 +268,8 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                                       viewModel.setIsEndDatePresent(value);
 
                                        if (!value && formData.endDateController.text == "Present") {
-                                          formData.endDateController.clear(); 
-                              
+                                          formData.endDateController.clear();
+
                                           if (formData.selectedEndDate != null) {
                                              viewModel.setDate(formData.selectedEndDate!, false);
                                           }
@@ -325,7 +302,7 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                             SubPagesCustomTextField(
                               controller: formData.activitiesController,
                               hintText: "Ex: IEEE, Debate Club",
-                              maxLines: null, 
+                              maxLines: null,
                             ),
                              Padding(
                               padding: EdgeInsets.only(top: 4.h, right: 8.w),
@@ -333,9 +310,9 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   Text(
-                                    "$_activitiesCharCount / $_maxActivitiesChars characters",
+                                   "$activitiesCharCount / $maxActivitiesChars characters", // Use calculated value
                                     style: TextStyles.font12_400Weight.copyWith(
-                                      color: _activitiesCharCount > _maxActivitiesChars
+                                      color: activitiesCharCount > maxActivitiesChars
                                              ? Colors.red
                                              : AppColors.lightGrey,
                                     ),
@@ -357,9 +334,8 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   Text(
-                                    "$_descriptionCharCount / $_maxDescriptionChars characters",
-                                    style: TextStyles.font12_400Weight.copyWith(
-                                      color: _descriptionCharCount > _maxDescriptionChars
+                                      "$descriptionCharCount / $maxDescriptionChars characters",                                    style: TextStyles.font12_400Weight.copyWith(
+                                      color: descriptionCharCount > maxDescriptionChars
                                              ? Colors.red
                                              : AppColors.lightGrey,
                                     ),
@@ -381,7 +357,6 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                             SizedBox(height: 10.h),
                             ElevatedButton(
                               onPressed: () {
-                                 // TODO: Implement Add Skill functionality
                                 },
                               style: isDarkMode
                                   ? buttonStyles.blueOutlinedButtonDark()
@@ -406,7 +381,6 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                              SizedBox(height: 10.h),
                             ElevatedButton(
                               onPressed: () {
-                                // TODO: Implement Add Media functionality
                                 },
                               style: isDarkMode
                                   ? buttonStyles.blueOutlinedButtonDark()
@@ -432,7 +406,7 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                        minimumSize: WidgetStateProperty.all(Size.fromHeight(50))),
                   onPressed: state is AddEducationLoading
                       ? null
-                      : () => viewModel.saveEducation(), 
+                      : () => viewModel.saveEducation(),
                   child: state is AddEducationLoading
                       ? const SizedBox(
                           height: 20,
