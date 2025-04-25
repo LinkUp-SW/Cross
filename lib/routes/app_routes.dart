@@ -250,7 +250,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         GoRoute(
             path: "/messages", builder: (context, state) => ChatListScreen()),
         GoRoute(path: "/chatpage", builder: (context, state) => Container()),
-        GoRoute(path: "/search", builder: (context, state) => SearchPage()),
+        GoRoute(
+          path: '/search',
+          builder: (context, state) => SearchPage(
+            searchKeyWord: state.extra as String?,
+          ),
+        ),
         GoRoute(path: "/settings", builder: (context, state) => SettingsPage()),
       ]);
 });

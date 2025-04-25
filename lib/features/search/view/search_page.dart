@@ -6,7 +6,11 @@ import 'package:link_up/features/search/viewModel/search_vm.dart';
 import 'package:link_up/shared/widgets/custom_search_bar.dart';
 
 class SearchPage extends ConsumerStatefulWidget {
-  const SearchPage({super.key});
+  final String? searchKeyWord;
+  const SearchPage({
+    super.key,
+    this.searchKeyWord,
+  });
 
   @override
   ConsumerState<SearchPage> createState() => _SearchPageState();
@@ -17,10 +21,23 @@ class _SearchPageState extends ConsumerState<SearchPage>
   @override
   void initState() {
     super.initState();
+
+    // Set up tab controller
     ref
         .read(searchProvider.notifier)
         .setTabController(TabController(length: 2, vsync: this));
-    ref.read(searchProvider.notifier).setSearchController(SearchController());
+
+    // Create search controller and pre-populate it with searchKeyword
+    final searchController = SearchController();
+    ref.read(searchProvider.notifier).setSearchController(searchController);
+
+    // Set initial search keyword if provided
+    if (widget.searchKeyWord != null && widget.searchKeyWord!.isNotEmpty) {
+      // Allow UI to build first, then set the search text
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        searchController.text = widget.searchKeyWord!;
+      });
+    }
   }
 
   @override

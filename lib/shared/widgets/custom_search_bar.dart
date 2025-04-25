@@ -1,12 +1,12 @@
-
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/search/viewModel/search_vm.dart';
 import 'package:link_up/features/search/viewModel/suggestions_vm.dart';
+import 'package:link_up/shared/themes/colors.dart';
+import 'package:link_up/shared/themes/text_styles.dart';
 
 class CustomSearchBar extends ConsumerStatefulWidget {
   const CustomSearchBar({
@@ -20,9 +20,9 @@ class CustomSearchBar extends ConsumerStatefulWidget {
 }
 
 class _CustomSearchBarState extends ConsumerState<CustomSearchBar> {
-
   @override
   Widget build(BuildContext context) {
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final searchController = ref.watch(searchProvider).searchController;
     final suggestions = ref.watch(suggestionsProvider);
     return SearchAnchor.bar(
@@ -39,7 +39,7 @@ class _CustomSearchBarState extends ConsumerState<CustomSearchBar> {
         ref.read(searchProvider.notifier).setSearchText(value);
         ref.read(searchProvider.notifier).search();
         if (!widget.inSearch) {
-          context.push('/search');
+          context.push('/search', extra: searchController.text);
         } else {
           context.pop();
         }
@@ -63,13 +63,31 @@ class _CustomSearchBarState extends ConsumerState<CustomSearchBar> {
               },
             ),
           ),
-          ListView.builder(
-            shrinkWrap: true,
-            itemCount: suggestions.length,
-            itemBuilder: (BuildContext context, index) {
-              return suggestions[index].buildSuggestion();
-            },
-          ),
+          suggestions.isEmpty
+              ? Center(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20.0),
+                    child: Text(
+                      'No suggestions found',
+                      style: TextStyles.font14_500Weight.copyWith(
+                        color: isDarkMode
+                            ? AppColors.darkSecondaryText
+                            : AppColors.lightTextColor,
+                      ),
+                    ),
+                  ),
+                )
+              : ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: suggestions.length,
+                  itemBuilder: (BuildContext context, index) {
+                    // Double-check index is valid (defensive programming)
+                    if (index >= suggestions.length) {
+                      return const SizedBox.shrink();
+                    }
+                    return suggestions[index].buildSuggestion();
+                  },
+                ),
         ];
       },
       viewTrailing: [
