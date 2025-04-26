@@ -17,10 +17,12 @@ class CommentsTextField extends ConsumerStatefulWidget {
   final String buttonName;
   final bool showSuggestions;
   final String postId;
+  final Function refresh;
   final String? commentId;
   const CommentsTextField(
       {super.key,
       required this.postId,
+      required this.refresh,
       required this.focusNode,
       required this.buttonName,
       this.commentId,
@@ -261,7 +263,7 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                                         });
                                         await ref
                                             .read(writeCommentProvider.notifier)
-                                            .createComment(widget.postId,
+                                            .comment(widget.postId,
                                                 widget.commentId);
                                         widget.focusNode.unfocus();
                                         ref
@@ -278,6 +280,7 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                                                 .addComments(value);
                                           });
                                         });
+                                        widget.refresh();
                                       },
                                       icon: _sending
                                           ? CircularProgressIndicator()
@@ -364,7 +367,7 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                                       });
                                       await ref
                                           .read(writeCommentProvider.notifier)
-                                          .createComment(
+                                          .comment(
                                               widget.postId, widget.commentId);
                                       widget.focusNode.unfocus();
                                       ref
@@ -381,6 +384,7 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                                               .addComments(value);
                                         });
                                       });
+                                      widget.refresh();
                                       setState(() {});
                                     },
                                     child: _sending
