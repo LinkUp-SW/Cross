@@ -104,15 +104,16 @@ class WritePostVm {
           TextPartStyleDefinition(
             pattern: r'@[\w ^:]*$',
             style: TextStyle(),
-            onDetected: (p0) async{
+            onDetected: (p0) async {
               if (p0.length > 1) {
                 final query = p0.substring(1);
                 final BaseService baseService = BaseService();
-                await baseService.get(
-                  'api/v1/search/users?query=$query&limit=25&page=1').then((value) {
+                await baseService
+                    .get('api/v1/search/users?query=$query&limit=25&page=1')
+                    .then((value) {
                   if (value.statusCode == 200) {
                     final body = jsonDecode(value.body);
-                    updateTags(false,[]);
+                    updateTags(false, []);
                     final List<dynamic> users = body['people'];
                     users.removeWhere((user) {
                       return taggedUsers.any((taggedUser) =>
@@ -131,7 +132,7 @@ class WritePostVm {
             preventPartialDeletion: true,
             onDelete: (p0) {
               log('Mention deleted: $p0');
-              updateTags(false,[]);
+              updateTags(false, []);
             },
           ),
           FormattingTextStyles.boldStyle,
@@ -213,22 +214,25 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
 
     final mediaContent = await state.media.setToUpload();
 
-    final response = await service.put('api/v1/post/posts', {
-      "postId": state.postId,
+    final response =
+        await service.patch('api/v1/post/posts/:postId', routeParameters: {
+      "postId": state.postId
+    }, body: {
       "content": state.controller.text,
       "mediaType": state.media.type.name,
       "media": mediaContent,
       "commentsDisabled":
           Visibilities.getVisibilityString(state.visibilityComment),
       "publicPost": state.visbilityPost == Visibilities.anyone ? true : false,
-      "taggedUsers": state.taggedUsers.map((user) {return user['user_id'];}).toList(),
+      "taggedUsers": state.taggedUsers.map((user) {
+        return user['user_id'];
+      }).toList(),
     });
 
     log('Response: ${response.statusCode} - ${response.body}');
     if (response.statusCode == 200) {
       log('Post edited successfully: ${response.body}');
-      final body = jsonDecode(response.body);
-      return body['postId'];
+      return state.postId;
     } else {
       log('Failed to edit post');
       return 'error';
@@ -239,8 +243,10 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
     final BaseService service = BaseService();
 
     final mediaContent = await state.media.setToUpload();
-    
-    log('${state.taggedUsers.map((user) {return user['user_id'];}).toList()}');
+
+    log('${state.taggedUsers.map((user) {
+      return user['user_id'];
+    }).toList()}');
     final response = await service.post('api/v1/post/posts', body: {
       "content": state.controller.text,
       "mediaType": state.media.type.name,
@@ -248,7 +254,9 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
       "commentsDisabled":
           Visibilities.getVisibilityString(state.visibilityComment),
       "publicPost": state.visbilityPost == Visibilities.anyone ? true : false,
-      "taggedUsers": state.taggedUsers.map((user) {return user['user_id'];}).toList(),
+      "taggedUsers": state.taggedUsers.map((user) {
+        return user['user_id'];
+      }).toList(),
     });
 
     // Rest of the function remains the same
