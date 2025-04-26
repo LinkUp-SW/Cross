@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -5,8 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/core/services/base_service.dart';
 import 'package:link_up/core/utils/global_keys.dart';
 import 'package:link_up/features/Home/home_enums.dart';
+import 'package:link_up/features/Home/model/comment_model.dart';
 import 'package:link_up/features/Home/model/media_model.dart';
-import 'package:link_up/features/Home/model/post_model.dart';
 import 'package:link_up/features/Post/widgets/formatted_input.dart';
 import 'package:link_up/features/Post/widgets/formatting_styles.dart';
 
@@ -16,12 +17,15 @@ class WriteCommentVm {
   TextEditingController controller;
   Media media;
   bool isEdited = false;
+  bool isReply = false;
+  String commentId = 'noId';
   List<dynamic> taggedUsers = [];
 
   WriteCommentVm({
     required this.media,
     required this.controller,
     this.isEdited = false,
+    this.isReply = false,
   });
 
   WriteCommentVm.initial()
@@ -65,18 +69,36 @@ class WriteCommentVm {
             },
           ),
           TextPartStyleDefinition(
-            pattern: r'@[\w ]*',
+            pattern: r'@[\w ^:]*$',
             style: TextStyle(),
-            onDetected: (p0) {
-              log('Mention detected: $p0');
+            onDetected: (p0) async{
               if (p0.length > 1) {
-                updateTags(true);
+                final query = p0.substring(1);
+                final BaseService baseService = BaseService();
+                await baseService.get(
+                  'api/v1/search/users?query=$query&limit=25&page=1').then((value) {
+                  if (value.statusCode == 200) {
+                    final body = jsonDecode(value.body);
+                    updateTags(false,[]);
+                    final List<dynamic> users = body['people'];
+                    users.removeWhere((user) {
+                      return taggedUsers.any((taggedUser) =>
+                          taggedUser['user_id'] == user['user_id']);
+                    });
+                    log('Fetched users: $users');
+                    updateTags(true, users);
+                  } else {
+                    log('Failed to fetch users');
+                  }
+                }).catchError((error) {
+                  log('Error fetching users: $error');
+                });
               }
             },
             preventPartialDeletion: true,
             onDelete: (p0) {
               log('Mention deleted: $p0');
-              updateTags(false);
+              updateTags(false,[]);
             },
           ),
           FormattingTextStyles.boldStyle,
@@ -122,35 +144,85 @@ class WriteCommentProvider extends StateNotifier<WriteCommentVm> {
     state = state.copyWith(media: media);
   }
 
+  void tagUser(Map<String, dynamic> user) {
+    state.taggedUsers.add(user);
+  }
+
   void clearWritePost() {
     state = WriteCommentVm.initial();
     state.initController(context, () {});
   }
 
-  void setComment(PostModel post, bool isEdited) {
-    state = WriteCommentVm(
-      isEdited: isEdited,
-      media: post.media,
-      controller: TextEditingController(text: post.text),
-    );
+  void setComment(CommentModel comment, bool isEdited) {
+    state.controller.text = comment.text;
+    state.isEdited = isEdited;
+    state.media = comment.media;
+    state.commentId = comment.id;
   }
 
-  Future<String> createComment() async {
+  Future<String> comment(String postId,String? commentId) async{
+    if(state.isEdited) {
+      return await editComment(postId,state.commentId);
+    } else {
+      return await createComment(postId,commentId);
+    }
+  }
+  
+  Future<String> editComment(String postId,String? commentId) async {
     final BaseService service = BaseService();
+    log('Editing comment with postId: $postId, commentId: $commentId');
 
-    final mediaContent = state.media.setToUpload();
-    //TODO: change to create comment
-    final response = await service.post('api/v1/post/create-post', body: {
+    final mediaContent = await state.media.setToUpload();
+    final response = await service.patch('api/v1/post/comment/:postId/:commentId'
+    , routeParameters: {
+        "postId": postId,
+        "commentId": commentId,
+      }
+    , body: {
       "content": state.controller.text,
-      "mediaType": state.media.type.name,
       "media": mediaContent,
-      "taggedUsers": []
+      "tagged_users": state.taggedUsers.map((user) {return user['user_id'];}).toList(),
+    }).catchError((error) {
+      log('Error editing comment: $error');
+      throw Exception(error);
+    }).timeout(const Duration(seconds: 5), onTimeout: () {
+      log('Request timed out');
+      throw Exception('Request timed out');
     });
-
-    // Rest of the function remains the same
-    log('Response: ${response.statusCode} - ${response.body}');
+    log('Response status code: ${response.statusCode}');
     if (response.statusCode == 200) {
-      log('Post created successfully: ${response.body}');
+      log('Comment edited successfully: ${response.body}');
+      return 'edited';
+    } else {
+      log('Failed to edit comment');
+      return 'error';
+    }
+  }
+
+  Future<String> createComment(String postId,String? commentId) async {
+    final BaseService service = BaseService();
+    log('Creating comment with postId: $postId, commentId: $commentId');
+
+    final mediaContent = await state.media.setToUpload();
+    final response = await service.post('api/v1/post/comment/:postId'
+    , routeParameters: {
+        "postId": postId,
+      }
+    , body: {
+      "parent_id": commentId,
+      "content": state.controller.text,
+      "media": mediaContent,
+      "tagged_users": state.taggedUsers.map((user) {return user['user_id'];}).toList(),
+    }).catchError((error) {
+      log('Error creating comment: $error');
+      throw Exception(error);
+    }).timeout(const Duration(seconds: 5), onTimeout: () {
+      log('Request timed out');
+      throw Exception('Request timed out');
+    });
+    log('Response status code: ${response.statusCode}');
+    if (response.statusCode == 200) {
+      log('Comment created successfully: ${response.body}');
       return 'created';
       //return jsonDecode(response.body)['postId'];
     } else {

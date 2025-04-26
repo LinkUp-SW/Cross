@@ -5,6 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:link_up/core/constants/endpoints.dart';
+import 'package:link_up/features/Home/home_enums.dart';
+import 'package:link_up/features/Home/model/media_model.dart';
+import 'package:link_up/features/Home/viewModel/comments_vm.dart';
 import 'package:link_up/features/Home/viewModel/write_comment_vm.dart';
 import 'package:link_up/features/Post/widgets/formatted_input.dart';
 import 'package:link_up/shared/themes/colors.dart';
@@ -13,10 +16,16 @@ class CommentsTextField extends ConsumerStatefulWidget {
   final FocusNode focusNode;
   final String buttonName;
   final bool showSuggestions;
+  final String postId;
+  final Function refresh;
+  final String? commentId;
   const CommentsTextField(
       {super.key,
+      required this.postId,
+      required this.refresh,
       required this.focusNode,
       required this.buttonName,
+      this.commentId,
       this.showSuggestions = true});
 
   @override
@@ -25,17 +34,20 @@ class CommentsTextField extends ConsumerStatefulWidget {
 
 class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
   bool _showTags = false;
-  XFile imagePath = XFile('');
+  bool _sending = false;
+  List<dynamic> users = [];
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(writeCommentProvider.notifier).setController(
-        (showTags) {
+        (showTags, data) {
           if (_showTags != showTags) {
             setState(() {
               _showTags = showTags;
+              users.clear();
+              users.addAll(data);
             });
           }
         },
@@ -73,22 +85,31 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                   child: Column(
                     children: [
                       if (_showTags) ...[
-                        SizedBox(
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.surface,
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(20.r),
+                              topRight: Radius.circular(20.r),
+                            ),
+                          ),
                           height: 200.h,
                           child: ListView.separated(
                             shrinkWrap: true,
                             physics: const ClampingScrollPhysics(),
-                            itemCount: 10,
+                            itemCount: users.length,
                             itemBuilder: (context, index) {
                               return ListTile(
                                 leading: CircleAvatar(
                                   radius: 20.r,
-                                  backgroundImage: const NetworkImage(
-                                    'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
-                                  ),
+                                  backgroundImage: NetworkImage(
+                                      users[index]['profile_photo']),
                                 ),
-                                title: Text("User $index"),
-                                subtitle: Text("user $index",
+                                title: Text(users[index]['name'],
+                                    style:
+                                        Theme.of(context).textTheme.bodyLarge),
+                                subtitle: Text(
+                                    users[index]['headline'] ?? '',
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodySmall!
@@ -98,12 +119,13 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                                 onTap: () {
                                   writeComment.controller.text =
                                       writeComment.controller.text.replaceRange(
-                                    writeComment.controller.text
-                                        .lastIndexOf('@'),
+                                    writeComment.controller.text.lastIndexOf('@'),
                                     writeComment.controller.text.length,
-                                    "@User $index:${InternalEndPoints.userId}^ ",
+                                    "@${users[index]['name']}:${users[index]['user_id']}^ ",
                                   );
-                                  widget.focusNode.requestFocus();
+                                  ref
+                                      .read(writeCommentProvider.notifier)
+                                      .tagUser(users[index]);
                                   setState(() {
                                     _showTags = false;
                                   });
@@ -149,7 +171,6 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                             flex: 1,
                             child: CircleAvatar(
                               radius: 20.r,
-                              //TODO: Replace with user profile image
                               backgroundImage:
                                   NetworkImage(InternalEndPoints.profileUrl),
                             ),
@@ -172,10 +193,14 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                                       child: FormattedInput(
                                         controller: writeComment.controller,
                                         focusNode: widget.focusNode,
-                                        onChanged: (value) {setState(() {});},
+                                        onChanged: (value) {
+                                          setState(() {});
+                                        },
                                       ),
                                     ),
-                                    if (imagePath.path != '')
+                                    if (writeComment.media.type !=
+                                            MediaType.none &&
+                                        writeComment.media.files[0].path != '')
                                       Padding(
                                         padding: EdgeInsets.all(
                                           10.r,
@@ -186,7 +211,10 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                                           child: Stack(
                                             children: [
                                               Image.file(
-                                                File(imagePath.path),
+                                                File(
+                                                  writeComment
+                                                      .media.files[0].path,
+                                                ),
                                                 fit: BoxFit.fitHeight,
                                                 height: 120.h,
                                               ),
@@ -201,7 +229,13 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                                                     ),
                                                     onPressed: () {
                                                       setState(() {
-                                                        imagePath = XFile('');
+                                                        ref
+                                                            .read(
+                                                                writeCommentProvider
+                                                                    .notifier)
+                                                            .setMedia(
+                                                              Media.initial(),
+                                                            );
                                                       });
                                                     },
                                                     icon: const Icon(
@@ -218,19 +252,44 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                           ),
                           if (!widget.focusNode.hasFocus)
                             Flexible(
-                              flex: writeComment.controller.text.isEmpty ? 0:1,
+                              flex:
+                                  writeComment.controller.text.isEmpty ? 0 : 1,
                               child: writeComment.controller.text.isEmpty
                                   ? SizedBox()
                                   : IconButton.filled(
-                                      onPressed: () {
-                                        //TODO: send message to backend
+                                      onPressed: () async {
+                                        setState(() {
+                                          _sending = true;
+                                        });
+                                        await ref
+                                            .read(writeCommentProvider.notifier)
+                                            .comment(widget.postId,
+                                                widget.commentId);
+                                        widget.focusNode.unfocus();
+                                        ref
+                                            .read(writeCommentProvider.notifier)
+                                            .clearWritePost();
+                                        setState(() {
+                                          _sending = false;
+                                          ref
+                                              .read(commentsProvider.notifier)
+                                              .fetchComments(widget.postId)
+                                              .then((value) {
+                                            ref
+                                                .read(commentsProvider.notifier)
+                                                .addComments(value);
+                                          });
+                                        });
+                                        widget.refresh();
                                       },
-                                      icon: Icon(
-                                        Icons.arrow_upward,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .surface,
-                                      ),
+                                      icon: _sending
+                                          ? CircularProgressIndicator()
+                                          : Icon(
+                                              Icons.arrow_upward,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .surface,
+                                            ),
                                       style: IconButton.styleFrom(
                                         backgroundColor: Theme.of(context)
                                             .colorScheme
@@ -256,7 +315,16 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                                             source: ImageSource.gallery);
                                         setState(() {
                                           if (image != null) {
-                                            imagePath = image;
+                                            ref
+                                                .read(writeCommentProvider
+                                                    .notifier)
+                                                .setMedia(
+                                                  Media(
+                                                      isLocal: true,
+                                                      urls: [],
+                                                      type: MediaType.image,
+                                                      files: [image]),
+                                                );
                                           } else {
                                             throw Exception(
                                                 'Could not add image');
@@ -272,7 +340,8 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                                         setState(() {
                                           _showTags = !_showTags;
                                           if (_showTags) {
-                                            writeComment.controller.text += '@ ';
+                                            writeComment.controller.text +=
+                                                '@ ';
                                           } else {
                                             writeComment.controller.text =
                                                 writeComment.controller.text
@@ -292,11 +361,35 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                               Wrap(
                                 children: [
                                   TextButton(
-                                    onPressed: () {
-                                      //TODO: send message to backend
+                                    onPressed: () async {
+                                      setState(() {
+                                        _sending = true;
+                                      });
+                                      await ref
+                                          .read(writeCommentProvider.notifier)
+                                          .comment(
+                                              widget.postId, widget.commentId);
                                       widget.focusNode.unfocus();
+                                      ref
+                                          .read(writeCommentProvider.notifier)
+                                          .clearWritePost();
+                                      setState(() {
+                                        _sending = false;
+                                        ref
+                                            .read(commentsProvider.notifier)
+                                            .fetchComments(widget.postId)
+                                            .then((value) {
+                                          ref
+                                              .read(commentsProvider.notifier)
+                                              .addComments(value);
+                                        });
+                                      });
+                                      widget.refresh();
+                                      setState(() {});
                                     },
-                                    child: Text(widget.buttonName),
+                                    child: _sending
+                                        ? CircularProgressIndicator()
+                                        : Text(widget.buttonName),
                                   ),
                                 ],
                               ),
