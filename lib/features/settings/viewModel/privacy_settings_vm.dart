@@ -47,7 +47,7 @@ class PrivacySettingsVmNotifier extends StateNotifier<PrivacySettingsVm> {
     //Public or Private
     await state.baseService.put('api/v1/user/privacy-settings/profile-visibility', {
       'profileVisibility':
-          visibility == Visibilities.anyone ? 'Public' : 'Private',
+          visibility == Visibilities.anyone ? 'Public' : 'Connections only',
     }).then((value) {
       if (value.statusCode == 200) {
         // Handle success

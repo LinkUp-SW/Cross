@@ -48,7 +48,7 @@ class _PrivacySettingsState extends ConsumerState<PrivacySettings> {
                             value: e,
                             child: Text(e == Visibilities.anyone
                                 ? "Public"
-                                : "Private"),
+                                : "Connections Only"),
                           ))
                       .toList(),
                   onChanged: (value) {
