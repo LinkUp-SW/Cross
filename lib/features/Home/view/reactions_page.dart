@@ -36,13 +36,6 @@ class _ReactionsPageState extends ConsumerState<ReactionsPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (reactions.isEmpty) {
-      return const Center(
-        child: CircularProgressIndicator(
-          color: AppColors.darkBlue,
-        ),
-      );
-    }
     return DefaultTabController(
       length: reactionsCount.length,
       child: Scaffold(
@@ -56,43 +49,52 @@ class _ReactionsPageState extends ConsumerState<ReactionsPage> {
             },
             icon: const Icon(Icons.arrow_back),
           ),
-          bottom: TabBar(
-              tabAlignment: TabAlignment.start,
-              isScrollable: true,
-              labelColor: Theme.of(context).colorScheme.tertiary,
-              indicatorColor: Theme.of(context).colorScheme.tertiary,
-              dividerColor: AppColors.grey,
-              tabs: [
-                Tab(
-                  child: Text('All  ${reactionsCount['All'].toString()}',
-                      textAlign: TextAlign.center),
-                ),
-                for (var reaction in reactionsCount.keys)
-                  if (reaction != 'All')
-                    Tab(
-                      icon: Row(
-                        children: [
-                          Reaction.getIcon(Reaction.getReaction(reaction), 20.r),
-                          Text(
-                            '  ${reactionsCount[reaction].toString()}',
-                          ),
-                        ],
+          bottom: reactions.isEmpty
+              ? null
+              : TabBar(
+                  tabAlignment: TabAlignment.start,
+                  isScrollable: true,
+                  labelColor: Theme.of(context).colorScheme.tertiary,
+                  indicatorColor: Theme.of(context).colorScheme.tertiary,
+                  dividerColor: AppColors.grey,
+                  tabs: [
+                      Tab(
+                        child: Text('All  ${reactionsCount['All'].toString()}',
+                            textAlign: TextAlign.center),
                       ),
-                    ),
-              ]),
+                      for (var reaction in reactionsCount.keys)
+                        if (reaction != 'All')
+                          Tab(
+                            icon: Row(
+                              children: [
+                                Reaction.getIcon(
+                                    Reaction.getReaction(reaction), 20.r),
+                                Text(
+                                  '  ${reactionsCount[reaction].toString()}',
+                                ),
+                              ],
+                            ),
+                          ),
+                    ]),
         ),
-        body: TabBarView(
-          children: [
-            ...reactions.keys.map((reaction) => ListView.builder(
-                  itemCount: reactions[reaction]!.length,
-                  itemBuilder: (context, index) {
-                    return ReactionTile(
-                      reactionTile: reactions[reaction]!.elementAt(index),
-                    );
-                  },
-                ))
-          ],
-        ),
+        body: reactions.isEmpty
+            ? const Center(
+                child: CircularProgressIndicator(
+                  color: AppColors.darkBlue,
+                ),
+              )
+            : TabBarView(
+                children: [
+                  ...reactions.keys.map((reaction) => ListView.builder(
+                        itemCount: reactions[reaction]!.length,
+                        itemBuilder: (context, index) {
+                          return ReactionTile(
+                            reactionTile: reactions[reaction]!.elementAt(index),
+                          );
+                        },
+                      ))
+                ],
+              ),
       ),
     );
   }

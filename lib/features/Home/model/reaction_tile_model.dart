@@ -13,7 +13,7 @@ class ReactionTileModel {
   });
 
   ReactionTileModel.fromJson(Map<String, dynamic> json)
-      : header = HeaderModel.fromJson(json['header']),
+      : header = HeaderModel.fromJson(json),
         reaction = Reaction.getReaction(json['reaction']);
 
   Map<String, dynamic> toJson() => {
