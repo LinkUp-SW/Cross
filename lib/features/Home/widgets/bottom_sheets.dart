@@ -1,93 +1,91 @@
-
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:link_up/core/utils/global_keys.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
 import 'package:link_up/features/Home/post_functions.dart';
 import 'package:link_up/features/Post/viewModel/write_post_vm.dart';
 import 'package:link_up/features/Post/widgets/bottom_sheet.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/widgets/bottom_sheet.dart';
+import 'package:link_up/shared/widgets/custom_snackbar.dart';
 import 'package:share_plus/share_plus.dart';
 
-aboutPostBottomSheet(BuildContext context, {bool isAd = false, required PostModel post}) {
+aboutPostBottomSheet(BuildContext context,
+    {bool isAd = false, required PostModel post}) {
   showModalBottomSheet(
     context: context,
     useRootNavigator: true,
-    builder: (context) => StatefulBuilder(
-      builder: (context,StateSetter setState) {
-        return CustomModalBottomSheet(
-          content: Column(
-            children: [
-              ListTile(
-                onTap: () {
-                  //TODO: save post
-                  setState(() {
-                      post.saved = !post.saved;
-                      if(post.saved)
-                      {
-                        savePost(post.id);
-                      }
-                      else
-                      {
-                        unsavePost(post.id);
-                      }
-                    });
-                },
-                leading: Icon(post.saved ? Icons.bookmark : Icons.bookmark_border),
-                title: const Text("Save"),
-              ),
-              ListTile(
-                onTap: () {
-                  //TODO: share post
+    builder: (context) =>
+        StatefulBuilder(builder: (context, StateSetter setState) {
+      return CustomModalBottomSheet(
+        content: Column(
+          children: [
+            ListTile(
+              onTap: () {
+                //TODO: save post
+                setState(() {
+                  post.saved = !post.saved;
+                  if (post.saved) {
+                    savePost(post.id);
+                  } else {
+                    unsavePost(post.id);
+                  }
+                });
+              },
+              leading:
+                  Icon(post.saved ? Icons.bookmark : Icons.bookmark_border),
+              title: Text(post.saved ? "Unsave" : "Save"),
+            ),
+            ListTile(
+              onTap: () {
+                //TODO: share post
                 context.pop();
                 Share.shareUri(Uri.parse('https://github.com'));
-
-                },
-                leading: const Icon(Icons.ios_share),
-                title: const Text("Share via"),
-              ),
+              },
+              leading: const Icon(Icons.ios_share),
+              title: const Text("Share via"),
+            ),
+            ListTile(
+              onTap: () {
+                //TODO:
+              },
+              leading: const Icon(Icons.visibility_off),
+              title: Text(isAd ? "Hide or report this add" : "Not interested"),
+            ),
+            isAd
+                ? ListTile(
+                    onTap: () {
+                      //TODO:
+                    },
+                    leading: const Icon(Icons.info),
+                    title: const Text("Why am I seeing this ad?"),
+                  )
+                : ListTile(
+                    onTap: () {
+                      //TODO: unfollow user
+                      //Needs to be changed to top id and name
+                      unfollowUser(post.header.userId);
+                    },
+                    leading: Transform.rotate(
+                        angle: math.pi / 4,
+                        child: const Icon(Icons.control_point_sharp)),
+                    title: Text("Unfollow ${post.header.name}"),
+                  ),
+            if (!isAd)
               ListTile(
                 onTap: () {
-                  //TODO:
+                  //TODO: report post
                 },
-                leading: const Icon(Icons.visibility_off),
-                title: Text(isAd ? "Hide or report this add" : "Not interested"),
+                leading: const Icon(Icons.report),
+                title: const Text("Report post"),
               ),
-              isAd
-                  ? ListTile(
-                      onTap: () {
-                        //TODO:
-                      },
-                      leading: const Icon(Icons.info),
-                      title: const Text("Why am I seeing this ad?"),
-                    )
-                  : ListTile(
-                      onTap: () {
-                        //TODO: unfollow user
-                        //Needs to be changed to top id and name
-                        unfollowUser(post.header.userId);
-                      },
-                      leading: Transform.rotate(
-                          angle: math.pi / 4,
-                          child: const Icon(Icons.control_point_sharp)),
-                      title: Text("Unfollow ${post.header.name}"),
-                    ),
-              if (!isAd)
-                ListTile(
-                  onTap: () {
-                    //TODO: report post
-                  },
-                  leading: const Icon(Icons.report),
-                  title: const Text("Report post"),
-                ),
-            ],
-          ),
-        );
-      }
-    ),
+          ],
+        ),
+      );
+    }),
   );
 }
 
@@ -117,18 +115,16 @@ myPostBottomSheet(BuildContext context, WidgetRef ref,
                 //TODO: save post
                 setState(() {
                   post.saved = !post.saved;
-                  if(post.saved)
-                  {
+                  if (post.saved) {
                     savePost(post.id);
-                  }
-                  else
-                  {
+                  } else {
                     unsavePost(post.id);
                   }
                 });
               },
-              leading: Icon(post.saved ? Icons.bookmark : Icons.bookmark_border),
-              title: const Text("Save"),
+              leading:
+                  Icon(post.saved ? Icons.bookmark : Icons.bookmark_border),
+              title: Text(post.saved ? "Unsave" : "Save"),
             ),
             ListTile(
               onTap: () {
@@ -144,8 +140,7 @@ myPostBottomSheet(BuildContext context, WidgetRef ref,
                 //TODO: edit post
                 ref.read(writePostProvider.notifier).setPost(post, true);
                 context.pop();
-                context.push('/writePost',extra: post.text);
-                
+                context.push('/writePost', extra: post.text);
               },
               leading: const Icon(Icons.edit),
               title: const Text("Edit post"),
@@ -171,7 +166,38 @@ myPostBottomSheet(BuildContext context, WidgetRef ref,
                             ),
                             TextButton(
                               onPressed: () {
-                                //TODO: Delete post
+                                deletePost(post.id).then((response) {
+                                  openSnackbar(
+                                      child: Row(
+                                    children: [
+                                      response == 200
+                                          ? Icon(Icons.delete,
+                                              color: Theme.of(navigatorKey
+                                                      .currentContext!)
+                                                  .colorScheme
+                                                  .tertiary)
+                                          : const Icon(
+                                              Icons.error,
+                                              color: AppColors.red,
+                                            ),
+                                      const SizedBox(width: 10),
+                                      Text(
+                                        response == 200
+                                            ? "Post deleted successfully"
+                                            : "Failed to delete post",
+                                        style: TextStyle(
+                                          color: Theme.of(
+                                                  navigatorKey.currentContext!)
+                                              .textTheme
+                                              .bodyLarge!
+                                              .color,
+                                        ),
+                                      )
+                                    ],
+                                  ));
+                                });
+                                context.pop();
+                                context.go('/');
                               },
                               child: const Text(
                                 "Delete",
