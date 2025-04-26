@@ -1,4 +1,3 @@
-
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -41,7 +40,9 @@ class _PostPageState extends ConsumerState<PostPage> {
     ref.read(commentsProvider.notifier).fetchComments(postId).then((value) {
       ref.read(commentsProvider.notifier).setComments(value);
     });
-    _focusNode.addListener((){setState(() {});});
+    _focusNode.addListener(() {
+      setState(() {});
+    });
     setState(() {});
   }
 
@@ -55,12 +56,24 @@ class _PostPageState extends ConsumerState<PostPage> {
     if (_scrollController.position.pixels ==
         _scrollController.position.maxScrollExtent) {
       _isLoading = true;
-      await ref.read(commentsProvider.notifier).fetchComments(postId).then((value) {
+      await ref
+          .read(commentsProvider.notifier)
+          .fetchComments(postId)
+          .then((value) {
         ref.read(commentsProvider.notifier).addComments(value);
         _isLoading = false;
       });
       setState(() {});
     }
+  }
+
+  Future<void> refresh() async {
+    ref.read(commentsProvider.notifier).clearComments();
+    await ref.read(commentsProvider.notifier).fetchComments(postId).then(
+          (value) => ref.read(commentsProvider.notifier).setComments(value),
+        );
+    log('Comments refreshed');
+    setState(() {});
   }
 
   @override
@@ -89,22 +102,12 @@ class _PostPageState extends ConsumerState<PostPage> {
       ),
       bottomNavigationBar: CommentsTextField(
         postId: postId,
+        refresh: refresh,
         focusNode: _focusNode,
         buttonName: 'Comment',
       ),
       body: RefreshIndicator(
-
-        onRefresh: () async {
-          ref.read(commentsProvider.notifier).clearComments();
-          await ref.read(commentsProvider.notifier).fetchComments(postId).then(
-                (value) => ref
-                    .read(commentsProvider.notifier)
-                    .setComments(value),
-              );
-          log('Comments refreshed');
-          setState(() {});
-          
-        },
+        onRefresh:() => refresh(),
         child: Padding(
           padding: EdgeInsets.only(top: 8.h),
           child: Container(
@@ -115,7 +118,6 @@ class _PostPageState extends ConsumerState<PostPage> {
               padding: const EdgeInsets.all(10),
               child: ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
-
                 controller: _scrollController,
                 children: [
                   Posts(showTop: false, inMessage: true, post: post),
@@ -208,7 +210,7 @@ class _PostPageState extends ConsumerState<PostPage> {
                         height: 10.h,
                       ),
                       itemBuilder: (context, index) {
-                        if (index == comments.length - 1  && _isLoading) {
+                        if (index == comments.length - 1 && _isLoading) {
                           return const Center(
                             child: CircularProgressIndicator(
                               color: AppColors.darkBlue,
@@ -216,6 +218,7 @@ class _PostPageState extends ConsumerState<PostPage> {
                           );
                         }
                         return CommentBubble(
+                          refresh: refresh,
                           comment: comments[index],
                         );
                       },
