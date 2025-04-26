@@ -1,3 +1,4 @@
+
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,8 +7,6 @@ import 'package:link_up/core/constants/endpoints.dart';
 import 'package:link_up/features/profile/model/contact_info_model.dart';
 import 'package:link_up/features/profile/services/profile_services.dart';
 import 'package:link_up/features/profile/state/contact_info_state.dart';
-import 'package:intl_phone_field/intl_phone_field.dart';
-
 
 class ContactInfoViewModel extends StateNotifier<EditContactInfoState> {
   final ProfileService _profileService;
@@ -18,6 +17,7 @@ class ContactInfoViewModel extends StateNotifier<EditContactInfoState> {
   final TextEditingController birthdayController = TextEditingController();
   final TextEditingController websiteController = TextEditingController();
   String? selectedPhoneType;
+  String? _selectedCountryCode;
   DateTime? _selectedBirthday;
 
   Map<String, dynamic> _originalBioData = {};
@@ -38,24 +38,16 @@ class ContactInfoViewModel extends StateNotifier<EditContactInfoState> {
       final fullProfileJson = await _profileService.fetchFullUserProfileJson(_userId);
       _originalBioData = fullProfileJson['bio'] ?? {};
 
-      // --- Construct Profile URL ---
       final firstName = _originalBioData['first_name'] as String?;
       final lastName = _originalBioData['last_name'] as String?;
-
       if (firstName != null && lastName != null && firstName.isNotEmpty && lastName.isNotEmpty && _userId.isNotEmpty) {
-        final formattedFirstName = firstName.toLowerCase().trim();
-        final formattedLastName = lastName.toLowerCase().trim();
-        // Replace spaces with hyphens if necessary, although LinkedIn usually concatenates or uses a specific format.
-        // Let's assume simple lowercase concatenation based on the example.
-        // Adjust formatting logic here if needed based on actual LinkedIn URL structures.
-        final constructedUrl = "https://www.linkedin.com/in/$formattedFirstName-$formattedLastName-$_userId/";
-        InternalEndPoints.profileUrl = constructedUrl; // Update the static variable
+         final formattedFirstName = firstName.toLowerCase().replaceAll(' ', '-');
+         final formattedLastName = lastName.toLowerCase().replaceAll(' ', '-');
+         InternalEndPoints.profileUrl = "https://www.linkedin.com/in/$formattedFirstName-$formattedLastName-$_userId/";
          log("ViewModel: Constructed and updated InternalEndPoints.profileUrl: ${InternalEndPoints.profileUrl}");
       } else {
          log("ViewModel: Could not construct profile URL. Missing data: F:$firstName, L:$lastName, ID:$_userId");
-         // Keep existing InternalEndPoints.profileUrl or set a default/empty string
       }
-      // --- End Construct Profile URL ---
 
 
       final contactInfoJson = _originalBioData['contact_info'] as Map<String, dynamic>?;
@@ -66,6 +58,7 @@ class ContactInfoViewModel extends StateNotifier<EditContactInfoState> {
       log("ViewModel: Initial data fetched. ContactInfo: ${contactInfo.toString()}");
 
       phoneNumberController.text = contactInfo.phoneNumber ?? '';
+      _selectedCountryCode = contactInfo.countryCode;  
       addressController.text = contactInfo.address ?? '';
       websiteController.text = contactInfo.website ?? '';
       selectedPhoneType = contactInfo.phoneType;
@@ -98,8 +91,22 @@ class ContactInfoViewModel extends StateNotifier<EditContactInfoState> {
      if (state is EditContactInfoLoaded || state is EditContactInfoSaving || state is EditContactInfoError) {
       _selectedBirthday = date;
       birthdayController.text = date != null ? DateFormat('yyyy-MM-dd').format(date) : '';
+
      }
   }
+
+  void setPhoneNumber(String fullNumber, String countryCode) {
+      if (state is EditContactInfoLoaded || state is EditContactInfoSaving || state is EditContactInfoError) {
+        
+        phoneNumberController.text = fullNumber;
+        _selectedCountryCode = countryCode;
+         log("ViewModel: Phone number set - Number: ${phoneNumberController.text}, Code: $_selectedCountryCode");
+
+      }
+   }
+
+
+
 
   Future<void> saveContactInfo() async {
      if (_userId.isEmpty) {
@@ -125,7 +132,7 @@ class ContactInfoViewModel extends StateNotifier<EditContactInfoState> {
 
      final updatedInfo = ContactInfoModel(
        phoneNumber: phoneNumberController.text.isNotEmpty ? phoneNumberController.text : null,
-       countryCode: currentOriginalBioData['contact_info']?['country_code'],
+       countryCode: _selectedCountryCode, 
        phoneType: selectedPhoneType,
        address: addressController.text.isNotEmpty ? addressController.text : null,
        birthday: _selectedBirthday,
@@ -136,7 +143,7 @@ class ContactInfoViewModel extends StateNotifier<EditContactInfoState> {
      log("ViewModel: Using originalBioData: $currentOriginalBioData");
 
      state = EditContactInfoSaving(
-       contactInfo: updatedInfo,
+       contactInfo: updatedInfo,  
        originalBioData: currentOriginalBioData,
      );
 
@@ -153,15 +160,15 @@ class ContactInfoViewModel extends StateNotifier<EditContactInfoState> {
           await Future.delayed(const Duration(milliseconds: 500));
           if (mounted) {
               state = EditContactInfoLoaded(
-                 contactInfo: updatedInfo,
-                 originalBioData: currentOriginalBioData,
+                 contactInfo: updatedInfo, 
+                 originalBioData: currentOriginalBioData, 
               );
           }
        } else if (mounted) {
          log("ViewModel: Save failed (service returned false).");
          state = EditContactInfoError(
            "Failed to save contact info.",
-           previousContactInfo: updatedInfo,
+           previousContactInfo: updatedInfo, 
            originalBioData: currentOriginalBioData,
          );
        }
@@ -170,7 +177,7 @@ class ContactInfoViewModel extends StateNotifier<EditContactInfoState> {
        if (mounted) {
          state = EditContactInfoError(
            "An error occurred during save: ${e.toString()}",
-           previousContactInfo: updatedInfo,
+           previousContactInfo: updatedInfo, 
            originalBioData: currentOriginalBioData,
          );
        }

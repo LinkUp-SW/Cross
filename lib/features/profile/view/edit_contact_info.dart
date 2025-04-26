@@ -1,9 +1,11 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:intl_phone_field/intl_phone_field.dart'; 
 import 'package:link_up/core/constants/endpoints.dart';
 import 'package:link_up/features/profile/state/contact_info_state.dart';
 import 'package:link_up/features/profile/viewModel/contact_info_view_model.dart';
@@ -27,14 +29,33 @@ class _EditContactInfoState extends ConsumerState<EditContactInfo> {
   final FocusNode _addressFocusNode = FocusNode();
   final FocusNode _birthdayFocusNode = FocusNode();
   final FocusNode _websiteFocusNode = FocusNode();
-  final FocusNode _phoneFocusNode = FocusNode();
+
+  String? _initialCountryCode;
+
+  @override
+  void initState() {
+      super.initState();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+          final state = ref.read(contactInfoViewModelProvider);
+          if (state is EditContactInfoLoaded) {
+             setState(() {
+                _initialCountryCode = state.contactInfo.countryCode;
+             });
+          } else if (state is EditContactInfoError && state.previousContactInfo != null) {
+             setState(() {
+                _initialCountryCode = state.previousContactInfo!.countryCode;
+             });
+          }
+          _initialCountryCode ??= 'EG';
+      });
+  }
+
 
   @override
   void dispose() {
     _addressFocusNode.dispose();
     _birthdayFocusNode.dispose();
     _websiteFocusNode.dispose();
-    _phoneFocusNode.dispose();
     super.dispose();
   }
 
@@ -134,23 +155,44 @@ class _EditContactInfoState extends ConsumerState<EditContactInfo> {
                 }
              });
         }
+         if ((previous is EditContactInfoInitial || previous is EditContactInfoLoading) &&
+             (next is EditContactInfoLoaded || (next is EditContactInfoError && next.previousContactInfo != null))) {
+           WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                 final loadedState = next is EditContactInfoLoaded ? next : null;
+                 final errorState = next is EditContactInfoError ? next : null;
+                 final newCode = loadedState?.contactInfo.countryCode ?? errorState?.previousContactInfo?.countryCode;
+                 setState(() {
+                    _initialCountryCode = newCode ?? 'EG'; 
+                 });
+              }
+           });
+         }
      });
 
     TextEditingController phoneNumberController = viewModel.phoneNumberController;
     TextEditingController addressController = viewModel.addressController;
     TextEditingController birthdayController = viewModel.birthdayController;
     TextEditingController websiteController = viewModel.websiteController;
-    String? selectedPhoneType = viewModel.selectedPhoneType;
+    String? selectedPhoneType = viewModel.selectedPhoneType; 
 
     final String profileUrl = InternalEndPoints.profileUrl.isNotEmpty
       ? InternalEndPoints.profileUrl
-      : "https://www.linkedin.com/in/firstname-familyname-userid/";
+      : "https://www.linkedin.com/in/firstname-lastname-userid/";
     final String email = InternalEndPoints.email.isNotEmpty
        ? InternalEndPoints.email
        : "email@example.com";
 
     bool isLoading = state is EditContactInfoLoading;
     bool isSaving = state is EditContactInfoSaving;
+
+    String initialPhoneNumber = '';
+    if (state is EditContactInfoLoaded) {
+        initialPhoneNumber = state.contactInfo.phoneNumber ?? '';
+    } else if (state is EditContactInfoError && state.previousContactInfo != null) {
+        initialPhoneNumber = state.previousContactInfo!.phoneNumber ?? '';
+    }
+
 
     return Scaffold(
       body: SafeArea(
@@ -175,58 +217,86 @@ class _EditContactInfoState extends ConsumerState<EditContactInfo> {
                             const SubPagesIndicatesRequiredLabel(),
                             SizedBox(height: 10.h),
 
-                            SubPagesFormLabel(label: "Profile URL"),
-                            SizedBox(height: 2.h),
-                            GestureDetector(
-                              onTap: () => _copyToClipboard(context, profileUrl),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      profileUrl,
-                                      style: TextStyles.font14_400Weight.copyWith(
-                                        color: AppColors.lightBlue,
-                                        decoration: TextDecoration.underline,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  Icon(Icons.open_in_new, color: AppColors.lightBlue, size: 20.sp),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: 20.h),
+                             SubPagesFormLabel(label: "Profile URL"),
+                             SizedBox(height: 2.h),
+                             GestureDetector(
+                               onTap: () => _copyToClipboard(context, profileUrl),
+                               child: Row(
+                                 children: [
+                                   Expanded(
+                                     child: Text(
+                                       profileUrl,
+                                       style: TextStyles.font14_400Weight.copyWith(
+                                         color: AppColors.lightBlue,
+                                         decoration: TextDecoration.underline,
+                                       ),
+                                       overflow: TextOverflow.ellipsis,
+                                     ),
+                                   ),
+                                   Icon(Icons.open_in_new, color: AppColors.lightBlue, size: 20.sp),
+                                 ],
+                               ),
+                             ),
+                             SizedBox(height: 20.h),
 
-                            SubPagesFormLabel(label: "Email"),
-                            SizedBox(height: 2.h),
-                            GestureDetector(
-                              onTap: () => _copyToClipboard(context, email),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      email,
-                                      style: TextStyles.font14_400Weight.copyWith(
-                                        color: AppColors.lightBlue,
-                                        decoration: TextDecoration.underline,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  Icon(Icons.open_in_new, color: AppColors.lightBlue, size: 20.sp),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: 20.h),
+                             SubPagesFormLabel(label: "Email"),
+                             SizedBox(height: 2.h),
+                             GestureDetector(
+                               onTap: () => _copyToClipboard(context, email),
+                               child: Row(
+                                 children: [
+                                   Expanded(
+                                     child: Text(
+                                       email,
+                                       style: TextStyles.font14_400Weight.copyWith(
+                                         color: AppColors.lightBlue,
+                                         decoration: TextDecoration.underline,
+                                       ),
+                                       overflow: TextOverflow.ellipsis,
+                                     ),
+                                   ),
+                                   Icon(Icons.open_in_new, color: AppColors.lightBlue, size: 20.sp),
+                                 ],
+                               ),
+                             ),
+                             SizedBox(height: 20.h),
 
                             SubPagesFormLabel(label: "Phone number"),
                             SizedBox(height: 2.h),
-                            SubPagesCustomTextField(
-                              controller: phoneNumberController,
-                              focusNode: _phoneFocusNode,
-                              enabled: !isSaving,
-                            ),
-                            SizedBox(height: 20.h),
+                            if (_initialCountryCode != null) 
+                                IntlPhoneField(
+                                   key: ValueKey(_initialCountryCode), 
+                                   controller: phoneNumberController, 
+                                   initialCountryCode: _initialCountryCode, 
+                                   initialValue: initialPhoneNumber, 
+                                   decoration: InputDecoration(
+                                     labelText: 'Phone Number',
+                                     border: UnderlineInputBorder(
+                                       borderSide: BorderSide(color: AppColors.lightGrey),
+                                     ),
+                                      enabledBorder: UnderlineInputBorder(
+                                         borderSide: BorderSide(color: AppColors.lightGrey),
+                                       ),
+                                       focusedBorder: UnderlineInputBorder(
+                                         borderSide: BorderSide(color: AppColors.lightBlue),
+                                       ),
+                                   ),
+                                   style: TextStyles.font14_400Weight.copyWith(
+                                     color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+                                   ),
+                                   dropdownTextStyle: TextStyles.font14_400Weight.copyWith(
+                                      color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+                                   ),
+                                   enabled: !isSaving,
+                                   onChanged: (phone) {
+                                     viewModel.setPhoneNumber(phone.number, phone.countryISOCode);
+                                   },
+                                  
+                                ),
+                            if (_initialCountryCode == null && !isLoading)
+                                 Container(height: 60, alignment: Alignment.center, child: Text("Loading phone info...")),
+                             SizedBox(height: 20.h),
+
 
                             SubPagesFormLabel(label: "Phone type"),
                             SizedBox(height: 2.h),
@@ -248,8 +318,9 @@ class _EditContactInfoState extends ConsumerState<EditContactInfo> {
                               controller: addressController,
                               focusNode: _addressFocusNode,
                               enabled: !isSaving,
+                              maxLines: null, 
                               maxLength: 220,
-                            ), 
+                            ),
                             SizedBox(height: 20.h),
 
                             SubPagesFormLabel(label: "Birthday"),
@@ -285,6 +356,7 @@ class _EditContactInfoState extends ConsumerState<EditContactInfo> {
                     ),
                 ),
             ),
+
             if (!isLoading)
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
@@ -292,9 +364,10 @@ class _EditContactInfoState extends ConsumerState<EditContactInfo> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: isSaving ? null : () => viewModel.saveContactInfo(),
-                    style: isDarkMode
-                        ? buttonStyles.wideBlueElevatedButtonDark()
-                        : buttonStyles.wideBlueElevatedButton(),
+                     style: (isDarkMode
+                           ? buttonStyles.wideBlueElevatedButtonDark()
+                           : buttonStyles.wideBlueElevatedButton()
+                     ).copyWith(minimumSize: MaterialStateProperty.all(Size.fromHeight(50.h))), 
                     child: isSaving
                         ? const SizedBox(
                             height: 20,

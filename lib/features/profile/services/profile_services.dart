@@ -307,7 +307,7 @@ class ProfileService extends BaseService {
 
         if (response.statusCode == 200) {
            final responseData = jsonDecode(response.body);
-           final imageUrl = responseData['coverPhoto'] as String?; // CONFIRM THIS KEY!
+           final imageUrl = responseData['coverPhoto'] as String?; 
 
            if (imageUrl != null && imageUrl.isNotEmpty) {
               log('ProfileService: Fetched cover photo URL successfully: $imageUrl');
