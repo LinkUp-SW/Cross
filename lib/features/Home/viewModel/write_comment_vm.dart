@@ -6,8 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/core/services/base_service.dart';
 import 'package:link_up/core/utils/global_keys.dart';
 import 'package:link_up/features/Home/home_enums.dart';
+import 'package:link_up/features/Home/model/comment_model.dart';
 import 'package:link_up/features/Home/model/media_model.dart';
-import 'package:link_up/features/Home/model/post_model.dart';
 import 'package:link_up/features/Post/widgets/formatted_input.dart';
 import 'package:link_up/features/Post/widgets/formatting_styles.dart';
 
@@ -18,6 +18,7 @@ class WriteCommentVm {
   Media media;
   bool isEdited = false;
   bool isReply = false;
+  String commentId = 'noId';
   List<dynamic> taggedUsers = [];
 
   WriteCommentVm({
@@ -152,12 +153,50 @@ class WriteCommentProvider extends StateNotifier<WriteCommentVm> {
     state.initController(context, () {});
   }
 
-  void setComment(PostModel post, bool isEdited) {
-    state = WriteCommentVm(
-      isEdited: isEdited,
-      media: post.media,
-      controller: TextEditingController(text: post.text),
-    );
+  void setComment(CommentModel comment, bool isEdited) {
+    state.controller.text = comment.text;
+    state.isEdited = isEdited;
+    state.media = comment.media;
+    state.commentId = comment.id;
+  }
+
+  Future<String> comment(String postId,String? commentId) async{
+    if(state.isEdited) {
+      return await editComment(postId,state.commentId);
+    } else {
+      return await createComment(postId,commentId);
+    }
+  }
+  
+  Future<String> editComment(String postId,String? commentId) async {
+    final BaseService service = BaseService();
+    log('Editing comment with postId: $postId, commentId: $commentId');
+
+    final mediaContent = await state.media.setToUpload();
+    final response = await service.patch('api/v1/post/comment/:postId/:commentId'
+    , routeParameters: {
+        "postId": postId,
+        "commentId": commentId,
+      }
+    , body: {
+      "content": state.controller.text,
+      "media": mediaContent,
+      "tagged_users": state.taggedUsers.map((user) {return user['user_id'];}).toList(),
+    }).catchError((error) {
+      log('Error editing comment: $error');
+      throw Exception(error);
+    }).timeout(const Duration(seconds: 5), onTimeout: () {
+      log('Request timed out');
+      throw Exception('Request timed out');
+    });
+    log('Response status code: ${response.statusCode}');
+    if (response.statusCode == 200) {
+      log('Comment edited successfully: ${response.body}');
+      return 'edited';
+    } else {
+      log('Failed to edit comment');
+      return 'error';
+    }
   }
 
   Future<String> createComment(String postId,String? commentId) async {
@@ -165,9 +204,12 @@ class WriteCommentProvider extends StateNotifier<WriteCommentVm> {
     log('Creating comment with postId: $postId, commentId: $commentId');
 
     final mediaContent = await state.media.setToUpload();
-    final response = await service.post('api/v1/post/comment', body: {
-      "post_id": postId,
-      "comment_id": commentId,
+    final response = await service.post('api/v1/post/comment/:postId'
+    , routeParameters: {
+        "postId": postId,
+      }
+    , body: {
+      "parent_id": commentId,
       "content": state.controller.text,
       "media": mediaContent,
       "tagged_users": state.taggedUsers.map((user) {return user['user_id'];}).toList(),
