@@ -228,7 +228,7 @@ class _WritePostState extends ConsumerState<WritePost> {
                           _sending = false;
                           ref.read(writePostProvider.notifier).clearWritePost();
                           final tempRef = ref.read(postProvider.notifier);
-                          context.pop();
+                          context.go('/');
                           openSnackbar(
                             child: Row(children: [
                               Icon(

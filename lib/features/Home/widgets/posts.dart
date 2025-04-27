@@ -1,4 +1,3 @@
-
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:link_up/features/Home/home_enums.dart';
 import 'package:link_up/features/Home/model/media_model.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
+import 'package:link_up/features/Home/post_functions.dart';
 import 'package:link_up/features/Home/viewModel/post_vm.dart';
 import 'package:link_up/features/Home/widgets/bottom_sheets.dart';
 import 'package:link_up/features/Home/widgets/post_header.dart';
@@ -34,7 +34,6 @@ class Posts extends ConsumerStatefulWidget {
 }
 
 class _PostsState extends ConsumerState<Posts> {
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -61,7 +60,7 @@ class _PostsState extends ConsumerState<Posts> {
                 ),
               ],
             ),
-            PostHeader(post: widget.post),
+          PostHeader(post: widget.post),
           Align(
             alignment: Alignment.centerLeft,
             child: Padding(
@@ -164,7 +163,29 @@ class _PostsState extends ConsumerState<Posts> {
                   reaction: widget.post.reaction,
                   setReaction: (reaction) {
                     setState(() {
-                      widget.post.reaction = reaction;
+                      Reaction oldReaction = widget.post.reaction;
+                      if (reaction == Reaction.none) {
+                        widget.post.reaction = Reaction.none;
+                        removeReaction(widget.post.id, "Post").then((value) {
+                          if (value != -1) {
+                            widget.post.reactions = value;
+                          } else {
+                            widget.post.reaction = oldReaction;
+                          }
+                          setState(() {});
+                        });
+                      } else {
+                        widget.post.reaction = reaction;
+                        setReaction(widget.post.id, reaction, "Post")
+                            .then((value) {
+                          if (value != -1) {
+                            widget.post.reactions = value;
+                          } else {
+                            widget.post.reaction = oldReaction;
+                          }
+                          setState(() {});
+                        });
+                      }
                     });
                   },
                   child: SizedBox(

@@ -25,10 +25,6 @@ class ManageMyNetworkScreenServices {
 }
 
 final manageMyNetworkScreenServicesProvider =
-    Provider<ManageMyNetworkScreenServices>(
-  (ref) {
-    return ManageMyNetworkScreenServices(
-      ref.read(baseServiceProvider),
-    );
-  },
-);
+    Provider<ManageMyNetworkScreenServices>((ref) {
+  return ManageMyNetworkScreenServices(ref.read(baseServiceProvider));
+});

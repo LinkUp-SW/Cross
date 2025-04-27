@@ -3,20 +3,20 @@ import 'package:link_up/features/my-network/model/invitations_screen_model.dart'
 import 'package:link_up/features/my-network/services/sent_invitations_tab_services.dart';
 import 'package:link_up/features/my-network/state/sent_invitations_tab_state.dart';
 
-class SentInvitationsTabViewModel extends Notifier<SentInvitationsTabState> {
-  @override
-  SentInvitationsTabState build() {
-    return SentInvitationsTabState.initial();
-  }
+class SentInvitationsTabViewModel
+    extends StateNotifier<SentInvitationsTabState> {
+  final SentInvitationsTabServices _sentInvitationsTabServices;
+
+  SentInvitationsTabViewModel(this._sentInvitationsTabServices)
+      : super(SentInvitationsTabState.initial());
 
   // Fetch sent invitations
   Future<void> getSentInvitations(Map<String, dynamic>? queryParameters) async {
     try {
       state = state.copyWith(isLoading: true, error: false);
-      final response =
-          await ref.read(sentInvitationsTabServicesProvider).getSentInvitations(
-                queryParameters: queryParameters,
-              );
+      final response = await _sentInvitationsTabServices.getSentInvitations(
+        queryParameters: queryParameters,
+      );
 
       // Parse the sent invitations from the response
       final List<InvitationsCardModel> sentInvitations =
@@ -38,8 +38,7 @@ class SentInvitationsTabViewModel extends Notifier<SentInvitationsTabState> {
     state = currentState.copyWith(isLoadingMore: true);
 
     try {
-      final response =
-          await ref.read(sentInvitationsTabServicesProvider).getSentInvitations(
+      final response = await _sentInvitationsTabServices.getSentInvitations(
         queryParameters: {
           'limit': '$paginationLimit',
           'cursor': currentState.nextCursor,
@@ -93,9 +92,7 @@ class SentInvitationsTabViewModel extends Notifier<SentInvitationsTabState> {
   Future<void> withdrawInvitation(String userId) async {
     try {
       state = state.copyWith(isLoading: true, error: false);
-      await ref
-          .read(sentInvitationsTabServicesProvider)
-          .withdrawInvitation(userId);
+      await _sentInvitationsTabServices.withdrawInvitation(userId);
       // Remove the withdrawn invitation from the sent list
       if (state.sent != null) {
         final updatedInvitations = state.sent!
@@ -112,8 +109,10 @@ class SentInvitationsTabViewModel extends Notifier<SentInvitationsTabState> {
 
 // Provider for the view model
 final sentInvitationsTabViewModelProvider =
-    NotifierProvider<SentInvitationsTabViewModel, SentInvitationsTabState>(
-  () {
-    return SentInvitationsTabViewModel();
+    StateNotifierProvider<SentInvitationsTabViewModel, SentInvitationsTabState>(
+  (ref) {
+    return SentInvitationsTabViewModel(
+      ref.read(sentInvitationsTabServicesProvider),
+    );
   },
 );

@@ -67,6 +67,36 @@ class BaseService {
     }
   }
 
+  Future<Response> patch(String endpoint, {required Map<String, dynamic> body,Map<String,dynamic>? routeParameters}) async {
+    try {
+      final token = await getToken();
+      String finalEndpoint = endpoint;
+      if (routeParameters != null) {
+        routeParameters.forEach((key, value) {
+          finalEndpoint = finalEndpoint.replaceAll(':$key', value.toString());
+        });
+      }
+      final uri = Uri.parse('${ExternalEndPoints.baseUrl}$finalEndpoint');
+      headers['Content-Type'] = 'application/json';
+      headers['Authorization'] = 'Bearer $token';
+      final response = await http
+          .patch(
+            uri,
+            headers: headers,
+            body: jsonEncode(body),
+          )
+          .timeout(const Duration(seconds: 10));
+      updateCookie(response);
+      return response;
+    } on TimeoutException {
+      throw Exception('Request timed out. Please try again.');
+    } on http.ClientException catch (e) {
+      throw Exception('Client error: ${e.message}');
+    } catch (e) {
+      throw Exception('An unexpected error occurred: $e');
+    }
+  }
+
   Future<Response> get(String endpoint,
       {Map<String, dynamic>? queryParameters,
       Map<String, dynamic>? routeParameters}) async {
@@ -116,7 +146,7 @@ class BaseService {
   }
 
   Future<Response> delete(
-      String endpoint, Map<String, dynamic>? routeParameters) async {
+      String endpoint, Map<String, dynamic>? routeParameters,{Map<String, dynamic>? body}) async {
     try {
       final token = await getToken();
       String finalEndpoint = endpoint;
@@ -126,11 +156,13 @@ class BaseService {
         });
       }
       headers['Authorization'] = 'Bearer $token';
+      headers['Content-Type'] = 'application/json';
       final uri = Uri.parse('${ExternalEndPoints.baseUrl}$finalEndpoint');
       final response = await http
           .delete(
             uri,
             headers: headers,
+            body: body != null ? jsonEncode(body) : null,
           )
           .timeout(const Duration(seconds: 10));
       updateCookie(response);

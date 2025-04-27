@@ -52,9 +52,11 @@ class _CommentRepliesPageState extends ConsumerState<CommentRepliesPage> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'Replies on ${comment.header.name}\'s comment on this post',
+                    'Replies on ${comment.header.name}\'s comment',
                     style:
                         TextStyle(fontSize: 15.r, fontWeight: FontWeight.bold),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                 ),
               ),
@@ -68,6 +70,7 @@ class _CommentRepliesPageState extends ConsumerState<CommentRepliesPage> {
             child: Padding(
               padding: EdgeInsets.all(5.r),
               child: CommentBubble(
+                refresh: (){},
                 comment: comment,
                 allRelies: true,
               ),
@@ -76,6 +79,13 @@ class _CommentRepliesPageState extends ConsumerState<CommentRepliesPage> {
         ),
       ),
       bottomNavigationBar: CommentsTextField(
+        refresh: () {
+          //TODO: implement refresh logic
+          // ref.read(commentProvider.notifier).getCommentReplies(
+          //       postId: postId,
+          //       commentId: comment.id,
+          //     );
+        },
         commentId: comment.id,
         postId: postId,
         focusNode: _focusNode,
