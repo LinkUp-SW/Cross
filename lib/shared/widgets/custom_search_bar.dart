@@ -37,7 +37,7 @@ class _CustomSearchBarState extends ConsumerState<CustomSearchBar> {
       },
       onSubmitted: (value) {
         ref.read(searchProvider.notifier).setSearchText(value);
-        ref.read(searchProvider.notifier).search();
+        // ref.read(searchProvider.notifier).search();
         if (!widget.inSearch) {
           context.push('/search', extra: searchController.text);
         } else {

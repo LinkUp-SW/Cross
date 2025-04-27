@@ -9,7 +9,6 @@ import 'package:link_up/features/logIn/view/forgot_pasword_view.dart';
 import 'package:link_up/features/logIn/view/login_view.dart';
 import 'package:link_up/features/profile/view/view.dart';
 import 'package:link_up/features/search/view/search_page.dart';
-import 'package:link_up/features/settings/view/privacy_settings.dart';
 import 'package:link_up/features/settings/view/settings.dart';
 import 'package:link_up/features/signUp/view/userInfo/names_view.dart';
 import 'package:link_up/features/signUp/view/userInfo/past_job_details.dart';

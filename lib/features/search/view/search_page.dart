@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:link_up/features/search/model/people_search_card_model.dart';
 import 'package:link_up/features/search/viewModel/search_vm.dart';
+import 'package:link_up/features/search/widgets/people_search_card.dart';
 import 'package:link_up/shared/widgets/custom_search_bar.dart';
 
 class SearchPage extends ConsumerStatefulWidget {
@@ -104,13 +106,27 @@ class _SearchPageState extends ConsumerState<SearchPage>
       body: TabBarView(
         controller: tabController,
         children: [
-          // People tab content
-          Center(
-            child: Text(
-              'People',
-              style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
+          ListView.builder(
+            shrinkWrap: true,
+            itemCount: 3,
+            itemBuilder: (context, index) => PeopleSearchCard(
+              data: PeopleCardModel(
+                  cardId: "1",
+                  name: 'Youssef Hassanien',
+                  headline: "Software Engineer @ Apple",
+                  location: "Cairo, Egypt",
+                  profilePhoto: null,
+                  connectionDegree: "1st",
+                  mutualConnectionsCount: 69,
+                  firstMutualConnectionName: "John",
+                  firstMutualConnectionPicture: null,
+                  isInReceivedConnectionInvitations: false,
+                  isInSentConnectionInvitations: false),
+              isFirstConnection: true,
+              buttonFunctionality: () {},
             ),
           ),
+
           // Posts tab content
           Center(
             child: Text(

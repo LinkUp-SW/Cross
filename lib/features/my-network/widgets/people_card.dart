@@ -72,7 +72,7 @@ class _PeopleCardState extends ConsumerState<PeopleCard> {
                   radius: 45.r,
                   foregroundImage: widget.data.profilePicture != null
                       ? NetworkImage(widget.data.profilePicture!)
-                      : AssetImage('assets/images/default-profile-picture.jpg')
+                      : AssetImage('assets/images/default-profile-picture.png')
                           as ImageProvider,
                 ),
               ),
