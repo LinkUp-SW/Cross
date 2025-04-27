@@ -1,5 +1,4 @@
 
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,15 +26,17 @@ class _CustomSearchBarState extends ConsumerState<CustomSearchBar> {
     final suggestions = ref.watch(suggestionsProvider);
     return SearchAnchor.bar(
       searchController: searchController,
-      onChanged: (value) async {
-        await ref.read(suggestionsProvider.notifier).getSuggestions(value);
-        setState(() {
+      onChanged: (value) {
+        ref.read(suggestionsProvider.notifier).setValue(value);
+        ref.read(suggestionsProvider.notifier).getSuggestions(value).then((_) {
+          setState(() {
           searchController.text += ' ';
-          searchController.text = value;
+          searchController.text = suggestions['value'];
         });
-        log(suggestions.toString());
+        });
       },
       onSubmitted: (value) {
+        ref.read(suggestionsProvider.notifier).clearSuggestions();
         ref.read(searchProvider.notifier).setSearchText(value);
         ref.read(searchProvider.notifier).search();
         if (!widget.inSearch) {
@@ -44,7 +45,6 @@ class _CustomSearchBarState extends ConsumerState<CustomSearchBar> {
           context.pop();
         }
         searchController.clear();
-        ref.read(suggestionsProvider.notifier).clearSuggestions();
       },
       suggestionsBuilder:
           (BuildContext context, SearchController searchController) {
@@ -65,9 +65,9 @@ class _CustomSearchBarState extends ConsumerState<CustomSearchBar> {
           ),
           ListView.builder(
             shrinkWrap: true,
-            itemCount: suggestions.length,
+            itemCount: suggestions['suggestions'].length,
             itemBuilder: (BuildContext context, index) {
-              return suggestions[index].buildSuggestion();
+              return suggestions['suggestions'][index].buildSuggestion();
             },
           ),
         ];
@@ -82,11 +82,12 @@ class _CustomSearchBarState extends ConsumerState<CustomSearchBar> {
       barLeading: const Icon(Icons.search),
       viewLeading: IconButton(
           onPressed: () {
+            ref.read(suggestionsProvider.notifier).clearSuggestions();
             searchController.clear();
             ref
                 .read(searchProvider.notifier)
                 .setSearchController(SearchController());
-            ref.read(suggestionsProvider.notifier).clearSuggestions();
+            
             context.pop();
           },
           icon: const Icon(Icons.arrow_back)),

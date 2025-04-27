@@ -7,8 +7,12 @@ import 'package:link_up/features/search/model/suggestions_model.dart';
 
 
 
-class SuggestionsProvider extends StateNotifier<List<SuggestionsModel>> {
-  SuggestionsProvider() : super([]);
+class SuggestionsProvider extends StateNotifier<Map<String, dynamic>> {
+  SuggestionsProvider() : super({"suggestions":[],"value": ""});
+
+  void setValue(String value) {
+    state['value'] = value;
+  }
 
   Future<void> getSuggestions(String value) {
     log(value);
@@ -19,11 +23,13 @@ class SuggestionsProvider extends StateNotifier<List<SuggestionsModel>> {
         final body = jsonDecode(value.body);
         final temp = body['suggestions'] as List<dynamic>;
         if(temp.isEmpty) {
-          state.clear();
+          log('empty');
+          state['suggestions'].clear();
           return;
         }
-        state.clear();
-        state.addAll(temp.map((e)=> SuggestionsModel.fromJson(e)).toList().cast<SuggestionsModel>());
+        log(temp.toString());
+        state['suggestions'].clear();
+        state['suggestions'].addAll(temp.map((e)=> SuggestionsModel.fromJson(e)).toList().cast<SuggestionsModel>());
       }
     }).catchError((error) {
       log(error.toString());
@@ -31,11 +37,12 @@ class SuggestionsProvider extends StateNotifier<List<SuggestionsModel>> {
   }
 
   void clearSuggestions() {
-    state.clear();
+    state['value'] = '';
+    state['suggestions'].clear();
   }
 }
 
 final suggestionsProvider =
-    StateNotifierProvider<SuggestionsProvider, List<SuggestionsModel>>(
+    StateNotifierProvider<SuggestionsProvider,Map<String, dynamic>>(
   (ref) => SuggestionsProvider(),
 );
