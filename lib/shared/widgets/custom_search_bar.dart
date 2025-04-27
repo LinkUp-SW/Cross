@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,8 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:link_up/features/search/viewModel/people_tab_view_model.dart';
 import 'package:link_up/features/search/viewModel/search_vm.dart';
 import 'package:link_up/features/search/viewModel/suggestions_vm.dart';
-import 'package:link_up/shared/themes/colors.dart';
-import 'package:link_up/shared/themes/text_styles.dart';
 
 class CustomSearchBar extends ConsumerStatefulWidget {
   const CustomSearchBar({
@@ -23,35 +20,34 @@ class CustomSearchBar extends ConsumerStatefulWidget {
 class _CustomSearchBarState extends ConsumerState<CustomSearchBar> {
   @override
   Widget build(BuildContext context) {
-    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final searchController = ref.watch(searchProvider).searchController;
     final suggestions = ref.watch(suggestionsProvider);
     return SearchAnchor.bar(
       searchController: searchController,
-      onChanged: (value) async {
-        await ref.read(suggestionsProvider.notifier).getSuggestions(value);
-        setState(() {
-          searchController.text += ' ';
-          searchController.text = value;
+      onChanged: (value) {
+        ref.read(suggestionsProvider.notifier).setValue(value);
+        ref.read(suggestionsProvider.notifier).getSuggestions(value).then((_) {
+          setState(() {
+            searchController.text += ' ';
+            searchController.text = suggestions['value'];
+          });
         });
-        log(suggestions.toString());
       },
       onSubmitted: (value) {
+        ref.read(suggestionsProvider.notifier).clearSuggestions();
         ref.read(searchProvider.notifier).setSearchText(value);
-        ref.read(searchProvider.notifier).search();
         ref
             .read(peopleTabViewModelProvider.notifier)
             .getPeopleSearch(queryParameters: {
-          'query': value.trim(),
-          'connectionDegree': 'all',
+          "query": value,
+          "connectionDegree": "all",
         });
         if (!widget.inSearch) {
-          context.push('/search', extra: searchController.text);
+          context.push('/search');
         } else {
           context.pop();
         }
         searchController.clear();
-        ref.read(suggestionsProvider.notifier).clearSuggestions();
       },
       suggestionsBuilder:
           (BuildContext context, SearchController searchController) {
@@ -70,31 +66,13 @@ class _CustomSearchBarState extends ConsumerState<CustomSearchBar> {
               },
             ),
           ),
-          suggestions.isEmpty
-              ? Center(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 20.0),
-                    child: Text(
-                      'No suggestions found',
-                      style: TextStyles.font14_500Weight.copyWith(
-                        color: isDarkMode
-                            ? AppColors.darkSecondaryText
-                            : AppColors.lightTextColor,
-                      ),
-                    ),
-                  ),
-                )
-              : ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: suggestions.length,
-                  itemBuilder: (BuildContext context, index) {
-                    // Double-check index is valid (defensive programming)
-                    if (index >= suggestions.length) {
-                      return const SizedBox.shrink();
-                    }
-                    return suggestions[index].buildSuggestion();
-                  },
-                ),
+          ListView.builder(
+            shrinkWrap: true,
+            itemCount: suggestions['suggestions'].length,
+            itemBuilder: (BuildContext context, index) {
+              return suggestions['suggestions'][index].buildSuggestion();
+            },
+          ),
         ];
       },
       viewTrailing: [
@@ -107,11 +85,12 @@ class _CustomSearchBarState extends ConsumerState<CustomSearchBar> {
       barLeading: const Icon(Icons.search),
       viewLeading: IconButton(
           onPressed: () {
+            ref.read(suggestionsProvider.notifier).clearSuggestions();
             searchController.clear();
             ref
                 .read(searchProvider.notifier)
                 .setSearchController(SearchController());
-            ref.read(suggestionsProvider.notifier).clearSuggestions();
+
             context.pop();
           },
           icon: const Icon(Icons.arrow_back)),

@@ -38,21 +38,6 @@ class _PeopleTabState extends ConsumerState<PeopleTab> {
   }
 
   @override
-  void didUpdateWidget(PeopleTab oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.keyWord != oldWidget.keyWord && widget.keyWord.isNotEmpty) {
-      ref.read(peopleTabViewModelProvider.notifier).getPeopleSearch(
-        queryParameters: {
-          "query": widget.keyWord,
-          "connectionDegree":
-              ref.read(peopleTabViewModelProvider).currentPeopleDegreeFilter,
-          "page": 1,
-        },
-      );
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final state = ref.watch(peopleTabViewModelProvider);

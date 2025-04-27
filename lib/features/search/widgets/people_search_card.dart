@@ -152,8 +152,8 @@ class PeopleSearchCard extends ConsumerWidget {
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 7.w),
                         child: Container(
-                            width: 30.w,
-                            height: 30.h,
+                            width: 35.w,
+                            height: 35.h,
                             decoration: BoxDecoration(
                               color: isDarkMode
                                   ? AppColors.darkMain
@@ -175,7 +175,7 @@ class PeopleSearchCard extends ConsumerWidget {
                                           4, // 45 degrees counterclockwise
                                       child: Icon(
                                         Icons.send,
-                                        size: 15.r,
+                                        size: 20.r,
                                         color: isDarkMode
                                             ? AppColors.darkTextColor
                                             : AppColors.lightTextColor,
@@ -186,7 +186,7 @@ class PeopleSearchCard extends ConsumerWidget {
                                     onPressed: () {},
                                     icon: Icon(
                                       Icons.person_add,
-                                      size: 15.r,
+                                      size: 20.r,
                                       color: isDarkMode
                                           ? AppColors.darkTextColor
                                           : AppColors.lightTextColor,

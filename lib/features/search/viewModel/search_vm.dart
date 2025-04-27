@@ -36,37 +36,14 @@ class SearchNotifier extends StateNotifier<SearchViewModel> {
 
   void setTabController(TabController tabController) {
     state.setTabController(tabController);
-    state.tabController!.addListener(() {
-      if (state.tabController!.indexIsChanging) {
-        search();
-      }
-    });
   }
 
   void setSearchController(SearchController searchController) {
     state.setSearchController(searchController);
   }
 
-  Future<void> search() {
-    if (state.tabController == null || state.tabController!.index == 0) {
-      return searchUsers();
-    } else {
-      return searchPosts();
-    }
-  }
-
   void setSearchText(String text) {
     state.searchText = text;
-  }
-
-  Future<void> searchUsers() async {
-    //TODO: Implement your search user logic here
-    log("Searching for users with text: ${state.searchText}");
-  }
-
-  Future<void> searchPosts() async {
-    //TODO: Implement your search post logic here
-    log("Searching for posts with text: ${state.searchText}");
   }
 }
 
