@@ -1,19 +1,16 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:link_up/features/chat/services/api_service.dart';
+import 'package:link_up/features/chat/services/chat_service.dart';
 import 'package:link_up/features/chat/state/chat_state.dart';
 import '../model/chat_model.dart';
-
 
 class ChatViewModel extends StateNotifier<ChatState> {
   final ApiChatService chatService;
 
-
   ChatViewModel(this.chatService) : super(ChatState.initial());
 
-  Future <void> fetchChats() async 
-  {
-   state=state.copyWith(isloading: true, isError: false);
+  Future<void> fetchChats() async {
+    state = state.copyWith(isloading: true, isError: false);
     try {
       final response = await chatService.fetchChats();
       final chats = (response['conversations'] as List).map((chat) => Chat.fromJson(chat)).toList();
@@ -22,8 +19,35 @@ class ChatViewModel extends StateNotifier<ChatState> {
       state = state.copyWith(isloading: false, isError: true);
     }
   }
-  
 
+  Future<void> deleteChat(int index) async {
+    try {
+      final chat = state.chats![index];
+      state = state.copyWith(isloading: true, isError: false);
+
+      final isDeleted = await chatService.deleteChat(chat.conversationId);
+
+      if (isDeleted) {
+        final updatedChats = List<Chat>.from(state.chats!);
+        updatedChats.removeAt(index);
+        state = state.copyWith(
+          chats: updatedChats,
+          isloading: false,
+          isError: false,
+        );
+      } else {
+        state = state.copyWith(
+          isloading: false,
+          isError: true,
+        );
+      }
+    } catch (e) {
+      state = state.copyWith(
+        isloading: false,
+        isError: true,
+      );
+    }
+  }
 
 /* 
   void updateTypingStatus(int chatIndex, bool isTyping) {
@@ -195,10 +219,7 @@ int startNewOrOpenExistingChat(ConnectionsCardModel connection) {
     ];
   } */
 
-  /* void deleteChat(int index) {
-    state.removeAt(index);
-    state = [...state];
-  }
+  /* 
 
   void blockUser(int index) {
     final chat = state[index];
@@ -265,9 +286,7 @@ int startNewOrOpenExistingChat(ConnectionsCardModel connection) {
   } */
 }
 
-
-
-final chatViewModelProvider = StateNotifierProvider<ChatViewModel,ChatState>((ref) {
+final chatViewModelProvider = StateNotifierProvider<ChatViewModel, ChatState>((ref) {
   final chatService = ref.read(chatServiceProvider);
   return ChatViewModel(chatService);
 });

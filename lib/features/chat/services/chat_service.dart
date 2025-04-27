@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/core/constants/endpoints.dart';
 import 'package:link_up/core/services/base_service.dart';
 import 'dart:developer';
+
 class ApiChatService {
   @override
   Future<bool> blockUser(String userid) async {
@@ -16,6 +17,32 @@ class ApiChatService {
       return true;
     } else {
       print("error: ${response.statusCode}");
+      return false;
+    }
+  }
+
+  Future<bool> deleteChat(String conversationId) async {
+    try {
+      final baseService = BaseService();
+      final response = await baseService.delete(
+        ExternalEndPoints.deleteChat,
+        {
+          'conversationId': conversationId,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        log("Chat deleted successfully");
+        return true;
+      } else if (response.statusCode == 404) {
+        log("Chat not found with ID: $conversationId");
+        return false;
+      } else {
+        log("Failed to delete chat: ${response.statusCode}");
+        return false;
+      }
+    } catch (e) {
+      log("Error deleting chat: $e");
       return false;
     }
   }

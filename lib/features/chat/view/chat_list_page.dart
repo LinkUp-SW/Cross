@@ -93,7 +93,7 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
                               /*   _showReadUnreadOption(context, ref, index, chats[index].isUnread); */
                             },
                             onThreeDotPressed: () {
-                              /*  _showChatOptions(context, ref, index); */
+                               _showChatOptions(context, ref, index);
                             },
                           ),
                         );
@@ -130,9 +130,9 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
       },
     );
   }
-
+*/
   void _showChatOptions(BuildContext context, WidgetRef ref, int index) {
-    final chat = ref.read(chatViewModelProvider)[index];
+    final chat = ref.read(chatViewModelProvider).chats![index];
     final theme = Theme.of(context);
 
     showModalBottomSheet(
@@ -150,27 +150,28 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
               },
             ),
             ListTile(
-              leading: Icon(
-                chat.isBlocked ? Icons.lock_open : Icons.block,
+              /* leading: Icon(
+                /* chat.isBlocked ? Icons.lock_open : Icons.block,
                 color: theme.iconTheme.color,
               ),
               title: Text(
                 chat.isBlocked ? "Unblock this Person" : "Block this Person",
                 style: theme.textTheme.bodyMedium,
               ),
-              onTap: () {
-                if (chat.isBlocked) {
+              onTap: () { */
+               /*  if (chat.isBlocked) {
                   ref.read(chatViewModelProvider.notifier).unblockUser(index);
                 } else {
                   ref.read(chatViewModelProvider.notifier).blockUser(index);
                 }
-                Navigator.pop(context);
-              },
+                Navigator.pop(context); */
+              }, */
             ),
           ],
         );
       },
     );
   
-   */
+   
+}
 }

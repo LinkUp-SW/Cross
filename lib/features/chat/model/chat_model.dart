@@ -1,4 +1,3 @@
-import 'message_model.dart';
 
 // fetch all chats
 class Chat {
