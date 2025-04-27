@@ -6,13 +6,26 @@ import 'package:link_up/features/chat/view/new_chat_screen.dart';
 import '../viewModel/chat_viewmodel.dart';
 import '../widgets/chat_tile.dart';
 
-class ChatListScreen extends ConsumerWidget {
+class ChatListScreen extends ConsumerStatefulWidget {
   const ChatListScreen({super.key});
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _ChatListScreenState();
+}
+
+class _ChatListScreenState extends ConsumerState<ChatListScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+    Future.microtask(() {
+      ref.read(chatViewModelProvider.notifier).fetchChats();
+    });
+  }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final chats = ref.watch(chatViewModelProvider);
+    final state = ref.watch(chatViewModelProvider);
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -28,60 +41,68 @@ class ChatListScreen extends ConsumerWidget {
         actions: [
           IconButton(
             icon: Icon(Icons.message, color: theme.iconTheme.color),
-             onPressed: () {
-    Navigator.push(
+            onPressed: () {
+              /*  Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => const NewChatScreen()),
-    );
-  },
+    ); */
+            },
           ),
         ],
       ),
-      body: chats.isEmpty
+      body: state.isloading
           ? Center(
               child: CircularProgressIndicator(
                 color: theme.colorScheme.primary,
               ),
             )
-          : ListView.separated(
-              padding: const EdgeInsets.only(top: 8),
-              itemCount: chats.length,
-              separatorBuilder: (context, index) => Divider(
-                height: 1,
-                thickness: 0.6,
-                color: theme.dividerColor,
-                indent: 16,
-                endIndent: 16,
-              ),
-              itemBuilder: (context, index) {
-                return Container(
-                  color: theme.cardColor,
-                  padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
-                  child: ChatTile(
-                    chat: chats[index],
-                    onTap: () {
-                      ref.read(chatViewModelProvider.notifier).toggleReadUnreadStatus(index);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ChatScreen(chatIndex: index),
-                        ),
-                      );
-                    },
-                    onLongPress: () {
-                      _showReadUnreadOption(context, ref, index, chats[index].isUnread);
-                    },
-                    onThreeDotPressed: () {
-                      _showChatOptions(context, ref, index);
-                    },
-                  ),
-                );
-              },
-            ),
+          : state.isError
+              ? Center(
+                  child: Text('Failed to load chats'),
+                )
+              : state.chats?.isEmpty ?? true
+                  ? Center(
+                      child: Text('No chats available'),
+                    )
+                  : ListView.separated(
+                      padding: const EdgeInsets.only(top: 8),
+                      itemCount: state.chats!.length,
+                      separatorBuilder: (context, index) => Divider(
+                        height: 1,
+                        thickness: 0.6,
+                        color: theme.dividerColor,
+                        indent: 16,
+                        endIndent: 16,
+                      ),
+                      itemBuilder: (context, index) {
+                        return Container(
+                          color: theme.cardColor,
+                          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+                          child: ChatTile(
+                            chat: state.chats![index],
+                            onTap: () {
+                              /* ref.read(chatViewModelProvider.notifier).toggleReadUnreadStatus(index);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ChatScreen(chatIndex: index),
+                                ),
+                              ); */
+                            },
+                            onLongPress: () {
+                              /*   _showReadUnreadOption(context, ref, index, chats[index].isUnread); */
+                            },
+                            onThreeDotPressed: () {
+                              /*  _showChatOptions(context, ref, index); */
+                            },
+                          ),
+                        );
+                      },
+                    ),
     );
   }
 
-  void _showReadUnreadOption(BuildContext context, WidgetRef ref, int index, bool isUnread) {
+  /*  void _showReadUnreadOption(BuildContext context, WidgetRef ref, int index, bool isUnread) {
     final theme = Theme.of(context);
 
     showModalBottomSheet(
@@ -150,5 +171,6 @@ class ChatListScreen extends ConsumerWidget {
         );
       },
     );
-  }
+  
+   */
 }

@@ -1,28 +1,36 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:link_up/features/chat/services/chat_service.dart';
-import 'package:link_up/features/chat/services/mock_service.dart';
-import 'package:link_up/features/my-network/model/connections_screen_model.dart';
+import 'package:link_up/features/chat/services/api_service.dart';
+import 'package:link_up/features/chat/state/chat_state.dart';
 import '../model/chat_model.dart';
-import '../model/message_model.dart';
 
-class ChatViewModel extends StateNotifier<List<Chat>> {
-  final ChatService _chatService;
-  Timer? _typingTimer;
 
-  ChatViewModel(this._chatService) : super([]) {
-    _fetchChats();
+class ChatViewModel extends StateNotifier<ChatState> {
+  final ApiChatService chatService;
+
+
+  ChatViewModel(this.chatService) : super(ChatState.initial());
+
+  Future <void> fetchChats() async 
+  {
+   state=state.copyWith(isloading: true, isError: false);
+    try {
+      final response = await chatService.fetchChats();
+      final chats = (response['conversations'] as List).map((chat) => Chat.fromJson(chat)).toList();
+      state = state.copyWith(chats: chats, isloading: false, isError: false);
+    } catch (e) {
+      state = state.copyWith(isloading: false, isError: true);
+    }
   }
+  
 
-  void _fetchChats() async {
-    state = await _chatService.fetchChats();
-  }
 
+/* 
   void updateTypingStatus(int chatIndex, bool isTyping) {
     final chat = state[chatIndex];
     final updatedChat = chat.copyWith(
       isTyping: isTyping,
-      typingUser: isTyping ? "jumana" : null,
+      typingUser: isTyping ? InternalEndPoints.userId.split("-")[0].toString() : null,
     );
 
     state = [
@@ -41,7 +49,7 @@ class ChatViewModel extends StateNotifier<List<Chat>> {
 
   void simulateOtherUserTyping(int chatIndex) {
     final chat = state[chatIndex];
-    final otherUserName = chat.name; // Dynamically get other user's name
+    final otherUserName = chat.sendername; // Dynamically get other user's name
 
     state = [
       for (int i = 0; i < state.length; i++)
@@ -60,14 +68,14 @@ class ChatViewModel extends StateNotifier<List<Chat>> {
             state[i]
       ];
     });
-  }
+  } */
 
-    void sendMessage(int chatIndex, String messageContent, MessageType type) {
+  /*   void sendMessage(int chatIndex, String messageContent, MessageType type) {
   final chat = state[chatIndex];
   if (chat.isBlocked) return;
 
   final newMessage = Message(
-    sender: "jumana",
+    sender: InternalEndPoints.userId.split("-")[0].toString(),
     content: messageContent,
     timestamp: DateTime.now(),
     type: type,
@@ -103,16 +111,16 @@ class ChatViewModel extends StateNotifier<List<Chat>> {
   });
 }
 int startNewOrOpenExistingChat(ConnectionsCardModel connection) {
-  final existingIndex = state.indexWhere((chat) => chat.userId == connection.cardId);
+  final existingIndex = state.indexWhere((chat) => chat.senderId == connection.cardId);
   if (existingIndex != -1) {
     return existingIndex;
   }
 
   final newChat = Chat(
 
-    userId: connection.cardId,
-    name: '${connection.firstName} ${connection.lastName}',
-    profilePictureUrl: connection.profilePicture, 
+    senderId: connection.cardId,
+    sendername: '${connection.firstName} ${connection.lastName}',
+    senderprofilePictureUrl: connection.profilePicture, 
     messages: [],
     isUnread: false,
     isTyping: false,
@@ -125,8 +133,8 @@ int startNewOrOpenExistingChat(ConnectionsCardModel connection) {
   state = [...state, newChat];
   return state.length - 1;
 }
-
-
+ */
+/* 
   void _updateLastMessageStatus(int chatIndex, DeliveryStatus status) {
   final chat = state[chatIndex];
   final messages = chat.messages;
@@ -134,7 +142,7 @@ int startNewOrOpenExistingChat(ConnectionsCardModel connection) {
 
   // Find the last message sent by the current user (jumana)
   final lastMessageIndex = messages.lastIndexWhere(
-    (message) => message.sender == "jumana",
+    (message) => message.sender == InternalEndPoints.userId.split("-")[0].toString(),
   );
 
   // If no message is found, return early
@@ -157,15 +165,15 @@ int startNewOrOpenExistingChat(ConnectionsCardModel connection) {
         state[i],
   ];
 }
+ */
 
-
-
+/* 
   void sendMediaAttachment(int chatIndex, String mediaUrl, MessageType type) {
     final chat = state[chatIndex];
     if (chat.isBlocked) return;
 
     final newMessage = Message(
-      sender: "jumana",
+      sender: InternalEndPoints.userId.split("-")[0].toString(),
       content: mediaUrl,
       timestamp: DateTime.now(),
       type: type,
@@ -185,9 +193,9 @@ int startNewOrOpenExistingChat(ConnectionsCardModel connection) {
         else
           state[i],
     ];
-  }
+  } */
 
-  void deleteChat(int index) {
+  /* void deleteChat(int index) {
     state.removeAt(index);
     state = [...state];
   }
@@ -254,14 +262,12 @@ int startNewOrOpenExistingChat(ConnectionsCardModel connection) {
   void dispose() {
     _typingTimer?.cancel();
     super.dispose();
-  }
+  } */
 }
 
-final chatServiceProvider = Provider<ChatService>((ref) {
-  return MockChatService();
-});
 
-final chatViewModelProvider = StateNotifierProvider<ChatViewModel, List<Chat>>((ref) {
+
+final chatViewModelProvider = StateNotifierProvider<ChatViewModel,ChatState>((ref) {
   final chatService = ref.read(chatServiceProvider);
   return ChatViewModel(chatService);
 });

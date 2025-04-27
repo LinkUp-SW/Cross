@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../model/chat_model.dart';
 
-class ChatTile extends StatelessWidget {
+class ChatTile extends ConsumerWidget {
   final Chat chat;
   final VoidCallback onTap;
   final VoidCallback onLongPress;
@@ -16,49 +17,39 @@ class ChatTile extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final isBlocked = chat.isBlocked;
+;
 
     return ListTile(
-      onTap: isBlocked ? null : onTap,
-      onLongPress: isBlocked ? null : onLongPress,
       leading: Stack(
         alignment: Alignment.center,
         children: [
           CircleAvatar(
-            backgroundImage: NetworkImage(chat.profilePictureUrl),
+            backgroundImage: NetworkImage(chat.senderprofilePictureUrl),
             backgroundColor: theme.colorScheme.surface,
-            foregroundColor: isBlocked ? theme.colorScheme.onSurface.withOpacity(0.3) : null,
-          ),
-          if (isBlocked)
-            const Icon(Icons.block, color: Colors.redAccent, size: 45),
+          )
         ],
       ),
       title: Text(
-        chat.name,
+        chat.sendername,
         style: theme.textTheme.titleMedium?.copyWith(
-          fontWeight: chat.isUnread ? FontWeight.bold : FontWeight.normal,
-          color: isBlocked
-              ? theme.disabledColor
-              : theme.textTheme.titleMedium?.color,
+          fontWeight: chat.unreadCount>0 ? FontWeight.bold : FontWeight.normal,
+          color: theme.textTheme.titleMedium?.color,
         ),
       ),
-      subtitle: Text(
-        isBlocked ? "This user is blocked" : chat.lastMessage,
+      subtitle: Text(  chat.lastMessage,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: theme.textTheme.bodySmall?.copyWith(
-          fontStyle: isBlocked ? FontStyle.italic : FontStyle.normal,
-          color: isBlocked
-              ? theme.disabledColor
-              : theme.textTheme.bodySmall?.color,
+          fontStyle: FontStyle.normal,
+          color: theme.textTheme.bodySmall?.color,
         ),
       ),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (!isBlocked && chat.unreadMessageCount > 0)
+          if (chat.unreadCount> 0)
             Container(
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
@@ -66,14 +57,14 @@ class ChatTile extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
               child: Text(
-                chat.unreadMessageCount.toString(),
+                chat.unreadCount.toString(),
                 style: TextStyle(
                   color: theme.colorScheme.onPrimary,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             )
-          else if (!isBlocked && chat.isUnread)
+          else if ( chat.unreadCount>0)
             Icon(Icons.circle, color: Colors.blue, size: 20),
           const SizedBox(width: 8),
           IconButton(

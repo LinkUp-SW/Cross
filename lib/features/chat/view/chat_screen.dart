@@ -1,9 +1,10 @@
-import 'dart:io';
+/* import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:link_up/core/constants/endpoints.dart';
 import 'package:link_up/features/chat/widgets/typing_indicator.dart';
 import 'package:link_up/features/chat/widgets/video_player_screen.dart';
 import 'package:open_filex/open_filex.dart';
@@ -40,7 +41,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         backgroundColor: theme.appBarTheme.backgroundColor ?? theme.colorScheme.primary,
         iconTheme: IconThemeData(color: theme.iconTheme.color),
         title: Text(
-          chat.name,
+          chat.sendername,
           style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
       ),
@@ -56,16 +57,16 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     itemCount: chat.messages.length,
                     itemBuilder: (context, index) {
                       final message = chat.messages[index];
-                      final isLastMessage = index == messages.length - 1 && message.sender == "jumana";
+                      final isLastMessage = index == messages.length - 1 && message.sender == InternalEndPoints.userId.split("-")[0].toString();
                       return GestureDetector(
                         onTap: () async {
                           await _handleMessageTap(message);
                         },
                         child: ChatMessageBubble(
                           message: message,
-                          currentUserName: "jumana",
+                          currentUserName: InternalEndPoints.userId.split("-")[0].toString(),
                           currentUserProfilePicUrl: "assets/images/profile.png",
-                          chatProfilePicUrl: chat.profilePictureUrl,
+                          chatProfilePicUrl: chat.senderprofilePictureUrl,
                           isLastMessage: isLastMessage,
                         ),
                       );
@@ -78,11 +79,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               ],
             ),
           ),
-            if (chat.isTyping && chat.typingUser != "jumana")
+            if (chat.isTyping && chat.typingUser != InternalEndPoints.userId.split("-")[0].toString())
                   TypingIndicator(
                     isTyping: chat.isTyping,
                     typingUser: chat.typingUser ?? '',
-                    currentUser: 'jumana', // Or dynamically get the current user's name
+                    currentUser: InternalEndPoints.userId.split("-")[0].toString(), // Or dynamically get the current user's name
                     theme: theme, 
                   ),
           // Chat input field (Message sending section)
@@ -124,7 +125,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   Future<void> _handleVideoMessage(Message message) async {
     final theme = Theme.of(context);
-    if (message.sender != "jumana") {
+    if (message.sender != InternalEndPoints.userId.split("-")[0].toString()) {
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -297,3 +298,4 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     }
   }
 }
+ */
