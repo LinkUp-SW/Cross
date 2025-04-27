@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/core/constants/endpoints.dart';
 import 'package:link_up/core/services/base_service.dart';
 
@@ -16,15 +17,23 @@ class PeopleTabServices {
         ExternalEndPoints.peopleSearch,
         queryParameters: queryParameters,
       );
-      log('People search response: $response');
+      log('People search response: ${response.body}');
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       }
       throw Exception(
-          'Failed to get search people list: ${response.statusCode}');
+          'Failed to get search people list with status code: ${response.statusCode} and body: ${response.body}');
     } catch (e) {
       log('Error fetching people search: $e');
       rethrow;
     }
   }
 }
+
+final peopleTabServicesProvider = Provider<PeopleTabServices>(
+  (ref) {
+    return PeopleTabServices(
+      ref.read(baseServiceProvider),
+    );
+  },
+);

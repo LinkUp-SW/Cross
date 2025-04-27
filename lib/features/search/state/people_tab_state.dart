@@ -1,7 +1,5 @@
 import 'package:link_up/features/search/model/people_search_card_model.dart';
 
-enum ConnectionDegree { all, first, second, third }
-
 class PeopleTabState {
   final Set<PeopleCardModel>? people;
   final int? peopleCount;
@@ -9,7 +7,8 @@ class PeopleTabState {
   final int? totalPages;
   final int? currentPage;
   final int? limit;
-  final ConnectionDegree currentPeopleDegreeFilter;
+  final String currentPeopleDegreeFilter;
+  final bool isLoadingMore;
   final bool isLoading;
   final bool isError;
 
@@ -20,7 +19,8 @@ class PeopleTabState {
     this.totalPages = 1,
     this.currentPage = 1,
     this.limit = 10,
-    this.currentPeopleDegreeFilter = ConnectionDegree.all,
+    this.currentPeopleDegreeFilter = 'all',
+    this.isLoadingMore = false,
     this.isLoading = true,
     this.isError = false,
   });
@@ -33,7 +33,8 @@ class PeopleTabState {
       totalPages: 1,
       currentPage: 1,
       limit: 10,
-      currentPeopleDegreeFilter: ConnectionDegree.all,
+      currentPeopleDegreeFilter: 'all',
+      isLoadingMore: false,
       isLoading: true,
       isError: false,
     );
@@ -46,7 +47,8 @@ class PeopleTabState {
     final int? totalPages,
     final int? currentPage,
     final int? limit,
-    final ConnectionDegree? currentPeopleDegreeFilter,
+    final String? currentPeopleDegreeFilter,
+    final bool? isLoadingMore,
     final bool? isLoading,
     final bool? isError,
   }) {
@@ -59,6 +61,7 @@ class PeopleTabState {
       limit: limit ?? this.limit,
       currentPeopleDegreeFilter:
           currentPeopleDegreeFilter ?? this.currentPeopleDegreeFilter,
+      isLoadingMore: isLoadingMore ?? this.isLoadingMore,
       isLoading: isLoading ?? this.isLoading,
       isError: isError ?? this.isError,
     );

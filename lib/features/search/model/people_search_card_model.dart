@@ -1,8 +1,10 @@
+import 'dart:developer';
+
 class PeopleCardModel {
   final String cardId;
   final String name;
   final String? headline;
-  final String location;
+  final String? location;
   final String? profilePhoto;
   final String connectionDegree;
   final int mutualConnectionsCount;
@@ -26,19 +28,24 @@ class PeopleCardModel {
   });
 
   factory PeopleCardModel.fromJson(Map<String, dynamic> json) {
-    return PeopleCardModel(
-      cardId: json['user_id'],
-      name: json['name'],
-      headline: json['headline'],
-      location: json['location'],
-      profilePhoto: json['profile_photo'],
-      connectionDegree: json['connection_degree'],
-      mutualConnectionsCount: json['mutual_connections']['count'],
-      firstMutualConnectionName: json['mutual_connections']['suggested_name'],
-      firstMutualConnectionPicture: json['mutual_connections']
-          ['suggested_profile_photo'],
-      isInReceivedConnectionInvitations: json['is_in_sent_connections'],
-      isInSentConnectionInvitations: json['is_in_received_connections'],
-    );
+    try {
+      return PeopleCardModel(
+        cardId: json['user_id'],
+        name: json['name'],
+        headline: json['headline'],
+        location: json['location'],
+        profilePhoto: json['profile_photo'],
+        connectionDegree: json['connection_degree'],
+        mutualConnectionsCount: json['mutual_connections']['count'],
+        firstMutualConnectionName: json['mutual_connections']['suggested_name'],
+        firstMutualConnectionPicture: json['mutual_connections']
+            ['suggested_profile_photo'],
+        isInReceivedConnectionInvitations: json['is_in_sent_connections'],
+        isInSentConnectionInvitations: json['is_in_received_connections'],
+      );
+    } catch (error) {
+      log('Error in converting json response to people card model object: $error');
+      rethrow;
+    }
   }
 }

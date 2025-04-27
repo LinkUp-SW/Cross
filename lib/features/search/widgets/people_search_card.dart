@@ -36,7 +36,8 @@ class PeopleSearchCard extends ConsumerWidget {
               padding: EdgeInsets.symmetric(horizontal: 7.w),
               child: CircleAvatar(
                 radius: 30.r,
-                foregroundImage: data.profilePhoto != null
+                foregroundImage: data.profilePhoto != null &&
+                        data.profilePhoto!.isNotEmpty
                     ? NetworkImage(data.profilePhoto!)
                     : AssetImage('assets/images/default-profile-picture.png')
                         as ImageProvider,
@@ -55,7 +56,7 @@ class PeopleSearchCard extends ConsumerWidget {
                   ),
                 ),
                 child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 5.h),
+                  padding: EdgeInsets.only(top: 5.h),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -96,7 +97,7 @@ class PeopleSearchCard extends ConsumerWidget {
                               maxLines: 2,
                             ),
                             Text(
-                              data.location,
+                              data.location!,
                               style: TextStyles.font14_500Weight.copyWith(
                                 color: isDarkMode
                                     ? AppColors.darkGrey
@@ -105,65 +106,92 @@ class PeopleSearchCard extends ConsumerWidget {
                               overflow: TextOverflow.ellipsis,
                               maxLines: 2,
                             ),
-                            Row(
-                              spacing: 5.w,
-                              children: [
-                                CircleAvatar(
-                                  radius: 10.r,
-                                  foregroundImage: data
-                                              .firstMutualConnectionPicture !=
-                                          null
-                                      ? NetworkImage(
-                                          data.firstMutualConnectionPicture!)
-                                      : AssetImage(
-                                              'assets/images/default-profile-picture.png')
-                                          as ImageProvider,
-                                ),
-                                Text(
-                                  "${data.firstMutualConnectionName} and ${data.mutualConnectionsCount - 1} mutual connections",
-                                  style: TextStyles.font13_500Weight.copyWith(
-                                    color: isDarkMode
-                                        ? AppColors.darkSecondaryText
-                                        : AppColors.lightTextColor,
+                            data.mutualConnectionsCount > 0
+                                ? Row(
+                                    spacing: 5.w,
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 10.r,
+                                        foregroundImage: data
+                                                        .firstMutualConnectionPicture !=
+                                                    null &&
+                                                data.firstMutualConnectionPicture!
+                                                    .isNotEmpty
+                                            ? NetworkImage(data
+                                                .firstMutualConnectionPicture!)
+                                            : AssetImage(
+                                                    'assets/images/default-profile-picture.png')
+                                                as ImageProvider,
+                                      ),
+                                      Text(
+                                        "${data.firstMutualConnectionName} and ${data.mutualConnectionsCount - 1} mutual connections",
+                                        style: TextStyles.font13_500Weight
+                                            .copyWith(
+                                          color: isDarkMode
+                                              ? AppColors.darkSecondaryText
+                                              : AppColors.lightTextColor,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 2,
+                                      ),
+                                    ],
+                                  )
+                                : Text(
+                                    "No mutual connections",
+                                    style: TextStyles.font13_500Weight.copyWith(
+                                      color: isDarkMode
+                                          ? AppColors.darkSecondaryText
+                                          : AppColors.lightTextColor,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 2,
                                   ),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 2,
-                                ),
-                              ],
-                            ),
                           ],
                         ),
                       ),
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 7.w),
                         child: Container(
-                          width: 35.w,
-                          height: 35.h,
-                          decoration: BoxDecoration(
-                            color: isDarkMode
-                                ? AppColors.darkMain
-                                : AppColors.lightMain,
-                            border: Border.all(
+                            width: 30.w,
+                            height: 30.h,
+                            decoration: BoxDecoration(
                               color: isDarkMode
-                                  ? AppColors.darkGrey
-                                  : AppColors.lightGrey,
-                            ),
-                            shape: BoxShape.circle,
-                          ),
-                          child: IconButton(
-                            onPressed: () {},
-                            icon: Transform.rotate(
-                              angle: -pi / 4, // 45 degrees counterclockwise
-                              child: Icon(
-                                Icons.send,
-                                size: 22.r,
+                                  ? AppColors.darkMain
+                                  : AppColors.lightMain,
+                              border: Border.all(
                                 color: isDarkMode
-                                    ? AppColors.darkTextColor
-                                    : AppColors.lightTextColor,
+                                    ? AppColors.darkGrey
+                                    : AppColors.lightGrey,
                               ),
+                              shape: BoxShape.circle,
                             ),
-                          ),
-                        ),
+                            child: data.connectionDegree == '1st' ||
+                                    data.isInReceivedConnectionInvitations ||
+                                    data.isInSentConnectionInvitations
+                                ? IconButton(
+                                    onPressed: () {},
+                                    icon: Transform.rotate(
+                                      angle: -pi /
+                                          4, // 45 degrees counterclockwise
+                                      child: Icon(
+                                        Icons.send,
+                                        size: 15.r,
+                                        color: isDarkMode
+                                            ? AppColors.darkTextColor
+                                            : AppColors.lightTextColor,
+                                      ),
+                                    ),
+                                  )
+                                : IconButton(
+                                    onPressed: () {},
+                                    icon: Icon(
+                                      Icons.person_add,
+                                      size: 15.r,
+                                      color: isDarkMode
+                                          ? AppColors.darkTextColor
+                                          : AppColors.lightTextColor,
+                                    ),
+                                  )),
                       ),
                     ],
                   ),

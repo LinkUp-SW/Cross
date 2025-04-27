@@ -21,8 +21,9 @@ class PeopleTabViewModel extends StateNotifier<PeopleTabState> {
 
       final peopleCount = response['pagination']['total'];
       final totalPages = response['pagination']['pages'];
-      final cuurentPage = response['pagination']['page'];
-      final limit = response['pagination']['limit'];
+      final currentPage = response['pagination']['page'];
+      final currentPeopleDegreeFilter =
+          queryParameters?['connectionDegree'] ?? 'all';
 
       state = state.copyWith(
         isLoading: false,
@@ -30,11 +31,21 @@ class PeopleTabViewModel extends StateNotifier<PeopleTabState> {
         people: people,
         peopleCount: peopleCount,
         totalPages: totalPages,
-        currentPage: cuurentPage,
-        limit: limit,
+        currentPage: currentPage,
+        currentPeopleDegreeFilter: currentPeopleDegreeFilter,
+        searchKeyWord: queryParameters?['query'],
       );
     } catch (error) {
       state = state.copyWith(isLoading: false, isError: true);
     }
   }
 }
+
+final peopleTabViewModelProvider =
+    StateNotifierProvider<PeopleTabViewModel, PeopleTabState>(
+  (ref) {
+    return PeopleTabViewModel(
+      ref.read(peopleTabServicesProvider),
+    );
+  },
+);

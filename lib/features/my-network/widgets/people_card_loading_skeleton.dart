@@ -54,7 +54,7 @@ class GrowTabPeopleCardLoadingSkeleton extends ConsumerWidget {
                     child: CircleAvatar(
                       radius: 45.r,
                       foregroundImage: AssetImage(
-                          'assets/images/default-profile-picture.jpg'),
+                          'assets/images/default-profile-picture.png'),
                     ),
                   ),
                   // Cancel Button

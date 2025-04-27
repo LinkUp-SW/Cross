@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:link_up/features/search/viewModel/people_tab_view_model.dart';
 import 'package:link_up/features/search/viewModel/search_vm.dart';
 import 'package:link_up/features/search/viewModel/suggestions_vm.dart';
 import 'package:link_up/shared/themes/colors.dart';
@@ -37,7 +38,13 @@ class _CustomSearchBarState extends ConsumerState<CustomSearchBar> {
       },
       onSubmitted: (value) {
         ref.read(searchProvider.notifier).setSearchText(value);
-        // ref.read(searchProvider.notifier).search();
+        ref.read(searchProvider.notifier).search();
+        ref
+            .read(peopleTabViewModelProvider.notifier)
+            .getPeopleSearch(queryParameters: {
+          'query': value.trim(),
+          'connectionDegree': 'all',
+        });
         if (!widget.inSearch) {
           context.push('/search', extra: searchController.text);
         } else {
