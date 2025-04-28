@@ -37,11 +37,13 @@ class CommentsProvider extends StateNotifier<Map<String, dynamic>> {
     //TODO: Implement fetching comments from the server
     final BaseService service = BaseService();
     log('Fetching comments for postId: $postId');
-    return service.get('api/v1/post/comment/:postId?cursor=:cursor?limit=:limit',
+    return service.get('api/v1/post/comment/:postId',
+        queryParameters: {
+          'limit': '1',
+          'cursor': state['cursor'].toString(),
+        },
         routeParameters: {
           'postId': postId,
-          'limit': 1,
-          'cursor': state['cursor'].toString(),
         },
         ).then((value) {
       final data = jsonDecode(value.body);
