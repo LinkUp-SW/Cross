@@ -41,15 +41,15 @@ class PostModel {
         header = HeaderModel.fromJson(json),
         text = json['content'],
         media = Media.fromJson(json['media']),
-        reactions = json['reacts'].length,
-        comments = json['comments'].length,
-        reposts = json['reposts'] ?? 0,
-        reaction = Reaction.getReaction(json['reaction'] ?? 'none'),
+        reactions =  json['reactionsCount'] ?? json['reacts'].length ?? 0,
+        comments =  json['commentsCount'] ??json['comments'].length ?? 0,
+        reposts = json['reposts'] ?? json['repostsCount'] ?? 0,
+        reaction = Reaction.getReaction(json['userReaction'] ?? 'none'),
         isAd = json['isAd'] ?? false,
         isCompany = json['isCompany'] ?? false,
         saved = json['saved'] ?? false,
         topReactions = List<Reaction>.from(
-            json['topReactions']?.map((e) => Reaction.getReaction(e)) ?? []),
+            json['topReactions']?.map((e) => Reaction.getReaction(e['reaction'])) ?? []),
         taggedUsers = List<String>.from(json['tagged_users'] ?? []);
 
   Map<String, dynamic> toJson() => {

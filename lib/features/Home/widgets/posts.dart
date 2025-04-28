@@ -20,6 +20,7 @@ import 'package:link_up/shared/widgets/bottom_sheet.dart';
 
 class Posts extends ConsumerStatefulWidget {
   final bool showTop;
+  final bool inFeed;
   final bool showBottom;
   final bool inMessage;
   final PostModel post;
@@ -27,6 +28,7 @@ class Posts extends ConsumerStatefulWidget {
       {super.key,
       this.showTop = true,
       this.showBottom = true,
+      this.inFeed = false,
       this.inMessage = false,
       required this.post});
 
@@ -46,7 +48,7 @@ class _PostsState extends ConsumerState<Posts> {
       },
       child: Column(
         children: [
-          if (widget.showTop)
+          if (widget.showTop && widget.inFeed)
             Column(
               children: [
                 PostTop(
@@ -61,7 +63,9 @@ class _PostsState extends ConsumerState<Posts> {
                 ),
               ],
             ),
-          PostHeader(post: widget.post),
+          PostHeader(post: widget.post,
+              inFeed: widget.inFeed,
+              showTop: widget.showTop),
           Align(
             alignment: Alignment.centerLeft,
             child: Padding(
@@ -100,7 +104,6 @@ class _PostsState extends ConsumerState<Posts> {
                     },
                     child: Row(
                       children: [
-                        //TODO: Need to change to Like or top reaction depending on the impelementation of the back team
                         Wrap(
                           children: [
                             for (var i = 0;

@@ -55,7 +55,7 @@ class PostsNotifier extends StateNotifier<List<PostState>> {
       final data =jsonDecode(response.body);
       log('Fetched posts: $data');
       final List<PostModel> posts = (data['posts'] as List).map((e) => PostModel.fromJson(e)).toList();
-      PostState.nextCursor = data['nextCursor'] ?? 0;
+      PostState.nextCursor = data['nextCursor'] ?? -1;
       return posts;
     } else {
       log('Failed to fetch posts: ${response.statusCode}');

@@ -27,10 +27,10 @@ class HeaderModel {
       : profileImage = json['author']['profilePicture'],
         userId = json['author']['username'],
         name = '${json['author']['firstName']}  ${json['author']['lastName']}',
-        connectionDegree = json['author']['connectionDegree'],
+        connectionDegree = json['author']['connectionDegree'] ?? '3rd+',
         about = json['author']['headline'],
         timeAgo =json['date'] != null ? DateTime.fromMillisecondsSinceEpoch(json['date']*1000,) : DateTime.now(),
-        edited = json['is_edited'] ?? false,
+        edited = json['isEdited'] ?? false,
         visibilityComments = Visibilities.getVisibility(json['comments_disabled'] ?? 'anyone'),
         visibilityPost =  Visibilities.getVisibility(json['public_post'] == true ? 'anyone': 'connectionsOnly');
 
