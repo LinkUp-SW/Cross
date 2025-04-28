@@ -149,15 +149,15 @@ class _PeopleTabState extends ConsumerState<PeopleTab> {
                   },
                 ),
                 FilterChip(
-                  selected: state.currentPeopleDegreeFilter == '3rd',
+                  selected: state.currentPeopleDegreeFilter == '3rd+',
                   backgroundColor:
                       isDarkMode ? AppColors.darkMain : AppColors.lightMain,
                   selectedColor:
                       isDarkMode ? AppColors.darkGreen : AppColors.lightGreen,
                   label: Text(
-                    '3rd',
+                    '3rd+',
                     style: TextStyles.font14_500Weight.copyWith(
-                        color: state.currentPeopleDegreeFilter == '3rd'
+                        color: state.currentPeopleDegreeFilter == '3rd+'
                             ? isDarkMode
                                 ? AppColors.darkBackground
                                 : AppColors.lightBackground
@@ -172,7 +172,7 @@ class _PeopleTabState extends ConsumerState<PeopleTab> {
                           .getPeopleSearch(
                         queryParameters: {
                           'query': state.searchKeyWord,
-                          'connectionDegree': '3rd',
+                          'connectionDegree': '3rd+',
                         },
                       );
                     }
@@ -189,10 +189,7 @@ class _PeopleTabState extends ConsumerState<PeopleTab> {
               if (notification is ScrollEndNotification &&
                   notification.metrics.pixels >=
                       notification.metrics.maxScrollExtent - 200) {
-                // Use the loadMorePeople function instead of getPeopleSearch
-                // ref
-                //     .read(peopleTabViewModelProvider.notifier)
-                //     .loadMorePeople();
+                ref.read(peopleTabViewModelProvider.notifier).loadMorePeople();
               }
               return false;
             },
@@ -213,6 +210,8 @@ class _PeopleTabState extends ConsumerState<PeopleTab> {
                               .getPeopleSearch(
                             queryParameters: {
                               "query": widget.keyWord,
+                              "connectionDegree":
+                                  state.currentPeopleDegreeFilter,
                             },
                           );
                         },

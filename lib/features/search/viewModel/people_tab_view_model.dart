@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/features/search/model/people_search_card_model.dart';
 import 'package:link_up/features/search/services/people_tab_services.dart';
 import 'package:link_up/features/search/state/people_tab_state.dart';
+import 'dart:developer';
 
 class PeopleTabViewModel extends StateNotifier<PeopleTabState> {
   final PeopleTabServices _peopleTabServices;
@@ -28,6 +29,7 @@ class PeopleTabViewModel extends StateNotifier<PeopleTabState> {
       state = state.copyWith(
         isLoading: false,
         isError: false,
+        isLoadingMore: false,
         people: people,
         peopleCount: peopleCount,
         totalPages: totalPages,
@@ -37,6 +39,69 @@ class PeopleTabViewModel extends StateNotifier<PeopleTabState> {
       );
     } catch (error) {
       state = state.copyWith(isLoading: false, isError: true);
+    }
+  }
+
+  Future<void> loadMorePeople() async {
+    final currentState = state;
+
+    // Don't load more if already loading or at the end of pages
+    if (currentState.isLoadingMore ||
+        currentState.currentPage! >= currentState.totalPages!) {
+      return;
+    }
+
+    // Set loading more state
+    state = currentState.copyWith(isLoadingMore: true);
+
+    try {
+      final response = await _peopleTabServices.getPeopleSearch(
+        queryParameters: {
+          'query': currentState.searchKeyWord,
+          'connectionDegree': currentState.currentPeopleDegreeFilter,
+          'page': currentState.currentPage! + 1,
+        },
+      );
+
+      final Set<PeopleCardModel> newPeople = (response['people'] as List)
+          .map((person) => PeopleCardModel.fromJson(person))
+          .toSet();
+
+      if (newPeople.isEmpty) {
+        state = currentState.copyWith(
+          isLoadingMore: false,
+          totalPages: response['pagination']['pages'],
+          currentPage: response['pagination']['page'],
+        );
+        return;
+      }
+
+      final existingIds =
+          currentState.people?.map((p) => p.cardId).toSet() ?? {};
+      final uniqueNewPeople = newPeople
+          .where((person) => !existingIds.contains(person.cardId))
+          .toSet();
+
+      final Set<PeopleCardModel> allPeople = {
+        ...currentState.people ?? {},
+        ...uniqueNewPeople
+      };
+
+      state = currentState.copyWith(
+        isLoadingMore: false,
+        isError: false,
+        people: allPeople,
+        currentPage: currentState.currentPage! + 1,
+        totalPages: response['pagination']['pages'],
+        peopleCount: response['pagination']['total'],
+      );
+    } catch (e) {
+      // Handle errors
+      log('Error loading more people: $e');
+      state = currentState.copyWith(
+        isLoadingMore: false,
+        isError: true,
+      );
     }
   }
 }

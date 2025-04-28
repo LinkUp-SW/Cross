@@ -17,7 +17,7 @@ class PeopleTabServices {
         ExternalEndPoints.peopleSearch,
         queryParameters: queryParameters,
       );
-      log('People search response: ${response.body}');
+      log('People Search Response Body: ${response.body}');
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       }
