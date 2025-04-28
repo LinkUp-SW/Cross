@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/my-network/widgets/received_invitations_card_loading_skeleton.dart';
-import 'package:link_up/features/my-network/widgets/retry_error_message.dart';
 import 'package:link_up/features/my-network/widgets/standard_empty_list_message.dart';
 import 'package:link_up/features/search/viewModel/people_tab_view_model.dart';
 import 'package:link_up/features/search/widgets/people_search_card.dart';
@@ -215,60 +214,45 @@ class _PeopleTabState extends ConsumerState<PeopleTab> {
                           childCount: 3,
                         ),
                       )
-                    : state.isError
+                    : state.people == null ||
+                            state.people!.isEmpty ||
+                            state.isError
                         ? SliverToBoxAdapter(
-                            child: RetryErrorMessage(
-                              errorMessage:
-                                  "Failed to load people search based on ${widget.keyWord} :(",
-                              buttonFunctionality: () async {
-                                await ref
-                                    .read(peopleTabViewModelProvider.notifier)
-                                    .getPeopleSearch(
-                                  queryParameters: {
-                                    "query": widget.keyWord,
-                                    "connectionDegree":
-                                        state.currentPeopleDegreeFilter,
-                                  },
-                                );
-                              },
+                            child: StandardEmptyListMessage(
+                              message: widget.keyWord.isNotEmpty
+                                  ? 'No people found based on ${widget.keyWord}'
+                                  : 'Please enter search word',
                             ),
                           )
-                        : state.people == null || state.people!.isEmpty
-                            ? SliverToBoxAdapter(
-                                child: StandardEmptyListMessage(
-                                  message:
-                                      'No people found based on ${widget.keyWord}',
-                                ),
-                              )
-                            : SliverList(
-                                delegate: SliverChildBuilderDelegate(
-                                  (context, index) {
-                                    if (index == state.people!.length) {
-                                      // Loading indicator at bottom when loading more
-                                      return Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            vertical: 16.h),
-                                        child: Center(
-                                          child: CircularProgressIndicator(
-                                            color: isDarkMode
-                                                ? AppColors.darkBlue
-                                                : AppColors.lightBlue,
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                    return PeopleSearchCard(
-                                      data: state.people!.elementAt(index),
-                                      isFirstConnection: state.people!
-                                              .elementAt(index)
-                                              .connectionDegree ==
-                                          '1st',
-                                    );
-                                  },
-                                  childCount: state.people!.length +
-                                      (state.isLoadingMore ? 1 : 0),
-                                ),
-                              ),
+                        : SliverList(
+                            delegate: SliverChildBuilderDelegate(
+                              (context, index) {
+                                if (index == state.people!.length) {
+                                  // Loading indicator at bottom when loading more
+                                  return Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(vertical: 16.h),
+                                    child: Center(
+                                      child: CircularProgressIndicator(
+                                        color: isDarkMode
+                                            ? AppColors.darkBlue
+                                            : AppColors.lightBlue,
+                                      ),
+                                    ),
+                                  );
+                                }
+                                return PeopleSearchCard(
+                                  data: state.people!.elementAt(index),
+                                  isFirstConnection: state.people!
+                                          .elementAt(index)
+                                          .connectionDegree ==
+                                      '1st',
+                                );
+                              },
+                              childCount: state.people!.length +
+                                  (state.isLoadingMore ? 1 : 0),
+                            ),
+                          ),
               ],
             ),
           ),
