@@ -31,4 +31,5 @@ class ExternalEndPoints {
   static const addEducation = 'api/v1/user/add-education';
   static const connect = 'api/v1/user/connect/:user_id';
   static const peopleYouMayKnow = 'api/v1/user/people-you-may-know';
+  static const peopleSearch = 'api/v1/search/users';
 }

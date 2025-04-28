@@ -40,7 +40,7 @@ class ConnectionsCardLoadingSkeleton extends ConsumerWidget {
                   CircleAvatar(
                     radius: 30.r,
                     foregroundImage: const AssetImage(
-                        'assets/images/default-profile-picture.jpg'),
+                        'assets/images/default-profile-picture.png'),
                   ),
                   // Text content
                   const Column(

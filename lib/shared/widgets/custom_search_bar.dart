@@ -1,9 +1,8 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:link_up/features/search/viewModel/people_tab_view_model.dart';
 import 'package:link_up/features/search/viewModel/search_vm.dart';
 import 'package:link_up/features/search/viewModel/suggestions_vm.dart';
 
@@ -19,7 +18,6 @@ class CustomSearchBar extends ConsumerStatefulWidget {
 }
 
 class _CustomSearchBarState extends ConsumerState<CustomSearchBar> {
-
   @override
   Widget build(BuildContext context) {
     final searchController = ref.watch(searchProvider).searchController;
@@ -30,17 +28,22 @@ class _CustomSearchBarState extends ConsumerState<CustomSearchBar> {
         ref.read(suggestionsProvider.notifier).setValue(value);
         ref.read(suggestionsProvider.notifier).getSuggestions(value).then((_) {
           setState(() {
-          searchController.text += ' ';
-          searchController.text = suggestions['value'];
-        });
+            searchController.text += ' ';
+            searchController.text = suggestions['value'];
+          });
         });
       },
       onSubmitted: (value) {
         ref.read(suggestionsProvider.notifier).clearSuggestions();
         ref.read(searchProvider.notifier).setSearchText(value);
-        ref.read(searchProvider.notifier).search();
+        ref
+            .read(peopleTabViewModelProvider.notifier)
+            .getPeopleSearch(queryParameters: {
+          "query": value,
+          "connectionDegree": "all",
+        });
         if (!widget.inSearch) {
-          context.push('/search');
+          context.push('/search', extra: searchController.text);
         } else {
           context.pop();
         }
@@ -87,7 +90,7 @@ class _CustomSearchBarState extends ConsumerState<CustomSearchBar> {
             ref
                 .read(searchProvider.notifier)
                 .setSearchController(SearchController());
-            
+
             context.pop();
           },
           icon: const Icon(Icons.arrow_back)),

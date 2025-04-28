@@ -67,7 +67,9 @@ class BaseService {
     }
   }
 
-  Future<Response> patch(String endpoint, {required Map<String, dynamic> body,Map<String,dynamic>? routeParameters}) async {
+  Future<Response> patch(String endpoint,
+      {required Map<String, dynamic> body,
+      Map<String, dynamic>? routeParameters}) async {
     try {
       final token = await getToken();
       String finalEndpoint = endpoint;
@@ -118,8 +120,18 @@ class BaseService {
       Uri uri = Uri.parse('${ExternalEndPoints.baseUrl}$finalEndpoint');
 
       if (queryParameters != null) {
+        // Convert all query parameter values to strings
+        final Map<String, String> stringifiedParams = {};
+        queryParameters.forEach((key, value) {
+          // Skip null values
+          if (value != null) {
+            stringifiedParams[key] = value.toString();
+          }
+        });
+
+        // Use the map with string values
         uri = uri.replace(
-          queryParameters: queryParameters,
+          queryParameters: stringifiedParams,
         );
       }
 
@@ -146,7 +158,8 @@ class BaseService {
   }
 
   Future<Response> delete(
-      String endpoint, Map<String, dynamic>? routeParameters,{Map<String, dynamic>? body}) async {
+      String endpoint, Map<String, dynamic>? routeParameters,
+      {Map<String, dynamic>? body}) async {
     try {
       final token = await getToken();
       String finalEndpoint = endpoint;

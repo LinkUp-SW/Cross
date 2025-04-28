@@ -9,7 +9,6 @@ import 'package:link_up/features/logIn/view/forgot_pasword_view.dart';
 import 'package:link_up/features/logIn/view/login_view.dart';
 import 'package:link_up/features/profile/view/view.dart';
 import 'package:link_up/features/search/view/search_page.dart';
-import 'package:link_up/features/settings/view/privacy_settings.dart';
 import 'package:link_up/features/settings/view/settings.dart';
 import 'package:link_up/features/signUp/view/userInfo/names_view.dart';
 import 'package:link_up/features/signUp/view/userInfo/past_job_details.dart';
@@ -39,8 +38,7 @@ import 'package:link_up/features/profile/view/add_new_education.dart';
 import 'package:link_up/shared/widgets/main_drawer.dart';
 import 'package:link_up/features/jobs/view/view.dart';
 import 'package:link_up/features/profile/view/search_school_page.dart';
-import 'package:link_up/features/profile/view/search_organization.dart'; 
-
+import 'package:link_up/features/profile/view/search_organization.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
@@ -109,26 +107,24 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           ),
         ),
         //Profile Page Routes
-          GoRoute(
+        GoRoute(
             path: "/search_school",
             pageBuilder: (context, state) {
               final initialQuery = state.extra as String?;
               return MaterialPage(
-                  fullscreenDialog: true,
-                  child: SearchSchoolPage(initialQuery: initialQuery),
+                fullscreenDialog: true,
+                child: SearchSchoolPage(initialQuery: initialQuery),
               );
-            }
-          ),
-           GoRoute(
-             path: "/search_organization",
-             pageBuilder: (context, state) {
-               final initialQuery = state.extra as String?;
-               return MaterialPage(
-                   fullscreenDialog: true, 
-                   child: SearchOrganizationPage(initialQuery: initialQuery),
-               );
-             }
-           ),
+            }),
+        GoRoute(
+            path: "/search_organization",
+            pageBuilder: (context, state) {
+              final initialQuery = state.extra as String?;
+              return MaterialPage(
+                fullscreenDialog: true,
+                child: SearchOrganizationPage(initialQuery: initialQuery),
+              );
+            }),
 
         GoRoute(
           path: "/edit_intro",
@@ -150,7 +146,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           builder: (context, state, navigationShell) => Scaffold(
             key: scaffoldKey,
             drawer: const MainDrawer(),
-            body: navigationShell, 
+            body: navigationShell,
             bottomNavigationBar: CustomBottomNavigationBar(
               navigationShell: navigationShell,
             ),
@@ -273,14 +269,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         GoRoute(
             path: "/messages", builder: (context, state) => ChatListScreen()),
         GoRoute(path: "/chatpage", builder: (context, state) => Container()),
-        GoRoute(path: "/search", builder: (context, state) => SearchPage()),
         GoRoute(
-            path: "/settings",
-            builder: (context, state) => SettingsPage(),
-            routes: [
-              GoRoute(
-                  path: "/privacy",
-                  builder: (context, state) => const PrivacySettings()),
-            ])
+          path: '/search',
+          builder: (context, state) => SearchPage(
+            searchKeyWord: state.extra as String?,
+          ),
+        ),
+        GoRoute(path: "/settings", builder: (context, state) => SettingsPage()),
       ]);
 });
