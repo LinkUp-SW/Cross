@@ -43,7 +43,7 @@ class _CustomSearchBarState extends ConsumerState<CustomSearchBar> {
           "connectionDegree": "all",
         });
         if (!widget.inSearch) {
-          context.push('/search');
+          context.push('/search', extra: searchController.text);
         } else {
           context.pop();
         }

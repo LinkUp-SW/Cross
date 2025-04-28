@@ -10,7 +10,7 @@ class PeopleTabViewModel extends StateNotifier<PeopleTabState> {
   PeopleTabViewModel(this._peopleTabServices) : super(PeopleTabState.initial());
 
   Future<void> getPeopleSearch({
-    Map<String, dynamic>? queryParameters,
+    required Map<String, dynamic> queryParameters,
   }) async {
     state = state.copyWith(isLoading: true, isError: false);
     try {
@@ -19,13 +19,11 @@ class PeopleTabViewModel extends StateNotifier<PeopleTabState> {
       final Set<PeopleCardModel> people = (response['people'] as List)
           .map((person) => PeopleCardModel.fromJson(person))
           .toSet();
-
       final peopleCount = response['pagination']['total'];
       final totalPages = response['pagination']['pages'];
       final currentPage = response['pagination']['page'];
       final currentPeopleDegreeFilter =
-          queryParameters?['connectionDegree'] ?? 'all';
-
+          queryParameters['connectionDegree'] ?? 'all';
       state = state.copyWith(
         isLoading: false,
         isError: false,
@@ -35,16 +33,17 @@ class PeopleTabViewModel extends StateNotifier<PeopleTabState> {
         totalPages: totalPages,
         currentPage: currentPage,
         currentPeopleDegreeFilter: currentPeopleDegreeFilter,
-        searchKeyWord: queryParameters?['query'],
       );
     } catch (error) {
+      log('Error getting people search list: $error');
       state = state.copyWith(isLoading: false, isError: true);
     }
   }
 
-  Future<void> loadMorePeople() async {
+  Future<void> loadMorePeople({
+    required Map<String, dynamic> queryParameters,
+  }) async {
     final currentState = state;
-
     // Don't load more if already loading or at the end of pages
     if (currentState.isLoadingMore ||
         currentState.currentPage! >= currentState.totalPages!) {
@@ -53,25 +52,23 @@ class PeopleTabViewModel extends StateNotifier<PeopleTabState> {
 
     // Set loading more state
     state = currentState.copyWith(isLoadingMore: true);
-
     try {
       final response = await _peopleTabServices.getPeopleSearch(
-        queryParameters: {
-          'query': currentState.searchKeyWord,
-          'connectionDegree': currentState.currentPeopleDegreeFilter,
-          'page': currentState.currentPage! + 1,
-        },
+        queryParameters: queryParameters,
       );
-
       final Set<PeopleCardModel> newPeople = (response['people'] as List)
           .map((person) => PeopleCardModel.fromJson(person))
           .toSet();
+      final peopleCount = response['pagination']['total'];
+      final totalPages = response['pagination']['pages'];
+      final currentPage = response['pagination']['page'];
 
       if (newPeople.isEmpty) {
         state = currentState.copyWith(
           isLoadingMore: false,
-          totalPages: response['pagination']['pages'],
-          currentPage: response['pagination']['page'],
+          totalPages: totalPages,
+          currentPage: currentPage,
+          peopleCount: peopleCount,
         );
         return;
       }
@@ -91,9 +88,9 @@ class PeopleTabViewModel extends StateNotifier<PeopleTabState> {
         isLoadingMore: false,
         isError: false,
         people: allPeople,
-        currentPage: currentState.currentPage! + 1,
-        totalPages: response['pagination']['pages'],
-        peopleCount: response['pagination']['total'],
+        currentPage: currentPage,
+        totalPages: totalPages,
+        peopleCount: peopleCount,
       );
     } catch (e) {
       // Handle errors

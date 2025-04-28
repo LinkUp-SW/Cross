@@ -13,7 +13,6 @@ class SuggestionsProvider extends StateNotifier<Map<String, dynamic>> {
   }
 
   Future<void> getSuggestions(String value) {
-    log(value);
     final BaseService service = BaseService();
     return service.get('api/v1/search/suggestions?query=:query',
         queryParameters: {'query': value}).then((value) {
@@ -21,11 +20,9 @@ class SuggestionsProvider extends StateNotifier<Map<String, dynamic>> {
         final body = jsonDecode(value.body);
         final temp = body['suggestions'] as List<dynamic>;
         if (temp.isEmpty) {
-          log('empty');
           state['suggestions'].clear();
           return;
         }
-        log(temp.toString());
         state['suggestions'].clear();
         state['suggestions'].addAll(temp
             .map((e) => SuggestionsModel.fromJson(e))

@@ -3,7 +3,6 @@ import 'package:link_up/features/search/model/people_search_card_model.dart';
 class PeopleTabState {
   final Set<PeopleCardModel>? people;
   final int? peopleCount;
-  final String? searchKeyWord;
   final int? totalPages;
   final int? currentPage;
   final int? limit;
@@ -15,7 +14,6 @@ class PeopleTabState {
   const PeopleTabState({
     required this.people,
     required this.peopleCount,
-    required this.searchKeyWord,
     this.totalPages = 1,
     this.currentPage = 1,
     this.limit = 10,
@@ -29,7 +27,6 @@ class PeopleTabState {
     return PeopleTabState(
       people: null,
       peopleCount: null,
-      searchKeyWord: null,
       totalPages: 1,
       currentPage: 1,
       limit: 10,
@@ -55,7 +52,6 @@ class PeopleTabState {
     return PeopleTabState(
       people: people ?? this.people,
       peopleCount: peopleCount ?? this.peopleCount,
-      searchKeyWord: searchKeyWord ?? this.searchKeyWord,
       totalPages: totalPages ?? this.totalPages,
       currentPage: currentPage ?? this.currentPage,
       limit: limit ?? this.limit,

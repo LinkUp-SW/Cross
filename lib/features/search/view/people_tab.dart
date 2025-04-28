@@ -8,6 +8,7 @@ import 'package:link_up/features/search/viewModel/people_tab_view_model.dart';
 import 'package:link_up/features/search/widgets/people_search_card.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
+import 'package:link_up/shared/utils/my_network_utils.dart';
 
 class PeopleTab extends ConsumerStatefulWidget {
   final String keyWord;
@@ -24,25 +25,14 @@ class _PeopleTabState extends ConsumerState<PeopleTab> {
   @override
   void initState() {
     super.initState();
-
-    Future.microtask(
-      () {
-        ref.read(peopleTabViewModelProvider.notifier).getPeopleSearch(
-          queryParameters: {
-            "query": widget.keyWord,
-            "connectionDegree": "all",
-          },
-        );
-      },
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final state = ref.watch(peopleTabViewModelProvider);
+
     return Column(
-      spacing: 20.h,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
@@ -81,7 +71,7 @@ class _PeopleTabState extends ConsumerState<PeopleTab> {
                           .read(peopleTabViewModelProvider.notifier)
                           .getPeopleSearch(
                         queryParameters: {
-                          'query': state.searchKeyWord,
+                          'query': widget.keyWord,
                           'connectionDegree': 'all',
                         },
                       );
@@ -111,7 +101,7 @@ class _PeopleTabState extends ConsumerState<PeopleTab> {
                           .read(peopleTabViewModelProvider.notifier)
                           .getPeopleSearch(
                         queryParameters: {
-                          'query': state.searchKeyWord,
+                          'query': widget.keyWord,
                           'connectionDegree': '1st',
                         },
                       );
@@ -141,7 +131,7 @@ class _PeopleTabState extends ConsumerState<PeopleTab> {
                           .read(peopleTabViewModelProvider.notifier)
                           .getPeopleSearch(
                         queryParameters: {
-                          'query': state.searchKeyWord,
+                          'query': widget.keyWord,
                           'connectionDegree': '2nd',
                         },
                       );
@@ -171,7 +161,7 @@ class _PeopleTabState extends ConsumerState<PeopleTab> {
                           .read(peopleTabViewModelProvider.notifier)
                           .getPeopleSearch(
                         queryParameters: {
-                          'query': state.searchKeyWord,
+                          'query': widget.keyWord,
                           'connectionDegree': '3rd+',
                         },
                       );
@@ -188,67 +178,100 @@ class _PeopleTabState extends ConsumerState<PeopleTab> {
               // Check if user has scrolled to near the end
               if (notification is ScrollEndNotification &&
                   notification.metrics.pixels >=
-                      notification.metrics.maxScrollExtent - 200) {
-                ref.read(peopleTabViewModelProvider.notifier).loadMorePeople();
+                      notification.metrics.maxScrollExtent - 200 &&
+                  !state.isLoadingMore &&
+                  state.currentPage != null) {
+                ref
+                    .read(peopleTabViewModelProvider.notifier)
+                    .loadMorePeople(queryParameters: {
+                  "query": widget.keyWord,
+                  "connectionDegree": state.currentPeopleDegreeFilter,
+                  "page": '${state.currentPage! + 1}'
+                });
               }
               return false;
             },
-            child: state.isLoading && state.people == null
-                ? ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: 3,
-                    itemBuilder: (context, index) =>
-                        ReceivedInvitationsCardLoadingSkeleton(),
-                  )
-                : state.isError
-                    ? RetryErrorMessage(
-                        errorMessage:
-                            "Failed to load people search based on ${state.searchKeyWord} :(",
-                        buttonFunctionality: () async {
-                          await ref
-                              .read(peopleTabViewModelProvider.notifier)
-                              .getPeopleSearch(
-                            queryParameters: {
-                              "query": widget.keyWord,
-                              "connectionDegree":
-                                  state.currentPeopleDegreeFilter,
-                            },
-                          );
-                        },
+            child: CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding:
+                        EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
+                    child: Text(
+                      'About ${parseIntegerToCommaSeparatedString(state.peopleCount ?? 0)} results',
+                      style: TextStyles.font15_500Weight.copyWith(
+                          color: isDarkMode
+                              ? AppColors.darkTextColor
+                              : AppColors.lightSecondaryText),
+                    ),
+                  ),
+                ),
+                state.isLoading && state.people == null
+                    ? SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) =>
+                              ReceivedInvitationsCardLoadingSkeleton(),
+                          childCount: 3,
+                        ),
                       )
-                    : state.people == null || state.people!.isEmpty
-                        ? StandardEmptyListMessage(
-                            message:
-                                'No people found based on ${state.searchKeyWord}',
-                          )
-                        : ListView.builder(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            itemCount: state.people!.length +
-                                (state.isLoadingMore ? 1 : 0),
-                            itemBuilder: (context, index) {
-                              if (index == state.people!.length) {
-                                // Show loading indicator at the bottom when loading more
-                                return Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 16.h),
-                                  child: Center(
-                                    child: CircularProgressIndicator(
-                                      color: isDarkMode
-                                          ? AppColors.darkBlue
-                                          : AppColors.lightBlue,
-                                    ),
-                                  ),
+                    : state.isError
+                        ? SliverToBoxAdapter(
+                            child: RetryErrorMessage(
+                              errorMessage:
+                                  "Failed to load people search based on ${widget.keyWord} :(",
+                              buttonFunctionality: () async {
+                                await ref
+                                    .read(peopleTabViewModelProvider.notifier)
+                                    .getPeopleSearch(
+                                  queryParameters: {
+                                    "query": widget.keyWord,
+                                    "connectionDegree":
+                                        state.currentPeopleDegreeFilter,
+                                  },
                                 );
-                              }
-                              return PeopleSearchCard(
-                                data: state.people!.elementAt(index),
-                                isFirstConnection: state.people!
-                                        .elementAt(index)
-                                        .connectionDegree ==
-                                    '1st',
-                                buttonFunctionality: () {},
-                              );
-                            },
-                          ),
+                              },
+                            ),
+                          )
+                        : state.people == null || state.people!.isEmpty
+                            ? SliverToBoxAdapter(
+                                child: StandardEmptyListMessage(
+                                  message:
+                                      'No people found based on ${widget.keyWord}',
+                                ),
+                              )
+                            : SliverList(
+                                delegate: SliverChildBuilderDelegate(
+                                  (context, index) {
+                                    if (index == state.people!.length) {
+                                      // Loading indicator at bottom when loading more
+                                      return Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: 16.h),
+                                        child: Center(
+                                          child: CircularProgressIndicator(
+                                            color: isDarkMode
+                                                ? AppColors.darkBlue
+                                                : AppColors.lightBlue,
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                    return PeopleSearchCard(
+                                      data: state.people!.elementAt(index),
+                                      isFirstConnection: state.people!
+                                              .elementAt(index)
+                                              .connectionDegree ==
+                                          '1st',
+                                      buttonFunctionality: () {},
+                                    );
+                                  },
+                                  childCount: state.people!.length +
+                                      (state.isLoadingMore ? 1 : 0),
+                                ),
+                              ),
+              ],
+            ),
           ),
         ),
       ],
