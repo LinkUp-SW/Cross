@@ -263,7 +263,6 @@ class _PeopleTabState extends ConsumerState<PeopleTab> {
                                               .elementAt(index)
                                               .connectionDegree ==
                                           '1st',
-                                      buttonFunctionality: () {},
                                     );
                                   },
                                   childCount: state.people!.length +
