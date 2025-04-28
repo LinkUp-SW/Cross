@@ -65,7 +65,7 @@ class _PeopleSearchCardState extends ConsumerState<PeopleSearchCard> {
                   ),
                 ),
                 child: Padding(
-                  padding: EdgeInsets.only(top: 5.h),
+                  padding: EdgeInsets.symmetric(vertical: 8.h),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -73,6 +73,7 @@ class _PeopleSearchCardState extends ConsumerState<PeopleSearchCard> {
                       Expanded(
                         child: Column(
                           spacing: 4.h,
+                          mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
@@ -134,16 +135,18 @@ class _PeopleSearchCardState extends ConsumerState<PeopleSearchCard> {
                                                     'assets/images/default-profile-picture.png')
                                                 as ImageProvider,
                                       ),
-                                      Text(
-                                        "${widget.data.firstMutualConnectionName} and ${widget.data.mutualConnectionsCount - 1} mutual connections",
-                                        style: TextStyles.font13_500Weight
-                                            .copyWith(
-                                          color: isDarkMode
-                                              ? AppColors.darkSecondaryText
-                                              : AppColors.lightTextColor,
+                                      Expanded(
+                                        child: Text(
+                                          "${widget.data.firstMutualConnectionName} and ${widget.data.mutualConnectionsCount - 1} mutual connections",
+                                          style: TextStyles.font13_500Weight
+                                              .copyWith(
+                                            color: isDarkMode
+                                                ? AppColors.darkSecondaryText
+                                                : AppColors.lightTextColor,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
                                         ),
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 2,
                                       ),
                                     ],
                                   )
@@ -155,7 +158,7 @@ class _PeopleSearchCardState extends ConsumerState<PeopleSearchCard> {
                                           : AppColors.lightTextColor,
                                     ),
                                     overflow: TextOverflow.ellipsis,
-                                    maxLines: 2,
+                                    maxLines: 1,
                                   ),
                           ],
                         ),
