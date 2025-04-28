@@ -56,7 +56,7 @@ class _SearchPageState extends ConsumerState<SearchPage>
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            context.pop();
+            context.go('/');
           },
         ),
         actions: [
