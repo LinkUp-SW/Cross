@@ -146,7 +146,7 @@ Future<void> reportComment(String commentId) async {
   }
 }
 
-Future<int> setReaction(String postId, Reaction reaction, String type,{String? commentId}) async {
+Future<Map<String,dynamic>> setReaction(String postId, Reaction reaction, String type,{String? commentId}) async {
   final BaseService service = BaseService();
   final response =
       await service.post('api/v1/post/reaction/:postId', routeParameters: {
@@ -159,15 +159,14 @@ Future<int> setReaction(String postId, Reaction reaction, String type,{String? c
 
   log('Response: ${response.statusCode} - ${response.body}');
   if (response.statusCode == 200) {
-    log('Reaction set successfully: ${response.body}');
-    return jsonDecode(response.body)['totalCount'] as int;
+    return jsonDecode(response.body);
   } else {
     log('Failed to set reaction');
-    return -1;
+    return {};
   }
 }
 
-Future<int> removeReaction(String postId, String type,{String? commentId}) async {
+Future<Map<String,dynamic>> removeReaction(String postId, String type,{String? commentId}) async {
   final BaseService service = BaseService();
   final response = await service.delete('api/v1/post/reaction/:postId', {
     "postId": postId,
@@ -178,10 +177,9 @@ Future<int> removeReaction(String postId, String type,{String? commentId}) async
 
   log('Response: ${response.statusCode} - ${response.body}');
   if (response.statusCode == 200) {
-    log('Reaction removed successfully: ${response.body}');
-    return jsonDecode(response.body)['totalCount'] as int;
+    return jsonDecode(response.body);
   } else {
     log('Failed to remove reaction');
-    return -1;
+    return {};
   }
 }

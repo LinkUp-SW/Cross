@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -102,17 +103,20 @@ class _PostsState extends ConsumerState<Posts> {
                         //TODO: Need to change to Like or top reaction depending on the impelementation of the back team
                         Wrap(
                           children: [
-                            for (var i = 0; i < 3; i++) ...[
+                            for (var i = 0;
+                                i < widget.post.topReactions.length;
+                                i++) ...[
                               Align(
                                 widthFactor: 0.7,
-                                child:
-                                    Reaction.getIcon(Reaction.values[i], 15.r),
+                                child: Reaction.getIcon(
+                                    widget.post.topReactions[i], 15.r),
                               )
                             ],
                           ],
                         ),
                         SizedBox(width: 5.w),
-                        Text(widget.post.reactions.toString()),
+                        if (widget.post.reactions > 0)
+                          Text(widget.post.reactions.toString()),
                       ],
                     ),
                   ),
@@ -167,8 +171,11 @@ class _PostsState extends ConsumerState<Posts> {
                       if (reaction == Reaction.none) {
                         widget.post.reaction = Reaction.none;
                         removeReaction(widget.post.id, "Post").then((value) {
-                          if (value != -1) {
-                            widget.post.reactions = value;
+                          if (value.isNotEmpty) {
+                            widget.post.reactions = value['totalCount'];
+                            widget.post.topReactions = value['topReactions']
+                                .map((e) => Reaction.getReaction(e['reaction']))
+                                .toList();
                           } else {
                             widget.post.reaction = oldReaction;
                           }
@@ -178,8 +185,12 @@ class _PostsState extends ConsumerState<Posts> {
                         widget.post.reaction = reaction;
                         setReaction(widget.post.id, reaction, "Post")
                             .then((value) {
-                          if (value != -1) {
-                            widget.post.reactions = value;
+                          if (value.isNotEmpty) {
+                            log(value.toString());
+                            widget.post.reactions = value['totalCount'];
+                            widget.post.topReactions = value['topReactions']
+                                .map((e) => Reaction.getReaction(e['reaction']))
+                                .toList();
                           } else {
                             widget.post.reaction = oldReaction;
                           }

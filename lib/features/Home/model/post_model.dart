@@ -17,6 +17,7 @@ class PostModel {
 
   Reaction reaction;
   List<String> taggedUsers = [];
+  List<dynamic> topReactions = [];
 
   bool saved;
 
@@ -47,6 +48,8 @@ class PostModel {
         isAd = json['isAd'] ?? false,
         isCompany = json['isCompany'] ?? false,
         saved = json['saved'] ?? false,
+        topReactions = List<Reaction>.from(
+            json['topReactions']?.map((e) => Reaction.getReaction(e)) ?? []),
         taggedUsers = List<String>.from(json['tagged_users'] ?? []);
 
   Map<String, dynamic> toJson() => {
