@@ -65,6 +65,7 @@ class _PostsState extends ConsumerState<Posts> {
             ),
           PostHeader(post: widget.post,
               inFeed: widget.inFeed,
+              inMessage: widget.inMessage,
               showTop: widget.showTop),
           Align(
             alignment: Alignment.centerLeft,
@@ -177,7 +178,7 @@ class _PostsState extends ConsumerState<Posts> {
                           if (value.isNotEmpty) {
                             widget.post.reactions = value['totalCount'];
                             widget.post.topReactions = value['topReactions']
-                                .map((e) => Reaction.getReaction(e['reaction']))
+                                .map((e) => Reaction.getReaction(e))
                                 .toList();
                           } else {
                             widget.post.reaction = oldReaction;
@@ -192,7 +193,7 @@ class _PostsState extends ConsumerState<Posts> {
                             log(value.toString());
                             widget.post.reactions = value['totalCount'];
                             widget.post.topReactions = value['topReactions']
-                                .map((e) => Reaction.getReaction(e['reaction']))
+                                .map((e) => Reaction.getReaction(e))
                                 .toList();
                           } else {
                             widget.post.reaction = oldReaction;

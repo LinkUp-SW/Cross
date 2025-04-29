@@ -15,11 +15,13 @@ class PostHeader extends ConsumerStatefulWidget {
   const PostHeader(
       {super.key,
       required this.post,
+      this.inMessage = false,
       this.inFeed = false,
       this.showTop = false});
   final PostModel post;
   final bool inFeed;
   final bool showTop;
+  final bool inMessage;
 
   @override
   ConsumerState<PostHeader> createState() => _PostHeaderState();
@@ -123,8 +125,9 @@ class _PostHeaderState extends ConsumerState<PostHeader> {
               ),
             ),
           ),
+          if(!widget.inMessage)
           Flexible(
-            flex: 1,
+            flex: 0,
             child: Wrap(
               children: [
                 widget.post.header.userId == InternalEndPoints.userId ||
@@ -192,8 +195,15 @@ class _PostHeaderState extends ConsumerState<PostHeader> {
                         children: [
                           IconButton(
                             onPressed: () {
+                              widget.post.header.userId ==
+                                      InternalEndPoints.userId
+                                  ? aboutPostBottomSheet(context, 
+                                      post: widget.post)
+                                  : 
                               myPostBottomSheet(context, ref,
                                   post: widget.post);
+
+                              
                             },
                             icon: const Icon(Icons.more_horiz),
                           ),
