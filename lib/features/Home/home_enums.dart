@@ -6,11 +6,11 @@ enum Visibilities { anyone, connectionsOnly, noOne;
   
     static Visibilities getVisibility(String visibility) {
       switch (visibility) {
-        case 'anyone':
+        case 'anyone' || 'Anyone':
           return Visibilities.anyone;
-        case 'connectionsOnly':
+        case 'connectionsOnly' || 'Connections only':
           return Visibilities.connectionsOnly;
-        case 'noOne':
+        case 'noOne' || 'No one':
           return Visibilities.noOne;
         default:
           return Visibilities.anyone;
