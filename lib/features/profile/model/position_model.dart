@@ -47,24 +47,36 @@ class PositionModel {
       if (profileHeadline != null && profileHeadline!.isNotEmpty) 'profile_headline': profileHeadline,
       if (location != null && location!.isNotEmpty) 'location': location,
       if (locationType != null && locationType!.isNotEmpty) 'location_type': locationType,
-      if (skills != null && skills!.isNotEmpty) 'skills': skills, // Add skills
-      if (media != null && media!.isNotEmpty) 'media': media, // Add media
+      if (skills != null && skills!.isNotEmpty) 'skills': skills, 
+      if (media != null && media!.isNotEmpty) 'media': media, 
     };
     log('PositionModel toJson: $data');
     return data;
   }
 
   factory PositionModel.fromJson(Map<String, dynamic> json) {
-    String? orgId;
     String? orgName;
-    if (json['organization'] is Map) {
-        orgId = json['organization']['_id'] as String? ?? json['organization']['id'] as String?;
-        orgName = json['organization']['name'] as String?;
-    } else {
-        orgId = json['organization'] as String?;
-    }
+    Map<String, dynamic>? organizationData = json['organization'] is Map ? json['organization'] as Map<String, dynamic>? : null;
+    String? orgId = organizationData?['_id'] as String? ?? organizationData?['id'] as String?;
+    String? orgLogo = organizationData?['logo'] as String?;
+
     orgName ??= json['company_name'] as String? ?? json['organization_name'] as String?;
 
+if (organizationData != null && organizationData['name'] != null) {
+      orgName = organizationData['name'] as String;
+     } else {
+        orgName = json['company_name'] as String? ?? json['organization_name'] as String?;
+     }
+
+    List<String>? parsedSkills = (json['skills'] as List?)?.map((item) => item.toString()).toList();
+
+    List<Map<String, dynamic>>? parsedMedia = (json['media'] as List?)?.map((item) {
+      if (item is Map<String, dynamic>) {
+        item['_id'] = item['_id']?.toString();
+        return item;
+      }
+      return <String, dynamic>{};
+    }).whereType<Map<String, dynamic>>().toList();
 
     return PositionModel(
       id: json['_id'] as String? ?? json['id'] as String?,
@@ -79,6 +91,8 @@ class PositionModel {
       profileHeadline: json['profile_headline'] as String?,
       location: json['location'] as String?,
       locationType: json['location_type'] as String?,
+      skills: parsedSkills, 
+      media: parsedMedia,
     );
   }
 }

@@ -60,6 +60,32 @@ class ProfileService extends BaseService {
        rethrow;
      }
    }
+  Future<List<PositionModel>> getUserExperience(String userId) async {
+     const String endpointTemplate = ExternalEndPoints.getUserExperience; //'api/v1/user/profile/experience/:user_id';
+     log('ProfileService: Fetching experience for user ID: $userId');
+     try {
+       final response = await super.get(
+         endpointTemplate,
+         routeParameters: {'user_id': userId},
+       );
+       log('ProfileService: getUserExperience API Response Status Code: ${response.statusCode}');
+       if (response.statusCode == 200) {
+         final Map<String, dynamic> jsonData = jsonDecode(response.body);
+         final List<dynamic> experienceJsonList = jsonData['work_experience'] as List? ?? [];
+         final List<PositionModel> experiences = experienceJsonList
+             .map((expJson) => expJson is Map<String, dynamic> ? PositionModel.fromJson(expJson) : null)
+             .whereType<PositionModel>()
+             .toList();
+         return experiences;
+       } else {
+         log('ProfileService: getUserExperience API Error: Status Code ${response.statusCode}, Body: ${response.body}');
+         throw Exception('Failed to load experience (Status code: ${response.statusCode})');
+       }
+     } catch (e) {
+       log('ProfileService: Error in getUserExperience: $e');
+       rethrow;
+     }
+   } 
   Future<List<EducationModel>> getUserEducation(String userId) async {
    const String endpointTemplate = ExternalEndPoints.getUserEducation; 
    log('ProfileService: Fetching education for user ID: $userId');

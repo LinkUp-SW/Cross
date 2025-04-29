@@ -30,7 +30,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   Widget build(BuildContext context) {
     final profileState = ref.watch(profileViewModelProvider);
     final educationState = ref.watch(educationDataProvider); 
-
+    final experienceState = ref.watch(experienceDataProvider);
     return Scaffold(
       appBar: const ProfileAppBar(),
       body: RefreshIndicator(
@@ -80,14 +80,14 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                   ),
                    SectionWidget(
                     title: "Experience",
-                     child: userProfile.experience.isEmpty
+                    child: experienceState == null || experienceState.isEmpty
                       ? const Text("No experience added yet.")
                       : Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: userProfile.experience.map((exp) {
+                          children: experienceState.map((exp) {
                             return ListTile(
                                leading: Icon(Icons.work, size: 20.sp, color: Colors.green),
-                               title: Text(exp, style: TextStyle(fontSize: 14.sp)),
+                               title: Text(exp.title, style: TextStyle(fontSize: 14.sp)),
                             );
                           }).toList(),
                         ),
