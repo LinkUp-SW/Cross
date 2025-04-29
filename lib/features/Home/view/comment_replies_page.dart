@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/Home/model/comment_model.dart';
 import 'package:link_up/features/Home/viewModel/comment_vm.dart';
+import 'package:link_up/features/Home/viewModel/post_vm.dart';
 import 'package:link_up/features/Home/widgets/comment_bubble.dart';
 import 'package:link_up/features/Home/widgets/comments_text_field.dart';
 import 'package:link_up/shared/themes/colors.dart';
@@ -24,6 +25,7 @@ class _CommentRepliesPageState extends ConsumerState<CommentRepliesPage> {
   @override
   Widget build(BuildContext context) {
     final CommentModel comment = ref.watch(commentProvider);
+    final String postId = ref.watch(postProvider).id;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -50,9 +52,11 @@ class _CommentRepliesPageState extends ConsumerState<CommentRepliesPage> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'Replies on ${comment.header.name}\'s comment on this post',
+                    'Replies on ${comment.header.name}\'s comment',
                     style:
                         TextStyle(fontSize: 15.r, fontWeight: FontWeight.bold),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                 ),
               ),
@@ -66,6 +70,7 @@ class _CommentRepliesPageState extends ConsumerState<CommentRepliesPage> {
             child: Padding(
               padding: EdgeInsets.all(5.r),
               child: CommentBubble(
+                refresh: (){},
                 comment: comment,
                 allRelies: true,
               ),
@@ -74,6 +79,15 @@ class _CommentRepliesPageState extends ConsumerState<CommentRepliesPage> {
         ),
       ),
       bottomNavigationBar: CommentsTextField(
+        refresh: () {
+          //TODO: implement refresh logic
+          // ref.read(commentProvider.notifier).getCommentReplies(
+          //       postId: postId,
+          //       commentId: comment.id,
+          //     );
+        },
+        commentId: comment.id,
+        postId: postId,
         focusNode: _focusNode,
         showSuggestions: false,
         buttonName: 'Reply',

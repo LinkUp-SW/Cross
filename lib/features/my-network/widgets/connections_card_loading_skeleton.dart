@@ -4,8 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class ReceivedInvitationsLoadingSkeleton extends ConsumerWidget {
-  const ReceivedInvitationsLoadingSkeleton({
+class ConnectionsCardLoadingSkeleton extends ConsumerWidget {
+  const ConnectionsCardLoadingSkeleton({
     super.key,
   });
 
@@ -40,7 +40,7 @@ class ReceivedInvitationsLoadingSkeleton extends ConsumerWidget {
                   CircleAvatar(
                     radius: 30.r,
                     foregroundImage: const AssetImage(
-                        'assets/images/default-profile-picture.jpg'),
+                        'assets/images/default-profile-picture.png'),
                   ),
                   // Text content
                   const Column(
@@ -58,12 +58,6 @@ class ReceivedInvitationsLoadingSkeleton extends ConsumerWidget {
                           "Professional title of the person",
                         ),
                       ),
-                      // Mutual connections
-                      SizedBox(
-                        child: Text(
-                          "64 mutual connections",
-                        ),
-                      ),
                       // Date
                       SizedBox(
                         child: Text(
@@ -74,16 +68,16 @@ class ReceivedInvitationsLoadingSkeleton extends ConsumerWidget {
                   ),
                 ],
               ),
-              // Accept & ignore buttons
+              // Remove & Message buttons
               Row(
                 spacing: 8.w,
                 children: [
                   Icon(
-                    Icons.circle,
+                    Icons.remove,
                     size: 30.r,
                   ),
                   Icon(
-                    Icons.circle,
+                    Icons.send,
                     size: 30.r,
                   ),
                 ],

@@ -1,6 +1,8 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:link_up/features/Home/home_enums.dart';
-import 'package:link_up/features/Home/model/header_model.dart';
+import 'package:link_up/core/services/base_service.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
 import 'package:link_up/features/Home/model/reaction_tile_model.dart';
 
@@ -15,38 +17,55 @@ class PostNotifier extends StateNotifier<PostModel> {
     return state.id;
   }
 
-  void fetchPost(String id) {
-    Future.delayed(const Duration(seconds: 2), () {
-      state = PostModel.initial();
+  Future<void> getPost(String id) async {
+    log('getPost called with id: $id');
+    final BaseService service = BaseService();
+    return await service.get('api/v1/post/posts/:postId',
+        routeParameters: {"postId": id}).then((value) {
+      log(value.body);
+      final data = jsonDecode(value.body);
+      state = PostModel.fromJson(data['post']);
+    }).catchError((error) {
+      log('$error');
+      throw Exception(error);
+    }).timeout(const Duration(seconds: 5), onTimeout: () {
+      log('timeout');
+      throw Exception('Request timed out');
     });
   }
 
-  Future<Map<String, List<ReactionTileModel>>> fetchReactions() {
-    return Future.delayed(const Duration(seconds: 5), () {
-      return List.generate(100, (index) {
-        return ReactionTileModel(
-          header: HeaderModel(
-            userId: index.toString(),
-            profileImage:
-                'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
-            name: 'John Doe',
-            connectionDegree: 'johndoe',
-            about: 'About John Doe',
-            timeAgo: DateTime.now(),
-            visibilityPost: Visibilities.anyone,
-            visibilityComments: Visibilities.anyone,
-          ),
-          reaction: Reaction.values[index % 6],
-        );
-      });
+  Future<Map<String, List<ReactionTileModel>>> fetchReactions() async {
+    final BaseService service = BaseService();
+    return service.get('api/v1/post/reaction/:postId', routeParameters: {
+      "postId": state.id,
+    }, queryParameters: {
+      "cursor": '0',
+      "limit": '10',
+      "targetType": "Post",
+      "commentId": null,
+      "specificReaction": null,
     }).then((value) {
-      return {
-        'All': value,
-        for (var reaction in Reaction.values)
-          if (reaction != Reaction.none)
-            Reaction.getReactionString(reaction):
-                value.where((element) => element.reaction == reaction).toList()
-      };
+      final data = jsonDecode(value.body);
+      log(data.toString());
+      final reactions = data['reactions']['reactions'] as List<dynamic>;
+      Map<String, List<ReactionTileModel>> reactionMap = {};
+      for (var reaction in reactions) {
+        String reactionType = reaction['reaction'];
+        if (reactionMap.containsKey(reactionType)) {
+          reactionMap[reactionType]!.add(ReactionTileModel.fromJson(reaction));
+        } else {
+          reactionMap[reactionType] = [ReactionTileModel.fromJson(reaction)];
+        }
+      }
+      reactionMap['All'] =
+          reactions.map((e) => ReactionTileModel.fromJson(e)).toList();
+      return reactionMap;
+    }).catchError((error) {
+      log('$error');
+      throw Exception(error);
+    }).timeout(const Duration(seconds: 5), onTimeout: () {
+      log('timeout');
+      throw Exception('Request timed out');
     });
   }
 }

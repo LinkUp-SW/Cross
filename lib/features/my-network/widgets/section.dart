@@ -7,7 +7,7 @@ import 'package:link_up/shared/themes/text_styles.dart';
 
 class Section extends ConsumerWidget {
   final String title;
-  final List<PeopleCard> cards;
+  final Set<PeopleCard> cards;
 
   const Section({
     super.key,
@@ -18,28 +18,37 @@ class Section extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     // Create rows of cards (2 cards per row)
     List<Widget> cardRows = [];
 
     for (int i = 0; i < cards.length; i += 2) {
-      List<Widget> rowCards = [];
-
-      // First card
-      rowCards.add(Expanded(child: cards[i]));
-
-      // Second card
-      if (i + 1 < cards.length) {
-        rowCards.add(Expanded(child: cards[i + 1]));
+      // If this is the last card and it's an odd count
+      if (i + 1 == cards.length) {
+        // Add a centered single card row
+        cardRows.add(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(child: cards.elementAt(i)),
+              Expanded(child: SizedBox()),
+            ],
+          ),
+        );
+      } else {
+        // Regular row with two cards
+        cardRows.add(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(child: cards.elementAt(i)),
+              Expanded(child: cards.elementAt(i + 1)),
+            ],
+          ),
+        );
       }
-
-      // Add the row
-      cardRows.add(
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: rowCards,
-        ),
-      );
     }
     return Material(
       color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
@@ -69,17 +78,6 @@ class Section extends ConsumerWidget {
               ),
             ),
             ...cardRows,
-            InkWell(
-              onTap: () {},
-              child: Text(
-                "Show all",
-                style: TextStyles.font15_700Weight.copyWith(
-                  color: isDarkMode
-                      ? AppColors.darkTextColor
-                      : AppColors.lightSecondaryText,
-                ),
-              ),
-            ),
           ],
         ),
       ),
