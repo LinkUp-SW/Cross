@@ -10,7 +10,7 @@ import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/shared/widgets/custom_app_bar.dart';
 import 'package:link_up/shared/widgets/custom_search_bar.dart';
-
+import 'package:link_up/features/jobs/view/my_jobs_screen.dart';
 class JobsScreen extends ConsumerStatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
   const JobsScreen({
@@ -84,7 +84,14 @@ Future<void> _refreshJobs() async {
                       ),
                     ),
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const MyJobsScreen(),
+                          ),
+                        );
+                      },
                       style: isDarkMode
                           ? LinkUpButtonStyles().jobsPreferencesDark()
                           : LinkUpButtonStyles().jobsPreferencesLight(),
