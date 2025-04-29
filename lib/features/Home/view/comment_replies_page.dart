@@ -18,14 +18,78 @@ class CommentRepliesPage extends ConsumerStatefulWidget {
 }
 
 class _CommentRepliesPageState extends ConsumerState<CommentRepliesPage> {
-
   final FocusNode _focusNode = FocusNode();
 
+  bool _isLoading = false;
+  late ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController()..addListener(scrollListener);
+    
+    widget.focused ? _focusNode.requestFocus() : _focusNode.unfocus();
+    _focusNode.addListener(() {
+      setState(() {});
+    });
+    setState(() {
+      _isLoading = true;
+    });
+    ref
+        .read(commentProvider.notifier)
+        .fetchCommentReplies(
+          ref.read(postProvider).id,
+          cursor: 0,
+        )
+        .then((value) {
+      ref.read(commentProvider.notifier).setCommentReplies(value);
+      setState(() {
+        _isLoading = false;
+      });
+    });
+  }
+
+  void scrollListener() async {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent && ref.watch(commentProvider).cursor != null) {
+      ref
+          .read(commentProvider.notifier)
+          .fetchCommentReplies(
+            ref.read(postProvider).id,
+            cursor: ref.read(commentProvider).cursor,
+          )
+          .then((value) {
+        ref.read(commentProvider.notifier).addCommentReplies(value);
+        setState(() {
+          
+        });
+      });
+    }
+  }
+
+  Future<void> refresh() async {
+    setState(() {
+      _isLoading = true;
+    });
+    ref
+        .read(commentProvider.notifier)
+        .fetchCommentReplies(
+          ref.read(postProvider).id,
+          cursor: 0,
+        )
+        .then((value) {
+      ref.read(commentProvider.notifier).setCommentReplies(value);
+      setState(() {
+        _isLoading = false;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final CommentModel comment = ref.watch(commentProvider);
+    final CommentModel comment = ref.watch(commentProvider).comment;
     final String postId = ref.watch(postProvider).id;
+    setState(() {});
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -64,28 +128,33 @@ class _CommentRepliesPageState extends ConsumerState<CommentRepliesPage> {
           ),
         ),
       ),
-      body: Scrollbar(
-        child: SingleChildScrollView(
-          child: Card(
-            child: Padding(
-              padding: EdgeInsets.all(5.r),
-              child: CommentBubble(
-                refresh: (){},
-                comment: comment,
-                allRelies: true,
+      body: _isLoading
+          ? Center(
+              child: CircularProgressIndicator(
+              color: Theme.of(context).colorScheme.secondary,
+            ))
+          : RefreshIndicator(
+              color: Theme.of(context).colorScheme.secondary,
+              onRefresh: () => refresh(),
+              child: Scrollbar(
+                child: SingleChildScrollView(
+                  controller: _scrollController,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Card(
+                    child: Padding(
+                      padding: EdgeInsets.all(5.r),
+                      child: CommentBubble(
+                        refresh: () {},
+                        comment: comment,
+                        allRelies: true,
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
-      ),
       bottomNavigationBar: CommentsTextField(
-        refresh: () {
-          //TODO: implement refresh logic
-          // ref.read(commentProvider.notifier).getCommentReplies(
-          //       postId: postId,
-          //       commentId: comment.id,
-          //     );
-        },
+        refresh: () => refresh(),
         commentId: comment.id,
         postId: postId,
         focusNode: _focusNode,

@@ -33,18 +33,11 @@ class CommentModel {
         id = json['_id'],
         postId = json['post_id'],
         text = json['content'],
-        likes = json['reacts'].length,
-        replies = json['children'] == null
-            ? 0
-            : (json['children'] as Map<String, dynamic>).length,
+        likes = json['reactionsCount'] ?? 0,
+        replies = json['childrenCount'] ?? 0,
         taggedUsers = List<String>.from(json['tagged_users'] ?? []),
-        repliesList = json['children'] == null
-            ? []
-            : (json['children'] as Map<String, dynamic>)
-                .values
-                .map((e) => CommentModel.fromJson(e))
-                .toList()
-                .toList(),
+        reaction = Reaction.getReaction(json['userReaction'] ?? 'none'),
+        repliesList =json['children'] != null  ? (json['children'] as List).map((e) => CommentModel.fromJson(e)).toList(): [],
         media = Media.fromJson(json['media']);
 
   Map<String, dynamic> toJson() => {

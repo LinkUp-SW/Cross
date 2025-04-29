@@ -43,8 +43,8 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
         Flexible(
           flex: 1,
           child: CircleAvatar(
-            radius: 20.r,
-            backgroundImage: NetworkImage(widget.comment.header.profileImage),
+            radius: 15.r,
+            backgroundImage: NetworkImage(widget.comment.header.profileImage,),
           ),
         ),
         SizedBox(
@@ -318,7 +318,7 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
               ),
               if (!widget.isReply) ...[
                 if (!widget.allRelies) ...[
-                  if (widget.comment.repliesList.length > 1)
+                  if (widget.comment.replies > 1)
                     TextButton(
                         onPressed: () {
                           ref

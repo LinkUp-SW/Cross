@@ -9,10 +9,6 @@ class CommentsProvider extends StateNotifier<Map<String, dynamic>> {
   CommentsProvider() : super({'comments': [],'cursor': 0});
 
   void addComments(List<CommentModel> comments) {
-    if (state['cursor'] == null)
-    {
-      state['comments'].clear();
-    }
     state['comments'].addAll(comments);
   }
 
@@ -33,14 +29,15 @@ class CommentsProvider extends StateNotifier<Map<String, dynamic>> {
     state['comments'].clear();
   }
 
-  Future<List<CommentModel>> fetchComments(String postId) {
+  Future<List<CommentModel>> fetchComments(String postId,{int? cursor}) {
     //TODO: Implement fetching comments from the server
     final BaseService service = BaseService();
     log('Fetching comments for postId: $postId');
     return service.get('api/v1/post/comment/:postId',
         queryParameters: {
-          'limit': '1',
-          'cursor': state['cursor'].toString(),
+          'limit': '10',
+          'cursor': (cursor ?? state['cursor']).toString(),
+          'replyLimit': '2',
         },
         routeParameters: {
           'postId': postId,
@@ -49,9 +46,7 @@ class CommentsProvider extends StateNotifier<Map<String, dynamic>> {
       final data = jsonDecode(value.body);
       log('Fetched comments: $data');
       state['cursor'] = data['nextCursor'];
-      return (data['comments'] as Map<String, dynamic>)
-          .values.map((e) => CommentModel.fromJson(e)).toList()
-          .toList();
+      return (data['comments'] as List).map((e) => CommentModel.fromJson(e)).toList();
     }).catchError((error) {
       log('$error');
       throw Exception(error);
