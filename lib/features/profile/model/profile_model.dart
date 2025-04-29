@@ -10,7 +10,6 @@ class UserProfile {
   final String? countryRegion;
   final String? city;
   final String? website;
-  final List<String> experience;
   final String profilePhotoUrl;
   final String coverPhotoUrl;
   final int numberOfConnections;
@@ -23,7 +22,6 @@ class UserProfile {
     this.countryRegion,
     this.city,
     this.website, 
-    required this.experience,
     required this.profilePhotoUrl,
     required this.coverPhotoUrl,
     required this.numberOfConnections,
@@ -42,7 +40,6 @@ class UserProfile {
       headline: bio['headline'] as String? ?? 'No Headline',
       countryRegion: location['country_region'] as String?,
       city: location['city'] as String?,
-      experience: List<String>.from(bio['experience'] as List? ?? []),
       profilePhotoUrl: json['profile_photo'] as String? ?? '',
       website: contactInfo['website'] as String? ?? bio['website'] as String?,     
       coverPhotoUrl: json['cover_photo'] as String? ?? '',
@@ -61,7 +58,6 @@ class UserProfile {
           'country_region': countryRegion,
           'city': city,
         },
-        'experience': experience, 
          'website': website,
       },
       'profile_photo': profilePhotoUrl,
@@ -79,7 +75,6 @@ class UserProfile {
       headline: '',
       countryRegion: null,
       city: null,
-      experience: [],
       website: null,
       profilePhotoUrl: '',
       coverPhotoUrl: '',
