@@ -70,17 +70,17 @@ enum Reaction {
 
   static Reaction getReaction(String reaction) {
     switch (reaction) {
-      case 'Like':
+      case 'Like'||'like':
         return Reaction.like;
-      case 'Celebrate':
+      case 'Celebrate'||'celebrate':
         return Reaction.celebrate;
-      case 'Support':
+      case 'Support'||'support':
         return Reaction.support;
-      case 'Love':
+      case 'Love'||'love':
         return Reaction.love;
-      case 'Insightful':
+      case 'Insightful'||'insightful':
         return Reaction.insightful;
-      case 'Funny':
+      case 'Funny'||'funny':
         return Reaction.funny;
       default:
         return Reaction.none;

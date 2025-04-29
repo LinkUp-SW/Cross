@@ -36,18 +36,18 @@ class PostModel {
   });
 
   PostModel.fromJson(Map<String, dynamic> json)
-      : id = json['id'],
-        header = HeaderModel.fromJson(json['header']),
-        text = json['text'],
+      : id = json['_id'],
+        header = HeaderModel.fromJson(json),
+        text = json['content'],
         media = Media.fromJson(json['media']),
-        reactions = json['reactions'],
-        comments = json['comments'],
-        reposts = json['reposts'],
-        reaction = Reaction.getReaction(json['reaction']),
+        reactions = json['reacts'].length,
+        comments = json['comments'].length,
+        reposts = json['reposts'] ?? 0,
+        reaction = Reaction.getReaction(json['reaction'] ?? 'none'),
         isAd = json['isAd'] ?? false,
         isCompany = json['isCompany'] ?? false,
         saved = json['saved'] ?? false,
-        taggedUsers = List<String>.from(json['taggedUsers'] ?? []);
+        taggedUsers = List<String>.from(json['tagged_users'] ?? []);
 
   Map<String, dynamic> toJson() => {
         'id': id,

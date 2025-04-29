@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/my-network/model/invitations_screen_model.dart';
+import 'package:link_up/features/my-network/widgets/snackbar_content.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/shared/utils/my_network_utils.dart';
@@ -97,28 +98,11 @@ class ReceivedInvitationsCard extends ConsumerWidget {
                     onTap: () {
                       onAccept(data.cardId);
                       openSnackbar(
-                        child: Row(
-                          spacing: 10.w,
-                          children: [
-                            Icon(
-                              Icons.add_box_outlined,
-                              size: 25.w,
-                            ),
-                            Flexible(
-                              child: Text(
-                                'You have successfuly accepted ${data.firstName} ${data.lastName} connection invitation',
-                                style: TextStyles.font14_600Weight.copyWith(
-                                  color: isDarkMode
-                                      ? AppColors.darkSecondaryText
-                                      : AppColors.lightTextColor,
-                                ),
-                                maxLines: 3,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
+                          child: SnackbarContent(
+                        message:
+                            'You have successfuly accepted ${data.firstName} ${data.lastName} connection invitation',
+                        icon: Icons.add_box_outlined,
+                      ));
                     },
                     child: Container(
                       padding: EdgeInsets.all(2.r),
@@ -150,28 +134,11 @@ class ReceivedInvitationsCard extends ConsumerWidget {
                     onTap: () {
                       onIgnore(data.cardId);
                       openSnackbar(
-                        child: Row(
-                          spacing: 10.w,
-                          children: [
-                            Icon(
-                              Icons.block_outlined,
-                              size: 25.w,
-                            ),
-                            Flexible(
-                              child: Text(
-                                'You have ignored ${data.firstName} ${data.lastName} connection invitation',
-                                style: TextStyles.font14_600Weight.copyWith(
-                                  color: isDarkMode
-                                      ? AppColors.darkSecondaryText
-                                      : AppColors.lightTextColor,
-                                ),
-                                maxLines: 3,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
+                          child: SnackbarContent(
+                        message:
+                            'You have ignored ${data.firstName} ${data.lastName} connection invitation',
+                        icon: Icons.block_outlined,
+                      ));
                     },
                     child: Container(
                       padding: EdgeInsets.all(2.r),

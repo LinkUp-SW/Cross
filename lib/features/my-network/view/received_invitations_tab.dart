@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/my-network/viewModel/received_invitations_tab_view_model.dart';
 import 'package:link_up/features/my-network/widgets/received_invitations_card.dart';
-import 'package:link_up/features/my-network/widgets/received_invitations_loading_skeleton.dart';
+import 'package:link_up/features/my-network/widgets/received_invitations_card_loading_skeleton.dart';
 import 'package:link_up/features/my-network/widgets/retry_error_message.dart';
 import 'package:link_up/features/my-network/widgets/standard_empty_list_message.dart';
 import 'package:link_up/shared/themes/colors.dart';
@@ -31,7 +31,7 @@ class _ReceivedInvitationsTabState
         ref
             .read(receivedInvitationsTabViewModelProvider.notifier)
             .getReceivedInvitations(
-          queryParameters: {
+          {
             'limit': '${widget.paginationLimit}',
             'cursor': null,
           },
@@ -52,7 +52,7 @@ class _ReceivedInvitationsTabState
           ref
               .read(receivedInvitationsTabViewModelProvider.notifier)
               .loadMoreReceivedInvitations(
-                widget.paginationLimit,
+                paginationLimit: widget.paginationLimit,
               );
         }
         return false;
@@ -62,7 +62,7 @@ class _ReceivedInvitationsTabState
               shrinkWrap: true,
               itemCount: 3,
               itemBuilder: (context, index) =>
-                  ReceivedInvitationsLoadingSkeleton(),
+                  ReceivedInvitationsCardLoadingSkeleton(),
             )
           : state.error
               ? RetryErrorMessage(
@@ -72,7 +72,7 @@ class _ReceivedInvitationsTabState
                     await ref
                         .read(receivedInvitationsTabViewModelProvider.notifier)
                         .getReceivedInvitations(
-                      queryParameters: {
+                      {
                         'limit': '${widget.paginationLimit}',
                         'cursor': null,
                       },

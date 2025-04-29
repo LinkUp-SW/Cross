@@ -1,11 +1,13 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:link_up/core/services/base_service.dart';
+import 'package:link_up/features/Home/home_enums.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
 
-Future<void> deletePost(String postId) async {
+Future<int> deletePost(String postId) async {
   final BaseService service = BaseService();
-  final response = await service.delete('api/v1/post/delete-post', {
+  final response = await service.delete('api/v1/post/posts/:postId', {
     "postId": postId,
   });
 
@@ -15,11 +17,12 @@ Future<void> deletePost(String postId) async {
   } else {
     log('Failed to delete post');
   }
+  return response.statusCode;
 }
 
 Future<void> savePost(String postId) async {
   final BaseService service = BaseService();
-  final response = await service.post('api/v1/post/save-post',body: {
+  final response = await service.post('api/v1/post/save-post', body: {
     "postId": postId,
   });
 
@@ -33,7 +36,7 @@ Future<void> savePost(String postId) async {
 
 Future<void> unsavePost(String postId) async {
   final BaseService service = BaseService();
-  final response = await service.delete('api/v1/post/save-post', {
+  final response = await service.delete('api/v1/post/save-post',null,body:  {
     "postId": postId,
   });
 
@@ -47,7 +50,8 @@ Future<void> unsavePost(String postId) async {
 
 Future<void> followUser(String userId) async {
   final BaseService service = BaseService();
-  final response = await service.post('api/v1/user/follow/:userId', routeParameters: {
+  final response =
+      await service.post('api/v1/user/follow/:userId', routeParameters: {
     "userId": userId,
   });
 
@@ -75,7 +79,8 @@ Future<void> unfollowUser(String userId) async {
 
 Future<void> connectToUser(String userId) async {
   final BaseService service = BaseService();
-  final response = await service.post('api/v1/user/connect/:userId', routeParameters: {
+  final response =
+      await service.post('api/v1/user/connect/:userId', routeParameters: {
     "userId": userId,
   });
 
@@ -89,20 +94,94 @@ Future<void> connectToUser(String userId) async {
 
 Future<List<PostModel>> getSavedPosts() async {
   final BaseService service = BaseService();
-  final response = await service.get('api/v1/post/saved-post',queryParameters: {
-    'limit': 10,
-    'cursor': 0,
+  final response =
+      await service.get('api/v1/post/save-post', queryParameters: {
+    'limit': '10',
+    'cursor': '0',
   });
 
   log('Response: ${response.statusCode} - ${response.body}');
   if (response.statusCode == 200) {
-    log('Saved posts retrieved successfully: ${response.body}');
-    List<PostModel> posts = (response.body as List)
+    List<PostModel> posts = (jsonDecode(response.body)['posts'] as List)
         .map((post) => PostModel.fromJson(post))
         .toList();
+    log('Posts: $posts');
+    for (var post in posts) {
+      post.saved = true;
+    }
     return posts;
   } else {
     log('Failed to retrieve saved posts');
     return [];
+  }
+}
+
+Future<void> reportPost(String postId) async {
+  final BaseService service = BaseService();
+  final response =
+      await service.post('api/v1/post/report/:postId', routeParameters: {
+    "postId": postId,
+  });
+
+  log('Response: ${response.statusCode} - ${response.body}');
+  if (response.statusCode == 200) {
+    log('Post reported successfully: ${response.body}');
+  } else {
+    log('Failed to report post');
+  }
+}
+
+Future<void> reportComment(String commentId) async {
+  final BaseService service = BaseService();
+  final response = await service
+      .post('api/v1/post/report-comment/:commentId', routeParameters: {
+    "commentId": commentId,
+  });
+
+  log('Response: ${response.statusCode} - ${response.body}');
+  if (response.statusCode == 200) {
+    log('Comment reported successfully: ${response.body}');
+  } else {
+    log('Failed to report comment');
+  }
+}
+
+Future<int> setReaction(String postId, Reaction reaction, String type,{String? commentId}) async {
+  final BaseService service = BaseService();
+  final response =
+      await service.post('api/v1/post/reaction/:postId', routeParameters: {
+    "postId": postId,
+  }, body: {
+    "reaction": Reaction.getReactionString(reaction).toLowerCase(),
+    "target_type": type,
+    "comment_id": commentId,
+  });
+
+  log('Response: ${response.statusCode} - ${response.body}');
+  if (response.statusCode == 200) {
+    log('Reaction set successfully: ${response.body}');
+    return jsonDecode(response.body)['totalCount'] as int;
+  } else {
+    log('Failed to set reaction');
+    return -1;
+  }
+}
+
+Future<int> removeReaction(String postId, String type,{String? commentId}) async {
+  final BaseService service = BaseService();
+  final response = await service.delete('api/v1/post/reaction/:postId', {
+    "postId": postId,
+  }, body: {
+    "comment_id": commentId,
+    "target_type": type,
+  });
+
+  log('Response: ${response.statusCode} - ${response.body}');
+  if (response.statusCode == 200) {
+    log('Reaction removed successfully: ${response.body}');
+    return jsonDecode(response.body)['totalCount'] as int;
+  } else {
+    log('Failed to remove reaction');
+    return -1;
   }
 }

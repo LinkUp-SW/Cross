@@ -4,8 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class ConnectionsLoadingSkeleton extends ConsumerWidget {
-  const ConnectionsLoadingSkeleton({
+class SentInvitationsCardLoadingSkeleton extends ConsumerWidget {
+  const SentInvitationsCardLoadingSkeleton({
     super.key,
   });
 
@@ -36,11 +36,11 @@ class ConnectionsLoadingSkeleton extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 spacing: 8.w,
                 children: [
-                  // Profile picture
+                  // Profile picture placeholder
                   CircleAvatar(
                     radius: 30.r,
                     foregroundImage: const AssetImage(
-                        'assets/images/default-profile-picture.jpg'),
+                        'assets/images/default-profile-picture.png'),
                   ),
                   // Text content
                   const Column(
@@ -68,19 +68,9 @@ class ConnectionsLoadingSkeleton extends ConsumerWidget {
                   ),
                 ],
               ),
-              // Remove & Message buttons
-              Row(
-                spacing: 8.w,
-                children: [
-                  Icon(
-                    Icons.remove,
-                    size: 30.r,
-                  ),
-                  Icon(
-                    Icons.send,
-                    size: 30.r,
-                  ),
-                ],
+              // Withdraw button
+              const Text(
+                "Withdraw",
               ),
             ],
           ),

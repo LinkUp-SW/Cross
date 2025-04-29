@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -15,8 +17,8 @@ class SavedPostsPage extends StatefulWidget {
 }
 
 class _RepostsPageState extends State<SavedPostsPage> {
-
   final List<PostModel> posts = [];
+  bool isLoading = true;
   @override
   void initState() {
     super.initState();
@@ -25,11 +27,29 @@ class _RepostsPageState extends State<SavedPostsPage> {
       setState(() {
         posts.addAll(fetchedPosts);
       });
+      isLoading = false;
     }).catchError((error) {
       // Handle error if needed
-      print('Error fetching saved posts: $error');
+      log('Error fetching saved posts: $error');
     });
   } // Assuming you have a function to get saved posts
+
+  Future<void> refreshPosts() async {
+    setState(() {
+      isLoading = true;
+    });
+    await getSavedPosts().then((fetchedPosts) {
+      setState(() {
+        posts.clear();
+        posts.addAll(fetchedPosts);
+        isLoading = false;
+      });
+    }).catchError((error) {
+      // Handle error if needed
+      log('Error fetching saved posts: $error');
+    });
+    return;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,13 +76,13 @@ class _RepostsPageState extends State<SavedPostsPage> {
               ),
               Padding(
                 padding: EdgeInsets.all(5.w).copyWith(left: 15.w),
-                child: 
-                Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    ChoiceChip(label: Text('All'),
-                      selected: true,
-                      onSelected: (value) {}),
+                    ChoiceChip(
+                        label: Text('All'),
+                        selected: true,
+                        onSelected: (value) {}),
                   ],
                 ),
               ),
@@ -71,22 +91,45 @@ class _RepostsPageState extends State<SavedPostsPage> {
         ),
       ),
       body: Scrollbar(
-        child: 
-        posts.isEmpty ? 
-        Center(child: CircularProgressIndicator(
-          color: Theme.of(context).colorScheme.secondary,
-          
-        )) :
-        ListView.separated(
-          shrinkWrap: true,
-          itemCount: posts.length,
-          separatorBuilder: (context, index) => const SizedBox(height: 10),
-          itemBuilder: (context, index) {
-            return Card(
-                child: Posts(post: posts[index],),
-            );
-          },
-        ),
+        child: isLoading
+            ? Center(
+                child: CircularProgressIndicator(
+                color: Theme.of(context).colorScheme.secondary,
+              ))
+            : RefreshIndicator(
+                color: Theme.of(context).colorScheme.secondary,
+                onRefresh: refreshPosts,
+                child: posts.isEmpty
+                    ? Center(
+                        child: SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: Text(
+                            'No saved posts yet',
+                            style: TextStyle(
+                              fontSize: 30.sp,
+                            ),
+                          ),
+                        ),
+                      )
+                    : Padding(
+                        padding: EdgeInsets.only(top: 5.h),
+                        child: ListView.separated(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: posts.length,
+                          separatorBuilder: (context, index) =>
+                              const SizedBox(height: 10),
+                          itemBuilder: (context, index) {
+                            return Card(
+                              child: Posts(
+                                post: posts[index],
+                                showTop: false,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+              ),
       ),
     );
   }

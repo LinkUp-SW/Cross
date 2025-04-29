@@ -57,9 +57,18 @@ class _PostHeaderState extends ConsumerState<PostHeader> {
               title: Text.rich(
                 TextSpan(
                   children: [
-                    TextSpan(
-                      text: widget.post.header.name,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    WidgetSpan(
+                      child: Container(
+                        constraints: BoxConstraints(
+                          maxWidth: 100.w,
+                        ),
+                        child: Text(
+                        widget.post.header.name,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: TextStyle(fontWeight: FontWeight.bold,fontSize: 12.r),
+                        ),
+                      )
                     ),
                     if (!widget.post.isCompany)
                       TextSpan(
