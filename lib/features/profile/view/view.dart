@@ -29,6 +29,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     final profileState = ref.watch(profileViewModelProvider);
+    final educationState = ref.watch(educationDataProvider); 
 
     return Scaffold(
       appBar: const ProfileAppBar(),
@@ -64,14 +65,15 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                   ProfileHeaderWidget(userProfile: userProfile),
                   SectionWidget(
                     title: "Education",
-                    child: userProfile.education.isEmpty
-                      ? const Text("No education added yet.")
+                    child: educationState == null || educationState.isEmpty
+                    ? const Text("No education added yet.")
                       : Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: userProfile.education.map((edu) {
+                          children: educationState.map((edu) {
                             return ListTile(
                               leading: Icon(Icons.school, size: 20.sp, color: Colors.blue),
-                              title: Text(edu, style: TextStyle(fontSize: 14.sp)),
+                              title:   Text(edu.institution,
+                            style: TextStyle(fontSize: 14.sp)),
                             );
                           }).toList(),
                         ),

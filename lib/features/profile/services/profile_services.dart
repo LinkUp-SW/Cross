@@ -20,7 +20,7 @@ class ProfileService extends BaseService {
     const String endpointTemplate = 'api/v1/user/profile/bio/:user_id';
     log('ProfileService: Fetching profile for UserProfile model, user ID: $userId');
     try {
-      final response = await get(
+      final response = await super.get(
         endpointTemplate,
         routeParameters: {'user_id': userId},
       );
@@ -42,7 +42,7 @@ class ProfileService extends BaseService {
      const String endpointTemplate = 'api/v1/user/profile/bio/:user_id';
      log('ProfileService: Fetching full profile JSON for user ID: $userId');
      try {
-       final response = await get(
+       final response = await super.get(
          endpointTemplate,
          routeParameters: {'user_id': userId},
        );
@@ -60,7 +60,32 @@ class ProfileService extends BaseService {
        rethrow;
      }
    }
-
+  Future<List<EducationModel>> getUserEducation(String userId) async {
+   const String endpointTemplate = ExternalEndPoints.getUserEducation; //'api/v1/user/profile/education/:user_id';
+   log('ProfileService: Fetching education for user ID: $userId');
+   try {
+     final response = await super.get( // Use super.get
+       endpointTemplate,
+       routeParameters: {'user_id': userId},
+     );
+     log('ProfileService: getUserEducation API Response Status Code: ${response.statusCode}');
+     if (response.statusCode == 200) {
+       final Map<String, dynamic> jsonData = jsonDecode(response.body);
+       final List<dynamic> educationJsonList = jsonData['education'] as List? ?? [];
+       final List<EducationModel> educations = educationJsonList
+           .map((eduJson) => eduJson is Map<String, dynamic> ? EducationModel.fromJson(eduJson) : null)
+           .whereType<EducationModel>()
+           .toList();
+       return educations;
+     } else {
+       log('ProfileService: getUserEducation API Error: Status Code ${response.statusCode}, Body: ${response.body}');
+       throw Exception('Failed to load education (Status code: ${response.statusCode})');
+     }
+   } catch (e) {
+     log('ProfileService: Error in getUserEducation: $e');
+     rethrow;
+   }
+ }
   Future<ContactInfoModel> getContactInfo(String userId) async {
     log('ProfileService: Getting ContactInfoModel for user ID: $userId');
     try {
@@ -182,7 +207,7 @@ class ProfileService extends BaseService {
      log('ProfileService: Fetching profile photo URL for user ID: $userId from $endpointTemplate');
 
      try {
-        final response = await get(endpointTemplate.replaceFirst('{user_id}', userId));
+        final response = await super.get(endpointTemplate.replaceFirst('{user_id}', userId));
 
         log('ProfileService: Get Photo URL API Response Status Code: ${response.statusCode}');
         log('ProfileService: Get Photo URL API Response Body: ${response.body}');
@@ -212,7 +237,7 @@ class ProfileService extends BaseService {
     log('ProfileService: Deleting profile photo via $endpoint');
 
     try {
-      final response = await delete(endpoint, null);
+      final response = await super.delete(endpoint, null);
 
       log('ProfileService: Delete Photo API Response Status Code: ${response.statusCode}');
       log('ProfileService: Delete Photo API Response Body: ${response.body}');
@@ -331,7 +356,7 @@ class ProfileService extends BaseService {
     log('ProfileService: Deleting cover photo via $endpoint');
 
     try {
-      final response = await delete(endpoint, null);
+      final response = await super.delete(endpoint, null);
 
       log('ProfileService: Delete Cover Photo API Response Status Code: ${response.statusCode}');
       log('ProfileService: Delete Cover Photo API Response Body: ${response.body}');

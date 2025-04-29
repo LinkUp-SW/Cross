@@ -230,18 +230,18 @@ class _EditIntroPageState extends ConsumerState<EditIntroPage> {
                                   value: formData.selectedEducationId,
                                   hintText: "Select your highest/current education",
                                   items: [
-                                    const DropdownMenuItem<String>(value: null, child: Text("None")),
-                                    ...formData.availableEducations.map((edu) {
-                                      final String? educationId = edu.id;
-                                      if (educationId == null) {
-                                        log("Warning: Education item found without an ID: ${edu.institution}");
-                                        return null;
-                                      }
+                                  const DropdownMenuItem<String>(
+                                  value: null, // Represents no selection
+                                  child: Text("None"),
+                                ),
+                                  ...formData.availableEducations
+                                    .where((edu) => edu.id != null) // Filter out items without an ID
+                                    .map((edu) {
                                       return DropdownMenuItem<String>(
-                                        value: educationId,
+                                        value: edu.id!,
                                         child: Text(edu.institution, overflow: TextOverflow.ellipsis),
                                       );
-                                    }).whereType<DropdownMenuItem<String>>().toList(),
+                                    }).toList(),
                                   ],
                                   onChanged: isSaving ? null : (value) => viewModel.setSelectedEducation(value),
                                 ),
