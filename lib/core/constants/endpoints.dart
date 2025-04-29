@@ -31,4 +31,5 @@ class ExternalEndPoints {
   static const unfollow = 'api/v1/user/unfollow/:user_id';
   static const addEducation = 'api/v1/user/add-education'; 
   static const getUserEducation = 'api/v1/user/profile/education/:user_id';
+  static const getUserExperience = 'api/v1/user/profile/experience/:user_id';
 }

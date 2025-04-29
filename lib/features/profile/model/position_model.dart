@@ -15,6 +15,8 @@ class PositionModel {
   final String? profileHeadline;
   final String? location;
   final String? locationType;
+  final List<String>? skills;
+  final List<Map<String, dynamic>>? media;
 
   const PositionModel({
     this.id,
@@ -29,6 +31,8 @@ class PositionModel {
     this.profileHeadline,
     this.location,
     this.locationType,
+    this.skills,
+    this.media,
   });
 
   Map<String, dynamic> toJson() {
@@ -43,6 +47,8 @@ class PositionModel {
       if (profileHeadline != null && profileHeadline!.isNotEmpty) 'profile_headline': profileHeadline,
       if (location != null && location!.isNotEmpty) 'location': location,
       if (locationType != null && locationType!.isNotEmpty) 'location_type': locationType,
+      if (skills != null && skills!.isNotEmpty) 'skills': skills, // Add skills
+      if (media != null && media!.isNotEmpty) 'media': media, // Add media
     };
     log('PositionModel toJson: $data');
     return data;
