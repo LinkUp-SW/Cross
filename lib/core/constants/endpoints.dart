@@ -8,7 +8,7 @@ class InternalEndPoints {
 
 class ExternalEndPoints {
 
-  // static const baseUrl = 'https://api.linkup-egypt.tech/';
+   //static const baseUrl = 'https://api.linkup-egypt.tech/';
   static const baseUrl = 'http://10.0.2.2:3000/';  // for localhosting
   static const receivedConnectionInvitations =
       'api/v1/user/my-network/invitation-manager/received';
@@ -33,4 +33,7 @@ class ExternalEndPoints {
   static const topJobs = 'api/v1/jobs/get-top-jobs';
   static const jobDetails = 'api/v1/jobs/get-job/:jobId';
   static const getJobs = 'api/v1/jobs/get-jobs';
+  static const saveJob = 'api/v1/jobs/save-jobs/:jobId';
+  static const unsaveJob = 'api/v1/jobs/unsave-jobs/:jobId';
+  static const getSavedJobs = 'api/v1/jobs/get-saved-jobs';
 }

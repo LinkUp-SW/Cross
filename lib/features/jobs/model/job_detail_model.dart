@@ -12,6 +12,7 @@ class JobDetailsModel {
   final String timeAgo;
   final String organizationName;
   final String logo;
+  final bool isSaved;
 
   JobDetailsModel({
     required this.jobId,
@@ -27,6 +28,7 @@ class JobDetailsModel {
     required this.timeAgo,
     required this.organizationName,
     required this.logo,
+    required this.isSaved,
   });
 
   factory JobDetailsModel.fromJson(Map<String, dynamic> json) {
@@ -45,6 +47,7 @@ class JobDetailsModel {
       timeAgo: json['timeAgo'] ?? '',
       organizationName: organization['name'] ?? '',
       logo: organization['logo'] ?? '',
+      isSaved: json['is_saved'],
     );
   }
 }

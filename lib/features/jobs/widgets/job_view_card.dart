@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/jobs/model/job_detail_model.dart';
+import 'package:link_up/features/jobs/viewModel/job_details_view_model.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 
@@ -71,6 +72,10 @@ class JobDetailsCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final jobDetailsState = ref.watch(jobDetailsViewModelProvider);
+    final bool isLoading = jobDetailsState.isLoading;
+    final bool isSaved = data.isSaved ?? false;
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -178,15 +183,52 @@ class JobDetailsCard extends ConsumerWidget {
                 SizedBox(width: 12.w),
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () {},
+                    onPressed: isLoading ? null : () {
+                      ref.read(jobDetailsViewModelProvider.notifier).saveJob(data.jobId);
+                    },
                     style: OutlinedButton.styleFrom(
                       padding: EdgeInsets.symmetric(vertical: 12.h),
-                      side: const BorderSide(color: Colors.blue),
+                      side: BorderSide(
+                        color: isSaved ? Colors.green : Colors.blue,
+                        width: 1.5,
+                      ),
+                      backgroundColor: isSaved 
+                        ? Colors.green.withOpacity(0.1)
+                        : Colors.blue.withOpacity(0.1),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(24.r),
                       ),
                     ),
-                    child: const Text('Save'),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (isLoading)
+                          SizedBox(
+                            width: 20.sp,
+                            height: 20.sp,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                isSaved ? Colors.green : Colors.blue,
+                              ),
+                            ),
+                          )
+                        else
+                          Icon(
+                            isSaved ? Icons.bookmark : Icons.bookmark_border,
+                            color: isSaved ? Colors.green : Colors.blue,
+                            size: 20.sp,
+                          ),
+                        SizedBox(width: 8.w),
+                        Text(
+                          isLoading ? 'Saving...' : (isSaved ? 'Saved' : 'Save'),
+                          style: TextStyle(
+                            color: isSaved ? Colors.green : Colors.blue,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],

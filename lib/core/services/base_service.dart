@@ -13,7 +13,7 @@ class BaseService {
 
   Future<Response> post(String endpoint,
       {Map<String, dynamic>? body,
-      Map<String, dynamic>? routeParameters}) async {
+      Map<String, dynamic>? routeParameters, Map<String, dynamic>? queryParameters}) async {
     try {
       final token = await getToken();
       String finalEndpoint = endpoint;

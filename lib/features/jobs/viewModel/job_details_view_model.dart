@@ -31,6 +31,7 @@ class JobDetailsViewModel extends StateNotifier<JobDetailsState> {
         jobDetails: jobDetails,
         isError: false,
         errorMessage: null,
+        isSaved: jobDetails.isSaved,
       );
     } catch (e, stackTrace) {
       developer.log('Error getting job details: $e\n$stackTrace');
@@ -39,6 +40,30 @@ class JobDetailsViewModel extends StateNotifier<JobDetailsState> {
         isError: true,
         errorMessage: e.toString(),
         jobDetails: null,
+        isSaved: false,
+      );
+    }
+  }
+
+  Future<void> saveJob(String jobId) async {
+    developer.log('Handling save/unsave for job ID: $jobId');
+    
+    try {
+      final currentSavedState = state.jobDetails?.isSaved ?? false;
+      
+      await _jobDetailsService.saveJob(
+        jobId: jobId,
+        isSaved: currentSavedState,
+      );
+
+      // Refresh job details to get the latest state
+      await getJobDetails(jobId);
+      
+    } catch (e, stackTrace) {
+      developer.log('Error updating job save state: $e\n$stackTrace');
+      state = state.copyWith(
+        isError: true,
+        errorMessage: e.toString(),
       );
     }
   }

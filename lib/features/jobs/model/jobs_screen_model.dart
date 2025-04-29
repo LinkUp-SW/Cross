@@ -6,9 +6,9 @@ class JobsCardModel {
   final String workType;
   final String companyPicture;
   final String postDate;
-  final String timeAgo;
+  final String? timeAgo;
   final String? experienceLevel;
-
+  final int salary;
   const JobsCardModel({
     required this.cardId,
     required this.jobTitle,
@@ -17,8 +17,9 @@ class JobsCardModel {
     required this.workType,
     required this.companyPicture,
     required this.postDate,
-    required this.timeAgo,
+    required this.salary,
     this.experienceLevel,
+    this.timeAgo,
   });
 
   factory JobsCardModel.fromJson(Map<String, dynamic> json) {
@@ -32,6 +33,7 @@ class JobsCardModel {
       companyPicture: organization['logo'],
       postDate: json['posted_time'],
       timeAgo: json['timeAgo'],
+      salary: json['salary'],
       experienceLevel: json['experience_level'],
     );
   }

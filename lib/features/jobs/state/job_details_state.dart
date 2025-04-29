@@ -5,20 +5,24 @@ class JobDetailsState {
   final String? errorMessage;
   final bool isLoading;
   final bool isError;
+  bool? isSaved;
+ 
 
-  const JobDetailsState({
+  JobDetailsState({
     this.jobDetails,
     this.errorMessage,
     this.isLoading = true,
     this.isError = false,
+    this.isSaved,
   });
 
   factory JobDetailsState.initial() {
-    return const JobDetailsState(
+    return  JobDetailsState(
       jobDetails: null,
       errorMessage: null,
       isLoading: true,
       isError: false,
+      isSaved: false,
     );
   }
 
@@ -27,12 +31,14 @@ class JobDetailsState {
     String? errorMessage,
     bool? isLoading,
     bool? isError,
+    bool? isSaved,
   }) {
     return JobDetailsState(
       jobDetails: jobDetails ?? this.jobDetails,
       errorMessage: errorMessage ?? this.errorMessage,
       isLoading: isLoading ?? this.isLoading,
       isError: isError ?? this.isError,
+      isSaved: isSaved ?? this.isSaved,
     );
   }
 }
