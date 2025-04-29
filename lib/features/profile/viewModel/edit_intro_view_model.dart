@@ -44,7 +44,8 @@ class EditIntroViewModel extends StateNotifier<EditIntroState> {
     try {
       final fullProfileJson = await _profileService.fetchFullUserProfileJson(_userId);
       _originalBioData = Map<String, dynamic>.from(fullProfileJson['bio'] ?? {});
-      final bio = _originalBioData; // Use the already fetched bio
+      final bio = _originalBioData; 
+
       final List<EducationModel> educations = await _profileService.getUserEducation(_userId);
 
       final location = bio['location'] as Map<String, dynamic>? ?? {};
@@ -62,7 +63,7 @@ class EditIntroViewModel extends StateNotifier<EditIntroState> {
         headline: headlineController.text,
         countryRegion: countryController.text,
         city: cityController.text,
-        availableEducations: educations, // Assign fetched educations
+        availableEducations: educations, 
         selectedEducationId: null, 
         showEducationInIntro: false,
         website: websiteController.text,

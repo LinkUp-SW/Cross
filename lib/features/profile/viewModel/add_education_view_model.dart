@@ -133,12 +133,11 @@ class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
   }
 
   String? validateForm() {
-    // ** FIXED VALIDATION **
     final schoolId = _selectedSchoolData?['_id'];
     if (_selectedSchoolData == null || schoolId == null || schoolId.trim().isEmpty) {
        return "School is required.";
     }
-    // ** END OF FIX **
+   
 
     if (_degreeController.text.trim().isEmpty) return "Degree is required.";
     if (_fieldOfStudyController.text.trim().isEmpty) return "Field of Study is required.";

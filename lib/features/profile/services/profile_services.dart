@@ -61,10 +61,10 @@ class ProfileService extends BaseService {
      }
    }
   Future<List<EducationModel>> getUserEducation(String userId) async {
-   const String endpointTemplate = ExternalEndPoints.getUserEducation; //'api/v1/user/profile/education/:user_id';
+   const String endpointTemplate = ExternalEndPoints.getUserEducation; 
    log('ProfileService: Fetching education for user ID: $userId');
    try {
-     final response = await super.get( // Use super.get
+     final response = await super.get( 
        endpointTemplate,
        routeParameters: {'user_id': userId},
      );

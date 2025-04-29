@@ -231,11 +231,11 @@ class _EditIntroPageState extends ConsumerState<EditIntroPage> {
                                   hintText: "Select your highest/current education",
                                   items: [
                                   const DropdownMenuItem<String>(
-                                  value: null, // Represents no selection
+                                  value: null, 
                                   child: Text("None"),
                                 ),
                                   ...formData.availableEducations
-                                    .where((edu) => edu.id != null) // Filter out items without an ID
+                                    .where((edu) => edu.id != null) 
                                     .map((edu) {
                                       return DropdownMenuItem<String>(
                                         value: edu.id!,
