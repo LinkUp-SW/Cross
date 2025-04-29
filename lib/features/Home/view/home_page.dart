@@ -143,7 +143,6 @@ class _HomePageState extends ConsumerState<HomePage> {
                           Card(
                             child: Posts(
                               post: PostModel.initial(),
-                              showTop: false,
                             ),
                           ),
                       ],
@@ -170,7 +169,6 @@ class _HomePageState extends ConsumerState<HomePage> {
                         child: !posts[index].showUndo
                             ? Posts(
                                 post: posts[index].post,
-                                showTop: false,
                                 inFeed: true,
                               )
                             : DeletedPost(

@@ -144,3 +144,59 @@ enum Reaction {
     }
   }
 }
+
+
+
+enum ActitvityType {
+  comment,
+  like,
+  celebrate,
+  support,
+  love,
+  insightful,
+  funny,
+  none;
+
+  static ActitvityType getActivityType(String activityType) {
+    switch (activityType) {
+      case 'comment':
+        return ActitvityType.comment;
+      case 'like':
+        return ActitvityType.like;
+      case 'celebrate':
+        return ActitvityType.celebrate;
+      case 'support':
+        return ActitvityType.support;
+      case 'love':
+        return ActitvityType.love;
+      case 'insightful':
+        return ActitvityType.insightful;
+      case 'funny':
+        return ActitvityType.funny;
+      default:
+        return ActitvityType.none;
+    }
+  }
+
+  static String getActivityTypeString(ActitvityType activityType) {
+    switch (activityType) {
+      case ActitvityType.comment:
+        return ' commented on this post';
+      case ActitvityType.like:
+        return ' likes this post';
+      case ActitvityType.celebrate:
+        return ' celebrates this post';
+      case ActitvityType.support:
+        return ' supports this post';
+      case ActitvityType.love:
+        return ' loves this post';
+      case ActitvityType.insightful:
+        return ' finds this post insightful';
+      case ActitvityType.funny:
+        return ' finds this post funny';
+      default:
+        return 'none';
+    }
+  }
+
+}

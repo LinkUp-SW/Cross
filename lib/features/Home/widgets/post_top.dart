@@ -1,25 +1,21 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:link_up/features/Home/home_enums.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
 import 'package:link_up/features/Home/viewModel/posts_vm.dart';
 import 'package:link_up/features/Home/widgets/bottom_sheets.dart';
 import 'package:link_up/shared/themes/colors.dart';
 
 class PostTop extends ConsumerWidget {
-  const PostTop({
-    super.key,
-    required bool isAd,
-    required this.post
-  }) : _isAd = isAd;
+  const PostTop({super.key, required bool isAd, required this.post})
+      : _isAd = isAd;
 
   final bool _isAd;
   final PostModel post;
 
   @override
-  Widget build(BuildContext context,WidgetRef ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -28,30 +24,24 @@ class PostTop extends ConsumerWidget {
             SizedBox(
               width: 10.w,
             ),
-            for (int i = 0; i < 3; i++)
-              Align(
-                widthFactor: 0.6,
-                child: CircleAvatar(
-                  radius: 12.r,
-                  child: CircleAvatar(
-                    radius: 10.r,
-                    backgroundImage: const NetworkImage(
-                        'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg'),
-                  ),
-                ),
-              ),
+            CircleAvatar(
+              radius: 12.r,
+              backgroundImage: NetworkImage(post.activity.actorProfileImage),
+            ),
             SizedBox(
               width: 10.w,
             ),
-            const Text.rich(
+            Text.rich(
               TextSpan(
+                style: TextStyle(fontSize: 10.sp),
                 children: [
                   TextSpan(
-                    text: 'John Doe',
+                    text: post.activity.actorName,
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   TextSpan(
-                    text: ' • johndoe',
+                    text:
+                        ActitvityType.getActivityTypeString(post.activity.type),
                     style: TextStyle(color: AppColors.grey),
                   ),
                 ],
@@ -65,8 +55,7 @@ class PostTop extends ConsumerWidget {
           children: [
             IconButton(
               onPressed: () {
-                
-                aboutPostBottomSheet(context,isAd: _isAd,post: post);
+                aboutPostBottomSheet(context, isAd: _isAd, post: post);
               },
               icon: const Icon(Icons.more_horiz),
             ),

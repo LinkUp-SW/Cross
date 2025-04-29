@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -42,9 +44,15 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
       children: [
         Flexible(
           flex: 1,
-          child: CircleAvatar(
-            radius: 15.r,
-            backgroundImage: NetworkImage(widget.comment.header.profileImage,),
+          child: GestureDetector(
+            onTap:() {
+              //TODO: navigate to user profile page
+              log('userprofile: ${widget.comment.header.userId}');
+            },
+            child: CircleAvatar(
+              radius: 15.r,
+              backgroundImage: NetworkImage(widget.comment.header.profileImage,),
+            ),
           ),
         ),
         SizedBox(

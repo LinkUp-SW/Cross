@@ -46,14 +46,13 @@ class PostsNotifier extends StateNotifier<List<PostState>> {
     //TODO: Implement fetchPosts form backend
     // Take note that the repost with thoughts could cause problems so check should be done
     final BaseService service = BaseService();
-    log('Fetching posts with cursor: ${PostState.nextCursor}');
     final response = await service.get('api/v1/post/posts/feed',queryParameters: {
       'limit': '20',
       'cursor': PostState.nextCursor.toString(),
     });
     if(response.statusCode == 200) {
       final data =jsonDecode(response.body);
-      //log('Fetched posts: $data');
+      log('Fetched posts: $data');
       final List<PostModel> posts = (data['posts'] as List).map((e) => PostModel.fromJson(e)).toList();
       PostState.nextCursor = data['nextCursor'] ?? -1;
       return posts;

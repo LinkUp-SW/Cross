@@ -133,7 +133,6 @@ class _PostPageState extends ConsumerState<PostPage> {
                 controller: _scrollController,
                 children: [
                   Posts(
-                      showTop: false,
                       inFeed: false,
                       inMessage: true,
                       post: post),

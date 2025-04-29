@@ -88,7 +88,6 @@ class Media {
             child: Posts(
               post: post!,
               showBottom: false,
-              showTop: false,
             ));
       default:
         return const SizedBox();

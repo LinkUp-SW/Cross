@@ -38,7 +38,7 @@ class CommentModel {
         taggedUsers = List<String>.from(json['tagged_users'] ?? []),
         reaction = Reaction.getReaction(json['userReaction'] ?? 'none'),
         repliesList =json['children'] != null  ? (json['children'] as List).map((e) => CommentModel.fromJson(e)).toList(): [],
-        media = Media.fromJson(json['media']);
+        media = json['media'] != null ?  Media.fromJson(json['media']): Media.initial();
 
   Map<String, dynamic> toJson() => {
         'id': id,

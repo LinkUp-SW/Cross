@@ -36,7 +36,7 @@ class _PostHeaderState extends ConsumerState<PostHeader> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        //TDOO: navigate to user profile page
+        //TODO: navigate to user profile page
         log('userprofile: ${widget.post.header.userId}');
       },
       child: Flex(

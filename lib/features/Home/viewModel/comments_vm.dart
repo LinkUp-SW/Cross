@@ -37,7 +37,7 @@ class CommentsProvider extends StateNotifier<Map<String, dynamic>> {
         queryParameters: {
           'limit': '10',
           'cursor': (cursor ?? state['cursor']).toString(),
-          'replyLimit': '2',
+          'replyLimit': '1',
         },
         routeParameters: {
           'postId': postId,

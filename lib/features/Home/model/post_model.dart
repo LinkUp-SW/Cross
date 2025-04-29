@@ -1,4 +1,5 @@
 import 'package:link_up/features/Home/home_enums.dart';
+import 'package:link_up/features/Home/model/activity_model.dart';
 import 'package:link_up/features/Home/model/header_model.dart';
 import 'package:link_up/features/Home/model/media_model.dart';
 
@@ -19,6 +20,8 @@ class PostModel {
   List<String> taggedUsers = [];
   List<dynamic> topReactions = [];
 
+  ActivityModel activity = ActivityModel.initial();
+
   bool saved;
 
   PostModel({
@@ -38,6 +41,7 @@ class PostModel {
 
   PostModel.fromJson(Map<String, dynamic> json)
       : id = json['_id'],
+        activity = json['activityContext'] != null ? ActivityModel.fromJson(json['activityContext']): ActivityModel.initial(),
         header = HeaderModel.fromJson(json),
         text = json['content'],
         media = Media.fromJson(json['media']),

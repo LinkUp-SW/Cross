@@ -123,7 +123,6 @@ class _RepostsPageState extends State<SavedPostsPage> {
                             return Card(
                               child: Posts(
                                 post: posts[index],
-                                showTop: false,
                               ),
                             );
                           },

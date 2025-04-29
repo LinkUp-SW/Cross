@@ -10,6 +10,7 @@ import 'package:link_up/features/Home/model/post_model.dart';
 import 'package:link_up/features/Home/post_functions.dart';
 import 'package:link_up/features/Home/viewModel/post_vm.dart';
 import 'package:link_up/features/Home/widgets/bottom_sheets.dart';
+import 'package:link_up/features/Home/widgets/comment_bubble.dart';
 import 'package:link_up/features/Home/widgets/post_header.dart';
 import 'package:link_up/features/Home/widgets/post_top.dart';
 import 'package:link_up/features/Home/widgets/reactions.dart';
@@ -19,14 +20,12 @@ import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/widgets/bottom_sheet.dart';
 
 class Posts extends ConsumerStatefulWidget {
-  final bool showTop;
   final bool inFeed;
   final bool showBottom;
   final bool inMessage;
   final PostModel post;
   const Posts(
       {super.key,
-      this.showTop = true,
       this.showBottom = true,
       this.inFeed = false,
       this.inMessage = false,
@@ -48,7 +47,7 @@ class _PostsState extends ConsumerState<Posts> {
       },
       child: Column(
         children: [
-          if (widget.showTop && widget.inFeed)
+          if (widget.post.activity.show && widget.inFeed)
             Column(
               children: [
                 PostTop(
@@ -66,7 +65,7 @@ class _PostsState extends ConsumerState<Posts> {
           PostHeader(post: widget.post,
               inFeed: widget.inFeed,
               inMessage: widget.inMessage,
-              showTop: widget.showTop),
+              showTop: widget.post.activity.show),
           Align(
             alignment: Alignment.centerLeft,
             child: Padding(
@@ -306,6 +305,11 @@ class _PostsState extends ConsumerState<Posts> {
               ],
             ),
             SizedBox(height: 10.h),
+            if(widget.post.activity.show && widget.post.activity.type == ActitvityType.comment)
+              Padding(
+                padding: EdgeInsets.all(8.r),
+                child: CommentBubble(comment: widget.post.activity.comment, refresh: (){}),
+              )
           ],
         ],
       ),
