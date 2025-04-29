@@ -28,8 +28,13 @@ class ExternalEndPoints {
   static const followingsList =
       'api/v1/user/my-network/network-manager/following';
   static const unfollow = 'api/v1/user/unfollow/:user_id';
-  static const addEducation = 'api/v1/user/add-education';
+   static const addEducation = 'api/v1/user/add-education';
   static const connect = 'api/v1/user/connect/:user_id';
   static const peopleYouMayKnow = 'api/v1/user/people-you-may-know';
   static const peopleSearch = 'api/v1/search/users';
+
+  static const addEducation = 'api/v1/user/add-education'; 
+  static const getUserEducation = 'api/v1/user/profile/education/:user_id';
+  static const getUserExperience = 'api/v1/user/profile/experience/:user_id';
+
 }
