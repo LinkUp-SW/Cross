@@ -9,6 +9,7 @@ import 'package:link_up/features/Home/model/media_model.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
 import 'package:link_up/features/Home/post_functions.dart';
 import 'package:link_up/features/Home/viewModel/post_vm.dart';
+import 'package:link_up/features/Home/viewModel/reactions_vm.dart';
 import 'package:link_up/features/Home/widgets/bottom_sheets.dart';
 import 'package:link_up/features/Home/widgets/comment_bubble.dart';
 import 'package:link_up/features/Home/widgets/post_header.dart';
@@ -100,6 +101,7 @@ class _PostsState extends ConsumerState<Posts> {
                 children: [
                   GestureDetector(
                     onTap: () {
+                      ref.read(reactionsProvider.notifier).setPost(widget.post.id);
                       context.push("/reactions");
                     },
                     child: Row(
@@ -260,12 +262,12 @@ class _PostsState extends ConsumerState<Posts> {
                                       );
                                 }
                                 context.pop();
-                                context.push('/post');
+                                context.push('/writePost');
                               },
                               leading: const Icon(Icons.edit),
                               title: const Text("Repost with your thoughts"),
-                              subtitle: const Text(
-                                  "Create new post with 'name' post attached"),
+                              subtitle: Text(
+                                  "Create new post with ${widget.post.header.name} post attached"),
                             ),
                             ListTile(
                               onTap: () {
@@ -273,8 +275,8 @@ class _PostsState extends ConsumerState<Posts> {
                               },
                               leading: const Icon(Icons.loop),
                               title: const Text("Repost"),
-                              subtitle: const Text(
-                                  "Instantly bring 'name' post to others' feeds"),
+                              subtitle: Text(
+                                  "Instantly bring ${widget.post.header.name} post to others' feeds"),
                             ),
                           ],
                         ),

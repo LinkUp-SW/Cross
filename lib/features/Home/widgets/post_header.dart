@@ -88,11 +88,12 @@ class _PostHeaderState extends ConsumerState<PostHeader> {
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    widget.post.header.about,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 10.r, color: AppColors.grey),
-                  ),
+                  if (widget.post.header.about != '')
+                    Text(
+                      widget.post.header.about,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: 10.r, color: AppColors.grey),
+                    ),
                   if (!widget.post.isCompany)
                     Text.rich(
                       TextSpan(
@@ -125,104 +126,102 @@ class _PostHeaderState extends ConsumerState<PostHeader> {
               ),
             ),
           ),
-          if(!widget.inMessage)
-          Flexible(
-            flex: 0,
-            child: Wrap(
-              children: [
-                widget.post.header.userId == InternalEndPoints.userId ||
-                        _isConnected
-                    ? SizedBox()
-                    : _showFollow
-                        ? TextButton(
-                            onPressed: () {
-                              setState(() {
-                                _following = !_following;
-                                if (_following) {
-                                  followUser(widget.post.header.userId);
-                                } else {
-                                  unfollowUser(widget.post.header.userId);
-                                }
-                              });
-                            },
-                            child: Wrap(
-                              crossAxisAlignment: WrapCrossAlignment.center,
-                              children: [
-                                Icon(
-                                  _following ? Icons.check : Icons.add,
-                                  color: _following ? AppColors.grey : null,
-                                ),
-                                SizedBox(width: 5.w),
-                                Text(
-                                  _following ? 'Following' : 'Follow',
-                                  style: TextStyle(
-                                    color: _following ? AppColors.grey : null,
-                                  ),
-                                ),
-                              ],
-                            ))
-                        : TextButton(
-                            onPressed: !_following
-                                ? () {
-                                    setState(() {
-                                      _following = !_following;
-                                      connectToUser(widget.post.header.userId);
-                                    });
-                                  }
-                                : null,
-                            child: Wrap(
-                              crossAxisAlignment: WrapCrossAlignment.center,
-                              children: [
-                                Icon(
-                                  _following
-                                      ? Icons.access_time
-                                      : Icons.person_add_alt_1,
-                                  color: _following ? AppColors.grey : null,
-                                ),
-                                SizedBox(width: 5.w),
-                                Text(
-                                  _following ? 'Pending' : 'Connect',
-                                  style: TextStyle(
-                                    color: _following ? AppColors.grey : null,
-                                  ),
-                                ),
-                              ],
-                            )),
-                !widget.showTop
-                    ? Wrap(
-                        alignment: WrapAlignment.end,
-                        runAlignment: WrapAlignment.end,
-                        children: [
-                          IconButton(
-                            onPressed: () {
-                              widget.post.header.userId ==
-                                      InternalEndPoints.userId
-                                  ? aboutPostBottomSheet(context, 
-                                      post: widget.post)
-                                  : 
-                              myPostBottomSheet(context, ref,
-                                  post: widget.post);
-
-                              
-                            },
-                            icon: const Icon(Icons.more_horiz),
-                          ),
-                          if (widget.inFeed)
-                            IconButton(
-                              //TODO: Remove post from feed
+          if (!widget.inMessage)
+            Flexible(
+              flex: 0,
+              child: Wrap(
+                children: [
+                  widget.post.header.userId == InternalEndPoints.userId ||
+                          _isConnected
+                      ? SizedBox()
+                      : _showFollow
+                          ? TextButton(
                               onPressed: () {
-                                ref
-                                    .read(postsProvider.notifier)
-                                    .showUndo(widget.post.id);
+                                setState(() {
+                                  _following = !_following;
+                                  if (_following) {
+                                    followUser(widget.post.header.userId);
+                                  } else {
+                                    unfollowUser(widget.post.header.userId);
+                                  }
+                                });
                               },
-                              icon: const Icon(Icons.close),
+                              child: Wrap(
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                children: [
+                                  Icon(
+                                    _following ? Icons.check : Icons.add,
+                                    color: _following ? AppColors.grey : null,
+                                  ),
+                                  SizedBox(width: 5.w),
+                                  Text(
+                                    _following ? 'Following' : 'Follow',
+                                    style: TextStyle(
+                                      color: _following ? AppColors.grey : null,
+                                    ),
+                                  ),
+                                ],
+                              ))
+                          : TextButton(
+                              onPressed: !_following
+                                  ? () {
+                                      setState(() {
+                                        _following = !_following;
+                                        connectToUser(
+                                            widget.post.header.userId);
+                                      });
+                                    }
+                                  : null,
+                              child: Wrap(
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                children: [
+                                  Icon(
+                                    _following
+                                        ? Icons.access_time
+                                        : Icons.person_add_alt_1,
+                                    color: _following ? AppColors.grey : null,
+                                  ),
+                                  SizedBox(width: 5.w),
+                                  Text(
+                                    _following ? 'Pending' : 'Connect',
+                                    style: TextStyle(
+                                      color: _following ? AppColors.grey : null,
+                                    ),
+                                  ),
+                                ],
+                              )),
+                  !widget.showTop
+                      ? Wrap(
+                          alignment: WrapAlignment.end,
+                          runAlignment: WrapAlignment.end,
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                widget.post.header.userId ==
+                                        InternalEndPoints.userId
+                                    ? aboutPostBottomSheet(context,
+                                        post: widget.post)
+                                    : myPostBottomSheet(context, ref,
+                                        post: widget.post);
+                              },
+                              icon: const Icon(Icons.more_horiz),
                             ),
-                        ],
-                      )
-                    : SizedBox(),
-              ],
+                            if (widget.inFeed)
+                              IconButton(
+                                //TODO: Remove post from feed
+                                onPressed: () {
+                                  ref
+                                      .read(postsProvider.notifier)
+                                      .showUndo(widget.post.id);
+                                },
+                                icon: const Icon(Icons.close),
+                              ),
+                          ],
+                        )
+                      : SizedBox(),
+                ],
+              ),
             ),
-          ),
         ],
       ),
     );

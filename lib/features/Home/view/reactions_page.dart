@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/Home/home_enums.dart';
 import 'package:link_up/features/Home/model/reaction_tile_model.dart';
-import 'package:link_up/features/Home/viewModel/post_vm.dart';
+import 'package:link_up/features/Home/viewModel/reactions_vm.dart';
 import 'package:link_up/shared/themes/colors.dart';
 
 class ReactionsPage extends ConsumerStatefulWidget {
@@ -15,27 +15,61 @@ class ReactionsPage extends ConsumerStatefulWidget {
 }
 
 class _ReactionsPageState extends ConsumerState<ReactionsPage> {
-  late Map<String, int> reactionsCount = {};
-  late Map<String, List<ReactionTileModel>> reactions = {};
+  bool isLoading = false;
+  ScrollController scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     intialLoad();
+    scrollController.addListener(() {
+      if (scrollController.position.pixels ==
+          scrollController.position.maxScrollExtent) {
+        final reactionsCount = ref.watch(reactionsProvider).reactionsCount;
+        final cursors = ref.watch(reactionsProvider).cursor;
+        for (var reaction in reactionsCount.keys) {
+          if (cursors[reaction] != null) {
+            getMoreReactions(reaction);
+          }
+        }
+      }
+    });
   }
 
   Future<void> intialLoad() async {
-    reactions = await ref.read(postProvider.notifier).fetchReactions();
     setState(() {
-      reactionsCount = {
-        for (var reaction in reactions.keys)
-          reaction: reactions[reaction]!.length
-      };
+      isLoading = true;
     });
+    await ref.read(reactionsProvider.notifier).fetchReactions(Reaction.none);
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  Future<void> getMoreReactionsAll() async {
+    await ref.read(reactionsProvider.notifier).fetchReactions(Reaction.none);
+    setState(() {});
+  }
+
+  Future<void> getMoreReactions(Reaction reaction) async {
+    await ref.read(reactionsProvider.notifier).fetchReactions(reaction);
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
+    final reactions = ref.watch(reactionsProvider).reactions;
+    final reactionsCount = ref.watch(reactionsProvider).reactionsCount;
+    final cursors = ref.watch(reactionsProvider).cursor;
+
+    if (isLoading) {
+      return Center(
+        child: CircularProgressIndicator(
+          color: Theme.of(context).colorScheme.secondary,
+        ),
+      );
+    }
+
     return DefaultTabController(
       length: reactionsCount.length,
       child: Scaffold(
@@ -45,56 +79,73 @@ class _ReactionsPageState extends ConsumerState<ReactionsPage> {
           backgroundColor: Theme.of(context).colorScheme.primary,
           leading: IconButton(
             onPressed: () {
+              ref.read(reactionsProvider.notifier).clear();
               context.pop();
             },
             icon: const Icon(Icons.arrow_back),
           ),
-          bottom: reactions.isEmpty
-              ? null
-              : TabBar(
-                  tabAlignment: TabAlignment.start,
-                  isScrollable: true,
-                  labelColor: Theme.of(context).colorScheme.tertiary,
-                  indicatorColor: Theme.of(context).colorScheme.tertiary,
-                  dividerColor: AppColors.grey,
-                  tabs: [
-                      Tab(
-                        child: Text('All  ${reactionsCount['All'].toString()}',
-                            textAlign: TextAlign.center),
-                      ),
-                      for (var reaction in reactionsCount.keys)
-                        if (reaction != 'All')
-                          Tab(
-                            icon: Row(
-                              children: [
-                                Reaction.getIcon(
-                                    Reaction.getReaction(reaction), 20.r),
-                                Text(
-                                  '  ${reactionsCount[reaction].toString()}',
-                                ),
-                              ],
-                            ),
-                          ),
-                    ]),
-        ),
-        body: reactions.isEmpty
-            ? const Center(
-                child: CircularProgressIndicator(
-                  color: AppColors.darkBlue,
+          bottom: TabBar(
+              tabAlignment: TabAlignment.start,
+              isScrollable: true,
+              labelColor: Theme.of(context).colorScheme.tertiary,
+              indicatorColor: Theme.of(context).colorScheme.tertiary,
+              dividerColor: AppColors.grey,
+              onTap: (index) {
+                // Handle tab switching
+                Reaction? selectedReaction;
+                if (index == 0) {
+                  selectedReaction = null; // All reactions
+                } else {
+                  // Get the specific reaction type from the keys, skipping the first one (Reaction.none)
+                  final reactionsList = reactionsCount.keys.toList();
+                  selectedReaction = reactionsList[index];
+                }
+
+                // Fetch reactions based on selected tab
+                if (selectedReaction == null) {
+                  if (cursors[Reaction.none] != null) {
+                    getMoreReactionsAll();
+                  }
+                } else {
+                  if (cursors[selectedReaction] != null) {
+                    getMoreReactions(selectedReaction);
+                  }
+                }
+              },
+              tabs: [
+                Tab(
+                  child: Text(
+                      'All  ${reactionsCount[Reaction.none].toString()}',
+                      textAlign: TextAlign.center),
                 ),
-              )
-            : TabBarView(
-                children: [
-                  ...reactions.keys.map((reaction) => ListView.builder(
-                        itemCount: reactions[reaction]!.length,
-                        itemBuilder: (context, index) {
-                          return ReactionTile(
-                            reactionTile: reactions[reaction]!.elementAt(index),
-                          );
-                        },
-                      ))
-                ],
+                for (var reaction in reactionsCount.keys)
+                  if (reaction != Reaction.none)
+                    Tab(
+                      icon: Row(
+                        children: [
+                          Reaction.getIcon(reaction, 20.r),
+                          Text(
+                            '  ${reactionsCount[reaction].toString()}',
+                          ),
+                        ],
+                      ),
+                    ),
+              ]),
+        ),
+        body: TabBarView(
+          children: [
+            for (var reaction in reactionsCount.keys)
+              ListView.builder(
+                controller: scrollController,
+                itemCount: reactions[reaction]!.length,
+                itemBuilder: (context, index) {
+                  return ReactionTile(
+                    reactionTile: reactions[reaction]!.elementAt(index),
+                  );
+                },
               ),
+          ],
+        ),
       ),
     );
   }
@@ -139,6 +190,8 @@ class ReactionTile extends StatelessWidget {
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          reactionTile.header.about == ''
+              ? const SizedBox():
           Text(reactionTile.header.about,
               style: const TextStyle(color: AppColors.grey)),
           const Divider(
