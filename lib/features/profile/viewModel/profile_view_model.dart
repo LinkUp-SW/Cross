@@ -2,15 +2,20 @@
 import 'dart:developer';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/features/profile/services/profile_services.dart';
+import 'package:link_up/features/profile/model/education_model.dart'; 
+import 'package:link_up/features/profile/model/position_model.dart';
 import 'package:link_up/features/profile/state/profile_state.dart';
 import 'package:link_up/core/constants/endpoints.dart';
 import 'package:link_up/features/profile/model/profile_model.dart';
 
+final experienceDataProvider = StateProvider<List<PositionModel>?>((ref) => null);
+final educationDataProvider = StateProvider<List<EducationModel>?>((ref) => null);
 class ProfileViewModel extends StateNotifier<ProfileState> {
   final ProfileService _profileService;
+  final Ref _ref;
   String? _currentUserId;
 
-  ProfileViewModel(this._profileService) : super(const ProfileInitial());
+  ProfileViewModel(this._profileService, this._ref) : super(const ProfileInitial()); // Pass ref
 
   Future<void> fetchUserProfile([String? userId]) async {
     final String idToFetch = userId ?? InternalEndPoints.userId;
@@ -28,6 +33,8 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
 
     try {
       final userProfile = await _profileService.getUserProfile(idToFetch);
+      final educationData = await _profileService.getUserEducation(idToFetch);
+      final experienceData = await _profileService.getUserExperience(idToFetch);
       if (mounted) {
         if (userProfile.profilePhotoUrl.isNotEmpty) {
           InternalEndPoints.profileUrl = userProfile.profilePhotoUrl;
@@ -36,6 +43,10 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
           InternalEndPoints.profileUrl = '';
           log("ProfileViewModel: Fetched profilePhotoUrl is empty, setting InternalEndPoints.profileUrl to empty.");
         }
+        _ref.read(educationDataProvider.notifier).state = educationData;
+        _ref.read(experienceDataProvider.notifier).state = experienceData;
+        log("ProfileViewModel: Updated experienceDataProvider with ${experienceData.length} items.");
+        log("ProfileViewModel: Updated educationDataProvider with ${educationData.length} items.");
         state = ProfileLoaded(userProfile);
       }
     } catch (e) {
@@ -57,8 +68,6 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
            headline: currentProfile.headline,
            countryRegion: currentProfile.countryRegion,
            city: currentProfile.city,
-           experience: currentProfile.experience,
-           education: currentProfile.education,
            profilePhotoUrl: newUrl,
            coverPhotoUrl: currentProfile.coverPhotoUrl,
            numberOfConnections: currentProfile.numberOfConnections,
@@ -83,8 +92,6 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
            headline: currentProfile.headline,
            countryRegion: currentProfile.countryRegion,
            city: currentProfile.city,
-           experience: currentProfile.experience,
-           education: currentProfile.education,
            profilePhotoUrl: currentProfile.profilePhotoUrl,
            coverPhotoUrl: newUrl,
            numberOfConnections: currentProfile.numberOfConnections,
@@ -101,5 +108,5 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
 final profileViewModelProvider =
     StateNotifierProvider.autoDispose<ProfileViewModel, ProfileState>((ref) {
   final profileService = ref.watch(profileServiceProvider);
-  return ProfileViewModel(profileService);
+  return ProfileViewModel(profileService,ref);
 });

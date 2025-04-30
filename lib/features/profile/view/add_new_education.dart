@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -28,36 +27,27 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
   final FocusNode _endDateFocusNode = FocusNode();
   final FocusNode _schoolFocusNode = FocusNode();
 
-
-
-  Map<String, dynamic>? _selectedSchoolData;
-
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final currentViewModelState = ref.read(addEducationViewModelProvider);
-      final formData = _getFormDataFromState(currentViewModelState);
-    });
+     WidgetsBinding.instance.addPostFrameCallback((_) {
+        final formData = _getFormDataFromState(ref.read(addEducationViewModelProvider));
+        if (formData == null) {
+           ref.read(addEducationViewModelProvider.notifier).resetForm();
+        }
+     });
   }
 
   AddEducationFormData? _getFormDataFromState(AddEducationFormState state) {
-    if (state is AddEducationIdle) {
-      return state.formData;
-    } else if (state is AddEducationLoading) {
-      return state.formData;
-    } else if (state is AddEducationFailure) {
-      return state.formData;
-    }
+    if (state is AddEducationIdle) return state.formData;
+    if (state is AddEducationLoading) return state.formData;
+    if (state is AddEducationFailure) return state.formData;
     return null;
   }
 
-  
 
   @override
   void dispose() {
-    
-
     _startDateFocusNode.dispose();
     _endDateFocusNode.dispose();
     _schoolFocusNode.dispose();
@@ -65,7 +55,7 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
   }
 
   Future<void> _selectDate(BuildContext context, bool isStartDate) async {
-    final viewModel = ref.read(addEducationViewModelProvider.notifier);
+     final viewModel = ref.read(addEducationViewModelProvider.notifier);
     final currentState = viewModel.state;
     final currentFormData = _getFormDataFromState(currentState);
 
@@ -118,15 +108,14 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
 
     ref.listen<AddEducationFormState>(addEducationViewModelProvider,
         (previous, next) {
-
       if (next is AddEducationSuccess) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Education saved successfully!')),
+          const SnackBar(content: Text('Education saved successfully!'), backgroundColor: Colors.green),
         );
         GoRouter.of(context).pop();
       } else if (next is AddEducationFailure) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${next.message}')),
+          SnackBar(content: Text('Error: ${next.message}'), backgroundColor: Colors.red),
         );
       }
     });
@@ -134,13 +123,14 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
     final state = ref.watch(addEducationViewModelProvider);
     final viewModel = ref.read(addEducationViewModelProvider.notifier);
     final formData = _getFormDataFromState(state);
-    // Define max lengths here or get from constants/ViewModel
-   final maxDescriptionChars = 2000;
-   final maxActivitiesChars = 500;
 
-   // ---> CALCULATE COUNTS HERE <---
-   final descriptionCharCount = formData?.descriptionController.text.length ?? 0;
-   final activitiesCharCount = formData?.activitiesController.text.length ?? 0;
+    final maxDescriptionChars = viewModel.maxDescriptionChars;
+    final maxActivitiesChars = viewModel.maxActivitiesChars;
+
+    final descriptionCharCount = formData?.descriptionController.text.length ?? 0;
+    final activitiesCharCount = formData?.activitiesController.text.length ?? 0;
+
+    final bool isSaving = state is AddEducationLoading;
 
     return Scaffold(
       backgroundColor: isDarkMode ? AppColors.darkBackground : AppColors.lightBackground,
@@ -168,20 +158,17 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                                 label: "School", isRequired: true),
                             SizedBox(height: 2.h),
                             GestureDetector(
-                              onTap: () async {
-                                final selectedSchool = await GoRouter.of(context).push<Map<String, dynamic>>(
+                              onTap: isSaving ? null : () async {
+                                final selectedSchool = await GoRouter.of(context)
+                                    .push<Map<String, dynamic>>(
                                   '/search_school',
                                   extra: formData.schoolController.text,
                                 );
 
-                                if (selectedSchool != null && selectedSchool.containsKey('name')) {
-                                  if (mounted) {
-                                      setState(() {
-                                        formData.schoolController.text = selectedSchool['name'];
-                                        _selectedSchoolData = selectedSchool;
-                                        log("Selected School updated: $_selectedSchoolData");
-                                      });
-                                  }
+                                if (selectedSchool != null &&
+                                    selectedSchool.containsKey('_id') &&
+                                    selectedSchool.containsKey('name')) {
+                                  viewModel.setSelectedSchool(selectedSchool);
                                 }
                               },
                               child: AbsorbPointer(
@@ -189,6 +176,7 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                                   controller: formData.schoolController,
                                   hintText: "Ex: Cairo University",
                                   focusNode: _schoolFocusNode,
+                                  enabled: !isSaving,
                                   suffixIcon: Icon(
                                     Icons.search,
                                     color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
@@ -203,6 +191,7 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                             SizedBox(height: 2.h),
                             SubPagesCustomTextField(
                               controller: formData.degreeController,
+                              enabled: !isSaving,
                               hintText: "Ex: Bachelor's",
                             ),
                             SizedBox(height: 20.h),
@@ -211,18 +200,20 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                             SizedBox(height: 2.h),
                             SubPagesCustomTextField(
                               controller: formData.fieldOfStudyController,
+                               enabled: !isSaving,
                               hintText: "Ex: Engineering",
                             ),
                             SizedBox(height: 20.h),
                             SubPagesFormLabel(
                                 label: "Start date", isRequired: true),
                             InkWell(
-                              onTap: () => _selectDate(context, true),
+                              onTap: isSaving ? null : () => _selectDate(context, true),
                               child: AbsorbPointer(
                                 child: SubPagesCustomTextField(
                                   controller: formData.startDateController,
                                   hintText: "Select start date",
                                   focusNode: _startDateFocusNode,
+                                   enabled: !isSaving,
                                   suffixIcon: Icon(
                                     Icons.calendar_today,
                                     color: isDarkMode
@@ -238,9 +229,9 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                                 label: "End date or expected",
                                 isRequired: true),
                             InkWell(
-                              onTap: formData.isEndDatePresent
+                              onTap: isSaving ? null : (formData.isEndDatePresent
                                   ? null
-                                  : () => _selectDate(context, false),
+                                  : () => _selectDate(context, false)),
                               child: AbsorbPointer(
                                 child: SubPagesCustomTextField(
                                   controller: formData.endDateController,
@@ -248,7 +239,7 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                                       ? "Present"
                                       : "Select end date",
                                   focusNode: _endDateFocusNode,
-                                  enabled: !formData.isEndDatePresent,
+                                  enabled: !isSaving && !formData.isEndDatePresent,
                                   suffixIcon: Icon(
                                     Icons.calendar_today,
                                     color: formData.isEndDatePresent
@@ -263,20 +254,13 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                               children: [
                                 Checkbox(
                                   value: formData.isEndDatePresent,
-                                  onChanged: (value) {
+                                  onChanged: isSaving ? null : (value) {
                                     if (value != null) {
                                       viewModel.setIsEndDatePresent(value);
-
-                                       if (!value && formData.endDateController.text == "Present") {
-                                          formData.endDateController.clear();
-
-                                          if (formData.selectedEndDate != null) {
-                                             viewModel.setDate(formData.selectedEndDate!, false);
-                                          }
-                                       }
                                     }
                                   },
                                   activeColor: AppColors.lightGreen,
+                                   checkColor: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
                                 ),
                                 Text(
                                   "I am currently studying here",
@@ -293,6 +277,7 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                             SizedBox(height: 2.h),
                             SubPagesCustomTextField(
                               controller: formData.gradeController,
+                               enabled: !isSaving,
                               hintText: "Ex: 3.8/4.0 or 85%",
                             ),
                             SizedBox(height: 20.h),
@@ -301,8 +286,10 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                             SizedBox(height: 2.h),
                             SubPagesCustomTextField(
                               controller: formData.activitiesController,
+                               enabled: !isSaving,
                               hintText: "Ex: IEEE, Debate Club",
                               maxLines: null,
+                              maxLength: maxActivitiesChars,
                             ),
                              Padding(
                               padding: EdgeInsets.only(top: 4.h, right: 8.w),
@@ -310,7 +297,7 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   Text(
-                                   "$activitiesCharCount / $maxActivitiesChars characters", // Use calculated value
+                                   "$activitiesCharCount / $maxActivitiesChars characters",
                                     style: TextStyles.font12_400Weight.copyWith(
                                       color: activitiesCharCount > maxActivitiesChars
                                              ? Colors.red
@@ -325,8 +312,10 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                             SizedBox(height: 2.h),
                             SubPagesCustomTextField(
                               controller: formData.descriptionController,
+                               enabled: !isSaving,
                               hintText: "Add details about your education...",
                               maxLines: null,
+                              maxLength: maxDescriptionChars,
                             ),
                             Padding(
                               padding: EdgeInsets.only(top: 4.h, right: 8.w),
@@ -334,7 +323,8 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   Text(
-                                      "$descriptionCharCount / $maxDescriptionChars characters",                                    style: TextStyles.font12_400Weight.copyWith(
+                                      "$descriptionCharCount / $maxDescriptionChars characters",
+                                      style: TextStyles.font12_400Weight.copyWith(
                                       color: descriptionCharCount > maxDescriptionChars
                                              ? Colors.red
                                              : AppColors.lightGrey,
@@ -356,7 +346,7 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                             ),
                             SizedBox(height: 10.h),
                             ElevatedButton(
-                              onPressed: () {
+                              onPressed: isSaving ? null : () {
                                 },
                               style: isDarkMode
                                   ? buttonStyles.blueOutlinedButtonDark()
@@ -380,7 +370,7 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                             ),
                              SizedBox(height: 10.h),
                             ElevatedButton(
-                              onPressed: () {
+                              onPressed: isSaving ? null : () {
                                 },
                               style: isDarkMode
                                   ? buttonStyles.blueOutlinedButtonDark()
@@ -402,12 +392,12 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                   style: buttonStyles.wideBlueElevatedButton().copyWith(
-                       minimumSize: WidgetStateProperty.all(Size.fromHeight(50))),
-                  onPressed: state is AddEducationLoading
-                      ? null
-                      : () => viewModel.saveEducation(),
-                  child: state is AddEducationLoading
+                  style: (isDarkMode
+                      ? buttonStyles.wideBlueElevatedButtonDark()
+                      : buttonStyles.wideBlueElevatedButton()
+                  ).copyWith(minimumSize: MaterialStateProperty.all(Size.fromHeight(50.h))),
+                  onPressed: isSaving ? null : () => viewModel.saveEducation(),
+                  child: isSaving
                       ? const SizedBox(
                           height: 20,
                           width: 20,
@@ -415,7 +405,7 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                               color: Colors.white, strokeWidth: 2.0))
                       : Text("Save",
                           style: TextStyles.font15_500Weight
-                              .copyWith(color: AppColors.lightMain)),
+                              .copyWith(color: isDarkMode ? AppColors.darkMain : AppColors.lightMain)),
                 ),
               ),
             ),
