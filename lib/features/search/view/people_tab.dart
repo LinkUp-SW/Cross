@@ -86,13 +86,14 @@ class _PeopleTabState extends ConsumerState<PeopleTab> {
                   label: Text(
                     '1st',
                     style: TextStyles.font14_500Weight.copyWith(
-                        color: state.currentPeopleDegreeFilter == '1st'
-                            ? isDarkMode
-                                ? AppColors.darkBackground
-                                : AppColors.lightBackground
-                            : isDarkMode
-                                ? AppColors.darkTextColor
-                                : AppColors.lightSecondaryText),
+                      color: state.currentPeopleDegreeFilter == '1st'
+                          ? isDarkMode
+                              ? AppColors.darkBackground
+                              : AppColors.lightBackground
+                          : isDarkMode
+                              ? AppColors.darkTextColor
+                              : AppColors.lightSecondaryText,
+                    ),
                   ),
                   onSelected: (bool selected) {
                     if (selected) {
@@ -116,13 +117,14 @@ class _PeopleTabState extends ConsumerState<PeopleTab> {
                   label: Text(
                     '2nd',
                     style: TextStyles.font14_500Weight.copyWith(
-                        color: state.currentPeopleDegreeFilter == '2nd'
-                            ? isDarkMode
-                                ? AppColors.darkBackground
-                                : AppColors.lightBackground
-                            : isDarkMode
-                                ? AppColors.darkTextColor
-                                : AppColors.lightSecondaryText),
+                      color: state.currentPeopleDegreeFilter == '2nd'
+                          ? isDarkMode
+                              ? AppColors.darkBackground
+                              : AppColors.lightBackground
+                          : isDarkMode
+                              ? AppColors.darkTextColor
+                              : AppColors.lightSecondaryText,
+                    ),
                   ),
                   onSelected: (bool selected) {
                     if (selected) {
@@ -146,13 +148,14 @@ class _PeopleTabState extends ConsumerState<PeopleTab> {
                   label: Text(
                     '3rd+',
                     style: TextStyles.font14_500Weight.copyWith(
-                        color: state.currentPeopleDegreeFilter == '3rd+'
-                            ? isDarkMode
-                                ? AppColors.darkBackground
-                                : AppColors.lightBackground
-                            : isDarkMode
-                                ? AppColors.darkTextColor
-                                : AppColors.lightSecondaryText),
+                      color: state.currentPeopleDegreeFilter == '3rd+'
+                          ? isDarkMode
+                              ? AppColors.darkBackground
+                              : AppColors.lightBackground
+                          : isDarkMode
+                              ? AppColors.darkTextColor
+                              : AppColors.lightSecondaryText,
+                    ),
                   ),
                   onSelected: (bool selected) {
                     if (selected) {
@@ -180,13 +183,13 @@ class _PeopleTabState extends ConsumerState<PeopleTab> {
                       notification.metrics.maxScrollExtent - 200 &&
                   !state.isLoadingMore &&
                   state.currentPage != null) {
-                ref
-                    .read(peopleTabViewModelProvider.notifier)
-                    .loadMorePeople(queryParameters: {
-                  "query": widget.keyWord,
-                  "connectionDegree": state.currentPeopleDegreeFilter,
-                  "page": '${state.currentPage! + 1}'
-                });
+                ref.read(peopleTabViewModelProvider.notifier).loadMorePeople(
+                  queryParameters: {
+                    "query": widget.keyWord,
+                    "connectionDegree": state.currentPeopleDegreeFilter,
+                    "page": '${state.currentPage! + 1}'
+                  },
+                );
               }
               return false;
             },
@@ -200,9 +203,10 @@ class _PeopleTabState extends ConsumerState<PeopleTab> {
                     child: Text(
                       'About ${parseIntegerToCommaSeparatedString(state.peopleCount ?? 0)} results',
                       style: TextStyles.font15_500Weight.copyWith(
-                          color: isDarkMode
-                              ? AppColors.darkTextColor
-                              : AppColors.lightSecondaryText),
+                        color: isDarkMode
+                            ? AppColors.darkTextColor
+                            : AppColors.lightSecondaryText,
+                      ),
                     ),
                   ),
                 ),
@@ -219,7 +223,8 @@ class _PeopleTabState extends ConsumerState<PeopleTab> {
                             state.isError
                         ? SliverToBoxAdapter(
                             child: StandardEmptyListMessage(
-                              message: widget.keyWord.isNotEmpty
+                              message: widget.keyWord.isNotEmpty &&
+                                      widget.keyWord != " "
                                   ? 'No people found based on ${widget.keyWord}'
                                   : 'Please enter search word',
                             ),
