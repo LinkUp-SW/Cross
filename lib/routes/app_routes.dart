@@ -39,6 +39,7 @@ import 'package:link_up/shared/widgets/main_drawer.dart';
 import 'package:link_up/features/jobs/view/view.dart';
 import 'package:link_up/features/jobs/view/job_details.dart';
 import 'package:link_up/features/jobs/view/my_jobs_screen.dart';
+import 'package:link_up/features/jobs/view/search_jobs_page.dart';
 final goRouterProvider = Provider<GoRouter>((ref) {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -191,6 +192,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                     GoRoute(
                       path: "/myjobs",
                       builder: (context, state) => const MyJobsScreen(),
+                    ),
+                    GoRoute(
+                      path: "/searchjobs",
+                      builder: (context, state) => const SearchJobsPage(),
                     ),
                   ],
                 ),

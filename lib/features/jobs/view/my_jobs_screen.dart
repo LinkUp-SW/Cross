@@ -6,7 +6,6 @@ import 'package:link_up/features/jobs/widgets/empty_jobs_state.dart';
 import 'package:link_up/features/jobs/widgets/saved_job_card.dart';
 import 'package:link_up/shared/themes/colors.dart';
 
-
 class MyJobsScreen extends ConsumerStatefulWidget {
   const MyJobsScreen({super.key});
 
@@ -28,6 +27,13 @@ class _MyJobsScreenState extends ConsumerState<MyJobsScreen> {
     final state = ref.watch(myJobsViewModelProvider);
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
+    if (state.isLoading) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
     
     if (state.savedJobs.isEmpty) {
       return EmptyJobsState(

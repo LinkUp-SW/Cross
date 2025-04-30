@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/core/services/base_service.dart';
 import 'package:link_up/core/constants/endpoints.dart';
-import 'package:link_up/features/jobs/view/view.dart';
 import 'dart:developer' as developer;
 
 class JobScreenService {

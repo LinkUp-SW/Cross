@@ -36,5 +36,5 @@ class ExternalEndPoints {
   static const saveJob = 'api/v1/jobs/save-jobs/:jobId';
   static const unsaveJob = 'api/v1/jobs/unsave-jobs/:jobId';
   static const getSavedJobs = 'api/v1/jobs/get-saved-jobs';
-  
+  static const searchJobs = 'api/v1/jobs/search-jobs';
 }

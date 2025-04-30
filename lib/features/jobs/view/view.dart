@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:link_up/features/jobs/model/jobs_screen_model.dart';
+import 'package:link_up/features/jobs/view/search_jobs_page.dart';
 import 'package:link_up/features/jobs/viewModel/jobs_screen_view_model.dart';
 import 'package:link_up/features/jobs/widgets/job_card_refactor.dart';
 import 'package:link_up/features/jobs/widgets/jobs_section.dart';
@@ -9,8 +9,9 @@ import 'package:link_up/shared/themes/button_styles.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/shared/widgets/custom_app_bar.dart';
-import 'package:link_up/shared/widgets/custom_search_bar.dart';
 import 'package:link_up/features/jobs/view/my_jobs_screen.dart';
+
+
 class JobsScreen extends ConsumerStatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
   const JobsScreen({
@@ -18,7 +19,7 @@ class JobsScreen extends ConsumerStatefulWidget {
     required this.scaffoldKey,
   });
   @override
-  ConsumerState<ConsumerStatefulWidget> createState()=>_CreateJobsScreenState();
+  ConsumerState<ConsumerStatefulWidget> createState() =>_CreateJobsScreenState();
 
     
   
@@ -49,7 +50,42 @@ Future<void> _refreshJobs() async {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: CustomAppBar(
-        searchBar: const CustomSearchBar(),
+        searchBar: GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const SearchJobsPage(),
+              ),
+            );
+          },
+          child: Container(
+            height: 35.h,
+            decoration: BoxDecoration(
+              color: isDarkMode ? Colors.grey[800] : Colors.grey[200],
+              borderRadius: BorderRadius.circular(8.r),
+            ),
+            child: Row(
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12.w),
+                  child: Icon(
+                    Icons.search,
+                    color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                    size: 20.sp,
+                  ),
+                ),
+                Text(
+                  'Search jobs',
+                  style: TextStyle(
+                    color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                    fontSize: 14.sp,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
         leadingAction: () {
           widget.scaffoldKey.currentState!.openDrawer();
         },

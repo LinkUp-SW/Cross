@@ -18,6 +18,86 @@ class SavedJobCard extends StatelessWidget {
     required this.onUnsave,
   });
 
+  void _showOptionsBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
+      ),
+      builder: (context) => Container(
+        padding: EdgeInsets.symmetric(vertical: 16.h),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40.w,
+              height: 4.h,
+              margin: EdgeInsets.only(bottom: 16.h),
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2.r),
+              ),
+            ),
+            _buildOptionTile(
+              context,
+              icon: Icons.edit_note_outlined,
+              text: 'Apply',
+              onTap: () {
+                Navigator.pop(context);
+                // TODO: Implement apply functionality
+              },
+            ),
+            _buildOptionTile(
+              context,
+              icon: Icons.send_outlined,
+              text: 'Send in a message',
+              onTap: () {
+                Navigator.pop(context);
+                // TODO: Implement send message functionality
+              },
+            ),
+            _buildOptionTile(
+              context,
+              icon: Icons.share_outlined,
+              text: 'Share via...',
+              onTap: () {
+                Navigator.pop(context);
+                // TODO: Implement share functionality
+              },
+            ),
+            _buildOptionTile(
+              context,
+              icon: Icons.bookmark_border,
+              text: 'Unsave',
+              onTap: () {
+                Navigator.pop(context);
+                onUnsave();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOptionTile(
+    BuildContext context, {
+    required IconData icon,
+    required String text,
+    required VoidCallback onTap,
+  }) {
+    return ListTile(
+      leading: Icon(icon, color: Colors.grey[700]),
+      title: Text(
+        text,
+        style: TextStyles.font16_400Weight.copyWith(
+          color: Colors.grey[800],
+        ),
+      ),
+      onTap: onTap,
+    );
+  }
+
   Widget _buildCompanyLogo() {
     return Container(
       width: 50.w,
@@ -101,10 +181,10 @@ class SavedJobCard extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    onPressed: onUnsave,
+                    onPressed: () => _showOptionsBottomSheet(context),
                     icon: Icon(
-                      Icons.bookmark,
-                      color: Colors.blue,
+                      Icons.more_vert,
+                      color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
                       size: 24.sp,
                     ),
                   ),
