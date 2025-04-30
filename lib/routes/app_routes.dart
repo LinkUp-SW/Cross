@@ -40,7 +40,7 @@ import 'package:link_up/features/jobs/view/view.dart';
 import 'package:link_up/features/profile/view/search_school_page.dart';
 import 'package:link_up/features/profile/view/search_organization.dart';
 import 'package:link_up/features/profile/view/add_section.dart';
-
+import 'package:link_up/features/profile/view/edit_about.dart';
 final goRouterProvider = Provider<GoRouter>((ref) {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -111,6 +111,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         GoRoute(
           path: "/add_profile_section",
           builder: (context, state) => const AddSectionPage(),
+         ),
+          GoRoute( 
+           path: "/edit_about",
+           builder: (context, state) => const EditAboutPage(),
          ),
         GoRoute(
             path: "/search_school",

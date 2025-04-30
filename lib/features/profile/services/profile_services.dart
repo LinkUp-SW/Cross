@@ -12,6 +12,7 @@ import 'package:link_up/features/profile/model/contact_info_model.dart';
 import 'package:link_up/features/profile/model/education_model.dart';
 import 'package:link_up/features/profile/model/profile_model.dart';
 import 'package:link_up/features/profile/model/position_model.dart'; 
+import 'package:link_up/features/profile/model/about_model.dart';
 import 'package:mime/mime.dart';
 
 class ProfileService extends BaseService {
@@ -60,6 +61,69 @@ class ProfileService extends BaseService {
        rethrow;
      }
    }
+Future<AboutModel> getUserAboutAndSkills(String userId) async {
+    const String endpointTemplate = ExternalEndPoints.userProfileAbout;
+    log('ProfileService: Fetching about and skills for user ID: $userId');
+    try {
+      final response = await super.get(
+        endpointTemplate,
+        routeParameters: {'user_id': userId},
+      );
+      log('ProfileService: getUserAboutAndSkills API Response Status Code: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonData = jsonDecode(response.body);
+        log('ProfileService: Fetched About/Skills JSON: ${jsonData.toString()}');
+        return AboutModel.fromJson(jsonData);
+      } else {
+        log('ProfileService: getUserAboutAndSkills API Error: Status Code ${response.statusCode}, Body: ${response.body}');
+        if (response.statusCode == 404) {
+           log('ProfileService: About section not found for user $userId, returning default.');
+           return const AboutModel(about: '', skills: []); // Return default if not found
+        }
+        throw Exception('Failed to load about section (Status code: ${response.statusCode})');
+      }
+    } catch (e) {
+      log('ProfileService: Error in getUserAboutAndSkills: $e');
+      return const AboutModel(about: '', skills: []); // Return default on other errors
+    }
+  }
+
+   Future<bool> updateOrAddUserAbout({
+      required String userId, // Keep userId for logging, but not for the path
+      required String aboutText,
+      required bool isCreating // Flag to determine POST or PUT
+  }) async {
+    // *** CORRECTED ENDPOINT PATH for POST/PUT ***
+    const String endpoint = 'api/v1/user/profile/about'; // Use the exact path from docs
+    final httpMethod = isCreating ? 'POST' : 'PUT';
+    log('ProfileService: ${isCreating ? 'Adding' : 'Updating'} about for user ID: $userId via $httpMethod to endpoint: $endpoint');
+
+    final Map<String, dynamic> requestBody = {'about': aboutText};
+    log('ProfileService: Sending $httpMethod request body: ${jsonEncode(requestBody)}');
+    try {
+      final response = isCreating
+          ? await super.post(endpoint, body: requestBody) // Use super.post
+          : await super.put(endpoint, requestBody); // Use super.put
+      log('ProfileService: updateOrAddUserAbout ($httpMethod) API Response Status Code: ${response.statusCode}');
+      log('ProfileService: updateOrAddUserAbout ($httpMethod) API Response Body: ${response.body}'); // Log the full response body
+
+      // Check status code AFTER logging
+      // POST often returns 201 (Created), PUT often returns 200 (OK) or 204 (No Content)
+      if (response.statusCode == 200 || response.statusCode == 201 || response.statusCode == 204) {
+          log('ProfileService: About ${isCreating ? 'add' : 'update'} successful (status code check).');
+          return true;
+      } else {
+          // Log failure before returning false or throwing
+          log('ProfileService: About ${isCreating ? 'add' : 'update'} failed (status code ${response.statusCode}).');
+          // Optionally throw an exception with more details from response.body if needed by ViewModel
+          // throw Exception('Failed to ${isCreating ? 'add' : 'update'} about: ${response.body}');
+          return false; // Indicate failure for non-success codes
+      }
+    } catch(e, stackTrace) {
+      log('ProfileService: Error ${isCreating ? 'adding' : 'updating'} about: $e\nStackTrace: $stackTrace');
+      rethrow; // Rethrow to be caught by ViewModel
+    }
+  }
   Future<List<PositionModel>> getUserExperience(String userId) async {
      const String endpointTemplate = ExternalEndPoints.getUserExperience; //'api/v1/user/profile/experience/:user_id';
      log('ProfileService: Fetching experience for user ID: $userId');

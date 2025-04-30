@@ -31,7 +31,7 @@ class _AddSectionPageState extends ConsumerState<AddSectionPage> {
 
 
   final List<SectionItem> allCoreItems = [
-    SectionItem(title: "Add about", route: "/edit_intro", icon: Icons.info_outline, type: "about"),
+    SectionItem(title: "Add about", route: "/edit_about", icon: Icons.info_outline, type: "about"),
     SectionItem(title: "Add education", route: "/add_new_education", icon: Icons.school_outlined, type: "education"),
     SectionItem(title: "Add position", route: "/add_new_position", icon: Icons.work_outline, type: "position"), 
     SectionItem(title: "Add skills", route: "/add_skills", icon: Icons.star_outline, type: "skills"), 

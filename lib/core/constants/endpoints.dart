@@ -35,5 +35,6 @@ class ExternalEndPoints {
 
   static const getUserEducation = 'api/v1/user/profile/education/:user_id';
   static const getUserExperience = 'api/v1/user/profile/experience/:user_id';
+  static const userProfileAbout = 'api/v1/user/profile/about/:user_id';
 
 }
