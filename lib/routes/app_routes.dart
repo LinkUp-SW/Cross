@@ -40,10 +40,11 @@ import 'package:link_up/features/jobs/view/view.dart';
 import 'package:link_up/features/profile/view/search_school_page.dart';
 import 'package:link_up/features/profile/view/search_organization.dart';
 
-final goRouterProvider = Provider<GoRouter>((ref) {
-  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+final goRouterProvider = Provider<GoRouter>(
+  (ref) {
+    final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
-  return GoRouter(
+    return GoRouter(
       navigatorKey: navigatorKey,
       initialLocation: '/login',
       routes: <RouteBase>[
@@ -276,5 +277,13 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           ),
         ),
         GoRoute(path: "/settings", builder: (context, state) => SettingsPage()),
-      ]);
-});
+        GoRoute(
+          path: "/payment",
+          builder: (context, state) => DummyPage(
+            title: 'Payment',
+          ),
+        ),
+      ],
+    );
+  },
+);
