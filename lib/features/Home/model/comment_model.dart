@@ -14,6 +14,7 @@ class CommentModel {
   bool isReply = false;
   List<dynamic> taggedUsers;
   List<CommentModel> repliesList = [];
+  List<Reaction> topReactions = [];
 
   CommentModel({
     required this.postId,
@@ -38,6 +39,7 @@ class CommentModel {
         taggedUsers = List<String>.from(json['tagged_users'] ?? []),
         reaction = Reaction.getReaction(json['userReaction'] ?? 'none'),
         repliesList =json['children'] != null  ? (json['children'] as List).map((e) => CommentModel.fromJson(e)).toList(): [],
+        topReactions = json['topReactions'] != null ? (json['topReactions'] as List).map((e) => Reaction.getReaction(e)).toList() : [],
         media = json['media'] != null ?  Media.fromJson(json['media']): Media.initial();
 
   Map<String, dynamic> toJson() => {
