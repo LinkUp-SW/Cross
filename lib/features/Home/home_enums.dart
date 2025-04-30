@@ -148,6 +148,7 @@ enum Reaction {
 
 
 enum ActitvityType {
+  repost,
   comment,
   like,
   celebrate,
@@ -159,6 +160,8 @@ enum ActitvityType {
 
   static ActitvityType getActivityType(String activityType) {
     switch (activityType) {
+      case 'repost':
+        return ActitvityType.repost;
       case 'comment':
         return ActitvityType.comment;
       case 'like':
@@ -180,6 +183,8 @@ enum ActitvityType {
 
   static String getActivityTypeString(ActitvityType activityType) {
     switch (activityType) {
+      case ActitvityType.repost:
+        return ' reposted this post';
       case ActitvityType.comment:
         return ' commented on this post';
       case ActitvityType.like:
