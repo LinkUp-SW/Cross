@@ -35,15 +35,15 @@ class _PostPageState extends ConsumerState<PostPage> {
     super.initState();
     widget.focused ? _focusNode.requestFocus() : _focusNode.unfocus();
     _scrollController = ScrollController()..addListener(scrollListener);
-    postId = ref.read(postProvider.notifier).getPostId();
     ref.read(commentsProvider.notifier).clearComments();
+    postId = ref.read(postProvider.notifier).getPostId();
     _isLoading = true;
-    ref.read(commentsProvider.notifier).fetchComments(postId,cursor: 0).then((value) {
-      ref.read(commentsProvider.notifier).setComments(value);
+    ref.read(postProvider.notifier).getPost(postId).then((value) {
+      ref.read(commentsProvider.notifier).setCommentsFromPost(value);
       setState(() {
         _isLoading = false;
       });
-    });
+    },);
     _focusNode.addListener(() {
       setState(() {});
     });
@@ -86,9 +86,17 @@ class _PostPageState extends ConsumerState<PostPage> {
 
   @override
   Widget build(BuildContext context) {
-    final PostModel post = ref.watch(postProvider);
+    final PostModel post = ref.watch(postProvider).post;
     final List<dynamic> comments = ref.watch(commentsProvider)['comments'];
     setState(() {});
+
+    if(ref.watch(postProvider).isLoading) {
+      return Center(
+        child: CircularProgressIndicator(
+          color: Theme.of(context).colorScheme.secondary,
+        ),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(

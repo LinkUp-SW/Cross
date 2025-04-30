@@ -25,6 +25,12 @@ class CommentsProvider extends StateNotifier<Map<String, dynamic>> {
     state['comments'].addAll(comments);
   }
 
+  void setCommentsFromPost(Map<String,dynamic> comments) {
+    state['comments'].clear();
+    state['comments'].addAll(comments['comments'].map((e) => CommentModel.fromJson(e)).toList());
+    state['cursor'] = comments['nextCursor'];
+  }
+
   void clearComments() {
     state['comments'].clear();
   }

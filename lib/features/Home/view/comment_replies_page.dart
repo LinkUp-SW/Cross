@@ -38,7 +38,7 @@ class _CommentRepliesPageState extends ConsumerState<CommentRepliesPage> {
     ref
         .read(commentProvider.notifier)
         .fetchCommentReplies(
-          ref.read(postProvider).id,
+          ref.read(postProvider).post.id,
           cursor: 0,
         )
         .then((value) {
@@ -55,7 +55,7 @@ class _CommentRepliesPageState extends ConsumerState<CommentRepliesPage> {
       ref
           .read(commentProvider.notifier)
           .fetchCommentReplies(
-            ref.read(postProvider).id,
+            ref.read(postProvider).post.id,
             cursor: ref.read(commentProvider).cursor,
           )
           .then((value) {
@@ -74,7 +74,7 @@ class _CommentRepliesPageState extends ConsumerState<CommentRepliesPage> {
     ref
         .read(commentProvider.notifier)
         .fetchCommentReplies(
-          ref.read(postProvider).id,
+          ref.read(postProvider).post.id,
           cursor: 0,
         )
         .then((value) {
@@ -88,7 +88,7 @@ class _CommentRepliesPageState extends ConsumerState<CommentRepliesPage> {
   @override
   Widget build(BuildContext context) {
     final CommentModel comment = ref.watch(commentProvider).comment;
-    final String postId = ref.watch(postProvider).id;
+    final String postId = ref.watch(postProvider).post.id;
     setState(() {});
     return Scaffold(
       appBar: AppBar(
