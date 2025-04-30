@@ -137,7 +137,11 @@ class _PeopleSearchCardState extends ConsumerState<PeopleSearchCard> {
                                       ),
                                       Expanded(
                                         child: Text(
-                                          "${widget.data.firstMutualConnectionName} and ${widget.data.mutualConnectionsCount - 1} mutual connections",
+                                          widget.data.mutualConnectionsCount -
+                                                      1 >
+                                                  0
+                                              ? "${widget.data.firstMutualConnectionName} and ${widget.data.mutualConnectionsCount - 1} mutual connections"
+                                              : "${widget.data.firstMutualConnectionName} is a mutual connections",
                                           style: TextStyles.font13_500Weight
                                               .copyWith(
                                             color: isDarkMode
