@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/core/services/base_service.dart';
 import 'package:link_up/core/constants/endpoints.dart';
@@ -33,6 +34,7 @@ class ConnectionsScreenServices {
         queryParameters: queryParameters,
         routeParameters: routeParameters,
       );
+      log (response.body.toString());
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       }

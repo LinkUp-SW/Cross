@@ -1,90 +1,68 @@
-enum MessageType { text, image, video, document }
-enum DeliveryStatus { sent, delivered, read }
-
-MessageType messageTypeFromString(String type) {
-  switch (type.toLowerCase()) {
-    case 'text':
-      return MessageType.text;
-    case 'image':
-      return MessageType.image;
-    case 'video':
-      return MessageType.video;
-    case 'document':
-      return MessageType.document;
-    default:
-      return MessageType.text;
-  }
-}
-
-String messageTypeToString(MessageType type) {
-  return type.toString().split('.').last;
-}
-
-DeliveryStatus deliveryStatusFromString(String status) {
-  switch (status.toLowerCase()) {
-    case 'sent':
-      return DeliveryStatus.sent;
-    case 'delivered':
-      return DeliveryStatus.delivered;
-    case 'read':
-      return DeliveryStatus.read;
-    default:
-      return DeliveryStatus.sent;
-  }
-}
-
-String deliveryStatusToString(DeliveryStatus status) {
-  return status.toString().split('.').last;
-}
+import 'dart:developer';
 
 class Message {
-  final String sender;
-  final String content;
+  final String messageId;
+  final String senderId;
+  final String senderName;
+  final String message;
+  final List<String> media;
   final DateTime timestamp;
-  final MessageType type;
-  final DeliveryStatus deliveryStatus;
+  final String reacted;
+  final bool isSeen;
+  final bool isOwnMessage;
+  final bool?isEdited;
 
   Message({
-    required this.sender,
-    required this.content,
+    required this.messageId,
+    required this.senderId,
+    required this.senderName,
+    required this.message,
+    required this.media,
     required this.timestamp,
-    required this.type,
-    required this.deliveryStatus,
+    this.reacted = '',
+    this.isSeen = false,
+    this.isOwnMessage=false,
+    this.isEdited = false,
   });
 
   factory Message.fromJson(Map<String, dynamic> json) {
-    return Message(
-      sender: json['sender'],
-      content: json['content'],
-      timestamp: DateTime.parse(json['timestamp']),
-      type: messageTypeFromString(json['type']),
-      deliveryStatus: deliveryStatusFromString(json['deliveryStatus']),
-    );
+    try {
+      log('Parsing message - ID: ${json['messageId']}, senderId: ${json['senderId']}, isOwn: ${json['isOwnMessage']}');
+
+      return Message(
+        messageId: json['messageId'] ?? '',
+        senderId: json['senderId'] ?? '',
+        senderName: json['senderName'] ?? '',
+        message: json['message'] ?? '',
+        media: List<String>.from(json['media'] ?? []),
+        timestamp: DateTime.parse(json['timestamp'] ?? DateTime.now().toIso8601String()),
+        reacted: json['reacted']?.toString() ?? '',
+        isSeen: json['isSeen'] ?? false,
+        isOwnMessage: json['isOwnMessage'] ?? false,
+        isEdited: json['isEdited'] ?? false,
+      );
+    } catch (e, stackTrace) {
+      log('Error parsing message: $json');
+      log('Parse error: $e');
+      log('Stack trace: $stackTrace');
+      rethrow;
+    }
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'sender': sender,
-      'content': content,
+      'messageId': messageId,
+      'senderId': senderId,
+      'senderName': senderName,
+      'message': message,
+      'media': media,
       'timestamp': timestamp.toIso8601String(),
-      'type': messageTypeToString(type),
-      'deliveryStatus': deliveryStatusToString(deliveryStatus),
+      'reacted': reacted,
+      'isSeen': isSeen,
+      'isOwnMessage': isOwnMessage,
+      'isEdited': isEdited,
     };
   }
 
-  Message copyWith({
-    String? sender,
-    String? content,
-    DateTime? timestamp,
-    MessageType? type,
-    DeliveryStatus? deliveryStatus,
-  }) {
-    return Message(
-      sender: sender ?? this.sender,
-      content: content ?? this.content,
-      timestamp: timestamp ?? this.timestamp,
-      type: type ?? this.type,
-      deliveryStatus: deliveryStatus ?? this.deliveryStatus,
-    );
-  }
+  bool hasReaction() => reacted.isNotEmpty;
 }

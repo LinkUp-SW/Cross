@@ -191,7 +191,7 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
 
     final mediaContent = await state.media.setToUpload();
 
-    final response = await service.put('api/v1/post/edit-post', {
+    final response = await service.put('api/v1/post/edit-post',body: {
       "postId": state.postId,
       "content": state.controller.text,
       "mediaType": state.media.type.name,

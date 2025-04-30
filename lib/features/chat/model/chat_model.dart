@@ -9,6 +9,8 @@ class Chat {
   final DateTime lastMessageTimestamp;
   final int unreadCount;
   final bool isOnline;
+  final List<dynamic> conversationtype;
+
 
   Chat({
     required this.conversationId,
@@ -19,6 +21,7 @@ class Chat {
     required this.lastMessageTimestamp,
     required this.unreadCount,
     required this.isOnline,
+    required this.conversationtype
   });
 
   factory Chat.fromJson(Map<String, dynamic> json) {
@@ -33,6 +36,7 @@ class Chat {
       lastMessage: lastMessage['message'],
       lastMessageTimestamp: DateTime.parse(lastMessage['timestamp']),
       unreadCount: json['unreadCount'],
+      conversationtype:json['conversationType'],
       isOnline: otherUser['onlineStatus'] ?? false,
     );
   }

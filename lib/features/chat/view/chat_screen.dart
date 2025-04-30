@@ -1,24 +1,32 @@
-/* import 'dart:io';
+import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:link_up/core/constants/endpoints.dart';
+import 'package:link_up/features/chat/viewModel/messages_viewmodel.dart';
 import 'package:link_up/features/chat/widgets/typing_indicator.dart';
 import 'package:link_up/features/chat/widgets/video_player_screen.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
-
 import '../viewModel/chat_viewmodel.dart';
 import '../widgets/chat_message_bubble.dart';
 import '../widgets/chat_input_field.dart';
-import '../model/message_model.dart';
+
+import 'dart:developer';
 
 class ChatScreen extends ConsumerStatefulWidget {
-  final int chatIndex;
+  final String conversationId;
+  final String senderName;
+  final String senderProfilePicUrl;
 
-  const ChatScreen({super.key, required this.chatIndex});
+  const ChatScreen({
+    Key? key,
+    required this.conversationId,
+    required this.senderName,
+    required this.senderProfilePicUrl,
+  }) : super(key: key);
 
   @override
   _ChatScreenState createState() => _ChatScreenState();
@@ -27,13 +35,30 @@ class ChatScreen extends ConsumerStatefulWidget {
 class _ChatScreenState extends ConsumerState<ChatScreen> {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController messageController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+
+    Future.microtask(() {
+      log('Initializing chat screen for conversation: ${widget.conversationId}');
+      ref.read(messagesViewModelProvider(widget.conversationId).notifier).loadMessages();
+    });
+_scrollController.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+      // Load more messages when reaching the bottom
+      // ref.read(messagesViewModelProvider(widget.conversationId).notifier).loadMoreMessages();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final chats = ref.watch(chatViewModelProvider);
-    final messages = chats[widget.chatIndex].messages;
-    final chat = chats[widget.chatIndex];
+    final messagesState = ref.watch(messagesViewModelProvider(widget.conversationId));
+
+    log('Building chat screen. Messages count: ${messagesState.messages?.length ?? 0}');
 
     return Scaffold(
       backgroundColor: theme.colorScheme.background,
@@ -41,78 +66,102 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         backgroundColor: theme.appBarTheme.backgroundColor ?? theme.colorScheme.primary,
         iconTheme: IconThemeData(color: theme.iconTheme.color),
         title: Text(
-          chat.sendername,
+          widget.senderName,
           style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
       ),
       body: Column(
-        children: [
-          // Chat messages and typing indicator section
-          Expanded(
-            child: Column(
               children: [
                 Expanded(
-                  child: ListView.builder(
-                    controller: _scrollController,
-                    itemCount: chat.messages.length,
-                    itemBuilder: (context, index) {
-                      final message = chat.messages[index];
-                      final isLastMessage = index == messages.length - 1 && message.sender == InternalEndPoints.userId.split("-")[0].toString();
-                      return GestureDetector(
+                  child: messagesState.isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : messagesState.isError
+                          ? Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    'Failed to load messages',
+                                    style: Theme.of(context).textTheme.bodyLarge,
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      ref
+                                          .read(messagesViewModelProvider(widget.conversationId).notifier)
+                                          .loadMessages();
+                                    },
+                                    child: const Text('Retry'),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : (messagesState.messages?.isEmpty ?? true)
+                              ? Center(
+                                  child: Text(
+                                    'No messages yet\nStart a conversation!',
+                                    textAlign: TextAlign.center,
+                                    style: theme.textTheme.bodyLarge,
+                                  ),
+                                )
+                              : ListView.builder(
+                                  controller: _scrollController,
+                                  itemCount: messagesState.messages?.length,
+                                  itemBuilder: (context, index) {
+                                    final message = messagesState.messages![index];
+                                    /*  return GestureDetector(
                         onTap: () async {
                           await _handleMessageTap(message);
-                        },
-                        child: ChatMessageBubble(
-                          message: message,
-                          currentUserName: InternalEndPoints.userId.split("-")[0].toString(),
-                          currentUserProfilePicUrl: "assets/images/profile.png",
-                          chatProfilePicUrl: chat.senderprofilePictureUrl,
-                          isLastMessage: isLastMessage,
-                        ),
-                      );
-                    },
-                  ),
+                        }, */
+                                    return ChatMessageBubble(
+                                      message: message,
+                                      currentUserName: '${InternalEndPoints.userId.split('-')[0][0].toUpperCase()}${InternalEndPoints.userId.split('-')[0].substring(1)}',
+                                      currentUserProfilePicUrl: "assets/images/profile.png",
+                                      chatProfilePicUrl: widget.senderProfilePicUrl,
+                                      
+                                    );
+                                  },
+                                ),
                 ),
-
+              
+                /* onAttachmentPressed: () => _showAttachmentOptions(context), */
+          
+               ChatInputField(
+                       Controller: messageController,
+                      onSendPressed: _handleSendMessage)
                 // Typing indicator UI (appears inside chat screen above the input field)
-               
               ],
+  
+              
             ),
-          ),
-            if (chat.isTyping && chat.typingUser != InternalEndPoints.userId.split("-")[0].toString())
-                  TypingIndicator(
-                    isTyping: chat.isTyping,
-                    typingUser: chat.typingUser ?? '',
-                    currentUser: InternalEndPoints.userId.split("-")[0].toString(), // Or dynamically get the current user's name
-                    theme: theme, 
-                  ),
-          // Chat input field (Message sending section)
-          ChatInputField(
-            messageController: messageController,
-            onSendPressed: () {
-              if (messageController.text.isNotEmpty) {
-                ref.read(chatViewModelProvider.notifier).sendMessage(
-                      widget.chatIndex,
-                      messageController.text,
-                      MessageType.text,
-                    );
-                messageController.clear();
+          
 
-                // Scroll to the bottom after sending a message
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  _scrollToBottom();
-                });
-              }
-            },
-            onAttachmentPressed: () {
-              _showAttachmentOptions(context, ref, widget.chatIndex);
-            },
-          ),
-        ],
-      ),
-    );
+          // Chat input field (Message sending section)
+          /*  */
+       );
+
+  }
+   void _handleSendMessage() {
+    if (messageController.text.isEmpty) return;
+
+    /* ref.read(messagesViewModelProvider(widget.conversationId).notifier)
+       .sendMessage(messageController.text, []);
+        */
+    messageController.clear();
+    _scrollToBottom();
+  }
+   void _scrollToBottom() {
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
   }
 
+/* 
   Future<void> _handleMessageTap(Message message) async {
     if (message.type == MessageType.video) {
       await _handleVideoMessage(message);
@@ -122,8 +171,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       await _openImage(message);
     }
   }
-
-  Future<void> _handleVideoMessage(Message message) async {
+ */
+  /* Future<void> _handleVideoMessage(Message message) async {
     final theme = Theme.of(context);
     if (message.sender != InternalEndPoints.userId.split("-")[0].toString()) {
       Navigator.push(
@@ -233,8 +282,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       ),
     );
   }
-
-  void _showAttachmentOptions(BuildContext context, WidgetRef ref, int chatIndex) {
+ */
+  /* void _showAttachmentOptions(BuildContext context, WidgetRef ref, int chatIndex) {
     showModalBottomSheet(
       context: context,
       builder: (_) => Wrap(
@@ -289,13 +338,23 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         ],
       ),
     );
-  }
+  } */
+  /* void _handleSendMessage() {
+    if (messageController.text.isEmpty) return;
 
-  void _scrollToBottom() {
-    // Ensure the scroll happens to the bottom after the new message
-    if (_scrollController.hasClients) {
-      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
-    }
+    /* ref.read(messagesViewModelProvider(widget.conversationId).notifier)
+       .sendMessage(messageController.text, []);
+        */
+    messageController.clear();
+    _scrollToBottom();
+  } */
+
+ /*  */
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    messageController.dispose();
+    super.dispose();
   }
 }
- */

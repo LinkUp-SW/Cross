@@ -20,7 +20,13 @@ class ExternalEndPoints {
   static const userId = 'api/v1/user/my-network/connections/count';
   static const followingsList = 'api/v1/user/my-network/network-manager/following';
   static const unfollow = 'api/v1/user/unfollow/:user_id';
-  static const deleteChat= 'api/v1/conversations/:conversationId';
+  static const deleteChat = 'api/v1/conversations/:conversationId';
   static const blockmessaging = 'api/v1/user/block/:user_id';
   static const fetchChats = 'api/v1/conversations';
+  static const startnewchat = 'api/v1/conversations/start-conversation/:user2ID';
+  static const gotospecificchat = 'api/v1/conversations/:conversationId';
+  static const sendmessage = 'api/v1/conversations/:conversationId/send-message';
+  static const markread = 'api/v1/conversations/:conversationId/read';
+  static const getallcounts = 'api/v1/conversation/unread-conversations';
+  static const markunread= 'api/v1/conversations/:conversationId/unread';
 }

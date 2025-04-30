@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
 class ChatInputField extends StatelessWidget {
-  final TextEditingController messageController;
+  final TextEditingController Controller;
   final VoidCallback onSendPressed;
-  final VoidCallback onAttachmentPressed;
+/*   final VoidCallback onAttachmentPressed; */
 
   const ChatInputField({
     super.key,
-    required this.messageController,
+    required this.Controller,
     required this.onSendPressed,
-    required this.onAttachmentPressed,
+   /*  required this.onAttachmentPressed, */
   });
 
   @override
@@ -20,11 +20,11 @@ class ChatInputField extends StatelessWidget {
         children: [
           IconButton(
             icon: const Icon(Icons.attachment_rounded),
-            onPressed: onAttachmentPressed,
+            onPressed: () {}, // Placeholder callback function
           ),
           Expanded(
             child: TextField(
-              controller: messageController,
+              controller: Controller,
               decoration: InputDecoration(
                 hintText: "Write a message...",
                 border: OutlineInputBorder(

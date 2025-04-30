@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:link_up/features/chat/model/chat_model.dart';
 import 'package:link_up/features/chat/view/chat_screen.dart';
 import 'package:link_up/features/chat/view/new_chat_screen.dart';
 import '../viewModel/chat_viewmodel.dart';
@@ -42,10 +45,10 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
           IconButton(
             icon: Icon(Icons.message, color: theme.iconTheme.color),
             onPressed: () {
-              /*  Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const NewChatScreen()),
-    ); */
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const NewChatScreen()),
+              );
             },
           ),
         ],
@@ -81,19 +84,22 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
                           child: ChatTile(
                             chat: state.chats![index],
                             onTap: () {
-                              /* ref.read(chatViewModelProvider.notifier).toggleReadUnreadStatus(index);
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => ChatScreen(chatIndex: index),
+                                  builder: (context) => ChatScreen(
+                                    conversationId: state.chats![index].conversationId,
+                                    senderName: state.chats![index].sendername,
+                                    senderProfilePicUrl: state.chats![index].senderprofilePictureUrl,
+                                  ),
                                 ),
-                              ); */
+                              );
                             },
                             onLongPress: () {
-                              /*   _showReadUnreadOption(context, ref, index, chats[index].isUnread); */
+                              _showReadUnreadOption(context, ref, index);
                             },
                             onThreeDotPressed: () {
-                               _showChatOptions(context, ref, index);
+                              _showChatOptions(context, ref, index);
                             },
                           ),
                         );
@@ -102,7 +108,8 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
     );
   }
 
-  /*  void _showReadUnreadOption(BuildContext context, WidgetRef ref, int index, bool isUnread) {
+  void _showReadUnreadOption(BuildContext context, WidgetRef ref, int index) {
+    final chat = ref.read(chatViewModelProvider).chats![index];
     final theme = Theme.of(context);
 
     showModalBottomSheet(
@@ -113,16 +120,16 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
           children: [
             ListTile(
               leading: Icon(
-                isUnread ? Icons.mark_chat_read : Icons.mark_chat_unread,
+                chat.conversationtype.contains("Unread") ? Icons.mark_email_read : Icons.mark_email_unread,
                 color: theme.iconTheme.color,
               ),
               title: Text(
-                isUnread ? "Mark as Read" : "Mark as Unread",
+                chat.conversationtype.contains("Unread") ? "Mark as Read" : "Mark as Unread",
                 style: theme.textTheme.bodyMedium,
               ),
               onTap: () {
-                ref.read(chatViewModelProvider.notifier).markReadUnread(index);
                 Navigator.pop(context);
+                _handleReadUnreadToggle(context, ref, index, chat);
               },
             ),
           ],
@@ -130,9 +137,8 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
       },
     );
   }
-*/
+
   void _showChatOptions(BuildContext context, WidgetRef ref, int index) {
-    final chat = ref.read(chatViewModelProvider).chats![index];
     final theme = Theme.of(context);
 
     showModalBottomSheet(
@@ -150,28 +156,35 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
               },
             ),
             ListTile(
-              /* leading: Icon(
-                /* chat.isBlocked ? Icons.lock_open : Icons.block,
+              leading: Icon(
+                Icons.block,
                 color: theme.iconTheme.color,
               ),
               title: Text(
-                chat.isBlocked ? "Unblock this Person" : "Block this Person",
+                "Block this Person",
                 style: theme.textTheme.bodyMedium,
               ),
-              onTap: () { */
-               /*  if (chat.isBlocked) {
-                  ref.read(chatViewModelProvider.notifier).unblockUser(index);
-                } else {
-                  ref.read(chatViewModelProvider.notifier).blockUser(index);
-                }
-                Navigator.pop(context); */
-              }, */
+              onTap: () {
+                ref.read(chatViewModelProvider.notifier).blockUser(index);
+
+                Navigator.pop(context);
+              },
             ),
           ],
         );
       },
     );
-  
-   
-}
+  }
+
+  void _handleReadUnreadToggle(BuildContext context, WidgetRef ref, int index, Chat chat) {
+    log("Current conversation type: ${chat.conversationtype}");
+
+    if (chat.conversationtype.contains("Unread")) {
+      log("Marking chat as read...");
+      ref.read(chatViewModelProvider.notifier).markChatAsRead(index);
+    } else {
+      log("Marking chat as unread...");
+      ref.read(chatViewModelProvider.notifier).markChatAsUnread(index);
+    }
+  }
 }

@@ -11,9 +11,7 @@ import 'package:link_up/core/constants/endpoints.dart';
 class BaseService {
   Map<String, String> headers = {};
 
-  Future<Response> post(String endpoint,
-      {Map<String, dynamic>? body,
-      Map<String, dynamic>? routeParameters}) async {
+  Future<Response> post(String endpoint, {Map<String, dynamic>? body, Map<String, dynamic>? routeParameters}) async {
     try {
       final token = await getToken();
       String finalEndpoint = endpoint;
@@ -43,10 +41,23 @@ class BaseService {
     }
   }
 
-  Future<Response> put(String endpoint, Map<String, dynamic> body) async {
+  Future<Response> put(String endpoint, {Map<String, dynamic>? body,Map<String, dynamic>? routeParameters}) async {
     try {
       final token = await getToken();
-      final uri = Uri.parse('${ExternalEndPoints.baseUrl}$endpoint');
+      String finalEndpoint = endpoint;
+
+      if (routeParameters != null) {
+        routeParameters.forEach(
+          (key, value) {
+            finalEndpoint = finalEndpoint.replaceAll(
+              ':$key',
+              value.toString(),
+            );
+          },
+        );
+      }
+      Uri uri = Uri.parse('${ExternalEndPoints.baseUrl}$finalEndpoint');
+
       headers['Content-Type'] = 'application/json';
       headers['Authorization'] = 'Bearer $token';
       final response = await http
@@ -68,8 +79,7 @@ class BaseService {
   }
 
   Future<Response> get(String endpoint,
-      {Map<String, dynamic>? queryParameters,
-      Map<String, dynamic>? routeParameters}) async {
+      {Map<String, dynamic>? queryParameters, Map<String, dynamic>? routeParameters}) async {
     try {
       final token = await getToken();
       String finalEndpoint = endpoint;
@@ -115,8 +125,7 @@ class BaseService {
     }
   }
 
-  Future<Response> delete(
-      String endpoint, Map<String, dynamic>? routeParameters) async {
+  Future<Response> delete(String endpoint, Map<String, dynamic>? routeParameters) async {
     try {
       final token = await getToken();
       String finalEndpoint = endpoint;
@@ -148,11 +157,9 @@ class BaseService {
     String? rawCookie = response.headers['set-cookie'];
     if (rawCookie != null) {
       int index = rawCookie.indexOf(';');
-      headers['cookie'] =
-          (index == -1) ? rawCookie : rawCookie.substring(0, index);
+      headers['cookie'] = (index == -1) ? rawCookie : rawCookie.substring(0, index);
 
-      final tokenMatch =
-          RegExp(r'linkup_auth_token=([^;]+)').firstMatch(rawCookie);
+      final tokenMatch = RegExp(r'linkup_auth_token=([^;]+)').firstMatch(rawCookie);
       if (tokenMatch != null) {
         final token = tokenMatch.group(1);
         if (token != null && token.isNotEmpty) {
