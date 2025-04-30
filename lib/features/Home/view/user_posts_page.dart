@@ -3,29 +3,31 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:link_up/core/constants/endpoints.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
 import 'package:link_up/features/Home/post_functions.dart';
 import 'package:link_up/features/Home/widgets/posts.dart';
-import 'package:link_up/shared/themes/colors.dart';
 
-class SavedPostsPage extends StatefulWidget {
-  const SavedPostsPage({super.key});
+class UserPostsPage extends StatefulWidget {
+  const UserPostsPage({super.key});
 
   @override
-  State<SavedPostsPage> createState() => _RepostsPageState();
+  State<UserPostsPage> createState() => _RepostsPageState();
 }
 
-class _RepostsPageState extends State<SavedPostsPage> {
+class _RepostsPageState extends State<UserPostsPage> {
   final List<PostModel> posts = [];
   bool isLoading = true;
+  bool isLoadingMore = false;
+  String userId = InternalEndPoints.userId; // Replace with actual user ID
+  String userName = "Salah"; // Replace with actual user name
   int? cursor = 0; // Initialize cursor to 0
   ScrollController scrollController = ScrollController();
-  bool isLoadingMore = false;
   @override
   void initState() {
     super.initState();
     // Fetch saved posts when the page is initialized
-    getSavedPosts(cursor).then((fetchedPosts) {
+    getUserPosts(cursor,userId).then((fetchedPosts) {
       setState(() {
         posts.addAll(fetchedPosts.first);
         cursor = fetchedPosts.last;
@@ -47,9 +49,8 @@ class _RepostsPageState extends State<SavedPostsPage> {
     setState(() {
       isLoadingMore = true;
     });
-    await getSavedPosts(cursor).then((fetchedPosts) {
+    await getUserPosts(cursor,userId).then((fetchedPosts) {
       setState(() {
-        log(fetchedPosts.toString());
         posts.addAll(fetchedPosts.first);
         cursor = fetchedPosts.last;
         isLoadingMore = false;
@@ -65,7 +66,7 @@ class _RepostsPageState extends State<SavedPostsPage> {
     setState(() {
       isLoading = true;
     });
-    await getSavedPosts(cursor).then((fetchedPosts) {
+    await getUserPosts(cursor,userId).then((fetchedPosts) {
       setState(() {
         posts.clear();
         posts.addAll(fetchedPosts.first);
@@ -84,38 +85,15 @@ class _RepostsPageState extends State<SavedPostsPage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text('Saved Posts'),
+        title: Text(userId == InternalEndPoints.userId
+            ? 'My Posts'
+            : '$userName Posts'),
         backgroundColor: Theme.of(context).colorScheme.primary,
         leading: IconButton(
           onPressed: () {
             context.pop();
           },
           icon: const Icon(Icons.arrow_back),
-        ),
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(40.h),
-          child: Column(
-            children: [
-              Divider(
-                indent: 5.w,
-                endIndent: 5.w,
-                thickness: 0,
-                color: AppColors.grey,
-              ),
-              Padding(
-                padding: EdgeInsets.all(5.w).copyWith(left: 15.w),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    ChoiceChip(
-                        label: Text('All'),
-                        selected: true,
-                        onSelected: (value) {}),
-                  ],
-                ),
-              ),
-            ],
-          ),
         ),
       ),
       body: Scrollbar(
@@ -132,7 +110,7 @@ class _RepostsPageState extends State<SavedPostsPage> {
                         child: SingleChildScrollView(
                           physics: const AlwaysScrollableScrollPhysics(),
                           child: Text(
-                            'No saved posts yet',
+                            'No user posts yet',
                             style: TextStyle(
                               fontSize: 30.sp,
                             ),
@@ -145,10 +123,11 @@ class _RepostsPageState extends State<SavedPostsPage> {
                           controller: scrollController,
                           physics: const AlwaysScrollableScrollPhysics(),
                           shrinkWrap: true,
-                          itemCount: posts.length,
+                          itemCount: posts.length + 1,
                           separatorBuilder: (context, index) =>
                               const SizedBox(height: 10),
                           itemBuilder: (context, index) {
+                            
                             if (index == posts.length && isLoadingMore) {
                               return Center(
                                 child: CircularProgressIndicator(

@@ -83,8 +83,6 @@ Future<void> connectToUser(String userId) async {
       await service.post('api/v1/user/connect/:userId', routeParameters: {
     "userId": userId,
   });
-
-  log('Response: ${response.statusCode} - ${response.body}');
   if (response.statusCode == 200) {
     log('User connected successfully: ${response.body}');
   } else {
@@ -92,27 +90,54 @@ Future<void> connectToUser(String userId) async {
   }
 }
 
-Future<List<PostModel>> getSavedPosts() async {
+Future<Set> getSavedPosts(int? cursor) async {
   final BaseService service = BaseService();
   final response =
       await service.get('api/v1/post/save-post', queryParameters: {
     'limit': '10',
-    'cursor': '0',
+    'cursor': cursor.toString(),
+  });
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    log('Response: ${response.statusCode} - ${response.body}');
+    List<PostModel> posts = (data['posts'] as List)
+        .map((post) => PostModel.fromJson(post))
+        .toList();
+    
+    cursor = data['nextCursor'];
+    log('Cursor: $cursor');
+    for (var post in posts) {
+      post.saved = true;
+    }
+    return {posts,cursor};
+  } else {
+    log('Failed to retrieve saved posts');
+    return {};
+  }
+}
+
+Future<Set> getUserPosts(int? cursor,String userId) async {
+  final BaseService service = BaseService();
+  final response = await service.get('api/v1/post/posts/user/:userId', routeParameters: {
+    "userId": userId,
+  },
+  queryParameters: {
+    'limit': '10',
+    'cursor': cursor.toString(),
   });
 
   log('Response: ${response.statusCode} - ${response.body}');
   if (response.statusCode == 200) {
-    List<PostModel> posts = (jsonDecode(response.body)['posts'] as List)
+    final data = jsonDecode(response.body);
+    List<PostModel> posts = (data['posts'] as List)
         .map((post) => PostModel.fromJson(post))
         .toList();
-    log('Posts: $posts');
-    for (var post in posts) {
-      post.saved = true;
-    }
-    return posts;
+    cursor = data['nextCursor'];
+    log('Cursor: $cursor');
+    return {posts,cursor};
   } else {
-    log('Failed to retrieve saved posts');
-    return [];
+    log('Failed to retrieve user posts');
+    return {};
   }
 }
 

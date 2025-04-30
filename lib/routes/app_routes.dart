@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/Home/view/saved_posts.dart';
+import 'package:link_up/features/Home/view/user_posts_page.dart';
 import 'package:link_up/features/admin_panel/view/statistics_view.dart';
 import 'package:link_up/features/my-network/view/connections_screen.dart';
 import 'package:link_up/core/utils/global_keys.dart';
@@ -270,6 +271,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           path: '/savedPosts',
           builder: (context, state) => SavedPostsPage(),
         ),
+        GoRoute(path: '/userPosts', builder: (context, state) => UserPostsPage()),
         GoRoute(
             path: "/messages", builder: (context, state) => ChatListScreen()),
         GoRoute(path: "/chatpage", builder: (context, state) => Container()),
