@@ -29,6 +29,8 @@ class _SubscriptionManagementScreenScreenState
     });
   }
 
+  bool _isExpanded = false;
+
   @override
   Widget build(BuildContext context) {
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
@@ -68,7 +70,7 @@ class _SubscriptionManagementScreenScreenState
                 ),
               ),
             ),
-            height: 40.h,
+            height: 42.h,
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
               child: SizedBox(
@@ -97,7 +99,7 @@ class _SubscriptionManagementScreenScreenState
             height: 40.h,
             child: ListTile(
               title: Text(
-                'Curren Plan',
+                'Current Plan',
                 style: TextStyles.font15_700Weight.copyWith(
                   color: isDarkMode
                       ? AppColors.darkSecondaryText
@@ -112,7 +114,276 @@ class _SubscriptionManagementScreenScreenState
               ),
             ),
           ),
-          if (state.currentPlan.plan == 'premium') ...[
+          if (state.currentPlan.plan == 'free')
+            Column(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color:
+                        isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+                    border: Border(
+                      bottom: BorderSide(
+                        width: 0.3.w,
+                        color: isDarkMode
+                            ? AppColors.darkGrey
+                            : AppColors.lightGrey,
+                      ),
+                    ),
+                  ),
+                  child: ExpansionTile(
+                    iconColor: isDarkMode
+                        ? AppColors.darkSecondaryText
+                        : AppColors.lightTextColor,
+                    title: Text(
+                      "Premium plan details",
+                      style: TextStyles.font15_700Weight.copyWith(
+                        color: isDarkMode
+                            ? AppColors.darkSecondaryText
+                            : AppColors.lightTextColor,
+                      ),
+                    ),
+                    onExpansionChanged: (expanded) {
+                      setState(() {
+                        _isExpanded = expanded;
+                      });
+                    },
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          color: isDarkMode
+                              ? AppColors.darkMain
+                              : AppColors.lightMain,
+                        ),
+                        height: 40.h,
+                        width: double.infinity,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 5.w,
+                          ),
+                          child: ListTile(
+                            leading: Icon(
+                              Icons.work,
+                            ),
+                            title: Text(
+                              'Enjoy unlimited job applications',
+                              style: TextStyles.font15_500Weight.copyWith(
+                                color: isDarkMode
+                                    ? AppColors.darkSecondaryText
+                                    : AppColors.lightTextColor,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: isDarkMode
+                              ? AppColors.darkMain
+                              : AppColors.lightMain,
+                        ),
+                        height: 40.h,
+                        width: double.infinity,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 5.w,
+                          ),
+                          child: ListTile(
+                            leading: Icon(
+                              Icons.people,
+                            ),
+                            title: Text(
+                              'Enjoy connecting with 500+ people',
+                              style: TextStyles.font15_500Weight.copyWith(
+                                color: isDarkMode
+                                    ? AppColors.darkSecondaryText
+                                    : AppColors.lightTextColor,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: isDarkMode
+                              ? AppColors.darkMain
+                              : AppColors.lightMain,
+                          border: Border(
+                            bottom: BorderSide(
+                              width: 0.3.w,
+                              color: isDarkMode
+                                  ? AppColors.darkGrey
+                                  : AppColors.lightGrey,
+                            ),
+                          ),
+                        ),
+                        height: 40.h,
+                        width: double.infinity,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 5.w,
+                          ),
+                          child: ListTile(
+                            leading: Icon(
+                              Icons.chat,
+                            ),
+                            title: Text(
+                              'Enjoy sending messages to anyone',
+                              style: TextStyles.font15_500Weight.copyWith(
+                                color: isDarkMode
+                                    ? AppColors.darkSecondaryText
+                                    : AppColors.lightTextColor,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Show subscribe container here only if NOT expanded
+                if (!_isExpanded)
+                  Container(
+                    decoration: BoxDecoration(
+                      color:
+                          isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+                      border: Border(
+                        bottom: BorderSide(
+                          width: 0.3.w,
+                          color: isDarkMode
+                              ? AppColors.darkGrey
+                              : AppColors.lightGrey,
+                        ),
+                      ),
+                    ),
+                    height: 40.h,
+                    child: ListTile(
+                      title: Text(
+                        'Subscribe to our premium plan',
+                        style: TextStyles.font15_500Weight.copyWith(
+                          color: isDarkMode
+                              ? AppColors.darkBlue
+                              : AppColors.lightBlue,
+                        ),
+                      ),
+                      onTap: () {},
+                    ),
+                  ),
+              ],
+            ),
+          // For premium plan users
+          if (state.currentPlan.plan != 'free')
+            Column(
+              children: [
+                // Premium plan details remain unchanged
+                Container(
+                  decoration: BoxDecoration(
+                    color:
+                        isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+                    border: Border(
+                      bottom: BorderSide(
+                        width: 0.3.w,
+                        color: isDarkMode
+                            ? AppColors.darkGrey
+                            : AppColors.lightGrey,
+                      ),
+                    ),
+                  ),
+                  height: 40.h,
+                  child: ListTile(
+                    title: Text(
+                      'Subscription Start Date',
+                      style: TextStyles.font15_700Weight.copyWith(
+                        color: isDarkMode
+                            ? AppColors.darkSecondaryText
+                            : AppColors.lightTextColor,
+                      ),
+                    ),
+                    trailing: Text(
+                      state.currentPlan.subscriptionStartDate != null
+                          ? '${DateTime.parse(state.currentPlan.subscriptionStartDate!).day}-${DateTime.parse(state.currentPlan.subscriptionStartDate!).month}-${DateTime.parse(state.currentPlan.subscriptionStartDate!).year}'
+                          : '',
+                      style: TextStyles.font14_500Weight.copyWith(
+                        color: isDarkMode
+                            ? AppColors.darkGrey
+                            : AppColors.lightGrey,
+                      ),
+                    ),
+                  ),
+                ),
+                // Other premium containers remain unchanged
+                Container(
+                  decoration: BoxDecoration(
+                    color:
+                        isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+                    border: Border(
+                      bottom: BorderSide(
+                        width: 0.3.w,
+                        color: isDarkMode
+                            ? AppColors.darkGrey
+                            : AppColors.lightGrey,
+                      ),
+                    ),
+                  ),
+                  height: 40.h,
+                  child: ListTile(
+                    title: Text(
+                      'Subscription End Date',
+                      style: TextStyles.font15_700Weight.copyWith(
+                        color: isDarkMode
+                            ? AppColors.darkSecondaryText
+                            : AppColors.lightTextColor,
+                      ),
+                    ),
+                    trailing: Text(
+                      state.currentPlan.subscriptionEndDate != null
+                          ? '${DateTime.parse(state.currentPlan.subscriptionEndDate!).day}-${DateTime.parse(state.currentPlan.subscriptionEndDate!).month}-${DateTime.parse(state.currentPlan.subscriptionEndDate!).year}'
+                          : '',
+                      style: TextStyles.font14_500Weight.copyWith(
+                        color: isDarkMode
+                            ? AppColors.darkGrey
+                            : AppColors.lightGrey,
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color:
+                        isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+                    border: Border(
+                      bottom: BorderSide(
+                        width: 0.3.w,
+                        color: isDarkMode
+                            ? AppColors.darkGrey
+                            : AppColors.lightGrey,
+                      ),
+                    ),
+                  ),
+                  height: 40.h,
+                  child: ListTile(
+                    title: Text(
+                      'Auto Renewal',
+                      style: TextStyles.font15_700Weight.copyWith(
+                        color: isDarkMode
+                            ? AppColors.darkSecondaryText
+                            : AppColors.lightTextColor,
+                      ),
+                    ),
+                    trailing: Switch(
+                      value: state.currentPlan.autoRenewal != null
+                          ? !state.currentPlan.autoRenewal!
+                          : false,
+                      onChanged: (bool value) {},
+                      activeColor: isDarkMode
+                          ? AppColors.darkGreen
+                          : AppColors.lightGreen,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          // Show subscribe container at the end ONLY if expanded
+          if (state.currentPlan.plan == 'free' && _isExpanded)
             Container(
               decoration: BoxDecoration(
                 color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
@@ -127,88 +398,15 @@ class _SubscriptionManagementScreenScreenState
               height: 40.h,
               child: ListTile(
                 title: Text(
-                  'Subscription Start Date',
-                  style: TextStyles.font15_700Weight.copyWith(
-                    color: isDarkMode
-                        ? AppColors.darkSecondaryText
-                        : AppColors.lightTextColor,
-                  ),
-                ),
-                trailing: Text(
-                  state.currentPlan.subscriptionStartDate != null
-                      ? '${DateTime.parse(state.currentPlan.subscriptionStartDate!).day}-${DateTime.parse(state.currentPlan.subscriptionStartDate!).month}-${DateTime.parse(state.currentPlan.subscriptionStartDate!).year}'
-                      : '',
-                  style: TextStyles.font14_500Weight.copyWith(
+                  'Subscribe to our premium plan',
+                  style: TextStyles.font15_500Weight.copyWith(
                     color:
-                        isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
+                        isDarkMode ? AppColors.darkBlue : AppColors.lightBlue,
                   ),
                 ),
+                onTap: () {},
               ),
             ),
-            Container(
-              decoration: BoxDecoration(
-                color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
-                border: Border(
-                  bottom: BorderSide(
-                    width: 0.3.w,
-                    color:
-                        isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
-                  ),
-                ),
-              ),
-              height: 40.h,
-              child: ListTile(
-                title: Text(
-                  'Subscription End Date',
-                  style: TextStyles.font15_700Weight.copyWith(
-                    color: isDarkMode
-                        ? AppColors.darkSecondaryText
-                        : AppColors.lightTextColor,
-                  ),
-                ),
-                trailing: Text(
-                  state.currentPlan.subscriptionEndDate != null
-                      ? '${DateTime.parse(state.currentPlan.subscriptionEndDate!).day}-${DateTime.parse(state.currentPlan.subscriptionEndDate!).month}-${DateTime.parse(state.currentPlan.subscriptionEndDate!).year}'
-                      : '',
-                  style: TextStyles.font14_500Weight.copyWith(
-                    color:
-                        isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
-                  ),
-                ),
-              ),
-            ),
-            Container(
-              decoration: BoxDecoration(
-                color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
-                border: Border(
-                  bottom: BorderSide(
-                    width: 0.3.w,
-                    color:
-                        isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
-                  ),
-                ),
-              ),
-              height: 40.h,
-              child: ListTile(
-                title: Text(
-                  'Auto Renewal',
-                  style: TextStyles.font15_700Weight.copyWith(
-                    color: isDarkMode
-                        ? AppColors.darkSecondaryText
-                        : AppColors.lightTextColor,
-                  ),
-                ),
-                trailing: Switch(
-                  value: state.currentPlan.autoRenewal != null
-                      ? state.currentPlan.autoRenewal!
-                      : false,
-                  onChanged: (bool value) {},
-                  activeColor:
-                      isDarkMode ? AppColors.darkGreen : AppColors.lightGreen,
-                ),
-              ),
-            ),
-          ],
         ],
       ),
     );
