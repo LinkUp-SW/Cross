@@ -8,6 +8,7 @@ class PositionModel {
   final String employeeType;
   final String? organizationId;
   final String companyName;
+  final String? companyLogoUrl; 
   final bool isCurrent;
   final String startDate;
   final String? endDate;
@@ -24,6 +25,7 @@ class PositionModel {
     required this.employeeType,
     required this.organizationId,
     required this.companyName,
+    this.companyLogoUrl, 
     required this.isCurrent,
     required this.startDate,
     this.endDate,
@@ -47,8 +49,8 @@ class PositionModel {
       if (profileHeadline != null && profileHeadline!.isNotEmpty) 'profile_headline': profileHeadline,
       if (location != null && location!.isNotEmpty) 'location': location,
       if (locationType != null && locationType!.isNotEmpty) 'location_type': locationType,
-      if (skills != null && skills!.isNotEmpty) 'skills': skills, 
-      if (media != null && media!.isNotEmpty) 'media': media, 
+      if (skills != null && skills!.isNotEmpty) 'skills': skills,
+      if (media != null && media!.isNotEmpty) 'media': media,
     };
     log('PositionModel toJson: $data');
     return data;
@@ -56,17 +58,23 @@ class PositionModel {
 
   factory PositionModel.fromJson(Map<String, dynamic> json) {
     String? orgName;
-    Map<String, dynamic>? organizationData = json['organization'] is Map ? json['organization'] as Map<String, dynamic>? : null;
-    String? orgId = organizationData?['_id'] as String? ?? organizationData?['id'] as String?;
-    String? orgLogo = organizationData?['logo'] as String?;
+    String? orgLogo; 
+    String? orgId;
+
+    Map<String, dynamic>? organizationData;
+    if (json['organization'] is Map) {
+        organizationData = json['organization'] as Map<String, dynamic>?;
+        orgId = organizationData?['_id'] as String? ?? organizationData?['id'] as String?;
+        orgName = organizationData?['name'] as String?;
+        orgLogo = organizationData?['logo'] as String?;
+        log("Experience fromJson: Found nested organization data. Name: $orgName, Logo: $orgLogo");
+    } else if (json['organization'] is String) {
+        orgId = json['organization'] as String?;
+        log("Experience fromJson: Found organization ID string: $orgId");
+    }
 
     orgName ??= json['company_name'] as String? ?? json['organization_name'] as String?;
-
-if (organizationData != null && organizationData['name'] != null) {
-      orgName = organizationData['name'] as String;
-     } else {
-        orgName = json['company_name'] as String? ?? json['organization_name'] as String?;
-     }
+    log("Experience fromJson: Final company name: $orgName");
 
     List<String>? parsedSkills = (json['skills'] as List?)?.map((item) => item.toString()).toList();
 
@@ -82,7 +90,8 @@ if (organizationData != null && organizationData['name'] != null) {
       id: json['_id'] as String? ?? json['id'] as String?,
       title: json['title'] as String? ?? '',
       organizationId: orgId,
-      companyName: orgName ?? '',
+      companyName: orgName ?? '', 
+      companyLogoUrl: orgLogo, 
       employeeType: json['employee_type'] as String? ?? '',
       startDate: json['start_date'] as String? ?? '',
       endDate: json['end_date'] as String?,
@@ -91,7 +100,7 @@ if (organizationData != null && organizationData['name'] != null) {
       profileHeadline: json['profile_headline'] as String?,
       location: json['location'] as String?,
       locationType: json['location_type'] as String?,
-      skills: parsedSkills, 
+      skills: parsedSkills,
       media: parsedMedia,
     );
   }
