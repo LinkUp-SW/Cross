@@ -55,7 +55,7 @@ class PostTop extends ConsumerWidget {
           children: [
             IconButton(
               onPressed: () {
-                aboutPostBottomSheet(context, isAd: _isAd, post: post);
+                aboutPostBottomSheet(context, isAd: _isAd, post: post,isAcitvity: true);
               },
               icon: const Icon(Icons.more_horiz),
             ),

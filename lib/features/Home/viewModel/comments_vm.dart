@@ -56,9 +56,6 @@ class CommentsProvider extends StateNotifier<Map<String, dynamic>> {
     }).catchError((error) {
       log('$error');
       throw Exception(error);
-    }).timeout(const Duration(seconds: 5), onTimeout: () {
-      log('timeout');
-      throw Exception('Request timed out');
     });
   }
 }

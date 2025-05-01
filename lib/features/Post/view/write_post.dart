@@ -345,7 +345,6 @@ class _WritePostState extends ConsumerState<WritePost> {
                       postData.controller.text.length,
                       "@${_listtiles[index]['name']}:${_listtiles[index]['user_id']}^ ",
                     );
-                    ref.read(writePostProvider.notifier).tagUser(_listtiles[index]);
                     setState(() {
                       _showTags = false;
                     });

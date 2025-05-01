@@ -48,10 +48,7 @@ class WriteCommentVm {
                 final String username = regMatch.group(1) ?? '';
                 final String userId = regMatch.group(2) ?? '';
                 log('User detected: $username with ID: $userId');
-                taggedUsers.add({
-                  'username': username,
-                  'userId': userId,
-                });
+                taggedUsers.add(userId);
                 log(taggedUsers.toString());
               }
             },
@@ -63,7 +60,7 @@ class WriteCommentVm {
                 final String userId = regMatch.group(2) ?? '';
                 log('User deleted: $username with ID: $userId');
                 taggedUsers
-                    .removeWhere((element) => element['userId'] == userId);
+                    .removeWhere((element) => element == userId);
                 log(taggedUsers.toString());
               }
             },
@@ -83,7 +80,7 @@ class WriteCommentVm {
                     final List<dynamic> users = body['people'];
                     users.removeWhere((user) {
                       return taggedUsers.any((taggedUser) =>
-                          taggedUser['user_id'] == user['user_id']);
+                          taggedUser == user['user_id']);
                     });
                     log('Fetched users: $users');
                     updateTags(true, users);
@@ -141,19 +138,22 @@ class WriteCommentProvider extends StateNotifier<WriteCommentVm> {
   }
 
   void setMedia(Media media) {
-    state = state.copyWith(media: media);
+    state.media = media;
   }
 
-  void tagUser(Map<String, dynamic> user) {
-    state.taggedUsers.add(user);
-  }
 
-  void clearWritePost() {
-    state = WriteCommentVm.initial();
-    state.initController(context, () {});
+
+  void clearWriteComment() {
+    state.commentId = 'noId';
+    state.isEdited = false;
+    state.isReply = false;
+    state.taggedUsers = [];
+    state.controller.clear();
+    state.media = Media.initial();
   }
 
   void setComment(CommentModel comment, bool isEdited) {
+    state.taggedUsers = comment.taggedUsers;
     state.controller.text = comment.text;
     state.isEdited = isEdited;
     state.media = comment.media;
@@ -173,6 +173,9 @@ class WriteCommentProvider extends StateNotifier<WriteCommentVm> {
     log('Editing comment with postId: $postId, commentId: $commentId');
 
     final mediaContent = await state.media.setToUpload();
+    log('Media content: $mediaContent');
+    log('Tagged users: ${state.taggedUsers}');
+    log('Content: ${state.controller.text}');
     final response = await service.patch('api/v2/post/comment/:postId/:commentId'
     , routeParameters: {
         "postId": postId,
@@ -181,13 +184,10 @@ class WriteCommentProvider extends StateNotifier<WriteCommentVm> {
     , body: {
       "content": state.controller.text,
       "media": mediaContent,
-      "tagged_users": state.taggedUsers.map((user) {return user['user_id'];}).toList(),
+      "tagged_users": state.taggedUsers,
     }).catchError((error) {
       log('Error editing comment: $error');
       throw Exception(error);
-    }).timeout(const Duration(seconds: 5), onTimeout: () {
-      log('Request timed out');
-      throw Exception('Request timed out');
     });
     log('Response status code: ${response.statusCode}');
     if (response.statusCode == 200) {
@@ -212,7 +212,7 @@ class WriteCommentProvider extends StateNotifier<WriteCommentVm> {
       "parent_id": commentId,
       "content": state.controller.text,
       "media": mediaContent,
-      "tagged_users": state.taggedUsers.map((user) {return user['user_id'];}).toList(),
+      "tagged_users": state.taggedUsers,
     }).catchError((error) {
       log('Error creating comment: $error');
       throw Exception(error);

@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -108,8 +107,7 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                                 title: Text(users[index]['name'],
                                     style:
                                         Theme.of(context).textTheme.bodyLarge),
-                                subtitle: Text(
-                                    users[index]['headline'] ?? '',
+                                subtitle: Text(users[index]['headline'] ?? '',
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodySmall!
@@ -119,13 +117,11 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                                 onTap: () {
                                   writeComment.controller.text =
                                       writeComment.controller.text.replaceRange(
-                                    writeComment.controller.text.lastIndexOf('@'),
+                                    writeComment.controller.text
+                                        .lastIndexOf('@'),
                                     writeComment.controller.text.length,
                                     "@${users[index]['name']}:${users[index]['user_id']}^ ",
                                   );
-                                  ref
-                                      .read(writeCommentProvider.notifier)
-                                      .tagUser(users[index]);
                                   setState(() {
                                     _showTags = false;
                                   });
@@ -199,8 +195,7 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                                       ),
                                     ),
                                     if (writeComment.media.type !=
-                                            MediaType.none &&
-                                        writeComment.media.files[0].path != '')
+                                        MediaType.none)
                                       Padding(
                                         padding: EdgeInsets.all(
                                           10.r,
@@ -210,14 +205,9 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                                               BorderRadius.circular(10.r),
                                           child: Stack(
                                             children: [
-                                              Image.file(
-                                                File(
-                                                  writeComment
-                                                      .media.files[0].path,
-                                                ),
-                                                fit: BoxFit.fitHeight,
+                                              SizedBox(
                                                 height: 120.h,
-                                              ),
+                                                child: writeComment.media.getMedia()),
                                               Positioned(
                                                 right: 0,
                                                 child: IconButton(
@@ -257,7 +247,11 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                               child: writeComment.controller.text.isEmpty
                                   ? SizedBox()
                                   : IconButton.filled(
-                                      onPressed: () async {
+                                      onPressed: writeComment.controller.text.isEmpty &&
+                                              writeComment.media.type ==
+                                                  MediaType.none
+                                          ? null:
+                                      () async {
                                         setState(() {
                                           _sending = true;
                                         });
@@ -268,7 +262,7 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                                         widget.focusNode.unfocus();
                                         ref
                                             .read(writeCommentProvider.notifier)
-                                            .clearWritePost();
+                                            .clearWriteComment();
                                         setState(() {
                                           _sending = false;
                                           ref
@@ -361,7 +355,15 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                               Wrap(
                                 children: [
                                   TextButton(
-                                    onPressed: () async {
+                                    style: TextButton.styleFrom(
+                                      disabledForegroundColor: AppColors.grey,
+                                    ),
+                                    onPressed: writeComment.controller.text.isEmpty && 
+                                            writeComment.media.type ==
+                                                MediaType.none
+                                        ? null
+                                        :
+                                     () async {
                                       setState(() {
                                         _sending = true;
                                       });
@@ -372,7 +374,7 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                                       widget.focusNode.unfocus();
                                       ref
                                           .read(writeCommentProvider.notifier)
-                                          .clearWritePost();
+                                          .clearWriteComment();
                                       setState(() {
                                         _sending = false;
                                         ref
