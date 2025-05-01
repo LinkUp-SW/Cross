@@ -221,7 +221,8 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
       "commentsDisabled":
           Visibilities.getVisibilityString(state.visibilityComment),
       "publicPost": state.visbilityPost == Visibilities.anyone ? true : false,
-      "taggedUsers": state.taggedUsers
+      "taggedUsers": state.taggedUsers,
+      "postType": state.media.type == MediaType.post ? "Repost thought" : "Standard",
     });
 
     log('Response: ${response.statusCode} - ${response.body}');
@@ -249,7 +250,8 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
       "commentsDisabled":
           Visibilities.getVisibilityString(state.visibilityComment),
       "publicPost": state.visbilityPost == Visibilities.anyone ? true : false,
-      "taggedUsers": state.taggedUsers
+      "taggedUsers": state.taggedUsers,
+      "postType": state.media.type == MediaType.post ? "Repost thought" : "Standard",
     });
 
     // Rest of the function remains the same

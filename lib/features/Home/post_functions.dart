@@ -36,7 +36,7 @@ Future<void> savePost(String postId) async {
 
 Future<void> unsavePost(String postId) async {
   final BaseService service = BaseService();
-  final response = await service.delete('api/v2/post/save-post',null,body:  {
+  final response = await service.delete('api/v2/post/save-post', null, body: {
     "postId": postId,
   });
 
@@ -92,8 +92,7 @@ Future<void> connectToUser(String userId) async {
 
 Future<Set> getSavedPosts(int? cursor) async {
   final BaseService service = BaseService();
-  final response =
-      await service.get('api/v2/post/save-post', queryParameters: {
+  final response = await service.get('api/v2/post/save-post', queryParameters: {
     'limit': '10',
     'cursor': cursor.toString(),
   });
@@ -103,25 +102,25 @@ Future<Set> getSavedPosts(int? cursor) async {
     List<PostModel> posts = (data['posts'] as List)
         .map((post) => PostModel.fromJson(post))
         .toList();
-    
+
     cursor = data['next_cursor'];
     log('Cursor: $cursor');
     for (var post in posts) {
       post.saved = true;
     }
-    return {posts,cursor};
+    return {posts, cursor};
   } else {
     log('Failed to retrieve saved posts');
     return {};
   }
 }
 
-Future<Set> getUserPosts(int? cursor,String userId) async {
+Future<Set> getUserPosts(int? cursor, String userId) async {
   final BaseService service = BaseService();
-  final response = await service.get('api/v2/post/posts/user/:userId', routeParameters: {
+  final response =
+      await service.get('api/v2/post/posts/user/:userId', routeParameters: {
     "userId": userId,
-  },
-  queryParameters: {
+  }, queryParameters: {
     'limit': '10',
     'cursor': cursor.toString(),
   });
@@ -134,7 +133,7 @@ Future<Set> getUserPosts(int? cursor,String userId) async {
         .toList();
     cursor = data['next_cursor'];
     log('Cursor: $cursor');
-    return {posts,cursor};
+    return {posts, cursor};
   } else {
     log('Failed to retrieve user posts');
     return {};
@@ -171,7 +170,9 @@ Future<void> reportComment(String commentId) async {
   }
 }
 
-Future<Map<String,dynamic>> setReaction(String postId, Reaction reaction, String type,{String? commentId}) async {
+Future<Map<String, dynamic>> setReaction(
+    String postId, Reaction reaction, String type,
+    {String? commentId}) async {
   final BaseService service = BaseService();
   final response =
       await service.post('api/v2/post/reaction/:postId', routeParameters: {
@@ -191,7 +192,8 @@ Future<Map<String,dynamic>> setReaction(String postId, Reaction reaction, String
   }
 }
 
-Future<Map<String,dynamic>> removeReaction(String postId, String type,{String? commentId}) async {
+Future<Map<String, dynamic>> removeReaction(String postId, String type,
+    {String? commentId}) async {
   final BaseService service = BaseService();
   final response = await service.delete('api/v2/post/reaction/:postId', {
     "postId": postId,
@@ -206,5 +208,23 @@ Future<Map<String,dynamic>> removeReaction(String postId, String type,{String? c
   } else {
     log('Failed to remove reaction');
     return {};
+  }
+}
+
+Future<bool> repostInstantly(String postId) async {
+  final BaseService service = BaseService();
+  final response = await service.post('api/v2/post/posts', body: {
+    "mediaType": "post",
+    "media": [postId],
+    "postType": "Repost instant"
+  });
+
+  log('Response: ${response.statusCode} - ${response.body}');
+  if (response.statusCode == 200) {
+    log('Post reposted successfully: ${response.body}');
+    return true;
+  } else {
+    log('Failed to repost post');
+    return false;
   }
 }

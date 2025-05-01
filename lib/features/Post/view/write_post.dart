@@ -187,7 +187,7 @@ class _WritePostState extends ConsumerState<WritePost> {
               disabledForegroundColor: AppColors.grey,
             ),
             onPressed: postData.controller.text.isEmpty &&
-                        postData.media.type == MediaType.none || 
+                        (postData.media.type == MediaType.none || postData.media.type ==  MediaType.post) || 
                     _sending == true
                 ? null
                 : () {

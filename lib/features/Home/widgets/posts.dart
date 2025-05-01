@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:link_up/core/utils/global_keys.dart';
 import 'package:link_up/features/Home/home_enums.dart';
 import 'package:link_up/features/Home/model/media_model.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
@@ -19,6 +20,7 @@ import 'package:link_up/features/Post/viewModel/write_post_vm.dart';
 import 'package:link_up/features/Post/widgets/formatted_richtext.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/widgets/bottom_sheet.dart';
+import 'package:link_up/shared/widgets/custom_snackbar.dart';
 
 class Posts extends ConsumerStatefulWidget {
   final bool inFeed;
@@ -63,7 +65,8 @@ class _PostsState extends ConsumerState<Posts> {
                 ),
               ],
             ),
-          PostHeader(post: widget.post,
+          PostHeader(
+              post: widget.post,
               inFeed: widget.inFeed,
               inMessage: widget.inMessage,
               showTop: widget.post.activity.show),
@@ -101,7 +104,9 @@ class _PostsState extends ConsumerState<Posts> {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      ref.read(reactionsProvider.notifier).setPost(widget.post.id);
+                      ref
+                          .read(reactionsProvider.notifier)
+                          .setPost(widget.post.id);
                       context.push("/reactions");
                     },
                     child: Row(
@@ -271,7 +276,41 @@ class _PostsState extends ConsumerState<Posts> {
                             ),
                             ListTile(
                               onTap: () {
-                                //TODO: send repost request to backend
+                                repostInstantly(widget.post.id).then((value) {
+                                  if(context.mounted) {
+                                    context.pop();
+                                  }
+                                  openSnackbar(
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          value
+                                              ? Icons.check_circle_outline
+                                              : Icons.error_outline,
+                                          color: value
+                                              ? Theme.of(navigatorKey
+                                                      .currentContext!)
+                                                  .colorScheme
+                                                  .tertiary
+                                              : AppColors.red,
+                                        ),
+                                        const SizedBox(width: 10),
+                                        Text(
+                                          value
+                                              ? "Reposted ${widget.post.header.name}'s post"
+                                              : "Failed to repost ${widget.post.header.name}'s post",
+                                          style: TextStyle(
+                                            fontSize: 14.sp,
+                                            color: Theme.of(navigatorKey
+                                                    .currentContext!)
+                                                .textTheme
+                                                .bodyLarge!.color,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                });
                               },
                               leading: const Icon(Icons.loop),
                               title: const Text("Repost"),
@@ -307,10 +346,12 @@ class _PostsState extends ConsumerState<Posts> {
               ],
             ),
             SizedBox(height: 10.h),
-            if(widget.post.activity.show && widget.post.activity.type == ActitvityType.comment)
+            if (widget.post.activity.show &&
+                widget.post.activity.type == ActitvityType.comment)
               Padding(
                 padding: EdgeInsets.all(8.r),
-                child: CommentBubble(comment: widget.post.activity.comment, refresh: (){}),
+                child: CommentBubble(
+                    comment: widget.post.activity.comment, refresh: () {}),
               )
           ],
         ],

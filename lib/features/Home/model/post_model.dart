@@ -15,6 +15,7 @@ class PostModel {
   int reactions;
   int comments;
   int reposts;
+  String postType = 'Standard';
 
   Reaction reaction;
   List<String> taggedUsers = [];
@@ -44,10 +45,12 @@ class PostModel {
         activity = json['activity_context'] != null ? ActivityModel.fromJson(json['activity_context']): ActivityModel.initial(),
         header = HeaderModel.fromJson(json),
         text = json['content'],
-        media = Media.fromJson(json['media']),
+        media = Media.fromJson(json['media'],
+            ogPost: json['original_post']),
         reactions =  json['reactions_count'] ?? 0,
         comments =  json['comments_count'] ?? 0,
         reposts = json['reposts_count'] ?? 0,
+        postType = json['post_type'] ?? 'Standard',
         reaction = Reaction.getReaction(json['user_reaction'] ?? 'none'),
         isAd = json['isAd'] ?? false,
         isCompany = json['isCompany'] ?? false,

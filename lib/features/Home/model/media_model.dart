@@ -24,13 +24,14 @@ class Media {
       this.post,
       this.isLocal = false});
 
-  Media.fromJson(Map<String, dynamic> json)
+  Media.fromJson(Map<String, dynamic> json,{Map<String, dynamic>? ogPost})
       : type = MediaType.getMediaType(json['media_type']),
         urls = json['link'].runtimeType == String
             ? json['link'] == ''
                 ? []
                 : [json['link']]
             : List<String>.from(json['link'] ?? []),
+        post = ogPost != null ? PostModel.fromJson(ogPost) : null,
         files = [];
 
   Map<String, dynamic> toJson() => {
