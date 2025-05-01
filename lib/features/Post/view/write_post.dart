@@ -187,7 +187,7 @@ class _WritePostState extends ConsumerState<WritePost> {
               disabledForegroundColor: AppColors.grey,
             ),
             onPressed: postData.controller.text.isEmpty &&
-                        postData.media.type == MediaType.none || 
+                        (postData.media.type == MediaType.none || postData.media.type ==  MediaType.post) || 
                     _sending == true
                 ? null
                 : () {
@@ -245,8 +245,8 @@ class _WritePostState extends ConsumerState<WritePost> {
                                           .bodyLarge!
                                           .color)),
                             ]),
-                            onPressed: () async {
-                              await tempRef.getPost(value);
+                            onPressed: () {
+                              tempRef.setPostId(value);
                               navigatorKey.currentContext!.push('/postPage');
                             },
                             label: 'View',
@@ -345,7 +345,6 @@ class _WritePostState extends ConsumerState<WritePost> {
                       postData.controller.text.length,
                       "@${_listtiles[index]['name']}:${_listtiles[index]['user_id']}^ ",
                     );
-                    ref.read(writePostProvider.notifier).tagUser(_listtiles[index]);
                     setState(() {
                       _showTags = false;
                     });
