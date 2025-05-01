@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:link_up/core/constants/endpoints.dart';
 import 'package:link_up/features/Home/home_enums.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
 import 'package:link_up/features/Home/viewModel/comments_vm.dart';
@@ -112,6 +113,8 @@ class _PostPageState extends ConsumerState<PostPage> {
           IconButton(
             icon: const Icon(Icons.more_horiz),
             onPressed: () {
+              InternalEndPoints.userId == post.header.userId ?
+              myPostBottomSheet(context, ref, post: post) :
               aboutPostBottomSheet(context, isAd: widget.isAd, post: post);
             },
           )
@@ -251,6 +254,7 @@ class _PostPageState extends ConsumerState<PostPage> {
                       return CommentBubble(
                         refresh: refresh,
                         comment: comments[index],
+                        focusNode: _focusNode,
                       );
                     },
                   )

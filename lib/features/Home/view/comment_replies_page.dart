@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:link_up/features/Home/model/comment_model.dart';
 import 'package:link_up/features/Home/viewModel/comment_vm.dart';
 import 'package:link_up/features/Home/viewModel/post_vm.dart';
+import 'package:link_up/features/Home/viewModel/write_comment_vm.dart';
 import 'package:link_up/features/Home/widgets/comment_bubble.dart';
 import 'package:link_up/features/Home/widgets/comments_text_field.dart';
 import 'package:link_up/shared/themes/colors.dart';
@@ -97,6 +98,7 @@ class _CommentRepliesPageState extends ConsumerState<CommentRepliesPage> {
         backgroundColor: Theme.of(context).colorScheme.primary,
         leading: IconButton(
           onPressed: () {
+            ref.read(writeCommentProvider.notifier).clearWriteComment();
             context.pop();
           },
           icon: const Icon(Icons.arrow_back),
@@ -147,6 +149,7 @@ class _CommentRepliesPageState extends ConsumerState<CommentRepliesPage> {
                         refresh: () {},
                         comment: comment,
                         allRelies: true,
+                        focusNode: _focusNode,
                       ),
                     ),
                   ),

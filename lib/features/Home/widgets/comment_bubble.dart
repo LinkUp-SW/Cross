@@ -24,6 +24,7 @@ class CommentBubble extends ConsumerStatefulWidget {
     required this.comment,
     this.allRelies = false,
     required this.refresh,
+    this.focusNode,
   });
 
   final CommentModel comment;
@@ -31,6 +32,7 @@ class CommentBubble extends ConsumerStatefulWidget {
   final bool isReply;
   final bool allRelies;
   final Function refresh;
+  final FocusNode? focusNode;
 
   @override
   ConsumerState<CommentBubble> createState() => _CommentBubbleState();
@@ -145,6 +147,9 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                                                                       widget
                                                                           .comment,
                                                                       true);
+                                                              widget
+                                                                  .focusNode
+                                                                  ?.requestFocus();
                                                               context.pop();
                                                             }),
                                                         ListTile(
@@ -371,6 +376,7 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                       refresh: widget.refresh,
                       isReply: true,
                       comment: widget.comment.repliesList[0],
+                      focusNode: widget.focusNode,
                     ),
                 ],
                 if (widget.allRelies)
@@ -383,6 +389,7 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                             refresh: widget.refresh,
                             isReply: true,
                             comment: widget.comment.repliesList[index],
+                            focusNode: widget.focusNode,
                           ),
                           SizedBox(
                             height: 10.h,
