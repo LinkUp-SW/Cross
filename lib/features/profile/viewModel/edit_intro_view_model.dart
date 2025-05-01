@@ -55,22 +55,26 @@ class EditIntroViewModel extends StateNotifier<EditIntroState> {
      if (value.length > 220) {
        return "Headline cannot exceed 220 characters."; 
      }
-final headlineRegExp = RegExp(r"""^[a-zA-Z0-9\s.,!?'\"()\-]+$""");
+    final headlineRegExp = RegExp(r"""^[a-zA-Z0-9\s.,!?'\"()\-]+$""");
 
-if (!headlineRegExp.hasMatch(value)) {
-  return "Headline contains invalid characters.";
-}
-return null;
-  }
+    if (!headlineRegExp.hasMatch(value)) {
+      return "Headline contains invalid characters.";
+    }
+    return null;
+      }
 
   String? _validateWebsite(String? value) {
       if (value == null || value.trim().isEmpty) {
-        return null; // Website is optional
+        return null; 
       }
+      
       final urlRegExp = RegExp(
-          r"^(?:http|https)://(?:[\w-]+\.)+[\w-]+(?:/[\w-./?%&=]*)?$");
+        r"^(https?:\/\/)?(www\.)?([\w-]+\.)+[\w-]+(\/[\w-.\/?%&=]*)?$",
+        caseSensitive: false, 
+      );
+
       if (!urlRegExp.hasMatch(value.trim())) {
-        return "Please enter a valid URL (e.g., https://example.com).";
+        return "Please enter a valid URL (e.g., www.example.com or https://example.com).";
       }
       return null;
     }

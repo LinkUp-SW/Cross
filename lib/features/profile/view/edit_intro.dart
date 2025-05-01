@@ -244,8 +244,6 @@ class _EditIntroPageState extends ConsumerState<EditIntroPage> {
                                 SizedBox(height: 20.h),
                                 SubPagesFormLabel(label: "Headline", isRequired: true),
                                 SizedBox(height: 2.h),
-                                SubPagesFormLabel(label: "Headline", isRequired: true),
-                                SizedBox(height: 2.h),
                                 TextFormField(
                                   controller: viewModel.headlineController,
                                   enabled: !isSaving,
