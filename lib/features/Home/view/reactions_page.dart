@@ -135,14 +135,24 @@ class _ReactionsPageState extends ConsumerState<ReactionsPage> {
         body: TabBarView(
           children: [
             for (var reaction in reactionsCount.keys)
-              ListView.builder(
-                controller: scrollController,
-                itemCount: reactions[reaction]!.length,
-                itemBuilder: (context, index) {
-                  return ReactionTile(
-                    reactionTile: reactions[reaction]!.elementAt(index),
-                  );
-                },
+              Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                child: ListView.separated(
+                  separatorBuilder: (context, index) => const Divider(
+                    color: AppColors.grey,
+                    thickness: 0,
+                  ),
+                  controller: scrollController,
+                  itemCount: reactions[reaction]!.length,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    return ReactionTile(
+                      reactionTile: reactions[reaction]!.elementAt(index),
+                    );
+                  },
+                ),
               ),
           ],
         ),
@@ -187,19 +197,10 @@ class ReactionTile extends StatelessWidget {
           ],
         ),
       ),
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          reactionTile.header.about == ''
-              ? const SizedBox():
-          Text(reactionTile.header.about,
-              style: const TextStyle(color: AppColors.grey)),
-          const Divider(
-            color: AppColors.grey,
-            thickness: 0,
-          ),
-        ],
-      ),
+      subtitle: reactionTile.header.about == ''
+          ? const SizedBox():
+      Text(reactionTile.header.about,
+          style: const TextStyle(color: AppColors.grey)),
     );
   }
 }
