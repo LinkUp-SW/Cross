@@ -14,6 +14,12 @@ class SearchJobViewModel extends StateNotifier<SearchJobState> {
   }) async {
     developer.log('Starting job search with parameters: $queryParameters');
     state = state.copyWith(isLoading: true, isError: false);
+    
+    // Add search term to recent searches if it exists
+    if (queryParameters.containsKey('query') && queryParameters['query'] != null) {
+      addToRecentSearches(queryParameters['query']);
+    }
+    
     try {
       final response = await _searchJobService.searchJobsData(
         queryParameters: queryParameters,
@@ -70,6 +76,49 @@ class SearchJobViewModel extends StateNotifier<SearchJobState> {
         totalJobs: 0,
       );
     }
+  }
+
+  // Add a search term to recent searches
+  void addToRecentSearches(String searchTerm) {
+    if (searchTerm.isEmpty) return;
+    
+    // Normalize the search term - trim and lowercase
+    final normalizedTerm = searchTerm.trim();
+    if (normalizedTerm.isEmpty) return;
+    
+    // Get current searches
+    final currentSearches = state.recentSearches;
+    
+    // Remove existing occurrence of this search term (if any)
+    final updatedSearches = currentSearches
+        .where((term) => term.toLowerCase() != normalizedTerm.toLowerCase())
+        .toList();
+    
+    // Add the new search term to the beginning of the list
+    updatedSearches.insert(0, normalizedTerm);
+    
+    // Keep only the most recent searches (max 10)
+    final limitedSearches = updatedSearches.length > 10 
+        ? updatedSearches.sublist(0, 10) 
+        : updatedSearches;
+    
+    // Update state with new recent searches
+    state = state.copyWith(recentSearches: limitedSearches);
+  }
+
+  // Clear all recent searches
+  void clearRecentSearches() {
+    state = state.copyWith(recentSearches: []);
+  }
+
+  // Delete a specific search from recent searches
+  void deleteFromRecentSearches(String searchTerm) {
+    final currentSearches = state.recentSearches;
+    final updatedSearches = currentSearches
+        .where((term) => term != searchTerm)
+        .toList();
+    
+    state = state.copyWith(recentSearches: updatedSearches);
   }
 
   Future<void> loadMoreJobs({
@@ -147,7 +196,9 @@ class SearchJobViewModel extends StateNotifier<SearchJobState> {
   }
 
   void clearSearch() {
-    state = SearchJobState.initial();
+    // Keep the recent searches when clearing the current search results
+    final currentSearches = state.recentSearches;
+    state = SearchJobState.initial().copyWith(recentSearches: currentSearches);
   }
 }
 

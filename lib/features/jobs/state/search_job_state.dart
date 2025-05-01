@@ -1,63 +1,68 @@
 import 'package:link_up/features/jobs/model/search_job_model.dart';
 
 class SearchJobState {
+  final bool isLoading;
+  final bool isError;
+  final bool isLoadingMore;
+  final String? errorMessage;
   final List<SearchJobModel>? searchJobs;
   final int? totalJobs;
   final int? totalPages;
   final int? currentPage;
   final int? limit;
-  final String? errorMessage;
-  final bool isLoadingMore;
-  final bool isLoading;
-  final bool isError;
+  final List<String> recentSearches;
 
   SearchJobState({
+    required this.isLoading,
+    required this.isError,
+    required this.isLoadingMore,
+    this.errorMessage,
     this.searchJobs,
     this.totalJobs,
-    this.totalPages = 1,
-    this.currentPage = 1,
-    this.limit = 10,
-    this.errorMessage,
-    this.isLoadingMore = false,
-    this.isLoading = true,
-    this.isError = false,
+    this.totalPages,
+    this.currentPage,
+    this.limit,
+    required this.recentSearches,
   });
 
   factory SearchJobState.initial() {
     return SearchJobState(
+      isLoading: false,
+      isError: false,
+      isLoadingMore: false,
+      errorMessage: null,
       searchJobs: null,
-      totalJobs: null,
-      totalPages: 1,
+      totalJobs: 0,
+      totalPages: 0,
       currentPage: 1,
       limit: 10,
-      errorMessage: null,
-      isLoadingMore: false,
-      isLoading: true,
-      isError: false,
+      recentSearches: [],
     );
   }
 
   SearchJobState copyWith({
+    bool? isLoading,
+    bool? isError,
+    bool? isLoadingMore,
+    String? errorMessage,
     List<SearchJobModel>? searchJobs,
     int? totalJobs,
     int? totalPages,
     int? currentPage,
     int? limit,
-    String? errorMessage,
-    bool? isLoadingMore,
-    bool? isLoading,
-    bool? isError,
+    List<String>? recentSearches,
   }) {
     return SearchJobState(
+      isLoading: isLoading ?? this.isLoading,
+      isError: isError ?? this.isError,
+      isLoadingMore: isLoadingMore ?? this.isLoadingMore,
+      errorMessage: errorMessage ?? this.errorMessage,
       searchJobs: searchJobs ?? this.searchJobs,
       totalJobs: totalJobs ?? this.totalJobs,
       totalPages: totalPages ?? this.totalPages,
       currentPage: currentPage ?? this.currentPage,
       limit: limit ?? this.limit,
-      errorMessage: errorMessage ?? this.errorMessage,
-      isLoadingMore: isLoadingMore ?? this.isLoadingMore,
-      isLoading: isLoading ?? this.isLoading,
-      isError: isError ?? this.isError,
+      recentSearches: recentSearches ?? this.recentSearches,
     );
   }
 }

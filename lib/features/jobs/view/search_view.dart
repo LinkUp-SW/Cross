@@ -21,6 +21,11 @@ class SearchView extends ConsumerWidget {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final state = ref.watch(searchJobViewModelProvider);
     
+    // Make sure the search is added to recent searches
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(searchJobViewModelProvider.notifier).addToRecentSearches(searchQuery);
+    });
+    
     return Scaffold(
       appBar: AppBar(
         title: Text(

@@ -24,15 +24,6 @@ class _SearchJobsPageState extends ConsumerState<SearchJobsPage> {
   bool showClearButton = false;
   bool showSuggestions = false;
   
-  // Common job search suggestions
-  final List<String> suggestions = [
-    'remote',
-    'marketing manager',
-    'hr',
-    'legal',
-    'sales',
-  ];
-  
   // Recent searches or dynamic suggestions based on input
   List<String> filteredSuggestions = [];
 
@@ -43,9 +34,12 @@ class _SearchJobsPageState extends ConsumerState<SearchJobsPage> {
       setState(() {
         showClearButton = _searchController.text.isNotEmpty;
         
+        // Get recent searches from state
+        final recentSearches = ref.read(searchJobViewModelProvider).recentSearches;
+        
         // Filter suggestions based on input
         if (_searchController.text.isNotEmpty) {
-          filteredSuggestions = suggestions
+          filteredSuggestions = recentSearches
               .where((item) => item.toLowerCase().contains(
                     _searchController.text.toLowerCase(),
                   ))
@@ -54,7 +48,7 @@ class _SearchJobsPageState extends ConsumerState<SearchJobsPage> {
           // Show suggestions when typing
           showSuggestions = true;
         } else {
-          filteredSuggestions = suggestions;
+          filteredSuggestions = recentSearches;
           // Hide suggestions when search bar is empty and not focused
           showSuggestions = _searchFocusNode.hasFocus;
         }
@@ -65,11 +59,30 @@ class _SearchJobsPageState extends ConsumerState<SearchJobsPage> {
       setState(() {
         // Show suggestions when search bar is focused
         showSuggestions = _searchFocusNode.hasFocus || _searchController.text.isNotEmpty;
+        
+        // Update filtered suggestions when focus changes
+        if (showSuggestions) {
+          final recentSearches = ref.read(searchJobViewModelProvider).recentSearches;
+          if (_searchController.text.isEmpty) {
+            filteredSuggestions = recentSearches;
+          } else {
+            filteredSuggestions = recentSearches
+                .where((item) => item.toLowerCase().contains(
+                      _searchController.text.toLowerCase(),
+                    ))
+                .toList();
+          }
+        }
       });
     });
     
-    // Initialize filtered suggestions
-    filteredSuggestions = suggestions;
+    // Initialize filtered suggestions with recent searches
+    Future.microtask(() {
+      final recentSearches = ref.read(searchJobViewModelProvider).recentSearches;
+      setState(() {
+        filteredSuggestions = recentSearches;
+      });
+    });
     
     // Give focus to search field when page opens
     Future.microtask(() => _searchFocusNode.requestFocus());
@@ -250,68 +263,122 @@ class _SearchJobsPageState extends ConsumerState<SearchJobsPage> {
       children: [
         Padding(
           padding: EdgeInsets.all(16.w),
-          child: Text(
-            'Try searching for',
-            style: TextStyle(
-              color: isDarkMode ? Colors.grey[400] : Colors.grey[700],
-              fontSize: 16.sp,
-              fontWeight: FontWeight.w500,
-            ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                filteredSuggestions.isEmpty 
+                    ? 'No recent searches' 
+                    : 'Recent searches',
+                style: TextStyle(
+                  color: isDarkMode ? Colors.grey[400] : Colors.grey[700],
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              if (filteredSuggestions.isNotEmpty)
+                TextButton(
+                  onPressed: () {
+                    // Clear all recent searches
+                    ref.read(searchJobViewModelProvider.notifier).clearRecentSearches();
+                    setState(() {
+                      filteredSuggestions = [];
+                    });
+                  },
+                  child: Text(
+                    'Clear all',
+                    style: TextStyle(
+                      color: isDarkMode ? AppColors.darkBlue : AppColors.lightBlue,
+                      fontSize: 14.sp,
+                    ),
+                  ),
+                ),
+            ],
           ),
         ),
         Expanded(
-          child: ListView.separated(
-            itemCount: filteredSuggestions.length,
-            separatorBuilder: (context, index) => Divider(
-              height: 1,
-              color: isDarkMode ? Colors.grey[800] : Colors.grey[300],
-            ),
-            itemBuilder: (context, index) {
-              return ListTile(
-                leading: Icon(
-                  Icons.search,
-                  color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
-                ),
-                title: Text(
-                  filteredSuggestions[index],
-                  style: TextStyle(
-                    color: isDarkMode ? Colors.white : Colors.black,
-                  ),
-                ),
-                trailing: Icon(
-                  Icons.north_east,
-                  size: 20.sp,
-                  color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
-                ),
-                onTap: () {
-                  final suggestion = filteredSuggestions[index];
-                  _searchController.text = suggestion;
-                  
-                  // Perform search with the suggestion
-                  final searchParams = {
-                    'query': suggestion,
-                    'page': '1',
-                    'limit': '10'
-                  };
-                  
-                  // Trigger search in view model
-                  ref.read(searchJobViewModelProvider.notifier).searchJobs(
-                    queryParameters: searchParams,
-                  );
-                  
-                  // Navigate to search results
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => SearchView(
-                        searchQuery: suggestion,
-                      ),
+          child: filteredSuggestions.isEmpty
+              ? Center(
+                  child: Text(
+                    'Your recent searches will appear here',
+                    style: TextStyle(
+                      color: isDarkMode ? Colors.grey[500] : Colors.grey[600],
+                      fontSize: 14.sp,
                     ),
-                  );
-                },
-              );
-            },
-          ),
+                  ),
+                )
+              : ListView.separated(
+                  itemCount: filteredSuggestions.length,
+                  separatorBuilder: (context, index) => Divider(
+                    height: 1,
+                    color: isDarkMode ? Colors.grey[800] : Colors.grey[300],
+                  ),
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      leading: Icon(
+                        Icons.history,
+                        color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                      ),
+                      title: Text(
+                        filteredSuggestions[index],
+                        style: TextStyle(
+                          color: isDarkMode ? Colors.white : Colors.black,
+                        ),
+                      ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: Icon(
+                              Icons.close,
+                              size: 18.sp,
+                              color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                            ),
+                            onPressed: () {
+                              // Remove this search from history
+                              ref.read(searchJobViewModelProvider.notifier)
+                                  .deleteFromRecentSearches(filteredSuggestions[index]);
+                              setState(() {
+                                filteredSuggestions.removeAt(index);
+                              });
+                            },
+                          ),
+                          Icon(
+                            Icons.north_east,
+                            size: 20.sp,
+                            color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                          ),
+                        ],
+                      ),
+                      onTap: () {
+                        final suggestion = filteredSuggestions[index];
+                        _searchController.text = suggestion;
+                        
+                        // Perform search with the suggestion
+                        final searchParams = {
+                          'query': suggestion,
+                          'page': '1',
+                          'limit': '10'
+                        };
+                        
+                        // Trigger search in view model
+                        ref.read(searchJobViewModelProvider.notifier).searchJobs(
+                          queryParameters: searchParams,
+                        );
+                        
+                        // Navigate to search results
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SearchView(
+                              searchQuery: suggestion,
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
         ),
       ],
     );
