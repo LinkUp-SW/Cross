@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
+import 'dart:io';
 import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:link_up/core/constants/endpoints.dart';
@@ -193,6 +194,160 @@ Future<AboutModel> getUserAboutAndSkills(String userId) async {
     } catch (e) {
       log('ProfileService: Error in getContactInfo: $e');
       rethrow;
+    }
+  }
+
+  Future<String?> getCurrentResumeUrl(String userId) async {
+    final String endpointTemplate = 'api/v1/user/profile/resume/:user_id';
+    log('ProfileService: Getting resume URL for user ID: $userId');
+    try {
+      final response = await super.get(
+        endpointTemplate,
+        routeParameters: {'user_id': userId},
+      );
+      log('ProfileService: getCurrentResumeUrl API Response Status Code: ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonData = jsonDecode(response.body);
+        final resumeUrl = jsonData['resume'] as String?;
+        log('ProfileService: Fetched resume URL: $resumeUrl');
+        return resumeUrl; 
+      } else if (response.statusCode == 404) {
+         log('ProfileService: No resume found for user $userId (404).');
+         return null; 
+      } else {
+        log('ProfileService: getCurrentResumeUrl API Error: Status Code ${response.statusCode}, Body: ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      log('ProfileService: Error in getCurrentResumeUrl: $e');
+      return null; 
+    }
+  }
+
+
+   Future<String> uploadOrUpdateResume(File resumeFile, bool isUpdating) async {
+    const String endpoint = 'api/v1/user/profile/resume';
+    final Uri uri = Uri.parse('${ExternalEndPoints.baseUrl}$endpoint');
+    final String? token = await getToken();
+    final String httpMethod = isUpdating ? 'PUT' : 'POST';
+
+    if (token == null || token.isEmpty) {
+      throw Exception("Authentication token not found.");
+    }
+
+    // --- Pre-Request Logging ---
+    log('--- Preparing Resume Upload ---');
+    log('ProfileService: Target URL: $uri');
+    log('ProfileService: HTTP Method: $httpMethod');
+    log('ProfileService: Auth Token Present: ${token.isNotEmpty}'); // Log token presence, not value
+    log('ProfileService: File Path: ${resumeFile.path}');
+    try {
+      final fileSize = await resumeFile.length();
+      log('ProfileService: File Size: $fileSize bytes');
+    } catch (e) {
+      log('ProfileService: Error getting file size: $e');
+    }
+    // --- End Pre-Request Logging ---
+
+    try {
+      var request = http.MultipartRequest(httpMethod, uri);
+
+      // Add Headers (Log them *after* adding)
+      request.headers['Authorization'] = 'Bearer $token';
+      log('ProfileService: Request Headers: ${request.headers}');
+
+
+      MediaType contentType = MediaType('application', 'pdf');
+      log('ProfileService: Explicit Content-Type: ${contentType.toString()}');
+
+      // Prepare the file part
+      final filePart = await http.MultipartFile.fromPath(
+         'resume', // Field name confirmed from docs
+         resumeFile.path,
+         contentType: contentType,
+      );
+      request.files.add(filePart);
+      log('ProfileService: Added file part. Field: ${filePart.field}, Filename: ${filePart.filename}, Length: ${filePart.length}, ContentType: ${filePart.contentType}');
+
+
+      log('ProfileService: Sending resume multipart request ($httpMethod)...');
+      var streamedResponse = await request.send().timeout(const Duration(seconds: 60));
+
+      // --- Post-Response Logging ---
+      log('--- Received Resume Upload Response ---');
+      log('ProfileService: Response Status Code: ${streamedResponse.statusCode}');
+      log('ProfileService: Response Reason Phrase: ${streamedResponse.reasonPhrase}');
+      log('ProfileService: Response Headers: ${jsonEncode(streamedResponse.headers)}'); // Encode headers for clarity
+
+      var response = await http.Response.fromStream(streamedResponse);
+      log('ProfileService: Response Body: ${response.body}');
+      // --- End Post-Response Logging ---
+
+
+      // Check status code *after* logging response details
+      if (response.statusCode == 200 || response.statusCode == 201) {
+          final responseData = jsonDecode(response.body);
+          final newUrl = responseData['resume'] as String?;
+          if (newUrl != null && newUrl.isNotEmpty) {
+              log('ProfileService: Resume ${isUpdating ? 'update' : 'upload'} successful. New URL: $newUrl');
+              return newUrl;
+          } else {
+              // Log before throwing
+              log('ProfileService: Error: Resume ${isUpdating ? 'update' : 'upload'} successful (status ${response.statusCode}), but URL not found in response body: ${response.body}');
+              throw Exception('Resume ${isUpdating ? 'update' : 'upload'} successful, but URL not found in response.');
+          }
+      } else {
+         // Log before throwing specific error
+         log('ProfileService: Error: Request failed with status ${response.statusCode}. Body: ${response.body}');
+         String errorMessage = 'Failed to ${isUpdating ? 'update' : 'upload'} resume';
+          try {
+             // Try to parse backend error only if body isn't empty
+             if (response.body.isNotEmpty && response.body != '{}') {
+                 final errorJson = jsonDecode(response.body);
+                 errorMessage = errorJson['message'] ?? '$errorMessage (Status: ${response.statusCode})';
+             } else {
+                 errorMessage = '$errorMessage (Status: ${response.statusCode}) - Empty response body';
+             }
+          } catch (e) {
+             // Catch JSON parsing error if body is not valid JSON
+             log('ProfileService: Error parsing error response body: $e');
+             errorMessage = '$errorMessage (Status: ${response.statusCode}) - Non-JSON or empty response body';
+          }
+         throw Exception(errorMessage);
+      }
+    } on TimeoutException catch(e, s) { // Catch specific exceptions for better logging
+       log('ProfileService: Resume upload/update request timed out.', error: e, stackTrace: s);
+       throw Exception('Resume upload timed out. Please try again.');
+    } catch (e, s) {
+       log('ProfileService: Error ${isUpdating ? 'updating' : 'uploading'} resume: $e', error: e, stackTrace: s);
+       rethrow; // Rethrow the original exception
+    }
+  }
+
+
+
+  Future<bool> deleteResume() async {
+    const String endpoint = 'api/v1/user/profile/resume';
+    log('ProfileService: Deleting resume via DELETE $endpoint');
+
+    try {
+      final response = await super.delete(endpoint, null); 
+
+      log('ProfileService: Delete Resume API Response Status Code: ${response.statusCode}');
+      log('ProfileService: Delete Resume API Response Body: ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        log('ProfileService: Resume deleted successfully.');
+        return true;
+      } else {
+        log('ProfileService: Failed to delete resume. Status Code: ${response.statusCode}');
+
+        return false; 
+      }
+    } catch (e) {
+      log('ProfileService: Error deleting resume: $e');
+      rethrow; 
     }
   }
 

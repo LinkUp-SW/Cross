@@ -2,80 +2,79 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:link_up/core/constants/endpoints.dart'; // Import endpoints
-import 'package:link_up/features/profile/services/profile_services.dart'; // Import ProfileService
+import 'package:link_up/core/constants/endpoints.dart';
+import 'package:link_up/features/profile/services/profile_services.dart';
 import 'package:link_up/features/profile/state/add_section_state.dart';
-// Removed direct dependency on main ProfileState/ViewModel for this check
-// import 'package:link_up/features/profile/state/profile_state.dart' as main_profile;
-// import 'package:link_up/features/profile/viewModel/profile_view_model.dart';
+import 'package:link_up/features/profile/model/about_model.dart'; // <-- Import AboutModel
 
 class AddSectionViewModel extends StateNotifier<AddSectionState> {
   final Ref _ref;
-  // Inject ProfileService
   final ProfileService _profileService;
   final String _userId = InternalEndPoints.userId;
-  // StreamSubscription? _profileSubscription; // Removed as we fetch directly now
 
-  // Pass ProfileService in constructor
   AddSectionViewModel(this._ref, this._profileService) : super(const AddSectionState()) {
-    // Fetch the about status on initialization
-    _checkAboutStatus();
+    refreshStatus();
   }
 
-  // New method to fetch specifically the 'about' status
-  Future<void> _checkAboutStatus() async {
+  /// Fetches status for sections that can be hidden (About, Resume).
+  Future<void> refreshStatus() async {
      if (!mounted) return;
      if (_userId.isEmpty) {
-       state = state.copyWith(isLoading: false, error: "User not logged in.");
+       state = state.copyWith(isLoading: false, error: "User not logged in.", hasAboutInfo: false, hasResume: false);
        return;
      }
 
-     log("[AddSectionViewModel] Checking about status for user ID: $_userId");
-     // Keep isLoading true only if it's the initial load
-     if (state is AddSectionState && state.isLoading) {
-        // Already loading, no need to set again unless retrying
-     } else {
-        state = state.copyWith(isLoading: true, clearError: true);
-     }
-
+     log("[AddSectionViewModel] Refreshing profile status for user ID: $_userId");
+     state = state.copyWith(isLoading: true, clearError: true);
 
      try {
-       // Call the service method to get about data
-       final aboutData = await _profileService.getUserAboutAndSkills(_userId);
-       log("[AddSectionViewModel] Fetched about data. About text length: ${aboutData.about.length}");
+       final aboutFuture = _profileService.getUserAboutAndSkills(_userId);
+       final resumeUrlFuture = _profileService.getCurrentResumeUrl(_userId);
+
+       // Future.wait returns List<Object?>
+       final List<Object?> results = await Future.wait([aboutFuture, resumeUrlFuture]);
+
+       // --- FIX STARTS HERE ---
+       // Safely cast results to their expected types
+       final AboutModel? aboutData = results[0] is AboutModel ? results[0] as AboutModel : null;
+       final String? resumeUrl = results[1] is String ? results[1] as String : null;
+       // --- FIX ENDS HERE ---
+
 
        if (mounted) {
-         state = state.copyWith(
-           isLoading: false,
-           // Determine if 'about' exists based on the fetched data
-           hasAboutInfo: aboutData.about.isNotEmpty,
-           clearError: true,
-         );
-          log("[AddSectionViewModel] Updated state: isLoading=false, hasAboutInfo=${state.hasAboutInfo}");
+          // Check results using the correctly typed variables
+          // Use null-aware access on aboutData
+          final bool aboutExists = aboutData?.about.isNotEmpty ?? false;
+          final bool resumeExists = resumeUrl != null && resumeUrl.isNotEmpty;
+
+          log("[AddSectionViewModel] Status Fetched. About exists: $aboutExists, Resume exists: $resumeExists");
+
+          state = state.copyWith(
+             isLoading: false,
+             hasAboutInfo: aboutExists,
+             hasResume: resumeExists,
+             clearError: true,
+          );
+          log("[AddSectionViewModel] Updated state: isLoading=${state.isLoading}, hasAboutInfo=${state.hasAboutInfo}, hasResume=${state.hasResume}");
        }
      } catch (e) {
-       log("[AddSectionViewModel] Error checking about status: $e");
+       log("[AddSectionViewModel] Error refreshing profile status: $e");
        if (mounted) {
-         state = state.copyWith(isLoading: false, error: "Failed to check profile sections: ${e.toString()}");
+         state = state.copyWith(isLoading: false, error: "Failed to check profile sections: ${e.toString()}", hasAboutInfo: false, hasResume: false);
        }
      }
   }
-
-
-  // Removed _listenToProfileUpdates and _updateStateFromProfile as they are replaced by _checkAboutStatus
 
   @override
   void dispose() {
     log("[AddSectionViewModel] Disposing.");
-    // _profileSubscription?.cancel(); // No longer needed
     super.dispose();
   }
 }
 
-// Update the provider to inject ProfileService
+// Provider definition remains the same
 final addSectionViewModelProvider =
     StateNotifierProvider.autoDispose<AddSectionViewModel, AddSectionState>((ref) {
-  // Get ProfileService instance
   final profileService = ref.watch(profileServiceProvider);
   return AddSectionViewModel(ref, profileService);
 });
