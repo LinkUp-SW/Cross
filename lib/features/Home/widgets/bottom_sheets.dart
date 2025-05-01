@@ -17,7 +17,7 @@ import 'package:link_up/shared/widgets/custom_snackbar.dart';
 import 'package:share_plus/share_plus.dart';
 
 aboutPostBottomSheet(BuildContext context,
-    {bool isAd = false, required PostModel post}) {
+    {bool isAd = false, required PostModel post, bool isAcitvity = false}) {
   showModalBottomSheet(
     context: context,
     useRootNavigator: true,
@@ -70,12 +70,15 @@ aboutPostBottomSheet(BuildContext context,
                     onTap: () {
                       //TODO: unfollow user
                       //Needs to be changed to top id and name
-                      unfollowUser(post.header.userId);
+                      isAcitvity
+                          ? unfollowUser(post.activity.actorUserName)
+                          : unfollowUser(post.header.userId);
                     },
                     leading: Transform.rotate(
                         angle: math.pi / 4,
                         child: const Icon(Icons.control_point_sharp)),
-                    title: Text("Unfollow ${post.header.name}"),
+                    title: Text(
+                        "Unfollow ${isAcitvity ? post.activity.actorName : post.header.name}"),
                   ),
             if (!isAd)
               ListTile(
@@ -292,7 +295,7 @@ shareBottomSheet(BuildContext context) {
     ),
     builder: (context) =>
         StatefulBuilder(builder: (context, StateSetter setState) {
-      if(users.isEmpty) {
+      if (users.isEmpty) {
         getUsers(' ').then((value) {
           if (context.mounted) {
             setState(() {});
@@ -322,7 +325,7 @@ shareBottomSheet(BuildContext context) {
                 onChanged: (value) async {
                   {
                     await getUsers(value);
-                    if(context.mounted) {
+                    if (context.mounted) {
                       setState(() {});
                     }
                   }
