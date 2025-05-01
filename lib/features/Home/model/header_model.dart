@@ -1,3 +1,4 @@
+
 import 'package:link_up/features/Home/home_enums.dart';
 
 class HeaderModel {
@@ -24,11 +25,11 @@ class HeaderModel {
   });
 
   HeaderModel.fromJson(Map<String, dynamic> json)
-      : profileImage = json['author']['profilePicture'],
+      : profileImage = json['author']['profile_picture'],
         userId = json['author']['username'],
-        name = '${json['author']['firstName']}  ${json['author']['lastName']}',
-        connectionDegree = json['author']['connectionDegree'],
-        about = json['author']['headline'],
+        name = '${json['author']['first_name']}  ${json['author']['last_name']}',
+        connectionDegree = json['author']['connection_degree'] ?? '3rd+',
+        about = json['author']['headline'] ?? '',
         timeAgo =json['date'] != null ? DateTime.fromMillisecondsSinceEpoch(json['date']*1000,) : DateTime.now(),
         edited = json['is_edited'] ?? false,
         visibilityComments = Visibilities.getVisibility(json['comments_disabled'] ?? 'anyone'),

@@ -34,8 +34,7 @@ class WriteCommentVm {
         controller = TextEditingController(); // Use basic controller initially
 
   // Initialize styleable controller after construction
-  void initController(
-      BuildContext context, Function updateTags) {
+  void initController(BuildContext context, Function updateTags) {
     controller = StyleableTextFieldController(
       styles: TextPartStyleDefinitions(
         definitionList: [
@@ -48,10 +47,7 @@ class WriteCommentVm {
                 final String username = regMatch.group(1) ?? '';
                 final String userId = regMatch.group(2) ?? '';
                 log('User detected: $username with ID: $userId');
-                taggedUsers.add({
-                  'username': username,
-                  'userId': userId,
-                });
+                taggedUsers.add(userId);
                 log(taggedUsers.toString());
               }
             },
@@ -62,8 +58,7 @@ class WriteCommentVm {
                 final String username = regMatch.group(1) ?? '';
                 final String userId = regMatch.group(2) ?? '';
                 log('User deleted: $username with ID: $userId');
-                taggedUsers
-                    .removeWhere((element) => element['userId'] == userId);
+                taggedUsers.removeWhere((element) => element == userId);
                 log(taggedUsers.toString());
               }
             },
@@ -71,19 +66,20 @@ class WriteCommentVm {
           TextPartStyleDefinition(
             pattern: r'@[\w ^:]*$',
             style: TextStyle(),
-            onDetected: (p0) async{
+            onDetected: (p0) async {
               if (p0.length > 1) {
                 final query = p0.substring(1);
                 final BaseService baseService = BaseService();
-                await baseService.get(
-                  'api/v1/search/users?query=$query&limit=25&page=1').then((value) {
+                await baseService
+                    .get('api/v1/search/users?query=$query&limit=25&page=1')
+                    .then((value) {
                   if (value.statusCode == 200) {
                     final body = jsonDecode(value.body);
-                    updateTags(false,[]);
+                    updateTags(false, []);
                     final List<dynamic> users = body['people'];
                     users.removeWhere((user) {
-                      return taggedUsers.any((taggedUser) =>
-                          taggedUser['user_id'] == user['user_id']);
+                      return taggedUsers
+                          .any((taggedUser) => taggedUser == user['user_id']);
                     });
                     log('Fetched users: $users');
                     updateTags(true, users);
@@ -98,7 +94,7 @@ class WriteCommentVm {
             preventPartialDeletion: true,
             onDelete: (p0) {
               log('Mention deleted: $p0');
-              updateTags(false,[]);
+              updateTags(false, []);
             },
           ),
           FormattingTextStyles.boldStyle,
@@ -132,62 +128,54 @@ class WriteCommentProvider extends StateNotifier<WriteCommentVm> {
     state.initController(context, updateTags);
   }
 
-  void setVisibilityPost(Visibilities visibility) {
-    state = state.copyWith(visbilityPost: visibility);
-  }
-
-  void setVisibilityComment(Visibilities visibility) {
-    state = state.copyWith(visibilityComment: visibility);
-  }
-
   void setMedia(Media media) {
-    state = state.copyWith(media: media);
+    state.media = media;
   }
 
-  void tagUser(Map<String, dynamic> user) {
-    state.taggedUsers.add(user);
-  }
-
-  void clearWritePost() {
-    state = WriteCommentVm.initial();
-    state.initController(context, () {});
+  void clearWriteComment() {
+    state.commentId = 'noId';
+    state.isEdited = false;
+    state.isReply = false;
+    state.taggedUsers = [];
+    state.controller.clear();
+    state.media = Media.initial();
   }
 
   void setComment(CommentModel comment, bool isEdited) {
+    state.taggedUsers = comment.taggedUsers;
     state.controller.text = comment.text;
     state.isEdited = isEdited;
     state.media = comment.media;
     state.commentId = comment.id;
   }
 
-  Future<String> comment(String postId,String? commentId) async{
-    if(state.isEdited) {
-      return await editComment(postId,state.commentId);
+  Future<String> comment(String postId, String? commentId) async {
+    if (state.isEdited) {
+      return await editComment(postId, state.commentId);
     } else {
-      return await createComment(postId,commentId);
+      return await createComment(postId, commentId);
     }
   }
-  
-  Future<String> editComment(String postId,String? commentId) async {
+
+  Future<String> editComment(String postId, String? commentId) async {
     final BaseService service = BaseService();
     log('Editing comment with postId: $postId, commentId: $commentId');
 
     final mediaContent = await state.media.setToUpload();
-    final response = await service.patch('api/v1/post/comment/:postId/:commentId'
-    , routeParameters: {
-        "postId": postId,
-        "commentId": commentId,
-      }
-    , body: {
+    log('Media content: $mediaContent');
+    log('Tagged users: ${state.taggedUsers}');
+    log('Content: ${state.controller.text}');
+    final response = await service
+        .patch('api/v2/post/comment/:postId/:commentId', routeParameters: {
+      "postId": postId,
+      "commentId": commentId,
+    }, body: {
       "content": state.controller.text,
       "media": mediaContent,
-      "tagged_users": state.taggedUsers.map((user) {return user['user_id'];}).toList(),
+      "tagged_users": state.taggedUsers,
     }).catchError((error) {
       log('Error editing comment: $error');
       throw Exception(error);
-    }).timeout(const Duration(seconds: 5), onTimeout: () {
-      log('Request timed out');
-      throw Exception('Request timed out');
     });
     log('Response status code: ${response.statusCode}');
     if (response.statusCode == 200) {
@@ -199,26 +187,22 @@ class WriteCommentProvider extends StateNotifier<WriteCommentVm> {
     }
   }
 
-  Future<String> createComment(String postId,String? commentId) async {
+  Future<String> createComment(String postId, String? commentId) async {
     final BaseService service = BaseService();
     log('Creating comment with postId: $postId, commentId: $commentId');
 
     final mediaContent = await state.media.setToUpload();
-    final response = await service.post('api/v1/post/comment/:postId'
-    , routeParameters: {
-        "postId": postId,
-      }
-    , body: {
+    final response =
+        await service.post('api/v2/post/comment/:postId', routeParameters: {
+      "postId": postId,
+    }, body: {
       "parent_id": commentId,
       "content": state.controller.text,
       "media": mediaContent,
-      "tagged_users": state.taggedUsers.map((user) {return user['user_id'];}).toList(),
+      "tagged_users": state.taggedUsers,
     }).catchError((error) {
       log('Error creating comment: $error');
       throw Exception(error);
-    }).timeout(const Duration(seconds: 5), onTimeout: () {
-      log('Request timed out');
-      throw Exception('Request timed out');
     });
     log('Response status code: ${response.statusCode}');
     if (response.statusCode == 200) {

@@ -9,10 +9,6 @@ class CommentsProvider extends StateNotifier<Map<String, dynamic>> {
   CommentsProvider() : super({'comments': [],'cursor': 0});
 
   void addComments(List<CommentModel> comments) {
-    if (state['cursor'] == null)
-    {
-      state['comments'].clear();
-    }
     state['comments'].addAll(comments);
   }
 
@@ -29,33 +25,37 @@ class CommentsProvider extends StateNotifier<Map<String, dynamic>> {
     state['comments'].addAll(comments);
   }
 
+  void setCommentsFromPost(Map<String,dynamic> comments) {
+    state['comments'].clear();
+    state['comments'].addAll(comments['comments'].map((e) => CommentModel.fromJson(e)).toList());
+    state['cursor'] = comments['next_cursor'];
+  }
+
   void clearComments() {
     state['comments'].clear();
   }
 
-  Future<List<CommentModel>> fetchComments(String postId) {
+  Future<List<CommentModel>> fetchComments(String postId,{int? cursor}) {
     //TODO: Implement fetching comments from the server
     final BaseService service = BaseService();
     log('Fetching comments for postId: $postId');
-    return service.get('api/v1/post/comment/:postId?cursor=:cursor?limit=:limit',
+    return service.get('api/v2/post/comment/:postId',
+        queryParameters: {
+          'limit': '10',
+          'cursor': (cursor ?? state['cursor']).toString(),
+          'replyLimit': '1',
+        },
         routeParameters: {
           'postId': postId,
-          'limit': 1,
-          'cursor': state['cursor'].toString(),
         },
         ).then((value) {
       final data = jsonDecode(value.body);
       log('Fetched comments: $data');
-      state['cursor'] = data['nextCursor'];
-      return (data['comments'] as Map<String, dynamic>)
-          .values.map((e) => CommentModel.fromJson(e)).toList()
-          .toList();
+      state['cursor'] = data['next_cursor'];
+      return (data['comments'] as List).map((e) => CommentModel.fromJson(e)).toList();
     }).catchError((error) {
       log('$error');
       throw Exception(error);
-    }).timeout(const Duration(seconds: 5), onTimeout: () {
-      log('timeout');
-      throw Exception('Request timed out');
     });
   }
 }

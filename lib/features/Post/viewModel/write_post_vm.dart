@@ -20,7 +20,7 @@ class WritePostVm {
   //bool brandPartnerships = false;
   TextEditingController controller;
   Media media;
-  List<dynamic> taggedUsers = [];
+  List<String> taggedUsers = [];
   String postId = 'noId';
 
   WritePostVm({
@@ -53,10 +53,7 @@ class WritePostVm {
                 final String username = regMatch.group(1) ?? '';
                 final String userId = regMatch.group(2) ?? '';
                 log('User detected: $username with ID: $userId');
-                taggedUsers.add({
-                  'username': username,
-                  'userId': userId,
-                });
+                taggedUsers.add(userId);
                 log(taggedUsers.toString());
               }
             },
@@ -68,7 +65,7 @@ class WritePostVm {
                 final String userId = regMatch.group(2) ?? '';
                 log('User deleted: $username with ID: $userId');
                 taggedUsers
-                    .removeWhere((element) => element['userId'] == userId);
+                    .removeWhere((element) => element == userId);
                 log(taggedUsers.toString());
               }
             },
@@ -117,7 +114,7 @@ class WritePostVm {
                     final List<dynamic> users = body['people'];
                     users.removeWhere((user) {
                       return taggedUsers.any((taggedUser) =>
-                          taggedUser['user_id'] == user['user_id']);
+                          taggedUser == user['user_id']);
                     });
                     log('Fetched users: $users');
                     updateTags(true, users);
@@ -177,28 +174,27 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
   }
 
   void setMedia(Media media) {
-    state = state.copyWith(media: media);
-  }
-
-  void tagUser(Map<String, dynamic> user) {
-    state.taggedUsers.add(user);
+    state.media = media;
   }
 
   void clearWritePost() {
-    state = WritePostVm.initial();
-    state.initController(context, () {}, () {});
+    state.postId = 'noId';
+    state.visbilityPost = Visibilities.anyone;
+    state.visibilityComment = Visibilities.anyone;
+    state.controller.clear();
+    state.media = Media.initial();
+    state.taggedUsers = [];
   }
 
   void setPost(PostModel post, bool isEdited) {
     state.controller.text = post.text;
-    state = WritePostVm(
-      taggedUsers: post.taggedUsers,
-      postId: post.id,
-      visbilityPost: post.header.visibilityPost,
-      visibilityComment: post.header.visibilityComments,
-      media: post.media,
-      controller: state.controller,
-    );
+    state.postId = post.id;
+    state.visbilityPost = post.header.visibilityPost;
+    state.visibilityComment = post.header.visibilityComments;
+    state.media = post.media;
+    state.taggedUsers = post.taggedUsers;
+    state.controller.text = post.text;
+    log('Post ID: ${state.postId}');
   }
 
   Future<String> post() async {
@@ -211,11 +207,12 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
 
   Future<String> editPost() async {
     final BaseService service = BaseService();
+    log('Editing post with ID: ${state.postId}');
 
     final mediaContent = await state.media.setToUpload();
 
     final response =
-        await service.patch('api/v1/post/posts/:postId', routeParameters: {
+        await service.patch('api/v2/post/posts/:postId', routeParameters: {
       "postId": state.postId
     }, body: {
       "content": state.controller.text,
@@ -224,9 +221,8 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
       "commentsDisabled":
           Visibilities.getVisibilityString(state.visibilityComment),
       "publicPost": state.visbilityPost == Visibilities.anyone ? true : false,
-      "taggedUsers": state.taggedUsers.map((user) {
-        return user['user_id'];
-      }).toList(),
+      "taggedUsers": state.taggedUsers,
+      "postType": state.media.type == MediaType.post ? "Repost thought" : "Standard",
     });
 
     log('Response: ${response.statusCode} - ${response.body}');
@@ -245,18 +241,17 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
     final mediaContent = await state.media.setToUpload();
 
     log('${state.taggedUsers.map((user) {
-      return user['user_id'];
+      return user;
     }).toList()}');
-    final response = await service.post('api/v1/post/posts', body: {
+    final response = await service.post('api/v2/post/posts', body: {
       "content": state.controller.text,
       "mediaType": state.media.type.name,
       "media": mediaContent,
       "commentsDisabled":
           Visibilities.getVisibilityString(state.visibilityComment),
       "publicPost": state.visbilityPost == Visibilities.anyone ? true : false,
-      "taggedUsers": state.taggedUsers.map((user) {
-        return user['user_id'];
-      }).toList(),
+      "taggedUsers": state.taggedUsers,
+      "postType": state.media.type == MediaType.post ? "Repost thought" : "Standard",
     });
 
     // Rest of the function remains the same
@@ -265,7 +260,6 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
       log('Post created successfully: ${response.body}');
       final body = jsonDecode(response.body);
       return body['postId'];
-      //return jsonDecode(response.body)['postId'];
     } else {
       log('Failed to create post');
       return 'error';

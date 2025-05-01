@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -108,8 +106,7 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                                 title: Text(users[index]['name'],
                                     style:
                                         Theme.of(context).textTheme.bodyLarge),
-                                subtitle: Text(
-                                    users[index]['headline'] ?? '',
+                                subtitle: Text(users[index]['headline'] ?? '',
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodySmall!
@@ -119,13 +116,11 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                                 onTap: () {
                                   writeComment.controller.text =
                                       writeComment.controller.text.replaceRange(
-                                    writeComment.controller.text.lastIndexOf('@'),
+                                    writeComment.controller.text
+                                        .lastIndexOf('@'),
                                     writeComment.controller.text.length,
                                     "@${users[index]['name']}:${users[index]['user_id']}^ ",
                                   );
-                                  ref
-                                      .read(writeCommentProvider.notifier)
-                                      .tagUser(users[index]);
                                   setState(() {
                                     _showTags = false;
                                   });
@@ -199,50 +194,42 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                                       ),
                                     ),
                                     if (writeComment.media.type !=
-                                            MediaType.none &&
-                                        writeComment.media.files[0].path != '')
+                                        MediaType.none)
                                       Padding(
                                         padding: EdgeInsets.all(
                                           10.r,
                                         ),
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(10.r),
-                                          child: Stack(
-                                            children: [
-                                              Image.file(
-                                                File(
-                                                  writeComment
-                                                      .media.files[0].path,
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(10.r),
+                                              child: SizedBox(
+                                                  height: 120.h,
+                                                  child: writeComment.media
+                                                      .getMedia()),
+                                            ),
+                                            IconButton(
+                                                style: IconButton.styleFrom(
+                                                  backgroundColor: AppColors
+                                                      .fineLinesGrey
+                                                      .withValues(alpha: 0.7),
                                                 ),
-                                                fit: BoxFit.fitHeight,
-                                                height: 120.h,
-                                              ),
-                                              Positioned(
-                                                right: 0,
-                                                child: IconButton(
-                                                    style: IconButton.styleFrom(
-                                                      backgroundColor: AppColors
-                                                          .fineLinesGrey
-                                                          .withValues(
-                                                              alpha: 0.5),
-                                                    ),
-                                                    onPressed: () {
-                                                      setState(() {
-                                                        ref
-                                                            .read(
-                                                                writeCommentProvider
-                                                                    .notifier)
-                                                            .setMedia(
-                                                              Media.initial(),
-                                                            );
-                                                      });
-                                                    },
-                                                    icon: const Icon(
-                                                        Icons.close)),
-                                              ),
-                                            ],
-                                          ),
+                                                onPressed: () {
+                                                  setState(() {
+                                                    ref
+                                                        .read(
+                                                            writeCommentProvider
+                                                                .notifier)
+                                                        .setMedia(
+                                                          Media.initial(),
+                                                        );
+                                                  });
+                                                },
+                                                icon: const Icon(Icons.close)),
+                                          ],
                                         ),
                                       ),
                                   ],
@@ -257,31 +244,41 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                               child: writeComment.controller.text.isEmpty
                                   ? SizedBox()
                                   : IconButton.filled(
-                                      onPressed: () async {
-                                        setState(() {
-                                          _sending = true;
-                                        });
-                                        await ref
-                                            .read(writeCommentProvider.notifier)
-                                            .comment(widget.postId,
-                                                widget.commentId);
-                                        widget.focusNode.unfocus();
-                                        ref
-                                            .read(writeCommentProvider.notifier)
-                                            .clearWritePost();
-                                        setState(() {
-                                          _sending = false;
-                                          ref
-                                              .read(commentsProvider.notifier)
-                                              .fetchComments(widget.postId)
-                                              .then((value) {
-                                            ref
-                                                .read(commentsProvider.notifier)
-                                                .addComments(value);
-                                          });
-                                        });
-                                        widget.refresh();
-                                      },
+                                      onPressed: writeComment
+                                                  .controller.text.isEmpty &&
+                                              writeComment.media.type ==
+                                                  MediaType.none
+                                          ? null
+                                          : () async {
+                                              setState(() {
+                                                _sending = true;
+                                              });
+                                              await ref
+                                                  .read(writeCommentProvider
+                                                      .notifier)
+                                                  .comment(widget.postId,
+                                                      widget.commentId);
+                                              widget.focusNode.unfocus();
+                                              ref
+                                                  .read(writeCommentProvider
+                                                      .notifier)
+                                                  .clearWriteComment();
+                                              setState(() {
+                                                _sending = false;
+                                                ref
+                                                    .read(commentsProvider
+                                                        .notifier)
+                                                    .fetchComments(
+                                                        widget.postId)
+                                                    .then((value) {
+                                                  ref
+                                                      .read(commentsProvider
+                                                          .notifier)
+                                                      .addComments(value);
+                                                });
+                                              });
+                                              widget.refresh();
+                                            },
                                       icon: _sending
                                           ? CircularProgressIndicator()
                                           : Icon(
@@ -307,6 +304,7 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                             children: [
                               Row(
                                 children: [
+                                  if(writeComment.media.type == MediaType.none)
                                   GestureDetector(
                                       onTap: () async {
                                         final ImagePicker picker =
@@ -361,32 +359,62 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                               Wrap(
                                 children: [
                                   TextButton(
-                                    onPressed: () async {
-                                      setState(() {
-                                        _sending = true;
-                                      });
-                                      await ref
-                                          .read(writeCommentProvider.notifier)
-                                          .comment(
-                                              widget.postId, widget.commentId);
-                                      widget.focusNode.unfocus();
-                                      ref
-                                          .read(writeCommentProvider.notifier)
-                                          .clearWritePost();
-                                      setState(() {
-                                        _sending = false;
-                                        ref
-                                            .read(commentsProvider.notifier)
-                                            .fetchComments(widget.postId)
-                                            .then((value) {
-                                          ref
-                                              .read(commentsProvider.notifier)
-                                              .addComments(value);
-                                        });
-                                      });
-                                      widget.refresh();
-                                      setState(() {});
-                                    },
+                                    style: TextButton.styleFrom(
+                                        disabledForegroundColor: AppColors.grey,
+                                        foregroundColor: AppColors.red),
+                                    onPressed:
+                                        writeComment.controller.text.isEmpty &&
+                                                writeComment.media.type ==
+                                                    MediaType.none
+                                            ? null
+                                            : () {
+                                                ref
+                                                    .read(writeCommentProvider
+                                                        .notifier)
+                                                    .clearWriteComment();
+                                                    setState(() {});
+                                              },
+                                    child: Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    style: TextButton.styleFrom(
+                                      disabledForegroundColor: AppColors.grey,
+                                    ),
+                                    onPressed: writeComment
+                                                .controller.text.isEmpty &&
+                                            writeComment.media.type ==
+                                                MediaType.none
+                                        ? null
+                                        : () async {
+                                            setState(() {
+                                              _sending = true;
+                                            });
+                                            await ref
+                                                .read(writeCommentProvider
+                                                    .notifier)
+                                                .comment(widget.postId,
+                                                    widget.commentId);
+                                            widget.focusNode.unfocus();
+                                            ref
+                                                .read(writeCommentProvider
+                                                    .notifier)
+                                                .clearWriteComment();
+                                            setState(() {
+                                              _sending = false;
+                                              ref
+                                                  .read(
+                                                      commentsProvider.notifier)
+                                                  .fetchComments(widget.postId)
+                                                  .then((value) {
+                                                ref
+                                                    .read(commentsProvider
+                                                        .notifier)
+                                                    .addComments(value);
+                                              });
+                                            });
+                                            widget.refresh();
+                                            setState(() {});
+                                          },
                                     child: _sending
                                         ? CircularProgressIndicator()
                                         : Text(widget.buttonName),
