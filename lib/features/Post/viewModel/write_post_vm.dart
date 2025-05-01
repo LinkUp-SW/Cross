@@ -174,24 +174,27 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
   }
 
   void setMedia(Media media) {
-    state = state.copyWith(media: media);
+    state.media = media;
   }
 
   void clearWritePost() {
-    state = WritePostVm.initial();
-    state.initController(context, () {}, () {});
+    state.postId = 'noId';
+    state.visbilityPost = Visibilities.anyone;
+    state.visibilityComment = Visibilities.anyone;
+    state.controller.clear();
+    state.media = Media.initial();
+    state.taggedUsers = [];
   }
 
   void setPost(PostModel post, bool isEdited) {
     state.controller.text = post.text;
-    state = WritePostVm(
-      taggedUsers: post.taggedUsers,
-      postId: post.id,
-      visbilityPost: post.header.visibilityPost,
-      visibilityComment: post.header.visibilityComments,
-      media: post.media,
-      controller: state.controller,
-    );
+    state.postId = post.id;
+    state.visbilityPost = post.header.visibilityPost;
+    state.visibilityComment = post.header.visibilityComments;
+    state.media = post.media;
+    state.taggedUsers = post.taggedUsers;
+    state.controller.text = post.text;
+    log('Post ID: ${state.postId}');
   }
 
   Future<String> post() async {
@@ -204,6 +207,7 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
 
   Future<String> editPost() async {
     final BaseService service = BaseService();
+    log('Editing post with ID: ${state.postId}');
 
     final mediaContent = await state.media.setToUpload();
 

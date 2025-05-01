@@ -10,6 +10,7 @@ import 'package:link_up/features/Home/home_enums.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
 import 'package:link_up/features/Home/viewModel/comments_vm.dart';
 import 'package:link_up/features/Home/viewModel/post_vm.dart';
+import 'package:link_up/features/Home/viewModel/write_comment_vm.dart';
 import 'package:link_up/features/Home/widgets/bottom_sheets.dart';
 import 'package:link_up/features/Home/widgets/comment_bubble.dart';
 import 'package:link_up/features/Home/widgets/comments_text_field.dart';
@@ -105,6 +106,7 @@ class _PostPageState extends ConsumerState<PostPage> {
         leading: IconButton(
           onPressed: () {
             ref.read(commentsProvider.notifier).clearComments();
+            ref.read(writeCommentProvider.notifier).clearWriteComment();
             context.pop();
           },
           icon: const Icon(Icons.arrow_back),
