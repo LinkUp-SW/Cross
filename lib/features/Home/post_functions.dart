@@ -51,7 +51,7 @@ Future<void> unsavePost(String postId) async {
 Future<void> followUser(String userId) async {
   final BaseService service = BaseService();
   final response =
-      await service.post('api/v2/user/follow/:userId', routeParameters: {
+      await service.post('api/v1/user/follow/:userId', routeParameters: {
     "userId": userId,
   });
 
@@ -65,7 +65,7 @@ Future<void> followUser(String userId) async {
 
 Future<void> unfollowUser(String userId) async {
   final BaseService service = BaseService();
-  final response = await service.delete('api/v2/user/unfollow/:userId', {
+  final response = await service.delete('api/v1/user/unfollow/:userId', {
     "userId": userId,
   });
 
