@@ -30,7 +30,7 @@ class HeaderModel {
         name = '${json['author']['first_name']}  ${json['author']['last_name']}',
         connectionDegree = json['author']['connection_degree'] ?? '3rd+',
         about = json['author']['headline'] ?? '',
-        timeAgo =json['date'] != null ? DateTime.fromMillisecondsSinceEpoch(json['date'],) : DateTime.now(),
+        timeAgo =json['date'] != null ? DateTime.fromMillisecondsSinceEpoch(json['date']*1000,) : DateTime.now(),
         edited = json['is_edited'] ?? false,
         visibilityComments = Visibilities.getVisibility(json['comments_disabled'] ?? 'anyone'),
         visibilityPost =  Visibilities.getVisibility(json['public_post'] == true ? 'anyone': 'connectionsOnly');
