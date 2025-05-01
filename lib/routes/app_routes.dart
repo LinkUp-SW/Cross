@@ -43,6 +43,8 @@ import 'package:link_up/features/profile/view/add_section.dart';
 import 'package:link_up/features/profile/view/edit_about.dart';
 import 'package:link_up/features/profile/view/add_resume.dart';
 import 'package:link_up/features/profile/view/resume_viewer.dart';
+import 'package:link_up/features/profile/view/add_new_license.dart';
+
 final goRouterProvider = Provider<GoRouter>((ref) {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -118,11 +120,15 @@ final goRouterProvider = Provider<GoRouter>((ref) {
            path: "/add_resume",
            builder: (context, state) => const AddResumePage(),
          ),
+         GoRoute( 
+           path: "/add_new_license",
+           builder: (context, state) => const AddNewLicensePage(),
+         ),         
           GoRoute(
-            path: '/resume_viewer', // In-app PDF viewer
+            path: '/resume_viewer', 
             builder: (context, state) {
             final String? resumeUrl = state.extra as String?;
-            return ResumeViewerPage(url: resumeUrl); // Pass URL to the page
+            return ResumeViewerPage(url: resumeUrl); 
       },
     ),
 

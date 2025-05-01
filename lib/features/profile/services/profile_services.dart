@@ -80,23 +80,22 @@ Future<AboutModel> getUserAboutAndSkills(String userId) async {
         log('ProfileService: getUserAboutAndSkills API Error: Status Code ${response.statusCode}, Body: ${response.body}');
         if (response.statusCode == 404) {
            log('ProfileService: About section not found for user $userId, returning default.');
-           return const AboutModel(about: '', skills: []); // Return default if not found
+           return const AboutModel(about: '', skills: []); 
         }
         throw Exception('Failed to load about section (Status code: ${response.statusCode})');
       }
     } catch (e) {
       log('ProfileService: Error in getUserAboutAndSkills: $e');
-      return const AboutModel(about: '', skills: []); // Return default on other errors
+      return const AboutModel(about: '', skills: []); 
     }
   }
 
    Future<bool> updateOrAddUserAbout({
-      required String userId, // Keep userId for logging, but not for the path
+      required String userId, 
       required String aboutText,
-      required bool isCreating // Flag to determine POST or PUT
+      required bool isCreating
   }) async {
-    // *** CORRECTED ENDPOINT PATH for POST/PUT ***
-    const String endpoint = 'api/v1/user/profile/about'; // Use the exact path from docs
+    const String endpoint = 'api/v1/user/profile/about'; 
     final httpMethod = isCreating ? 'POST' : 'PUT';
     log('ProfileService: ${isCreating ? 'Adding' : 'Updating'} about for user ID: $userId via $httpMethod to endpoint: $endpoint');
 
@@ -104,152 +103,27 @@ Future<AboutModel> getUserAboutAndSkills(String userId) async {
     log('ProfileService: Sending $httpMethod request body: ${jsonEncode(requestBody)}');
     try {
       final response = isCreating
-          ? await super.post(endpoint, body: requestBody) // Use super.post
-          : await super.put(endpoint, requestBody); // Use super.put
+          ? await super.post(endpoint, body: requestBody) 
+          : await super.put(endpoint, requestBody);
       log('ProfileService: updateOrAddUserAbout ($httpMethod) API Response Status Code: ${response.statusCode}');
       log('ProfileService: updateOrAddUserAbout ($httpMethod) API Response Body: ${response.body}'); // Log the full response body
 
-      // Check status code AFTER logging
-      // POST often returns 201 (Created), PUT often returns 200 (OK) or 204 (No Content)
       if (response.statusCode == 200 || response.statusCode == 201 || response.statusCode == 204) {
           log('ProfileService: About ${isCreating ? 'add' : 'update'} successful (status code check).');
           return true;
       } else {
-          // Log failure before returning false or throwing
           log('ProfileService: About ${isCreating ? 'add' : 'update'} failed (status code ${response.statusCode}).');
-          // Optionally throw an exception with more details from response.body if needed by ViewModel
-          // throw Exception('Failed to ${isCreating ? 'add' : 'update'} about: ${response.body}');
-          return false; // Indicate failure for non-success codes
+         
+          return false;
       }
     } catch(e, stackTrace) {
       log('ProfileService: Error ${isCreating ? 'adding' : 'updating'} about: $e\nStackTrace: $stackTrace');
-      rethrow; // Rethrow to be caught by ViewModel
+      rethrow; 
     }
   }
-    Future<List<LicenseModel>> getLicenses(String userId) async {
-    const String endpointTemplate = ExternalEndPoints.getUserLicenses; // Use the constant
-    log('ProfileService: Fetching licenses for user ID: $userId');
-    try {
-      final response = await super.get(
-        endpointTemplate,
-        routeParameters: {'user_id': userId},
-      );
-      log('ProfileService: getLicenses API Response Status Code: ${response.statusCode}');
-      if (response.statusCode == 200) {
-        // Assuming the API returns a list directly under a key like 'licenses' or 'liscence_certificates'
-        // Adjust the key based on the actual API response
-        final List<dynamic> licenseJsonList = jsonDecode(response.body)['liscence_certificates'] as List? ?? [];
-        final List<LicenseModel> licenses = licenseJsonList
-            .map((licJson) => licJson is Map<String, dynamic> ? LicenseModel.fromJson(licJson) : null)
-            .whereType<LicenseModel>()
-            .toList();
-        log('ProfileService: Fetched ${licenses.length} licenses.');
-        return licenses;
-      } else if (response.statusCode == 404) {
-         log('ProfileService: No licenses found for user $userId (404). Returning empty list.');
-         return []; // Return empty list if not found
-      }
-      else {
-        log('ProfileService: getLicenses API Error: Status Code ${response.statusCode}, Body: ${response.body}');
-        throw Exception('Failed to load licenses (Status code: ${response.statusCode})');
-      }
-    } catch (e) {
-      log('ProfileService: Error in getLicenses: $e');
-      rethrow;
-    }
-  }
-
-  Future<bool> addLicense(LicenseModel license) async {
-    const String endpoint = ExternalEndPoints.addLicense;
-    log('ProfileService: Adding license via POST $endpoint');
-    final requestBody = license.toJson();
-    log('ProfileService: Request Body: ${jsonEncode(requestBody)}');
-
-    try {
-      // Note: The API schema shows an array 'liscence_certificates'.
-      // Check if the API expects a single license object directly or inside an array.
-      // Assuming it expects the license object directly in the request body for adding ONE.
-      // If it expects an array like {"liscence_certificates": [ license.toJson() ]}, adjust accordingly.
-      final response = await super.post(endpoint, body: requestBody);
-
-      log('ProfileService: addLicense API Response Status Code: ${response.statusCode}');
-      log('ProfileService: addLicense API Response Body: ${response.body}');
-
-      // POST usually returns 201 (Created) on success
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        log('ProfileService: License added successfully.');
-        return true;
-      } else {
-        log('ProfileService: Add License Error: Status Code ${response.statusCode}');
-        // Throw a more specific error based on response body if possible
-        throw Exception('Failed to add license (Status Code: ${response.statusCode}): ${response.body}');
-      }
-    } catch (e) {
-      log('ProfileService: Error adding license: $e');
-      rethrow;
-    }
-  }
-
-  Future<bool> updateLicense(String licenseId, LicenseModel license) async {
-    const String endpointTemplate = ExternalEndPoints.updateLicense;
-    log('ProfileService: Updating license ID: $licenseId via PUT $endpointTemplate');
-    final requestBody = license.toJson();
-     // Remove the ID from the body if the API doesn't expect it there for updates
-     // requestBody.remove('_id'); // Uncomment if ID shouldn't be in the PUT body
-    log('ProfileService: Request Body: ${jsonEncode(requestBody)}');
-
-    try {
-      final response = await super.put(
-         endpointTemplate.replaceFirst(':licenseId', licenseId), // Use super.put
-         requestBody,
-      );
-
-      log('ProfileService: updateLicense API Response Status Code: ${response.statusCode}');
-      log('ProfileService: updateLicense API Response Body: ${response.body}');
-
-      // PUT often returns 200 (OK) or 204 (No Content) on success
-      if (response.statusCode == 200 || response.statusCode == 204) {
-        log('ProfileService: License updated successfully.');
-        return true;
-      } else {
-        log('ProfileService: Update License Error: Status Code ${response.statusCode}');
-        throw Exception('Failed to update license (Status Code: ${response.statusCode}): ${response.body}');
-      }
-    } catch (e) {
-      log('ProfileService: Error updating license: $e');
-      rethrow;
-    }
-  }
-
-   Future<bool> deleteLicense(String licenseId) async {
-     const String endpointTemplate = ExternalEndPoints.deleteLicense;
-     log('ProfileService: Deleting license ID: $licenseId via DELETE $endpointTemplate');
-
-     try {
-       final response = await super.delete(
-          endpointTemplate,
-          {'licenseId': licenseId}, // Pass licenseId as route parameter
-       );
-
-       log('ProfileService: deleteLicense API Response Status Code: ${response.statusCode}');
-       log('ProfileService: deleteLicense API Response Body: ${response.body}');
-
-       // DELETE often returns 200 (OK) or 204 (No Content) on success
-       if (response.statusCode == 200 || response.statusCode == 204) {
-         log('ProfileService: License deleted successfully.');
-         return true;
-       } else {
-         log('ProfileService: Delete License Error: Status Code ${response.statusCode}');
-         throw Exception('Failed to delete license (Status Code: ${response.statusCode}): ${response.body}');
-       }
-     } catch (e) {
-       log('ProfileService: Error deleting license: $e');
-       rethrow;
-     }
-   }
 
   Future<List<PositionModel>> getUserExperience(String userId) async {
-     const String endpointTemplate = ExternalEndPoints.getUserExperience; //'api/v1/user/profile/experience/:user_id';
+     const String endpointTemplate = ExternalEndPoints.getUserExperience;
      log('ProfileService: Fetching experience for user ID: $userId');
      try {
        final response = await super.get(
@@ -300,6 +174,88 @@ Future<AboutModel> getUserAboutAndSkills(String userId) async {
      rethrow;
    }
  }
+
+
+ // --- Get Licenses ---
+  Future<bool> addLicense(LicenseModel license) async {
+    const String endpoint = ExternalEndPoints.addLicense;
+    final String userId = InternalEndPoints.userId;
+    if (userId.isEmpty) {
+      throw Exception("User ID not available. Please log in again.");
+    }
+    try {
+      final response = await post(
+        endpoint,
+        body: license.toJson(),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        throw Exception('Failed to add license (Status code: ${response.statusCode})');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<LicenseModel>> getUserLicenses(String userId) async {
+    const String endpointTemplate = ExternalEndPoints.getUserLicenses;
+    try {
+      final response = await super.get(
+        endpointTemplate,
+        routeParameters: {'user_id': userId},
+      );
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonData = jsonDecode(response.body);
+        final List<dynamic> licenseJsonList = jsonData['licenses'] as List? ?? [];
+        final List<LicenseModel> licenses = licenseJsonList
+            .map((licJson) => licJson is Map<String, dynamic> ? LicenseModel.fromJson(licJson) : null)
+            .whereType<LicenseModel>()
+            .toList();
+        return licenses;
+      } else if (response.statusCode == 404) {
+        return [];
+      } else {
+        throw Exception('Failed to load licenses (Status code: ${response.statusCode})');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<bool> updateLicense(String licenseId, LicenseModel license) async {
+    final String endpointTemplate = ExternalEndPoints.updateLicense;
+    final String endpoint = endpointTemplate.replaceFirst(':licenseId', licenseId);
+    try {
+      final response = await put(
+        endpoint,
+        license.toJson(),
+      );
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        return true;
+      } else {
+        throw Exception('Failed to update license (Status code: ${response.statusCode})');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<bool> deleteLicense(String licenseId) async {
+    final String endpointTemplate = ExternalEndPoints.deleteLicense;
+    final String endpoint = endpointTemplate.replaceFirst(':licenseId', licenseId);
+    try {
+      final response = await super.delete(endpoint, null);
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        return true;
+      } else {
+        throw Exception('Failed to delete license (Status code: ${response.statusCode})');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<ContactInfoModel> getContactInfo(String userId) async {
     log('ProfileService: Getting ContactInfoModel for user ID: $userId');
     try {
@@ -359,7 +315,6 @@ Future<AboutModel> getUserAboutAndSkills(String userId) async {
       throw Exception("Authentication token not found.");
     }
 
-    // --- Pre-Request Logging ---
     log('--- Preparing Resume Upload ---');
     log('ProfileService: Target URL: $uri');
     log('ProfileService: HTTP Method: $httpMethod');
@@ -371,12 +326,10 @@ Future<AboutModel> getUserAboutAndSkills(String userId) async {
     } catch (e) {
       log('ProfileService: Error getting file size: $e');
     }
-    // --- End Pre-Request Logging ---
 
     try {
       var request = http.MultipartRequest(httpMethod, uri);
 
-      // Add Headers (Log them *after* adding)
       request.headers['Authorization'] = 'Bearer $token';
       log('ProfileService: Request Headers: ${request.headers}');
 
@@ -384,9 +337,8 @@ Future<AboutModel> getUserAboutAndSkills(String userId) async {
       MediaType contentType = MediaType('application', 'pdf');
       log('ProfileService: Explicit Content-Type: ${contentType.toString()}');
 
-      // Prepare the file part
       final filePart = await http.MultipartFile.fromPath(
-         'resume', // Field name confirmed from docs
+         'resume', 
          resumeFile.path,
          contentType: contentType,
       );
@@ -397,7 +349,6 @@ Future<AboutModel> getUserAboutAndSkills(String userId) async {
       log('ProfileService: Sending resume multipart request ($httpMethod)...');
       var streamedResponse = await request.send().timeout(const Duration(seconds: 60));
 
-      // --- Post-Response Logging ---
       log('--- Received Resume Upload Response ---');
       log('ProfileService: Response Status Code: ${streamedResponse.statusCode}');
       log('ProfileService: Response Reason Phrase: ${streamedResponse.reasonPhrase}');
@@ -405,10 +356,8 @@ Future<AboutModel> getUserAboutAndSkills(String userId) async {
 
       var response = await http.Response.fromStream(streamedResponse);
       log('ProfileService: Response Body: ${response.body}');
-      // --- End Post-Response Logging ---
 
 
-      // Check status code *after* logging response details
       if (response.statusCode == 200 || response.statusCode == 201) {
           final responseData = jsonDecode(response.body);
           final newUrl = responseData['resume'] as String?;
@@ -416,16 +365,13 @@ Future<AboutModel> getUserAboutAndSkills(String userId) async {
               log('ProfileService: Resume ${isUpdating ? 'update' : 'upload'} successful. New URL: $newUrl');
               return newUrl;
           } else {
-              // Log before throwing
               log('ProfileService: Error: Resume ${isUpdating ? 'update' : 'upload'} successful (status ${response.statusCode}), but URL not found in response body: ${response.body}');
               throw Exception('Resume ${isUpdating ? 'update' : 'upload'} successful, but URL not found in response.');
           }
       } else {
-         // Log before throwing specific error
          log('ProfileService: Error: Request failed with status ${response.statusCode}. Body: ${response.body}');
          String errorMessage = 'Failed to ${isUpdating ? 'update' : 'upload'} resume';
           try {
-             // Try to parse backend error only if body isn't empty
              if (response.body.isNotEmpty && response.body != '{}') {
                  final errorJson = jsonDecode(response.body);
                  errorMessage = errorJson['message'] ?? '$errorMessage (Status: ${response.statusCode})';
@@ -433,18 +379,17 @@ Future<AboutModel> getUserAboutAndSkills(String userId) async {
                  errorMessage = '$errorMessage (Status: ${response.statusCode}) - Empty response body';
              }
           } catch (e) {
-             // Catch JSON parsing error if body is not valid JSON
              log('ProfileService: Error parsing error response body: $e');
              errorMessage = '$errorMessage (Status: ${response.statusCode}) - Non-JSON or empty response body';
           }
          throw Exception(errorMessage);
       }
-    } on TimeoutException catch(e, s) { // Catch specific exceptions for better logging
+    } on TimeoutException catch(e, s) {
        log('ProfileService: Resume upload/update request timed out.', error: e, stackTrace: s);
        throw Exception('Resume upload timed out. Please try again.');
     } catch (e, s) {
        log('ProfileService: Error ${isUpdating ? 'updating' : 'uploading'} resume: $e', error: e, stackTrace: s);
-       rethrow; // Rethrow the original exception
+       rethrow; 
     }
   }
 

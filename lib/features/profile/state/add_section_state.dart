@@ -4,27 +4,31 @@ import 'package:flutter/foundation.dart' show immutable;
 class AddSectionState {
   final bool isLoading;
   final bool hasAboutInfo;
-  final bool hasResume; // <-- Add hasResume flag
+  final bool hasResume;
+  final bool hasLicenses;
   final String? error;
 
   const AddSectionState({
     this.isLoading = true,
     this.hasAboutInfo = false,
-    this.hasResume = false, // <-- Initialize
+    this.hasResume = false,
+    this.hasLicenses = false,
     this.error,
   });
 
   AddSectionState copyWith({
     bool? isLoading,
     bool? hasAboutInfo,
-    bool? hasResume, // <-- Add to copyWith
+    bool? hasResume,
+    bool? hasLicenses,
     String? error,
     bool clearError = false,
   }) {
     return AddSectionState(
       isLoading: isLoading ?? this.isLoading,
       hasAboutInfo: hasAboutInfo ?? this.hasAboutInfo,
-      hasResume: hasResume ?? this.hasResume, // <-- Assign in copyWith
+      hasResume: hasResume ?? this.hasResume,
+      hasLicenses: hasLicenses ?? this.hasLicenses,
       error: clearError ? null : error ?? this.error,
     );
   }
@@ -36,13 +40,15 @@ class AddSectionState {
           runtimeType == other.runtimeType &&
           isLoading == other.isLoading &&
           hasAboutInfo == other.hasAboutInfo &&
-          hasResume == other.hasResume && // <-- Compare in equality
+          hasResume == other.hasResume &&
+          hasLicenses == other.hasLicenses &&
           error == other.error;
 
   @override
   int get hashCode =>
       isLoading.hashCode ^
       hasAboutInfo.hashCode ^
-      hasResume.hashCode ^ // <-- Include in hashcode
+      hasResume.hashCode ^
+      hasLicenses.hashCode ^
       error.hashCode;
 }
