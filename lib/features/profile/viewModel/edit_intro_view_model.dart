@@ -34,6 +34,46 @@ class EditIntroViewModel extends StateNotifier<EditIntroState> {
     websiteController.addListener(() => _updateFormData((current) => current.copyWith(website: websiteController.text)));
   }
 
+  String? _validateName(String? value, String fieldName) {
+    if (value == null || value.trim().isEmpty) {
+      return "$fieldName is required.";
+    }
+    if (value.length > 50) {
+      return "$fieldName cannot exceed 50 characters.";
+    }
+    final nameRegExp = RegExp(r"^[a-zA-Z\s]+$");
+    if (!nameRegExp.hasMatch(value)) {
+      return "$fieldName can only contain letters and spaces.";
+    }
+    return null;
+  }
+
+  String? _validateHeadline(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return "Headline is required.";
+    }
+     if (value.length > 220) {
+       return "Headline cannot exceed 220 characters."; 
+     }
+final headlineRegExp = RegExp(r"""^[a-zA-Z0-9\s.,!?'\"()\-]+$""");
+
+if (!headlineRegExp.hasMatch(value)) {
+  return "Headline contains invalid characters.";
+}
+return null;
+  }
+
+  String? _validateWebsite(String? value) {
+      if (value == null || value.trim().isEmpty) {
+        return null; // Website is optional
+      }
+      final urlRegExp = RegExp(
+          r"^(?:http|https)://(?:[\w-]+\.)+[\w-]+(?:/[\w-./?%&=]*)?$");
+      if (!urlRegExp.hasMatch(value.trim())) {
+        return "Please enter a valid URL (e.g., https://example.com).";
+      }
+      return null;
+    }
   Future<void> _fetchInitialData() async {
     if (_userId.isEmpty) {
       state = const EditIntroError("User not logged in.");
@@ -159,22 +199,35 @@ class EditIntroViewModel extends StateNotifier<EditIntroState> {
        return;
      }
 
-    if (currentFormData.firstName.trim().isEmpty) {
-      state = EditIntroError("First name is required.", previousFormData: currentFormData, originalBioData: originalDataForSave);
+    final firstNameError = _validateName(currentFormData.firstName, "First Name");
+    if (firstNameError != null) {
+      state = EditIntroError(firstNameError, previousFormData: currentFormData, originalBioData: originalDataForSave);
       return;
     }
-    if (currentFormData.lastName.trim().isEmpty) {
-       state = EditIntroError("Last name is required.", previousFormData: currentFormData, originalBioData: originalDataForSave);
-       return;
+
+    final lastNameError = _validateName(currentFormData.lastName, "Last Name");
+    if (lastNameError != null) {
+      state = EditIntroError(lastNameError, previousFormData: currentFormData, originalBioData: originalDataForSave);
+      return;
     }
-     if (currentFormData.headline.trim().isEmpty) {
-       state = EditIntroError("Headline is required.", previousFormData: currentFormData, originalBioData: originalDataForSave);
+
+     final headlineError = _validateHeadline(currentFormData.headline);
+     if (headlineError != null) {
+       state = EditIntroError(headlineError, previousFormData: currentFormData, originalBioData: originalDataForSave);
        return;
      }
-      if (currentFormData.countryRegion == null || currentFormData.countryRegion!.trim().isEmpty) {
-        state = EditIntroError("Country/Region is required.", previousFormData: currentFormData, originalBioData: originalDataForSave);
-        return;
-      }
+
+    if (currentFormData.countryRegion == null || currentFormData.countryRegion!.trim().isEmpty) {
+      state = EditIntroError("Country/Region is required.", previousFormData: currentFormData, originalBioData: originalDataForSave);
+      return;
+    }
+
+    final websiteError = _validateWebsite(currentFormData.website);
+     if (websiteError != null) {
+       state = EditIntroError(websiteError, previousFormData: currentFormData, originalBioData: originalDataForSave);
+       return;
+     }
+
 
     state = EditIntroSaving(formData: currentFormData, originalBioData: originalDataForSave);
 

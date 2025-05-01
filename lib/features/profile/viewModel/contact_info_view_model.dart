@@ -26,7 +26,18 @@ class ContactInfoViewModel extends StateNotifier<EditContactInfoState> {
       : super(const EditContactInfoInitial()) {
     _fetchInitialData();
   }
-
+   String? _validateWebsite(String? value) {
+     if (value == null || value.trim().isEmpty) {
+       return null; // Website is optional
+     }
+     // Simple URL regex (consider using a more robust package like `validators` for production)
+     final urlRegExp = RegExp(
+          r"^(?:http|https)://(?:[\w-]+\.)+[\w-]+(?:/[\w-./?%&=]*)?$");
+     if (!urlRegExp.hasMatch(value.trim())) {
+       return "Please enter a valid URL (e.g., https://example.com).";
+     }
+     return null;
+   }
   Future<void> _fetchInitialData() async {
     if (_userId.isEmpty) {
       state = const EditContactInfoError("User not logged in.");
@@ -138,7 +149,22 @@ class ContactInfoViewModel extends StateNotifier<EditContactInfoState> {
        birthday: _selectedBirthday,
        website: websiteController.text.isNotEmpty ? websiteController.text : null,
      );
-
+    final websiteError = _validateWebsite(websiteController.text);
+      if (websiteError != null) {
+        state = EditContactInfoError(
+          websiteError,
+          previousContactInfo: currentContactInfo.copyWith( // Keep other fields
+             phoneNumber: phoneNumberController.text,
+             countryCode: _selectedCountryCode,
+             phoneType: selectedPhoneType,
+             address: addressController.text,
+             birthday: _selectedBirthday,
+             website: websiteController.text // Keep invalid value for user to see
+          ),
+          originalBioData: currentOriginalBioData
+       );
+       return;
+    }
      log("ViewModel: Preparing to save. Updated ContactInfo: ${updatedInfo.toJson()}");
      log("ViewModel: Using originalBioData: $currentOriginalBioData");
 
