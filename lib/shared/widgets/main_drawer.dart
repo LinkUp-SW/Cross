@@ -99,15 +99,22 @@ class MainDrawer extends ConsumerWidget {
               children: [
                 const Divider(color: AppColors.grey, thickness: 0),
                 ListTile(
-                  title: const Text('Try Premium for EGP0'),
+                  title: const Text('Try Premium for 0 EGP'),
+                  trailing: Image(
+                    image: AssetImage('assets/images/Logo_mini.png'),
+                    width: 25.w,
+                    height: 25.h,
+                  ),
                   onTap: () {
-                    context.push('/premium');
+                    context.pop();
+                    context.push('/payment');
                   },
                 ),
                 ListTile(
                   leading: const Icon(Icons.settings),
                   title: const Text('Settings'),
                   onTap: () {
+                    context.pop();
                     context.push('/settings');
                   },
                 ),

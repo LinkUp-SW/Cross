@@ -29,6 +29,7 @@ import 'package:link_up/features/my-network/view/manage_my_network_screen.dart';
 import 'package:link_up/features/my-network/view/people_i_follow_screen.dart';
 import 'package:link_up/features/my-network/view/view.dart';
 import 'package:link_up/features/chat/view/chat_list_page.dart';
+import 'package:link_up/features/subscription/view/view.dart';
 import 'package:link_up/shared/dummy_page.dart';
 import 'package:link_up/shared/widgets/bottom_navigation_bar.dart';
 import 'package:link_up/features/profile/view/edit_intro.dart';
@@ -279,9 +280,7 @@ final goRouterProvider = Provider<GoRouter>(
         GoRoute(path: "/settings", builder: (context, state) => SettingsPage()),
         GoRoute(
           path: "/payment",
-          builder: (context, state) => DummyPage(
-            title: 'Payment',
-          ),
+          builder: (context, state) => SubscriptionManagementScreen(),
         ),
       ],
     );
