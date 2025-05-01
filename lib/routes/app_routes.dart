@@ -40,6 +40,11 @@ import 'package:link_up/shared/widgets/main_drawer.dart';
 import 'package:link_up/features/jobs/view/view.dart';
 import 'package:link_up/features/profile/view/search_school_page.dart';
 import 'package:link_up/features/profile/view/search_organization.dart';
+import 'package:link_up/features/profile/view/add_section.dart';
+import 'package:link_up/features/profile/view/edit_about.dart';
+import 'package:link_up/features/profile/view/add_resume.dart';
+import 'package:link_up/features/profile/view/resume_viewer.dart';
+import 'package:link_up/features/profile/view/add_new_license.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
@@ -108,6 +113,30 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           ),
         ),
         //Profile Page Routes
+        GoRoute(
+          path: "/add_profile_section",
+          builder: (context, state) => const AddSectionPage(),
+         ),
+         GoRoute( 
+           path: "/add_resume",
+           builder: (context, state) => const AddResumePage(),
+         ),
+         GoRoute( 
+           path: "/add_new_license",
+           builder: (context, state) => const AddNewLicensePage(),
+         ),         
+          GoRoute(
+            path: '/resume_viewer', 
+            builder: (context, state) {
+            final String? resumeUrl = state.extra as String?;
+            return ResumeViewerPage(url: resumeUrl); 
+      },
+    ),
+
+          GoRoute( 
+           path: "/edit_about",
+           builder: (context, state) => const EditAboutPage(),
+         ),
         GoRoute(
             path: "/search_school",
             pageBuilder: (context, state) {

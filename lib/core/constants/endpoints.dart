@@ -35,5 +35,11 @@ class ExternalEndPoints {
 
   static const getUserEducation = 'api/v1/user/profile/education/:user_id';
   static const getUserExperience = 'api/v1/user/profile/experience/:user_id';
+  static const userProfileAbout = 'api/v1/user/profile/about/:user_id';
+  static const getUserLicenses = 'api/v1/user/profile/licenses/:user_id'; 
+  static const addLicense = 'api/v1/user/add-license';
+  static const updateLicense = 'api/v1/user/update-license/:licenseId';
+  static const deleteLicense = 'api/v1/user/delete-license/:licenseId';
+
 
 }

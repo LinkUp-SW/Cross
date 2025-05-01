@@ -12,7 +12,9 @@ class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
 
   final int maxDescriptionChars = 2000;
   final int maxActivitiesChars = 500;
-
+  final int maxGradeChars = 50;
+  final int maxDegreeChars = 50;
+  final int maxFieldOfStudyChars = 100;
   final TextEditingController _schoolController = TextEditingController();
   final TextEditingController _degreeController = TextEditingController();
   final TextEditingController _fieldOfStudyController = TextEditingController();
@@ -155,6 +157,15 @@ class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
     }
     if (_activitiesController.text.length > maxActivitiesChars) {
        return "Activities cannot exceed $maxActivitiesChars characters (currently ${_activitiesController.text.length}).";
+    }
+    if (_gradeController.text.length > maxGradeChars) {
+      return "Grade cannot exceed $maxGradeChars characters (currently ${_gradeController.text.length}).";
+    }
+    if (_fieldOfStudyController.text.length > maxFieldOfStudyChars) {
+      return "Field of Study cannot exceed $maxFieldOfStudyChars characters (currently ${_fieldOfStudyController.text.length}).";
+    }
+    if (_degreeController.text.length > maxDegreeChars) {
+      return "Degree cannot exceed $maxDegreeChars characters (currently ${_degreeController.text.length}).";
     }
     return null;
   }
