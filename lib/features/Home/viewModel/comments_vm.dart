@@ -28,7 +28,7 @@ class CommentsProvider extends StateNotifier<Map<String, dynamic>> {
   void setCommentsFromPost(Map<String,dynamic> comments) {
     state['comments'].clear();
     state['comments'].addAll(comments['comments'].map((e) => CommentModel.fromJson(e)).toList());
-    state['cursor'] = comments['nextCursor'];
+    state['cursor'] = comments['next_cursor'];
   }
 
   void clearComments() {
@@ -39,7 +39,7 @@ class CommentsProvider extends StateNotifier<Map<String, dynamic>> {
     //TODO: Implement fetching comments from the server
     final BaseService service = BaseService();
     log('Fetching comments for postId: $postId');
-    return service.get('api/v1/post/comment/:postId',
+    return service.get('api/v2/post/comment/:postId',
         queryParameters: {
           'limit': '10',
           'cursor': (cursor ?? state['cursor']).toString(),
@@ -51,7 +51,7 @@ class CommentsProvider extends StateNotifier<Map<String, dynamic>> {
         ).then((value) {
       final data = jsonDecode(value.body);
       log('Fetched comments: $data');
-      state['cursor'] = data['nextCursor'];
+      state['cursor'] = data['next_cursor'];
       return (data['comments'] as List).map((e) => CommentModel.fromJson(e)).toList();
     }).catchError((error) {
       log('$error');

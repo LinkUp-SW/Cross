@@ -246,7 +246,7 @@ class _WritePostState extends ConsumerState<WritePost> {
                                           .color)),
                             ]),
                             onPressed: () {
-                              tempRef.getPost(value);
+                              tempRef.setPostId(value);
                               navigatorKey.currentContext!.push('/postPage');
                             },
                             label: 'View',

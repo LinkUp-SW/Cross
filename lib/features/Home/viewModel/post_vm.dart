@@ -21,6 +21,10 @@ class PostNotifier extends StateNotifier<PostState> {
     state.post = post;
   }
 
+  void setPostId(String postId) {
+    state.post.id = postId;
+  }
+
   String getPostId() {
     return state.post.id;
   }
@@ -29,7 +33,7 @@ class PostNotifier extends StateNotifier<PostState> {
     log('getPost called with id: $id');
     state.isLoading = true;
     final BaseService service = BaseService();
-    return await service.get('api/v1/post/posts/:postId',
+    return await service.get('api/v2/post/posts/:postId',
         queryParameters: {
           'limit': '10',
           'cursor': '0',

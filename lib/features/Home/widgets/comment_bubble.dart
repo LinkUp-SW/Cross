@@ -268,7 +268,7 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                                   commentId: widget.comment.id)
                               .then((value) {
                             if (value.isNotEmpty) {
-                              widget.comment.likes = value['totalCount'];
+                              widget.comment.likes = value['reactions_count'];
                             } else {
                               widget.comment.reaction = oldReaction;
                             }
@@ -281,7 +281,7 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                                   commentId: widget.comment.id)
                               .then((value) {
                             if (value.isNotEmpty) {
-                              widget.comment.likes = value['totalCount'];
+                              widget.comment.likes = value['reactions_count'];
                             } else {
                               widget.comment.reaction = oldReaction;
                             }

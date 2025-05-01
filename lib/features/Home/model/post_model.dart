@@ -41,19 +41,19 @@ class PostModel {
 
   PostModel.fromJson(Map<String, dynamic> json)
       : id = json['_id'],
-        activity = json['activityContext'] != null ? ActivityModel.fromJson(json['activityContext']): ActivityModel.initial(),
+        activity = json['activity_context'] != null ? ActivityModel.fromJson(json['activity_context']): ActivityModel.initial(),
         header = HeaderModel.fromJson(json),
         text = json['content'],
         media = Media.fromJson(json['media']),
-        reactions =  json['reactionsCount'] ?? json['reacts']?.length ?? 0,
-        comments =  json['commentsCount'] ??json['comments']?.length ?? 0,
-        reposts = json['reposts']?.length ?? json['repostsCount'] ?? 0,
-        reaction = Reaction.getReaction(json['userReaction'] ?? 'none'),
+        reactions =  json['reactions_count'] ?? 0,
+        comments =  json['comments_count'] ?? 0,
+        reposts = json['reposts_count'] ?? 0,
+        reaction = Reaction.getReaction(json['user_reaction'] ?? 'none'),
         isAd = json['isAd'] ?? false,
         isCompany = json['isCompany'] ?? false,
-        saved = json['saved'] ?? false,
+        saved = json['is_saved'] ?? false,
         topReactions = List<Reaction>.from(
-            json['topReactions']?.map((e) => Reaction.getReaction(e)) ?? []),
+            json['top_reactions']?.map((e) => Reaction.getReaction(e)) ?? []),
         taggedUsers = List<String>.from(json['tagged_users'] ?? []);
 
   Map<String, dynamic> toJson() => {

@@ -52,7 +52,7 @@ class ReactionsNotifier extends StateNotifier<ReactionsState> {
 
   Future<void> fetchReactions(Reaction reaction) async {
     final BaseService service = BaseService();
-    return service.get('api/v1/post/reaction/:postId', routeParameters: {
+    return service.get('api/v2/post/reaction/:postId', routeParameters: {
       "postId": state.postId,
     }, queryParameters: {
       "cursor": state.cursor[reaction].toString(),
@@ -69,10 +69,9 @@ class ReactionsNotifier extends StateNotifier<ReactionsState> {
       state.reactions[reaction]?.addAll(
           reactions.map((e) => ReactionTileModel.fromJson(e)).toList());
       if (reaction == Reaction.none) {
-        state.reactionsCount[Reaction.none] = data['totalCount'];
         state.reactionsCount = Map<Reaction, int>.fromEntries(
-        [MapEntry(Reaction.none, data['totalCount']),
-          ...(data['reactionCounts'] as Map).map(
+        [MapEntry(Reaction.none, data['reactions_count']),
+          ...(data['reaction_counts'] as Map).map(
             (key, value) => MapEntry(Reaction.getReaction(key), value as int),
           ).entries]
         );
@@ -83,7 +82,7 @@ class ReactionsNotifier extends StateNotifier<ReactionsState> {
           });
         state.reactionsCount = Map.fromEntries(sortedEntries);
       }
-      state.cursor[reaction] = data['nextCursor'] as int?;
+      state.cursor[reaction] = data['next_cursor'] as int?;
     }).catchError((error) {
       log('$error');
       throw Exception(error);

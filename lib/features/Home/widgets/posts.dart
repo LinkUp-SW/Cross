@@ -177,8 +177,8 @@ class _PostsState extends ConsumerState<Posts> {
                         widget.post.reaction = Reaction.none;
                         removeReaction(widget.post.id, "Post").then((value) {
                           if (value.isNotEmpty) {
-                            widget.post.reactions = value['totalCount'];
-                            widget.post.topReactions = value['topReactions']
+                            widget.post.reactions = value['reactions_count'];
+                            widget.post.topReactions = value['top_reactions']
                                 .map((e) => Reaction.getReaction(e))
                                 .toList();
                           } else {
@@ -192,8 +192,8 @@ class _PostsState extends ConsumerState<Posts> {
                             .then((value) {
                           if (value.isNotEmpty) {
                             log(value.toString());
-                            widget.post.reactions = value['totalCount'];
-                            widget.post.topReactions = value['topReactions']
+                            widget.post.reactions = value['reactions_count'];
+                            widget.post.topReactions = value['top_reactions']
                                 .map((e) => Reaction.getReaction(e))
                                 .toList();
                           } else {

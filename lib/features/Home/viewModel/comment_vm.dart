@@ -21,7 +21,7 @@ class CommentProvider extends StateNotifier<CommentState> {
 
   Future<void> deleteComment(String postId, String commentId) async {
     final BaseService service = BaseService();
-    return await service.delete('api/v1/post/comment/:postId/:commentId',
+    return await service.delete('api/v2/post/comment/:postId/:commentId',
         {"postId": postId, "commentId": commentId}).then((value) {
       state.comment = CommentModel.initial();
     }).catchError((error) {
@@ -44,7 +44,7 @@ class CommentProvider extends StateNotifier<CommentState> {
       {int? cursor}) async {
     final BaseService service = BaseService();
     final response = await service.get(
-      'api/v1/post/comment/:postId/:commentId',
+      'api/v2/post/comment/:postId/:commentId',
       queryParameters: {
         'replyLimit': '10',
         'cursor': (cursor ?? state.cursor).toString(),
@@ -60,7 +60,7 @@ class CommentProvider extends StateNotifier<CommentState> {
     }
     final data = jsonDecode(response.body);
     log('Comments: $data');
-    state.cursor = data['nextCursor'];
+    state.cursor = data['next_cursor'];
     return (data['replies'] as List)
         .map((e) => CommentModel.fromJson(e))
         .toList();

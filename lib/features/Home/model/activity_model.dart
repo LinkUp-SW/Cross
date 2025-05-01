@@ -19,10 +19,10 @@ class ActivityModel {
 
   ActivityModel.fromJson(Map<String, dynamic> json)
       : type = ActitvityType.getActivityType(json['type']),
-        actorUserName = json['actorUsername'],
-        actorName = json['actorName'],
+        actorUserName = json['actor_username'],
+        actorName = json['actor_name'],
         show = true,
-        actorProfileImage = json['actorPicture'],
+        actorProfileImage = json['actor_picture'],
         comment = json['type'] == 'comment'
             ? CommentModel.fromJson(json['comment'])
             : CommentModel.initial();

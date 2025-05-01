@@ -197,7 +197,7 @@ class _PostHeaderState extends ConsumerState<PostHeader> {
                           children: [
                             IconButton(
                               onPressed: () {
-                                widget.post.header.userId ==
+                                widget.post.header.userId !=
                                         InternalEndPoints.userId
                                     ? aboutPostBottomSheet(context,
                                         post: widget.post)

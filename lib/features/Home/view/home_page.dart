@@ -41,7 +41,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   void _scrollListener() {
     if (scrollController.position.pixels ==
-        scrollController.position.maxScrollExtent && PostState.nextCursor != -1) {
+        scrollController.position.maxScrollExtent && PostsState.nextCursor != -1) {
       ref.read(postsProvider.notifier).fetchPosts().then((value) {
         ref.read(postsProvider.notifier).addPosts(value);
       });
@@ -102,7 +102,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final List<PostState> posts = ref.watch(postsProvider);
+    final List<PostsState> posts = ref.watch(postsProvider);
     ref.listen(currentTabProvider, (previous, current) {
       if (current) {
         scrollTop();
@@ -130,7 +130,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           child: RefreshIndicator(
             color: AppColors.darkBlue,
             onRefresh: () async {
-              PostState.nextCursor = 0;
+              PostsState.nextCursor = 0;
               await ref.read(postsProvider.notifier).refreshPosts();
             },
             child: Builder(builder: (context) {
@@ -158,7 +158,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                       const SizedBox(height: 10),
                   itemBuilder: (context, index) {
                     if (index == posts.length - 1 &&
-                        PostState.nextCursor != -1) {
+                        PostsState.nextCursor != -1) {
                       return const Center(
                         child: CircularProgressIndicator(
                           color: AppColors.darkBlue,

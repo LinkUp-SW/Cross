@@ -215,7 +215,7 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
     final mediaContent = await state.media.setToUpload();
 
     final response =
-        await service.patch('api/v1/post/posts/:postId', routeParameters: {
+        await service.patch('api/v2/post/posts/:postId', routeParameters: {
       "postId": state.postId
     }, body: {
       "content": state.controller.text,
@@ -247,7 +247,7 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
     log('${state.taggedUsers.map((user) {
       return user['user_id'];
     }).toList()}');
-    final response = await service.post('api/v1/post/posts', body: {
+    final response = await service.post('api/v2/post/posts', body: {
       "content": state.controller.text,
       "mediaType": state.media.type.name,
       "media": mediaContent,
@@ -265,7 +265,6 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
       log('Post created successfully: ${response.body}');
       final body = jsonDecode(response.body);
       return body['postId'];
-      //return jsonDecode(response.body)['postId'];
     } else {
       log('Failed to create post');
       return 'error';

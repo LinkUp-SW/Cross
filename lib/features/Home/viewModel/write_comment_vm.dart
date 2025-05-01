@@ -173,7 +173,7 @@ class WriteCommentProvider extends StateNotifier<WriteCommentVm> {
     log('Editing comment with postId: $postId, commentId: $commentId');
 
     final mediaContent = await state.media.setToUpload();
-    final response = await service.patch('api/v1/post/comment/:postId/:commentId'
+    final response = await service.patch('api/v2/post/comment/:postId/:commentId'
     , routeParameters: {
         "postId": postId,
         "commentId": commentId,
@@ -204,7 +204,7 @@ class WriteCommentProvider extends StateNotifier<WriteCommentVm> {
     log('Creating comment with postId: $postId, commentId: $commentId');
 
     final mediaContent = await state.media.setToUpload();
-    final response = await service.post('api/v1/post/comment/:postId'
+    final response = await service.post('api/v2/post/comment/:postId'
     , routeParameters: {
         "postId": postId,
       }

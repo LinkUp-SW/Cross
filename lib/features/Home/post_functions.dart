@@ -7,7 +7,7 @@ import 'package:link_up/features/Home/model/post_model.dart';
 
 Future<int> deletePost(String postId) async {
   final BaseService service = BaseService();
-  final response = await service.delete('api/v1/post/posts/:postId', {
+  final response = await service.delete('api/v2/post/posts/:postId', {
     "postId": postId,
   });
 
@@ -22,7 +22,7 @@ Future<int> deletePost(String postId) async {
 
 Future<void> savePost(String postId) async {
   final BaseService service = BaseService();
-  final response = await service.post('api/v1/post/save-post', body: {
+  final response = await service.post('api/v2/post/save-post', body: {
     "postId": postId,
   });
 
@@ -36,7 +36,7 @@ Future<void> savePost(String postId) async {
 
 Future<void> unsavePost(String postId) async {
   final BaseService service = BaseService();
-  final response = await service.delete('api/v1/post/save-post',null,body:  {
+  final response = await service.delete('api/v2/post/save-post',null,body:  {
     "postId": postId,
   });
 
@@ -51,7 +51,7 @@ Future<void> unsavePost(String postId) async {
 Future<void> followUser(String userId) async {
   final BaseService service = BaseService();
   final response =
-      await service.post('api/v1/user/follow/:userId', routeParameters: {
+      await service.post('api/v2/user/follow/:userId', routeParameters: {
     "userId": userId,
   });
 
@@ -65,7 +65,7 @@ Future<void> followUser(String userId) async {
 
 Future<void> unfollowUser(String userId) async {
   final BaseService service = BaseService();
-  final response = await service.delete('api/v1/user/unfollow/:userId', {
+  final response = await service.delete('api/v2/user/unfollow/:userId', {
     "userId": userId,
   });
 
@@ -80,7 +80,7 @@ Future<void> unfollowUser(String userId) async {
 Future<void> connectToUser(String userId) async {
   final BaseService service = BaseService();
   final response =
-      await service.post('api/v1/user/connect/:userId', routeParameters: {
+      await service.post('api/v2/user/connect/:userId', routeParameters: {
     "userId": userId,
   });
   if (response.statusCode == 200) {
@@ -93,7 +93,7 @@ Future<void> connectToUser(String userId) async {
 Future<Set> getSavedPosts(int? cursor) async {
   final BaseService service = BaseService();
   final response =
-      await service.get('api/v1/post/save-post', queryParameters: {
+      await service.get('api/v2/post/save-post', queryParameters: {
     'limit': '10',
     'cursor': cursor.toString(),
   });
@@ -104,7 +104,7 @@ Future<Set> getSavedPosts(int? cursor) async {
         .map((post) => PostModel.fromJson(post))
         .toList();
     
-    cursor = data['nextCursor'];
+    cursor = data['next_cursor'];
     log('Cursor: $cursor');
     for (var post in posts) {
       post.saved = true;
@@ -118,7 +118,7 @@ Future<Set> getSavedPosts(int? cursor) async {
 
 Future<Set> getUserPosts(int? cursor,String userId) async {
   final BaseService service = BaseService();
-  final response = await service.get('api/v1/post/posts/user/:userId', routeParameters: {
+  final response = await service.get('api/v2/post/posts/user/:userId', routeParameters: {
     "userId": userId,
   },
   queryParameters: {
@@ -132,7 +132,7 @@ Future<Set> getUserPosts(int? cursor,String userId) async {
     List<PostModel> posts = (data['posts'] as List)
         .map((post) => PostModel.fromJson(post))
         .toList();
-    cursor = data['nextCursor'];
+    cursor = data['next_cursor'];
     log('Cursor: $cursor');
     return {posts,cursor};
   } else {
@@ -144,7 +144,7 @@ Future<Set> getUserPosts(int? cursor,String userId) async {
 Future<void> reportPost(String postId) async {
   final BaseService service = BaseService();
   final response =
-      await service.post('api/v1/post/report/:postId', routeParameters: {
+      await service.post('api/v2/post/report/:postId', routeParameters: {
     "postId": postId,
   });
 
@@ -159,7 +159,7 @@ Future<void> reportPost(String postId) async {
 Future<void> reportComment(String commentId) async {
   final BaseService service = BaseService();
   final response = await service
-      .post('api/v1/post/report-comment/:commentId', routeParameters: {
+      .post('api/v2/post/report-comment/:commentId', routeParameters: {
     "commentId": commentId,
   });
 
@@ -174,7 +174,7 @@ Future<void> reportComment(String commentId) async {
 Future<Map<String,dynamic>> setReaction(String postId, Reaction reaction, String type,{String? commentId}) async {
   final BaseService service = BaseService();
   final response =
-      await service.post('api/v1/post/reaction/:postId', routeParameters: {
+      await service.post('api/v2/post/reaction/:postId', routeParameters: {
     "postId": postId,
   }, body: {
     "reaction": Reaction.getReactionString(reaction).toLowerCase(),
@@ -193,7 +193,7 @@ Future<Map<String,dynamic>> setReaction(String postId, Reaction reaction, String
 
 Future<Map<String,dynamic>> removeReaction(String postId, String type,{String? commentId}) async {
   final BaseService service = BaseService();
-  final response = await service.delete('api/v1/post/reaction/:postId', {
+  final response = await service.delete('api/v2/post/reaction/:postId', {
     "postId": postId,
   }, body: {
     "comment_id": commentId,
