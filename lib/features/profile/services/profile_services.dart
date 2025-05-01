@@ -14,6 +14,7 @@ import 'package:link_up/features/profile/model/education_model.dart';
 import 'package:link_up/features/profile/model/profile_model.dart';
 import 'package:link_up/features/profile/model/position_model.dart'; 
 import 'package:link_up/features/profile/model/about_model.dart';
+import 'package:link_up/features/profile/model/license_model.dart';
 import 'package:mime/mime.dart';
 
 class ProfileService extends BaseService {
@@ -125,6 +126,128 @@ Future<AboutModel> getUserAboutAndSkills(String userId) async {
       rethrow; // Rethrow to be caught by ViewModel
     }
   }
+    Future<List<LicenseModel>> getLicenses(String userId) async {
+    const String endpointTemplate = ExternalEndPoints.getUserLicenses; // Use the constant
+    log('ProfileService: Fetching licenses for user ID: $userId');
+    try {
+      final response = await super.get(
+        endpointTemplate,
+        routeParameters: {'user_id': userId},
+      );
+      log('ProfileService: getLicenses API Response Status Code: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        // Assuming the API returns a list directly under a key like 'licenses' or 'liscence_certificates'
+        // Adjust the key based on the actual API response
+        final List<dynamic> licenseJsonList = jsonDecode(response.body)['liscence_certificates'] as List? ?? [];
+        final List<LicenseModel> licenses = licenseJsonList
+            .map((licJson) => licJson is Map<String, dynamic> ? LicenseModel.fromJson(licJson) : null)
+            .whereType<LicenseModel>()
+            .toList();
+        log('ProfileService: Fetched ${licenses.length} licenses.');
+        return licenses;
+      } else if (response.statusCode == 404) {
+         log('ProfileService: No licenses found for user $userId (404). Returning empty list.');
+         return []; // Return empty list if not found
+      }
+      else {
+        log('ProfileService: getLicenses API Error: Status Code ${response.statusCode}, Body: ${response.body}');
+        throw Exception('Failed to load licenses (Status code: ${response.statusCode})');
+      }
+    } catch (e) {
+      log('ProfileService: Error in getLicenses: $e');
+      rethrow;
+    }
+  }
+
+  Future<bool> addLicense(LicenseModel license) async {
+    const String endpoint = ExternalEndPoints.addLicense;
+    log('ProfileService: Adding license via POST $endpoint');
+    final requestBody = license.toJson();
+    log('ProfileService: Request Body: ${jsonEncode(requestBody)}');
+
+    try {
+      // Note: The API schema shows an array 'liscence_certificates'.
+      // Check if the API expects a single license object directly or inside an array.
+      // Assuming it expects the license object directly in the request body for adding ONE.
+      // If it expects an array like {"liscence_certificates": [ license.toJson() ]}, adjust accordingly.
+      final response = await super.post(endpoint, body: requestBody);
+
+      log('ProfileService: addLicense API Response Status Code: ${response.statusCode}');
+      log('ProfileService: addLicense API Response Body: ${response.body}');
+
+      // POST usually returns 201 (Created) on success
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        log('ProfileService: License added successfully.');
+        return true;
+      } else {
+        log('ProfileService: Add License Error: Status Code ${response.statusCode}');
+        // Throw a more specific error based on response body if possible
+        throw Exception('Failed to add license (Status Code: ${response.statusCode}): ${response.body}');
+      }
+    } catch (e) {
+      log('ProfileService: Error adding license: $e');
+      rethrow;
+    }
+  }
+
+  Future<bool> updateLicense(String licenseId, LicenseModel license) async {
+    const String endpointTemplate = ExternalEndPoints.updateLicense;
+    log('ProfileService: Updating license ID: $licenseId via PUT $endpointTemplate');
+    final requestBody = license.toJson();
+     // Remove the ID from the body if the API doesn't expect it there for updates
+     // requestBody.remove('_id'); // Uncomment if ID shouldn't be in the PUT body
+    log('ProfileService: Request Body: ${jsonEncode(requestBody)}');
+
+    try {
+      final response = await super.put(
+         endpointTemplate.replaceFirst(':licenseId', licenseId), // Use super.put
+         requestBody,
+      );
+
+      log('ProfileService: updateLicense API Response Status Code: ${response.statusCode}');
+      log('ProfileService: updateLicense API Response Body: ${response.body}');
+
+      // PUT often returns 200 (OK) or 204 (No Content) on success
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        log('ProfileService: License updated successfully.');
+        return true;
+      } else {
+        log('ProfileService: Update License Error: Status Code ${response.statusCode}');
+        throw Exception('Failed to update license (Status Code: ${response.statusCode}): ${response.body}');
+      }
+    } catch (e) {
+      log('ProfileService: Error updating license: $e');
+      rethrow;
+    }
+  }
+
+   Future<bool> deleteLicense(String licenseId) async {
+     const String endpointTemplate = ExternalEndPoints.deleteLicense;
+     log('ProfileService: Deleting license ID: $licenseId via DELETE $endpointTemplate');
+
+     try {
+       final response = await super.delete(
+          endpointTemplate,
+          {'licenseId': licenseId}, // Pass licenseId as route parameter
+       );
+
+       log('ProfileService: deleteLicense API Response Status Code: ${response.statusCode}');
+       log('ProfileService: deleteLicense API Response Body: ${response.body}');
+
+       // DELETE often returns 200 (OK) or 204 (No Content) on success
+       if (response.statusCode == 200 || response.statusCode == 204) {
+         log('ProfileService: License deleted successfully.');
+         return true;
+       } else {
+         log('ProfileService: Delete License Error: Status Code ${response.statusCode}');
+         throw Exception('Failed to delete license (Status Code: ${response.statusCode}): ${response.body}');
+       }
+     } catch (e) {
+       log('ProfileService: Error deleting license: $e');
+       rethrow;
+     }
+   }
+
   Future<List<PositionModel>> getUserExperience(String userId) async {
      const String endpointTemplate = ExternalEndPoints.getUserExperience; //'api/v1/user/profile/experience/:user_id';
      log('ProfileService: Fetching experience for user ID: $userId');
