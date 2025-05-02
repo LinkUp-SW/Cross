@@ -44,7 +44,7 @@ class PeopleCardModel {
             ['suggested_profile_photo'],
         isInReceivedConnectionInvitations: json['is_in_sent_connections'],
         isInSentConnectionInvitations: json['is_in_received_connections'],
-        isAnyoneCanSendMeConnectionInvitation: json['is_connect_by_email'],
+        isAnyoneCanSendMeConnectionInvitation: !json['is_connect_by_email'],
       );
     } catch (error) {
       log('Error in converting json response to people card model object: $error');
