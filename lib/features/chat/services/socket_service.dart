@@ -91,21 +91,36 @@ class SocketService {
       }
     });
 
+    // Also listen for private messages (which might have a different format)
+    _socket.on('private_message', (data) {
+      log('[SOCKET] Received private message: $data');
+      if (_messageCallback != null) {
+        _messageCallback!(data);
+      }
+    });
+
     // Listen for message sent confirmation
     _socket.on('message_sent', (data) {
       log('[SOCKET] Message sent confirmation: $data');
+      // Also trigger the message callback for sent messages to ensure both sides update
       if (_messageCallback != null) {
-        _messageCallback!(data); // This will trigger a reload
+        _messageCallback!(data);
       }
     });
 
     // Listen for typing indicators
     _socket.on('user_typing', (data) {
       log('[SOCKET] User typing: $data');
+      if (_typingCallback != null) {
+        _typingCallback!(data);
+      }
     });
 
     _socket.on('user_stop_typing', (data) {
       log('[SOCKET] User stopped typing: $data');
+      if (_stopTypingCallback != null) {
+        _stopTypingCallback!(data);
+      }
     });
 
     // Listen for read receipts
@@ -117,8 +132,20 @@ class SocketService {
   // Callback for handling messages
   Function(dynamic)? _messageCallback;
 
+  // Callback for handling typing events
+  Function(dynamic)? _typingCallback;
+  Function(dynamic)? _stopTypingCallback;
+
   void onMessageReceived(Function(dynamic) callback) {
     _messageCallback = callback;
+  }
+
+  void onTypingStarted(Function(dynamic) callback) {
+    _typingCallback = callback;
+  }
+
+  void onTypingStopped(Function(dynamic) callback) {
+    _stopTypingCallback = callback;
   }
 
   void sendMessage(String conversationId, Message message) {
@@ -131,7 +158,7 @@ class SocketService {
     try {
       final messageData = {
         'conversationId': conversationId,
-        'message': message.message, 
+        'message': message.message,
         'messageData': {
           'messageId': message.messageId,
           'senderId': message.senderId,

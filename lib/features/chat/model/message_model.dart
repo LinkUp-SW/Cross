@@ -70,4 +70,32 @@ class Message {
   }
 
   bool hasReaction() => reacted.isNotEmpty;
+
+  Message copyWith({
+    String? messageId,
+    String? senderId,
+    String? receiverId,
+    String? senderName,
+    String? message,
+    List<String>? media,
+    DateTime? timestamp,
+    String? reacted,
+    bool? isSeen,
+    bool? isOwnMessage,
+    bool? isEdited,
+  }) {
+    return Message(
+      messageId: messageId ?? this.messageId,
+      senderId: senderId ?? this.senderId,
+      receiverId: receiverId ?? this.receiverId,
+      senderName: senderName ?? this.senderName,
+      message: message ?? this.message,
+      media: media ?? this.media,
+      timestamp: timestamp ?? this.timestamp,
+      reacted: reacted ?? this.reacted,
+      isSeen: isSeen ?? this.isSeen,
+      isOwnMessage: isOwnMessage ?? this.isOwnMessage,
+      isEdited: isEdited ?? this.isEdited,
+    );
+  }
 }

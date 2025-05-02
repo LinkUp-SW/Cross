@@ -7,6 +7,7 @@ import 'dart:developer';
 
 class ChatViewModel extends StateNotifier<ChatState> {
   final ApiChatService chatService;
+ 
 
   ChatViewModel(this.chatService) : super(ChatState.initial());
 

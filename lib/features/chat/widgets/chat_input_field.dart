@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 class ChatInputField extends StatelessWidget {
   final TextEditingController Controller;
   final VoidCallback onSendPressed;
-/*   final VoidCallback onAttachmentPressed; */
+  final VoidCallback? onTyping;
 
   const ChatInputField({
     Key? key,
     required this.Controller,
     required this.onSendPressed,
-   /*  required this.onAttachmentPressed, */
+    this.onTyping,
   });
 
   @override
@@ -25,8 +25,13 @@ class ChatInputField extends StatelessWidget {
           Expanded(
             child: TextField(
               controller: Controller,
-              textInputAction: TextInputAction.send, // Enable send on keyboard
-              onSubmitted: (_) => onSendPressed(), // Send on keyboard action
+              textInputAction: TextInputAction.send,
+              onSubmitted: (_) => onSendPressed(),
+              onChanged: (value) {
+                if (onTyping != null) {
+                  onTyping!();
+                }
+              },
               decoration: const InputDecoration(
                 hintText: 'Type a message...',
                 border: OutlineInputBorder(),
@@ -38,7 +43,6 @@ class ChatInputField extends StatelessWidget {
           FloatingActionButton(
             backgroundColor: Colors.blue,
             foregroundColor: Colors.white,
-            
             onPressed: onSendPressed,
             mini: true,
             child: const Icon(Icons.send),

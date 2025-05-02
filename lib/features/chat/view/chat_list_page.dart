@@ -22,6 +22,7 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
 
     Future.microtask(() {
       ref.read(chatViewModelProvider.notifier).fetchChats();
+     
     });
   }
 

@@ -38,6 +38,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController messageController = TextEditingController();
   late final String otheruser;
+
   @override
   void initState() {
     super.initState();
@@ -46,7 +47,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     // Load messages initially
     Future.microtask(() {
       log('Initializing chat screen for conversation: ${widget.conversationId}');
-      ref.read(messagesViewModelProvider(widget.conversationId).notifier).loadMessages();
+      ref.read(messagesViewModelProvider(widget.conversationId).notifier).loadMessages().then((_) {
+        // Scroll to bottom after messages are loaded
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _scrollToBottom();
+        });
+      });
     });
 
     _scrollController.addListener(_onScroll);
@@ -65,6 +71,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final messagesState = ref.watch(messagesViewModelProvider(widget.conversationId));
 
     log('Building chat screen. Messages count: ${messagesState.messages?.length ?? 0}');
+
+    // Scroll to bottom whenever messages update and loading completes
+    if (!messagesState.isLoading && messagesState.messages != null && messagesState.messages!.isNotEmpty) {
+      // Use post frame callback to ensure the list view is built before scrolling
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollToBottom();
+      });
+    }
 
     return Scaffold(
       backgroundColor: theme.colorScheme.background,
@@ -95,17 +109,39 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     itemCount: messagesState.messages?.length ?? 0,
                     itemBuilder: (context, index) {
                       final message = messagesState.messages![index];
+
+                      // Debug the message at render time
+                      print('Rendering message: ID=${message.messageId}, content="${message.message}"');
+
                       return ChatMessageBubble(
-                        key: ValueKey(message.messageId), // Add key for better list updates
+                        key: ValueKey(message.messageId),
                         message: message,
-                        currentUserName:
-                            '${InternalEndPoints.userId.split('-')[0][0].toUpperCase()}${InternalEndPoints.userId.split('-')[0].substring(1)}',
+                        currentUserName: "You",
                         currentUserProfilePicUrl: "assets/images/profile.png",
                         chatProfilePicUrl: widget.senderProfilePicUrl,
+                        senderName: widget.senderName, // Pass the sender name from the ChatScreen
                       );
                     },
                   ),
           ),
+
+          // Show typing indicator if other user is typing
+          if (messagesState.isOtherUserTyping)
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0, bottom: 8.0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "${widget.senderName} is typing...",
+                  style: TextStyle(
+                    fontStyle: FontStyle.italic,
+                    fontSize: 12,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
+            ),
+
           if (messagesState.isError)
             Padding(
               padding: const EdgeInsets.all(8.0),
@@ -117,6 +153,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           ChatInputField(
             Controller: messageController,
             onSendPressed: _handleSendMessage,
+            onTyping: () {
+              ref.read(messagesViewModelProvider(widget.conversationId).notifier).startTyping();
+            },
           ),
         ],
       ),
@@ -126,13 +165,17 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   void _handleSendMessage() {
     if (messageController.text.isEmpty) return;
 
+    final messageText = messageController.text.trim();
+
+    // Debug logging
+    print('Sending message: "$messageText"');
+
     final newMessage = Message(
-      messageId: DateTime.now().toString(),
+      messageId: 'temp_${DateTime.now().millisecondsSinceEpoch}',
       senderId: InternalEndPoints.userId,
       receiverId: otheruser,
-      senderName:
-          '${InternalEndPoints.userId.split('-')[0][0].toUpperCase()}${InternalEndPoints.userId.split('-')[0].substring(1)}',
-      message: messageController.text,
+      senderName: 'You', // Simplified display name for current user
+      message: messageText, // Make sure this is not empty
       media: [],
       timestamp: DateTime.now(),
       isOwnMessage: true,
@@ -155,11 +198,18 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
-      _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
+      try {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+        log('[CHAT] Scrolled to bottom');
+      } catch (e) {
+        log('[CHAT] Error scrolling to bottom: $e');
+      }
+    } else {
+      log('[CHAT] Scroll controller has no clients yet');
     }
   }
 
