@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
+import 'dart:io';
 import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:link_up/core/constants/endpoints.dart';
@@ -12,6 +13,8 @@ import 'package:link_up/features/profile/model/contact_info_model.dart';
 import 'package:link_up/features/profile/model/education_model.dart';
 import 'package:link_up/features/profile/model/profile_model.dart';
 import 'package:link_up/features/profile/model/position_model.dart'; 
+import 'package:link_up/features/profile/model/about_model.dart';
+import 'package:link_up/features/profile/model/license_model.dart';
 import 'package:mime/mime.dart';
 
 class ProfileService extends BaseService {
@@ -60,8 +63,67 @@ class ProfileService extends BaseService {
        rethrow;
      }
    }
+Future<AboutModel> getUserAboutAndSkills(String userId) async {
+    const String endpointTemplate = ExternalEndPoints.userProfileAbout;
+    log('ProfileService: Fetching about and skills for user ID: $userId');
+    try {
+      final response = await super.get(
+        endpointTemplate,
+        routeParameters: {'user_id': userId},
+      );
+      log('ProfileService: getUserAboutAndSkills API Response Status Code: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonData = jsonDecode(response.body);
+        log('ProfileService: Fetched About/Skills JSON: ${jsonData.toString()}');
+        return AboutModel.fromJson(jsonData);
+      } else {
+        log('ProfileService: getUserAboutAndSkills API Error: Status Code ${response.statusCode}, Body: ${response.body}');
+        if (response.statusCode == 404) {
+           log('ProfileService: About section not found for user $userId, returning default.');
+           return const AboutModel(about: '', skills: []); 
+        }
+        throw Exception('Failed to load about section (Status code: ${response.statusCode})');
+      }
+    } catch (e) {
+      log('ProfileService: Error in getUserAboutAndSkills: $e');
+      return const AboutModel(about: '', skills: []); 
+    }
+  }
+
+   Future<bool> updateOrAddUserAbout({
+      required String userId, 
+      required String aboutText,
+      required bool isCreating
+  }) async {
+    const String endpoint = 'api/v1/user/profile/about'; 
+    final httpMethod = isCreating ? 'POST' : 'PUT';
+    log('ProfileService: ${isCreating ? 'Adding' : 'Updating'} about for user ID: $userId via $httpMethod to endpoint: $endpoint');
+
+    final Map<String, dynamic> requestBody = {'about': aboutText};
+    log('ProfileService: Sending $httpMethod request body: ${jsonEncode(requestBody)}');
+    try {
+      final response = isCreating
+          ? await super.post(endpoint, body: requestBody) 
+          : await super.put(endpoint, requestBody);
+      log('ProfileService: updateOrAddUserAbout ($httpMethod) API Response Status Code: ${response.statusCode}');
+      log('ProfileService: updateOrAddUserAbout ($httpMethod) API Response Body: ${response.body}'); // Log the full response body
+
+      if (response.statusCode == 200 || response.statusCode == 201 || response.statusCode == 204) {
+          log('ProfileService: About ${isCreating ? 'add' : 'update'} successful (status code check).');
+          return true;
+      } else {
+          log('ProfileService: About ${isCreating ? 'add' : 'update'} failed (status code ${response.statusCode}).');
+         
+          return false;
+      }
+    } catch(e, stackTrace) {
+      log('ProfileService: Error ${isCreating ? 'adding' : 'updating'} about: $e\nStackTrace: $stackTrace');
+      rethrow; 
+    }
+  }
+
   Future<List<PositionModel>> getUserExperience(String userId) async {
-     const String endpointTemplate = ExternalEndPoints.getUserExperience; //'api/v1/user/profile/experience/:user_id';
+     const String endpointTemplate = ExternalEndPoints.getUserExperience;
      log('ProfileService: Fetching experience for user ID: $userId');
      try {
        final response = await super.get(
@@ -112,6 +174,88 @@ class ProfileService extends BaseService {
      rethrow;
    }
  }
+
+
+ // --- Get Licenses ---
+  Future<bool> addLicense(LicenseModel license) async {
+    const String endpoint = ExternalEndPoints.addLicense;
+    final String userId = InternalEndPoints.userId;
+    if (userId.isEmpty) {
+      throw Exception("User ID not available. Please log in again.");
+    }
+    try {
+      final response = await post(
+        endpoint,
+        body: license.toJson(),
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        throw Exception('Failed to add license (Status code: ${response.statusCode})');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<LicenseModel>> getUserLicenses(String userId) async {
+    const String endpointTemplate = ExternalEndPoints.getUserLicenses;
+    try {
+      final response = await super.get(
+        endpointTemplate,
+        routeParameters: {'user_id': userId},
+      );
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonData = jsonDecode(response.body);
+        final List<dynamic> licenseJsonList = jsonData['licenses'] as List? ?? [];
+        final List<LicenseModel> licenses = licenseJsonList
+            .map((licJson) => licJson is Map<String, dynamic> ? LicenseModel.fromJson(licJson) : null)
+            .whereType<LicenseModel>()
+            .toList();
+        return licenses;
+      } else if (response.statusCode == 404) {
+        return [];
+      } else {
+        throw Exception('Failed to load licenses (Status code: ${response.statusCode})');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<bool> updateLicense(String licenseId, LicenseModel license) async {
+    final String endpointTemplate = ExternalEndPoints.updateLicense;
+    final String endpoint = endpointTemplate.replaceFirst(':licenseId', licenseId);
+    try {
+      final response = await put(
+        endpoint,
+        license.toJson(),
+      );
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        return true;
+      } else {
+        throw Exception('Failed to update license (Status code: ${response.statusCode})');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<bool> deleteLicense(String licenseId) async {
+    final String endpointTemplate = ExternalEndPoints.deleteLicense;
+    final String endpoint = endpointTemplate.replaceFirst(':licenseId', licenseId);
+    try {
+      final response = await super.delete(endpoint, null);
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        return true;
+      } else {
+        throw Exception('Failed to delete license (Status code: ${response.statusCode})');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<ContactInfoModel> getContactInfo(String userId) async {
     log('ProfileService: Getting ContactInfoModel for user ID: $userId');
     try {
@@ -129,6 +273,149 @@ class ProfileService extends BaseService {
     } catch (e) {
       log('ProfileService: Error in getContactInfo: $e');
       rethrow;
+    }
+  }
+
+  Future<String?> getCurrentResumeUrl(String userId) async {
+    final String endpointTemplate = 'api/v1/user/profile/resume/:user_id';
+    log('ProfileService: Getting resume URL for user ID: $userId');
+    try {
+      final response = await super.get(
+        endpointTemplate,
+        routeParameters: {'user_id': userId},
+      );
+      log('ProfileService: getCurrentResumeUrl API Response Status Code: ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonData = jsonDecode(response.body);
+        final resumeUrl = jsonData['resume'] as String?;
+        log('ProfileService: Fetched resume URL: $resumeUrl');
+        return resumeUrl; 
+      } else if (response.statusCode == 404) {
+         log('ProfileService: No resume found for user $userId (404).');
+         return null; 
+      } else {
+        log('ProfileService: getCurrentResumeUrl API Error: Status Code ${response.statusCode}, Body: ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      log('ProfileService: Error in getCurrentResumeUrl: $e');
+      return null; 
+    }
+  }
+
+
+   Future<String> uploadOrUpdateResume(File resumeFile, bool isUpdating) async {
+    const String endpoint = 'api/v1/user/profile/resume';
+    final Uri uri = Uri.parse('${ExternalEndPoints.baseUrl}$endpoint');
+    final String? token = await getToken();
+    final String httpMethod = isUpdating ? 'PUT' : 'POST';
+
+    if (token == null || token.isEmpty) {
+      throw Exception("Authentication token not found.");
+    }
+
+    log('--- Preparing Resume Upload ---');
+    log('ProfileService: Target URL: $uri');
+    log('ProfileService: HTTP Method: $httpMethod');
+    log('ProfileService: Auth Token Present: ${token.isNotEmpty}'); // Log token presence, not value
+    log('ProfileService: File Path: ${resumeFile.path}');
+    try {
+      final fileSize = await resumeFile.length();
+      log('ProfileService: File Size: $fileSize bytes');
+    } catch (e) {
+      log('ProfileService: Error getting file size: $e');
+    }
+
+    try {
+      var request = http.MultipartRequest(httpMethod, uri);
+
+      request.headers['Authorization'] = 'Bearer $token';
+      log('ProfileService: Request Headers: ${request.headers}');
+
+
+      MediaType contentType = MediaType('application', 'pdf');
+      log('ProfileService: Explicit Content-Type: ${contentType.toString()}');
+
+      final filePart = await http.MultipartFile.fromPath(
+         'resume', 
+         resumeFile.path,
+         contentType: contentType,
+      );
+      request.files.add(filePart);
+      log('ProfileService: Added file part. Field: ${filePart.field}, Filename: ${filePart.filename}, Length: ${filePart.length}, ContentType: ${filePart.contentType}');
+
+
+      log('ProfileService: Sending resume multipart request ($httpMethod)...');
+      var streamedResponse = await request.send().timeout(const Duration(seconds: 60));
+
+      log('--- Received Resume Upload Response ---');
+      log('ProfileService: Response Status Code: ${streamedResponse.statusCode}');
+      log('ProfileService: Response Reason Phrase: ${streamedResponse.reasonPhrase}');
+      log('ProfileService: Response Headers: ${jsonEncode(streamedResponse.headers)}'); // Encode headers for clarity
+
+      var response = await http.Response.fromStream(streamedResponse);
+      log('ProfileService: Response Body: ${response.body}');
+
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+          final responseData = jsonDecode(response.body);
+          final newUrl = responseData['resume'] as String?;
+          if (newUrl != null && newUrl.isNotEmpty) {
+              log('ProfileService: Resume ${isUpdating ? 'update' : 'upload'} successful. New URL: $newUrl');
+              return newUrl;
+          } else {
+              log('ProfileService: Error: Resume ${isUpdating ? 'update' : 'upload'} successful (status ${response.statusCode}), but URL not found in response body: ${response.body}');
+              throw Exception('Resume ${isUpdating ? 'update' : 'upload'} successful, but URL not found in response.');
+          }
+      } else {
+         log('ProfileService: Error: Request failed with status ${response.statusCode}. Body: ${response.body}');
+         String errorMessage = 'Failed to ${isUpdating ? 'update' : 'upload'} resume';
+          try {
+             if (response.body.isNotEmpty && response.body != '{}') {
+                 final errorJson = jsonDecode(response.body);
+                 errorMessage = errorJson['message'] ?? '$errorMessage (Status: ${response.statusCode})';
+             } else {
+                 errorMessage = '$errorMessage (Status: ${response.statusCode}) - Empty response body';
+             }
+          } catch (e) {
+             log('ProfileService: Error parsing error response body: $e');
+             errorMessage = '$errorMessage (Status: ${response.statusCode}) - Non-JSON or empty response body';
+          }
+         throw Exception(errorMessage);
+      }
+    } on TimeoutException catch(e, s) {
+       log('ProfileService: Resume upload/update request timed out.', error: e, stackTrace: s);
+       throw Exception('Resume upload timed out. Please try again.');
+    } catch (e, s) {
+       log('ProfileService: Error ${isUpdating ? 'updating' : 'uploading'} resume: $e', error: e, stackTrace: s);
+       rethrow; 
+    }
+  }
+
+
+
+  Future<bool> deleteResume() async {
+    const String endpoint = 'api/v1/user/profile/resume';
+    log('ProfileService: Deleting resume via DELETE $endpoint');
+
+    try {
+      final response = await super.delete(endpoint, null); 
+
+      log('ProfileService: Delete Resume API Response Status Code: ${response.statusCode}');
+      log('ProfileService: Delete Resume API Response Body: ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        log('ProfileService: Resume deleted successfully.');
+        return true;
+      } else {
+        log('ProfileService: Failed to delete resume. Status Code: ${response.statusCode}');
+
+        return false; 
+      }
+    } catch (e) {
+      log('ProfileService: Error deleting resume: $e');
+      rethrow; 
     }
   }
 

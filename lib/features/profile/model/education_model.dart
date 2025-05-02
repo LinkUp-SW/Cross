@@ -4,6 +4,7 @@ class EducationModel {
   final String? id;
   final Map<String, String>? schoolData;
   final String institution;
+  final String? logoUrl;
   final String degree;
   final String fieldOfStudy;
   final String startDate;
@@ -17,6 +18,7 @@ class EducationModel {
   EducationModel({
     this.id,
     this.schoolData,
+    this.logoUrl,
     required this.institution,
     required this.degree,
     required this.fieldOfStudy,
@@ -32,11 +34,12 @@ class EducationModel {
   factory EducationModel.fromJson(Map<String, dynamic> json) {
     Map<String, String>? fetchedSchoolData;
     String fetchedInstitution = json['institution'] as String? ?? '';
-
+    String? fetchedLogoUrl;
     if (json['school'] is Map) {
       final schoolMapDynamic = Map<String, dynamic>.from(json['school']);
       fetchedSchoolData = schoolMapDynamic.map((key, value) => MapEntry(key, value?.toString() ?? ''));
       fetchedInstitution = fetchedSchoolData['name'] ?? fetchedInstitution;
+      fetchedLogoUrl = fetchedSchoolData['logo'];
     } else if (json['school'] is String) {
       fetchedSchoolData = {'_id': json['school'] as String};
     }
@@ -45,6 +48,7 @@ class EducationModel {
       id: json['_id'] as String? ?? json['id'] as String?,
       schoolData: fetchedSchoolData,
       institution: fetchedInstitution,
+      logoUrl: fetchedLogoUrl,
       degree: json['degree'] as String? ?? '',
       fieldOfStudy: json['field_of_study'] as String? ?? '',
       startDate: json['start_date'] as String? ?? '',

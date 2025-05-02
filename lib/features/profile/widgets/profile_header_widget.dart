@@ -461,7 +461,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
                     Expanded(
                       flex: 4,
                       child: OutlinedButton(
-                        onPressed: () {},
+                        onPressed: () {GoRouter.of(context).push('/add_profile_section');},
                         style: isDarkMode
                             ? buttonStyles.blueOutlinedButtonDark()
                             : buttonStyles.blueOutlinedButton(),
