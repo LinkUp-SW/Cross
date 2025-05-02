@@ -33,9 +33,12 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
         child: searchBar,
       ),
       actions: [
-        IconButton(
-          onPressed: () => context.push('/messages'),
-          icon: const Icon(Icons.message),
+        Padding(
+          padding: const EdgeInsets.all(8),
+          child: IconButton(
+            onPressed: () => context.push('/messages'),
+            icon: const Icon(Icons.message),
+          ),
         )
       ],
       bottom: bottom,
