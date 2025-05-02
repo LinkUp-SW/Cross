@@ -277,7 +277,7 @@ class _PostsState extends ConsumerState<Posts> {
                             ListTile(
                               onTap: () {
                                 repostInstantly(widget.post.id).then((value) {
-                                  if(context.mounted) {
+                                  if (context.mounted) {
                                     context.pop();
                                   }
                                   openSnackbar(
@@ -304,7 +304,8 @@ class _PostsState extends ConsumerState<Posts> {
                                             color: Theme.of(navigatorKey
                                                     .currentContext!)
                                                 .textTheme
-                                                .bodyLarge!.color,
+                                                .bodyLarge!
+                                                .color,
                                           ),
                                         ),
                                       ],
@@ -351,7 +352,9 @@ class _PostsState extends ConsumerState<Posts> {
               Padding(
                 padding: EdgeInsets.all(8.r),
                 child: CommentBubble(
-                    comment: widget.post.activity.comment, refresh: () {}),
+                    inComments: false,
+                    comment: widget.post.activity.comment,
+                    refresh: () {}),
               )
           ],
         ],

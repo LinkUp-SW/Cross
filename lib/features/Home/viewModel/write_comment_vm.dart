@@ -162,27 +162,26 @@ class WriteCommentProvider extends StateNotifier<WriteCommentVm> {
     log('Editing comment with postId: $postId, commentId: $commentId');
 
     final mediaContent = await state.media.setToUpload();
-    log('Media content: $mediaContent');
-    log('Tagged users: ${state.taggedUsers}');
-    log('Content: ${state.controller.text}');
-    final response = await service
-        .patch('api/v2/post/comment/:postId/:commentId', routeParameters: {
-      "postId": postId,
-      "commentId": commentId,
-    }, body: {
-      "content": state.controller.text,
-      "media": mediaContent,
-      "tagged_users": state.taggedUsers,
-    }).catchError((error) {
+    try {
+      final response = await service
+          .patch('api/v2/post/comment/:postId/:commentId', routeParameters: {
+        "postId": postId,
+        "commentId": commentId,
+      }, body: {
+        "content": state.controller.text,
+        "media": mediaContent,
+        "tagged_users": state.taggedUsers,
+      });
+      log('Response status code: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        log('Comment edited successfully: ${response.body}');
+        return 'edited';
+      } else {
+        log('Failed to edit comment');
+        return 'error';
+      }
+    } catch (error) {
       log('Error editing comment: $error');
-      throw Exception(error);
-    });
-    log('Response status code: ${response.statusCode}');
-    if (response.statusCode == 200) {
-      log('Comment edited successfully: ${response.body}');
-      return 'edited';
-    } else {
-      log('Failed to edit comment');
       return 'error';
     }
   }
@@ -192,25 +191,27 @@ class WriteCommentProvider extends StateNotifier<WriteCommentVm> {
     log('Creating comment with postId: $postId, commentId: $commentId');
 
     final mediaContent = await state.media.setToUpload();
-    final response =
-        await service.post('api/v2/post/comment/:postId', routeParameters: {
-      "postId": postId,
-    }, body: {
-      "parent_id": commentId,
-      "content": state.controller.text,
-      "media": mediaContent,
-      "tagged_users": state.taggedUsers,
-    }).catchError((error) {
+    try {
+      final response =
+          await service.post('api/v2/post/comment/:postId', routeParameters: {
+        "postId": postId,
+      }, body: {
+        "parent_id": commentId,
+        "content": state.controller.text,
+        "media": mediaContent,
+        "tagged_users": state.taggedUsers,
+      });
+      log('Response status code: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        log('Comment created successfully: ${response.body}');
+        return 'created';
+        //return jsonDecode(response.body)['postId'];
+      } else {
+        log('Failed to create post');
+        return 'error';
+      }
+    } catch (error) {
       log('Error creating comment: $error');
-      throw Exception(error);
-    });
-    log('Response status code: ${response.statusCode}');
-    if (response.statusCode == 200) {
-      log('Comment created successfully: ${response.body}');
-      return 'created';
-      //return jsonDecode(response.body)['postId'];
-    } else {
-      log('Failed to create post');
       return 'error';
     }
   }

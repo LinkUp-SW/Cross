@@ -25,9 +25,7 @@ class CommentProvider extends StateNotifier<CommentState> {
         {"postId": postId, "commentId": commentId}).then((value) {
       state.comment = CommentModel.initial();
     }).catchError((error) {
-      throw Exception(error);
-    }).timeout(const Duration(seconds: 5), onTimeout: () {
-      throw Exception('Request timed out');
+      log('Error deleting comment: $error');
     });
   }
 
@@ -43,27 +41,33 @@ class CommentProvider extends StateNotifier<CommentState> {
   Future<List<CommentModel>> fetchCommentReplies(String postId,
       {int? cursor}) async {
     final BaseService service = BaseService();
-    final response = await service.get(
-      'api/v2/post/comment/:postId/:commentId',
-      queryParameters: {
-        'replyLimit': '10',
-        'cursor': (cursor ?? state.cursor).toString(),
-      },
-      routeParameters: {
-        'postId': postId,
-        'commentId': state.comment.id,
-      },
-    );
-    if (response.statusCode != 200) {
-      log('Failed to load comments: ${response.statusCode}');
-      throw Exception('Failed to load comments');
+    try {
+      final response = await service.get(
+        'api/v2/post/comment/:postId/:commentId',
+        queryParameters: {
+          'replyLimit': '10',
+          'cursor': (cursor ?? state.cursor).toString(),
+        },
+        routeParameters: {
+          'postId': postId,
+          'commentId': state.comment.id,
+        },
+      );
+
+      if (response.statusCode != 200) {
+        log('Failed to load comments: ${response.statusCode}');
+        return [];
+      }
+      final data = jsonDecode(response.body);
+      log('Comments: $data');
+      state.cursor = data['next_cursor'];
+      return (data['replies'] as List)
+          .map((e) => CommentModel.fromJson(e))
+          .toList();
+    } catch (e) {
+      log('Error fetching comment replies: $e');
+      return [];
     }
-    final data = jsonDecode(response.body);
-    log('Comments: $data');
-    state.cursor = data['next_cursor'];
-    return (data['replies'] as List)
-        .map((e) => CommentModel.fromJson(e))
-        .toList();
   }
 }
 

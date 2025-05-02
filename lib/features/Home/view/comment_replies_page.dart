@@ -150,15 +150,18 @@ class _CommentRepliesPageState extends ConsumerState<CommentRepliesPage> {
                         comment: comment,
                         allRelies: true,
                         focusNode: _focusNode,
+                        inComments: true,
                       ),
                     ),
                   ),
                 ),
               ),
             ),
-      bottomNavigationBar: CommentsTextField(
+      bottomNavigationBar: _isLoading
+          ? null : CommentsTextField(
         refresh: () => refresh(),
         commentId: comment.id,
+        userName: comment.header.name,
         postId: postId,
         focusNode: _focusNode,
         showSuggestions: false,

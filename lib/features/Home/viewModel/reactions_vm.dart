@@ -69,13 +69,16 @@ class ReactionsNotifier extends StateNotifier<ReactionsState> {
       state.reactions[reaction]?.addAll(
           reactions.map((e) => ReactionTileModel.fromJson(e)).toList());
       if (reaction == Reaction.none) {
-        state.reactionsCount = Map<Reaction, int>.fromEntries(
-        [MapEntry(Reaction.none, data['reactions_count']),
-          ...(data['reaction_counts'] as Map).map(
-            (key, value) => MapEntry(Reaction.getReaction(key), value as int),
-          ).entries]
-        );
-        
+        state.reactionsCount = Map<Reaction, int>.fromEntries([
+          MapEntry(Reaction.none, data['reactions_count']),
+          ...(data['reaction_counts'] as Map)
+              .map(
+                (key, value) =>
+                    MapEntry(Reaction.getReaction(key), value as int),
+              )
+              .entries
+        ]);
+
         final sortedEntries = state.reactionsCount.entries.toList()
           ..sort((a, b) {
             return b.value.compareTo(a.value);
@@ -85,10 +88,7 @@ class ReactionsNotifier extends StateNotifier<ReactionsState> {
       state.cursor[reaction] = data['next_cursor'] as int?;
     }).catchError((error) {
       log('$error');
-      throw Exception(error);
-    }).timeout(const Duration(seconds: 5), onTimeout: () {
-      log('timeout');
-      throw Exception('Request timed out');
+      state.cursor[reaction] = null;
     });
   }
 }
