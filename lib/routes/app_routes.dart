@@ -30,6 +30,7 @@ import 'package:link_up/features/my-network/view/manage_my_network_screen.dart';
 import 'package:link_up/features/my-network/view/people_i_follow_screen.dart';
 import 'package:link_up/features/my-network/view/view.dart';
 import 'package:link_up/features/chat/view/chat_list_page.dart';
+import 'package:link_up/features/subscription/view/view.dart';
 import 'package:link_up/shared/dummy_page.dart';
 import 'package:link_up/shared/widgets/bottom_navigation_bar.dart';
 import 'package:link_up/features/profile/view/edit_intro.dart';
@@ -46,10 +47,11 @@ import 'package:link_up/features/profile/view/add_resume.dart';
 import 'package:link_up/features/profile/view/resume_viewer.dart';
 import 'package:link_up/features/profile/view/add_new_license.dart';
 
-final goRouterProvider = Provider<GoRouter>((ref) {
-  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+final goRouterProvider = Provider<GoRouter>(
+  (ref) {
+    final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
-  return GoRouter(
+    return GoRouter(
       navigatorKey: navigatorKey,
       initialLocation: '/login',
       routes: <RouteBase>[
@@ -307,5 +309,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           ),
         ),
         GoRoute(path: "/settings", builder: (context, state) => SettingsPage()),
-      ]);
-});
+        GoRoute(
+          path: "/payment",
+          builder: (context, state) => const SubscriptionManagementScreen(),
+        ),
+      ],
+    );
+  },
+);

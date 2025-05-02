@@ -150,6 +150,17 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               },
             ),
             ListTile(
+              leading: Image(
+                image: AssetImage('assets/images/linkup_premium.png'),
+                width: 20.w,
+                height: 20.h,
+              ),
+              title: const Text('Subscription Management'),
+              onTap: () {
+                context.push('/payment');
+              },
+            ),
+            ListTile(
               leading: const Icon(
                 Icons.logout,
                 color: AppColors.red,
@@ -220,7 +231,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                     final response = await baseService.delete(
                                         'api/v1/user/delete-account', null);
                                     log(response.body.toString());
-                                    if (context.mounted && response.statusCode == 200) {
+                                    if (context.mounted &&
+                                        response.statusCode == 200) {
                                       logout(context);
                                     }
                                   },
