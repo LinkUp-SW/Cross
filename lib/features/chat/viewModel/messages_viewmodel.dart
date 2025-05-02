@@ -28,11 +28,20 @@ class MessagesViewModel extends StateNotifier<MessagesState> {
     _socketService.onMessageReceived((dynamic data) async {
       log('[VIEWMODEL] Full data received: $data');
       try {
-        // Reload messages when receiving a new message
-        await loadMessages();
-        log('[VIEWMODEL] Messages reloaded after receiving new message');
+        // Add new message to state
+        final message = Message.fromJson(data['message']);
+        final updatedMessages = [...?state.messages, message]
+          ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+        
+        state = state.copyWith(
+          messages: updatedMessages,
+          isLoading: false,
+          isError: false,
+        );
+
+        log('[VIEWMODEL] Message added to state');
       } catch (e) {
-        log('[VIEWMODEL] Error reloading messages: $e');
+        log('[VIEWMODEL] Error processing message: $e');
       }
     });
   }
@@ -68,20 +77,23 @@ class MessagesViewModel extends StateNotifier<MessagesState> {
     try {
       log('[VIEWMODEL] Sending message: ${message.message}');
 
-      // Optimistic update
-      final updatedMessages = [...?state.messages, message]..sort((a, b) => a.timestamp.compareTo(b.timestamp));
-      state = state.copyWith(messages: updatedMessages);
+      // Add message to state immediately for instant feedback
+      final currentMessages = [...?state.messages];
+      currentMessages.add(message);
+      currentMessages.sort((a, b) => a.timestamp.compareTo(b.timestamp));
 
-      // Send via socket
+      state = state.copyWith(
+        messages: currentMessages,
+        isLoading: false,
+        isError: false,
+      );
+
+      // Send via socket in background
       _socketService.sendMessage(conversationId, message);
-
-      // Reload messages after sending
-      await loadMessages();
-
-      log('[VIEWMODEL] Message sent and messages reloaded');
     } catch (e) {
       log('[VIEWMODEL] Failed to send message: $e');
-      // Revert optimistic update on failure
+
+      // Remove message from state if sending failed
       final originalMessages = state.messages?.where((m) => m.messageId != message.messageId).toList();
       state = state.copyWith(
         messages: originalMessages,

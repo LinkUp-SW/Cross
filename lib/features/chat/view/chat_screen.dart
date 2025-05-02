@@ -88,53 +88,32 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       body: Column(
         children: [
           Expanded(
-            child: messagesState.isLoading
+            child: messagesState.isLoading && (messagesState.messages?.isEmpty ?? true)
                 ? const Center(child: CircularProgressIndicator())
-                : messagesState.isError
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.error_outline, size: 48, color: Colors.red),
-                            const SizedBox(height: 16),
-                            Text(
-                              messagesState.errorMessage ?? 'Failed to load messages',
-                              style: Theme.of(context).textTheme.bodyLarge,
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 8),
-                            TextButton(
-                              onPressed: () {
-                                ref.read(messagesViewModelProvider(widget.conversationId).notifier).loadMessages();
-                              },
-                              child: const Text('Retry'),
-                            ),
-                          ],
-                        ),
-                      )
-                    : (messagesState.messages?.isEmpty ?? true)
-                        ? Center(
-                            child: Text(
-                              'No messages yet\nStart a conversation!',
-                              textAlign: TextAlign.center,
-                              style: theme.textTheme.bodyLarge,
-                            ),
-                          )
-                        : ListView.builder(
-                            controller: _scrollController,
-                            itemCount: messagesState.messages?.length ?? 0,
-                            itemBuilder: (context, index) {
-                              final message = messagesState.messages![index];
-                              return ChatMessageBubble(
-                                message: message,
-                                currentUserName:
-                                    '${InternalEndPoints.userId.split('-')[0][0].toUpperCase()}${InternalEndPoints.userId.split('-')[0].substring(1)}',
-                                currentUserProfilePicUrl: "assets/images/profile.png",
-                                chatProfilePicUrl: widget.senderProfilePicUrl,
-                              );
-                            },
-                          ),
+                : ListView.builder(
+                    controller: _scrollController,
+                    itemCount: messagesState.messages?.length ?? 0,
+                    itemBuilder: (context, index) {
+                      final message = messagesState.messages![index];
+                      return ChatMessageBubble(
+                        key: ValueKey(message.messageId), // Add key for better list updates
+                        message: message,
+                        currentUserName:
+                            '${InternalEndPoints.userId.split('-')[0][0].toUpperCase()}${InternalEndPoints.userId.split('-')[0].substring(1)}',
+                        currentUserProfilePicUrl: "assets/images/profile.png",
+                        chatProfilePicUrl: widget.senderProfilePicUrl,
+                      );
+                    },
+                  ),
           ),
+          if (messagesState.isError)
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                messagesState.errorMessage ?? 'Error sending message',
+                style: TextStyle(color: theme.colorScheme.error),
+              ),
+            ),
           ChatInputField(
             Controller: messageController,
             onSendPressed: _handleSendMessage,
@@ -147,14 +126,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   void _handleSendMessage() {
     if (messageController.text.isEmpty) return;
 
-    // Create new message with all required fields
     final newMessage = Message(
       messageId: DateTime.now().toString(),
       senderId: InternalEndPoints.userId,
       receiverId: otheruser,
       senderName:
           '${InternalEndPoints.userId.split('-')[0][0].toUpperCase()}${InternalEndPoints.userId.split('-')[0].substring(1)}',
-      message: messageController.text, // This is the actual message text
+      message: messageController.text,
       media: [],
       timestamp: DateTime.now(),
       isOwnMessage: true,
@@ -163,19 +141,15 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       isEdited: false,
     );
 
-    log('[CHAT] Sending message: ${newMessage.message}'); // Add logging
-
-    // Send message via viewmodel
-    ref.read(messagesViewModelProvider(widget.conversationId).notifier).sendMessage(newMessage);
-
-    // Clear input and scroll after sending
+    // Clear input field immediately
     messageController.clear();
 
-    // Ensure UI updates after message is sent
+    // Send message
+    ref.read(messagesViewModelProvider(widget.conversationId).notifier).sendMessage(newMessage);
+
+    // Scroll to bottom immediately
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToBottom();
-      final messagesState = ref.read(messagesViewModelProvider(widget.conversationId));
-      log('[CHAT] Current messages count: ${messagesState.messages?.length ?? 0}');
     });
   }
 

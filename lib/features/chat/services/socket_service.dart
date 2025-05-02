@@ -131,7 +131,7 @@ class SocketService {
     try {
       final messageData = {
         'conversationId': conversationId,
-        'message': message.message, // Add the actual message text directly
+        'message': message.message, 
         'messageData': {
           'messageId': message.messageId,
           'senderId': message.senderId,

@@ -6,7 +6,7 @@ class ChatInputField extends StatelessWidget {
 /*   final VoidCallback onAttachmentPressed; */
 
   const ChatInputField({
-    super.key,
+    Key? key,
     required this.Controller,
     required this.onSendPressed,
    /*  required this.onAttachmentPressed, */
@@ -14,8 +14,8 @@ class ChatInputField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       child: Row(
         children: [
           IconButton(
@@ -25,17 +25,23 @@ class ChatInputField extends StatelessWidget {
           Expanded(
             child: TextField(
               controller: Controller,
-              decoration: InputDecoration(
-                hintText: "Write a message...",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(5.0),
-                ),
+              textInputAction: TextInputAction.send, // Enable send on keyboard
+              onSubmitted: (_) => onSendPressed(), // Send on keyboard action
+              decoration: const InputDecoration(
+                hintText: 'Type a message...',
+                border: OutlineInputBorder(),
+                contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               ),
             ),
           ),
-          IconButton(
-            icon: const Icon(Icons.send),
+          const SizedBox(width: 8),
+          FloatingActionButton(
+            backgroundColor: Colors.blue,
+            foregroundColor: Colors.white,
+            
             onPressed: onSendPressed,
+            mini: true,
+            child: const Icon(Icons.send),
           ),
         ],
       ),
