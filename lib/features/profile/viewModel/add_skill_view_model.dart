@@ -5,7 +5,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/features/profile/model/skills_model.dart';
 import 'package:link_up/features/profile/services/profile_services.dart';
 import 'package:link_up/features/profile/state/skills_state.dart';
-import 'package:link_up/features/profile/viewModel/profile_view_model.dart'; 
+import 'package:link_up/features/profile/viewModel/profile_view_model.dart';
+import 'dart:async';
+
+
+
+
 
 class AddSkillViewModel extends StateNotifier<AddSkillState> {
   final ProfileService _profileService;

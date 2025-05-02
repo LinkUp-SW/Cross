@@ -6,9 +6,13 @@ import 'package:intl/intl.dart';
 import 'package:link_up/features/profile/model/education_model.dart';
 import 'package:link_up/features/profile/services/profile_services.dart';
 import 'package:link_up/features/profile/state/add_education_state.dart';
+import 'dart:async';
+import 'package:link_up/features/profile/viewModel/profile_view_model.dart';
+
 
 class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
   final ProfileService _profileService;
+  final Ref _ref;
 
   final int maxDescriptionChars = 2000;
   final int maxActivitiesChars = 500;
@@ -29,7 +33,7 @@ class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
   bool _isEndDatePresent = false;
   Map<String, String>? _selectedSchoolData;
 
-  AddEducationViewModel(this._profileService)
+  AddEducationViewModel(this._profileService, this._ref)
       : super(AddEducationIdle(AddEducationFormData(
           schoolController: TextEditingController(),
           degreeController: TextEditingController(),
@@ -196,11 +200,12 @@ class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
 
     try {
       final success = await _profileService.addEducation(educationModel);
-      if (success && mounted) {
+       if (success && mounted) {
+        unawaited(_ref.read(profileViewModelProvider.notifier).fetchUserProfile());
         state = const AddEducationSuccess();
-         resetForm();
+        resetForm(); 
       } else if (mounted) {
-        state = AddEducationFailure(currentFormData, "Failed to save education. Server error.");
+        state = AddEducationFailure(currentFormData, "Failed to save position. Server error.");
       }
     } catch (e) {
       if (mounted) {
@@ -262,5 +267,5 @@ class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
 final addEducationViewModelProvider =
     StateNotifierProvider.autoDispose<AddEducationViewModel, AddEducationFormState>((ref) {
   final profileService = ref.watch(profileServiceProvider);
-  return AddEducationViewModel(profileService);
+  return AddEducationViewModel(profileService, ref);
 });

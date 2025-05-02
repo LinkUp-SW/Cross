@@ -6,6 +6,10 @@ import 'package:link_up/features/profile/model/license_model.dart';
 import 'package:link_up/features/profile/services/profile_services.dart';
 import 'package:link_up/features/profile/state/license_state.dart';
 import 'package:link_up/features/profile/viewModel/profile_view_model.dart';
+import 'dart:async';
+
+
+
 
 class AddLicenseViewModel extends StateNotifier<AddLicenseState> {
   final ProfileService _profileService;
@@ -168,7 +172,8 @@ class AddLicenseViewModel extends StateNotifier<AddLicenseState> {
       final success = await _profileService.addLicense(licenseModel);
       if (success && mounted) {
         state = const AddLicenseSuccess();
-        await _ref.read(profileViewModelProvider.notifier).fetchUserProfile();
+        unawaited(_ref.read(profileViewModelProvider.notifier).fetchUserProfile());
+        
         resetForm();
       } else if (mounted) {
         state = AddLicenseFailure(currentFormData, "Failed to save license. Server error.");

@@ -4,9 +4,12 @@ import 'package:intl/intl.dart';
 import 'package:link_up/features/profile/model/position_model.dart';
 import 'package:link_up/features/profile/services/profile_services.dart';
 import 'package:link_up/features/profile/state/add_position_state.dart';
+import 'package:link_up/features/profile/viewModel/profile_view_model.dart';
+import 'dart:async';
 
 class AddPositionViewModel extends StateNotifier<AddPositionState> {
   final ProfileService _profileService;
+  final Ref _ref;
   final int maxDescriptionChars = 2000;
 
   final _titleController = TextEditingController();
@@ -24,7 +27,7 @@ class AddPositionViewModel extends StateNotifier<AddPositionState> {
   bool _isCurrentPosition = false;
   List<String>? _skills;
 
-  AddPositionViewModel(this._profileService)
+  AddPositionViewModel(this._profileService, this._ref)
       : super(AddPositionInitial(AddPositionFormData.initial())) {
     state = AddPositionInitial(AddPositionFormData(
       titleController: _titleController,
@@ -161,10 +164,12 @@ class AddPositionViewModel extends StateNotifier<AddPositionState> {
 
     try {
       final success = await _profileService.addPosition(positionModel);
-      if (success) {
+
+      if (success && mounted) {
+        unawaited(_ref.read(profileViewModelProvider.notifier).fetchUserProfile());
         state = const AddPositionSuccess();
-        resetForm();
-      } else {
+        resetForm(); 
+      } else if (mounted) {
         state = AddPositionFailure(currentFormData, "Failed to save position. Server error.");
       }
     } catch (e) {
@@ -218,7 +223,7 @@ class AddPositionViewModel extends StateNotifier<AddPositionState> {
 }
 
 final addPositionViewModelProvider =
-    StateNotifierProvider.autoDispose<AddPositionViewModel, AddPositionState>((ref) {
+    StateNotifierProvider.autoDispose<AddPositionViewModel, AddPositionState>((ref) { 
   final profileService = ref.watch(profileServiceProvider);
-  return AddPositionViewModel(profileService);
+  return AddPositionViewModel(profileService, ref); 
 });
