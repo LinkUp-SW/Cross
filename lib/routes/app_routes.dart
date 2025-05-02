@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/Home/view/saved_posts.dart';
+import 'package:link_up/features/admin_panel/state/dashboard_states.dart';
+import 'package:link_up/features/admin_panel/view/dashboard_view.dart';
+import 'package:link_up/features/admin_panel/view/privilages_view.dart';
 import 'package:link_up/features/admin_panel/view/statistics_view.dart';
+import 'package:link_up/features/admin_panel/view/users_view.dart';
 import 'package:link_up/features/my-network/view/connections_screen.dart';
 import 'package:link_up/core/utils/global_keys.dart';
 import 'package:link_up/features/logIn/view/forgot_pasword_view.dart';
@@ -43,7 +47,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
 
   return GoRouter(
       navigatorKey: navigatorKey,
-      initialLocation: '/login',
+      initialLocation: '/dashboard',
       routes: <RouteBase>[
         GoRoute(path: "/profile", builder: (context, state) => ProfilePage()),
         GoRoute(
@@ -58,8 +62,15 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             path: '/statistics',
             builder: (context, state) => const StatisticsView()),
         GoRoute(
-            path: '/priv',
-            builder: (context, state) => const DummyPage(title: 'Users')),
+            path: '/dashboard',
+            builder: (context, state) => const DashboardView()),
+        GoRoute(path: '/users', builder: (context, state) => const UsersPage()),
+        GoRoute(
+            path: '/adminjobs',
+            builder: (context, state) => const DummyPage(title: 'Admin Jobs')),
+        GoRoute(
+            path: '/contentModration',
+            builder: (context, state) => const ReportsPage()),
         GoRoute(
             path: "/signup",
             builder: (context, state) => const EmailPasswordView(),
