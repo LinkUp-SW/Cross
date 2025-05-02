@@ -57,6 +57,8 @@ dependencies:
   share_plus: ^10.1.4
   open_filex: ^4.3.2
   path_provider: ^2.1.5
+  carousel_slider: ^5.0.0
+  fl_chart: ^0.71.0
 
 dev_dependencies:
   flutter_test:
