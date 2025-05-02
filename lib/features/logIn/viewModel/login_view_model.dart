@@ -44,7 +44,7 @@ class LogInNotifier extends StateNotifier<LogInState> {
   Future<String> getProfileUrl(String userId) async {
           final BaseService baseService = BaseService();
           final response = await baseService.get(
-              '/profile/profile-picture/:user_id',
+              'api/v1/user/profile/profile-picture/:user_id',
               routeParameters: {'user_id': userId});
           if (response.statusCode == 200) {
             return jsonDecode(response.body)['profilePicture'];

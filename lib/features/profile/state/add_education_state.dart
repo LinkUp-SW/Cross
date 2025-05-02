@@ -1,11 +1,9 @@
-import 'package:flutter/material.dart'; // Needed for TextEditingController
+import 'package:flutter/material.dart'; 
 
-// Base state for the Add/Edit Education Form page
 sealed class AddEducationFormState {
   const AddEducationFormState();
 }
 
-// State holding the current data entered in the form
 class AddEducationFormData extends AddEducationFormState {
   final TextEditingController schoolController;
   final TextEditingController degreeController;
@@ -62,29 +60,24 @@ class AddEducationFormData extends AddEducationFormState {
   }
 }
 
-// States representing the status of the save/API operation
 sealed class AddEducationStatusState extends AddEducationFormState {
     const AddEducationStatusState();
 }
 
-// The form is ready for input or has returned from a loading/error state
 class AddEducationIdle extends AddEducationStatusState {
   final AddEducationFormData formData; 
   const AddEducationIdle(this.formData);
 }
 
-// Currently attempting to save the data via the service
 class AddEducationLoading extends AddEducationStatusState {
     final AddEducationFormData formData; 
     const AddEducationLoading(this.formData);
 }
 
-// Data was successfully saved
 class AddEducationSuccess extends AddEducationStatusState {
   const AddEducationSuccess();
 }
 
-// An error occurred during the save operation
 class AddEducationFailure extends AddEducationStatusState {
   final AddEducationFormData formData;
   final String message;

@@ -11,6 +11,8 @@ import 'package:link_up/core/constants/endpoints.dart';
 
 class ProfilePhotoViewModel extends StateNotifier<ProfilePhotoState> {
   final Ref _ref;
+  final int maxFileSizeInBytes = 2 * 1024 * 1024; 
+
 
   ProfilePhotoViewModel(this._ref) : super(const ProfilePhotoInitial());
 
@@ -22,14 +24,26 @@ class ProfilePhotoViewModel extends StateNotifier<ProfilePhotoState> {
     try {
       final imageFile = await _imagePickerService.pickImage(source);
       if (imageFile != null) {
+        final fileSize = await imageFile.length();
+        if (fileSize > maxFileSizeInBytes) {
+          if (mounted) {
+             state = ProfilePhotoError("Image size cannot exceed 2MB.");
+             await Future.delayed(const Duration(milliseconds: 100));
+             if (mounted && state is ProfilePhotoError) { 
+                 state = const ProfilePhotoInitial();
+             }
+          }
+          return; 
+        }
+
         if (mounted) {
-           state = ProfilePhotoSelected(imageFile);
-           await uploadProfilePhoto();
+          state = ProfilePhotoSelected(imageFile);
+          await uploadProfilePhoto();
         }
       } else {
-         if (mounted) {
-           state = const ProfilePhotoInitial();
-         }
+        if (mounted) {
+          state = const ProfilePhotoInitial();
+        }
       }
     } catch (e) {
       log("ViewModel: Error picking image: $e");
@@ -38,6 +52,7 @@ class ProfilePhotoViewModel extends StateNotifier<ProfilePhotoState> {
       }
     }
   }
+
 
   Future<void> uploadProfilePhoto() async {
     if (state is! ProfilePhotoSelected) {

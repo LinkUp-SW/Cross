@@ -28,6 +28,56 @@ class AdminDrawer extends StatelessWidget {
                 children: [
                   GestureDetector(
                     onTap: () {
+                      context.push('/dashboard');
+                    },
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.dashboard,
+                          color: AppColors.grey,
+                          size: 30.r,
+                        ),
+                        SizedBox(
+                          width: 10.w,
+                        ),
+                        Text(
+                          'Dashboard',
+                          style: TextStyle(
+                              fontSize: 20.r, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10.h,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      context.push('/users');
+                    },
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.people,
+                          color: AppColors.grey,
+                          size: 30.r,
+                        ),
+                        SizedBox(
+                          width: 10.w,
+                        ),
+                        Text(
+                          'Users',
+                          style: TextStyle(
+                              fontSize: 20.r, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10.h,
+                  ),
+                  GestureDetector(
+                    onTap: () {
                       context.push('/statistics');
                     },
                     child: Row(
@@ -53,7 +103,7 @@ class AdminDrawer extends StatelessWidget {
                   ),
                   GestureDetector(
                     onTap: () {
-                      context.push('/priv');
+                      context.push('/contentModration');
                     },
                     child: Row(
                       children: [
@@ -66,7 +116,7 @@ class AdminDrawer extends StatelessWidget {
                           width: 10.w,
                         ),
                         Text(
-                          'Privileges',
+                          'Reports',
                           style: TextStyle(
                               fontSize: 20.r, fontWeight: FontWeight.bold),
                         ),

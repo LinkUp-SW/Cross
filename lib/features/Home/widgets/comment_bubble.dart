@@ -1,13 +1,21 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:link_up/core/constants/endpoints.dart';
 import 'package:link_up/features/Home/home_enums.dart';
 import 'package:link_up/features/Home/model/comment_model.dart';
+import 'package:link_up/features/Home/post_functions.dart';
 import 'package:link_up/features/Home/viewModel/comment_vm.dart';
+import 'package:link_up/features/Home/viewModel/reactions_vm.dart';
+import 'package:link_up/features/Home/viewModel/write_comment_vm.dart';
 import 'package:link_up/features/Home/widgets/reactions.dart';
+import 'package:link_up/features/Post/widgets/formatted_richtext.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/widgets/bottom_sheet.dart';
+
 //TODO: handle child comment replay calling
 class CommentBubble extends ConsumerStatefulWidget {
   const CommentBubble({
@@ -15,20 +23,24 @@ class CommentBubble extends ConsumerStatefulWidget {
     this.isReply = false,
     required this.comment,
     this.allRelies = false,
+    required this.refresh,
+    this.focusNode,
+    required this.inComments,
+
   });
 
   final CommentModel comment;
-
+  final bool inComments;
   final bool isReply;
   final bool allRelies;
+  final Function refresh;
+  final FocusNode? focusNode;
 
   @override
   ConsumerState<CommentBubble> createState() => _CommentBubbleState();
 }
 
 class _CommentBubbleState extends ConsumerState<CommentBubble> {
-
-  Reaction _reaction = Reaction.none;
   @override
   Widget build(BuildContext context) {
     return Flex(
@@ -37,9 +49,17 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
       children: [
         Flexible(
           flex: 1,
-          child: CircleAvatar(
-            radius: 20.r,
-            backgroundImage: NetworkImage(widget.comment.header.profileImage),
+          child: GestureDetector(
+            onTap: () {
+              //TODO: navigate to user profile page
+              log('userprofile: ${widget.comment.header.userId}');
+            },
+            child: CircleAvatar(
+              radius: 15.r,
+              backgroundImage: NetworkImage(
+                widget.comment.header.profileImage,
+              ),
+            ),
           ),
         ),
         SizedBox(
@@ -52,6 +72,8 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
             children: [
               GestureDetector(
                 onTap: () {
+                  if(widget.inComments) return;
+                  if (widget.isReply) return;
                   ref.read(commentProvider.notifier).setComment(widget.comment);
                   context.push("/commentReplies/unfocused");
                 },
@@ -87,11 +109,12 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                                       ],
                                     ),
                                   ),
-                                  Text(
-                                    widget.comment.header.about,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(fontSize: 10.r),
-                                  ),
+                                  if (widget.comment.header.about != '')
+                                    Text(
+                                      widget.comment.header.about,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(fontSize: 10.r),
+                                    ),
                                 ],
                               ),
                             ),
@@ -106,30 +129,104 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                                     showModalBottomSheet(
                                         context: context,
                                         useRootNavigator: true,
-                                        builder: (context) =>
-                                            CustomModalBottomSheet(
-                                              content: Column(
-                                                children: [
-                                                  ListTile(
-                                                    onTap: () {
-                                                      //TODO: share comment
-                                                    },
-                                                    leading: const Icon(
-                                                        Icons.ios_share),
-                                                    title:
-                                                        const Text("Share via"),
+                                        builder:
+                                            (context) => CustomModalBottomSheet(
+                                                  content: Column(
+                                                    children: [
+                                                      if (widget.comment.header
+                                                              .userId ==
+                                                          InternalEndPoints
+                                                              .userId) ...[
+                                                        ListTile(
+                                                            leading: const Icon(
+                                                                Icons.edit),
+                                                            title: const Text(
+                                                                "Edit Comment"),
+                                                            onTap: () {
+                                                              ref
+                                                                  .read(writeCommentProvider
+                                                                      .notifier)
+                                                                  .setComment(
+                                                                      widget
+                                                                          .comment,
+                                                                      true);
+                                                              widget
+                                                                  .focusNode
+                                                                  ?.requestFocus();
+                                                              context.pop();
+                                                            }),
+                                                        ListTile(
+                                                            leading: const Icon(
+                                                                Icons.delete),
+                                                            title: const Text(
+                                                                "Delete Comment"),
+                                                            onTap: () {
+                                                              showDialog(
+                                                                  context:
+                                                                      context,
+                                                                  builder:
+                                                                      (context) {
+                                                                    return AlertDialog(
+                                                                      backgroundColor: Theme.of(
+                                                                              context)
+                                                                          .colorScheme
+                                                                          .primary,
+                                                                      title: const Text(
+                                                                          "Delete Comment"),
+                                                                      content:
+                                                                          const Text(
+                                                                              "Are you sure you want to delete this comment?"),
+                                                                      actions: [
+                                                                        TextButton(
+                                                                          onPressed:
+                                                                              () {
+                                                                            context.pop();
+                                                                          },
+                                                                          child:
+                                                                              const Text("Cancel"),
+                                                                        ),
+                                                                        TextButton(
+                                                                          onPressed:
+                                                                              () {
+                                                                            ref.read(commentProvider.notifier).deleteComment(widget.comment.postId, widget.comment.id).then((_) {
+                                                                              widget.refresh();
+                                                                            });
+                                                                            context.pop();
+                                                                            context.pop();
+                                                                          },
+                                                                          child:
+                                                                              const Text(
+                                                                            "Delete",
+                                                                            style:
+                                                                                TextStyle(color: AppColors.red),
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    );
+                                                                  });
+                                                            }),
+                                                      ],
+                                                      ListTile(
+                                                        onTap: () {
+                                                          //TODO: share comment
+                                                        },
+                                                        leading: const Icon(
+                                                            Icons.ios_share),
+                                                        title: const Text(
+                                                            "Share via"),
+                                                      ),
+                                                      ListTile(
+                                                        onTap: () {
+                                                          //TODO: report comment
+                                                        },
+                                                        leading: const Icon(
+                                                            Icons.report),
+                                                        title: const Text(
+                                                            "Report"),
+                                                      ),
+                                                    ],
                                                   ),
-                                                  ListTile(
-                                                    onTap: () {
-                                                      //TODO: report comment
-                                                    },
-                                                    leading:
-                                                        const Icon(Icons.report),
-                                                    title: const Text("Report"),
-                                                  ),
-                                                ],
-                                              ),
-                                            ));
+                                                ));
                                   },
                                   icon: const Icon(Icons.more_horiz),
                                 ),
@@ -137,12 +234,23 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                             ),
                           ],
                         ),
-                        Text.rich(
-                          TextSpan(
-                            text: widget.comment.text,
-                            style: TextStyle(fontSize: 12.r),
-                          ),
+                        FormattedRichText(
+                          text: widget.comment.text,
+                          defaultStyle: TextStyle(fontSize: 12.r,color: Theme.of(context).textTheme.bodyLarge!.color),
                         ),
+                        if (widget.comment.media.type != MediaType.none) ...[
+                          SizedBox(
+                            height: 10.h,
+                          ),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10.r),
+                            child: Image.network(
+                              widget.comment.media.urls[0],
+                              fit: BoxFit.fitHeight,
+                              height: 120.h,
+                            ),
+                          ),
+                        ]
                       ],
                     ),
                   ),
@@ -158,30 +266,98 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                   ),
                   Reactions(
                     offset: 80.h,
-                    reaction: _reaction,
+                    reaction: widget.comment.reaction,
                     setReaction: (reaction) {
                       setState(() {
-                        _reaction = reaction;
+                        Reaction oldReaction = widget.comment.reaction;
+                        if (reaction == Reaction.none) {
+                          widget.comment.reaction = Reaction.none;
+                          removeReaction(widget.comment.postId, "Comment",
+                                  commentId: widget.comment.id)
+                              .then((value) {
+                            if (value.isNotEmpty) {
+                              widget.comment.likes = value['reactions_count'];
+                            } else {
+                              widget.comment.reaction = oldReaction;
+                            }
+                            setState(() {});
+                          });
+                        } else {
+                          widget.comment.reaction = reaction;
+                          setReaction(
+                                  widget.comment.postId, reaction, "Comment",
+                                  commentId: widget.comment.id)
+                              .then((value) {
+                            if (value.isNotEmpty) {
+                              widget.comment.likes = value['reactions_count'];
+                            } else {
+                              widget.comment.reaction = oldReaction;
+                            }
+                            setState(() {});
+                          });
+                        }
                       });
                     },
-                    child: Text(Reaction.getReactionString(_reaction), style: TextStyle(color: _reaction == Reaction.none ? AppColors.grey : Reaction.getColor(_reaction))),
+                    child: Text(
+                        Reaction.getReactionString(widget.comment.reaction),
+                        style: TextStyle(
+                            color: widget.comment.reaction == Reaction.none
+                                ? AppColors.grey
+                                : Reaction.getColor(widget.comment.reaction))),
                   ),
-                  if (widget.comment.likes > 0) Text("  •  ${widget.comment.likes} likes", style: const TextStyle(color: AppColors.grey)),
-                  const Text("  |  ", style: TextStyle(color: AppColors.grey)),
-                  GestureDetector(
+                  if (widget.comment.likes > 0)
+                    GestureDetector(
                       onTap: () {
-                        ref.read(commentProvider.notifier).setComment(widget.comment);
+                        ref.read(reactionsProvider.notifier).setComment(
+                            widget.comment.id, widget.comment.postId);
+                        context.push("/reactions");
+                      },
+                      child: Wrap(
+                        children: [
+                          Text(" • ${widget.comment.likes}  ",
+                              style: const TextStyle(color: AppColors.grey)),
+                          for (var i = 0;
+                              i < widget.comment.topReactions.length;
+                              i++) ...[
+                            Align(
+                              widthFactor: 0.7,
+                              child: Reaction.getIcon(
+                                  widget.comment.topReactions[i], 15.r),
+                            )
+                          ],
+                        ],
+                      ),
+                    ),
+                  if (!widget.isReply) ...[
+                    const Text("  |  ",
+                        style: TextStyle(color: AppColors.grey)),
+                    GestureDetector(
+                      onTap: () {
+                        if(widget.inComments) return;
+                        ref
+                            .read(commentProvider.notifier)
+                            .setComment(widget.comment);
                         context.push("/commentReplies");
-                      }
-                    ,child: const Text("Reply ", style: TextStyle(color: AppColors.grey))),
+                      },
+                      child: const Text(
+                        "Reply ",
+                        style: TextStyle(color: AppColors.grey),
+                      ),
+                    ),
+                  ],
                   if (widget.comment.replies > 0)
                     GestureDetector(
                         onTap: () {
-                          ref.read(commentProvider.notifier).setComment(widget.comment);
+                          if(widget.inComments) return;
+                          ref
+                              .read(commentProvider.notifier)
+                              .setComment(widget.comment);
                           context.push("/commentReplies");
                         },
                         child: Text(
-                            " •  ${widget.comment.replies}  ${widget.comment.replies > 1 ? "replies" : "reply"}",style: const TextStyle(color: AppColors.grey),)),
+                          " •  ${widget.comment.replies}  ${widget.comment.replies > 1 ? "replies" : "reply"}",
+                          style: const TextStyle(color: AppColors.grey),
+                        )),
                 ],
               ),
               SizedBox(
@@ -192,27 +368,36 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                   if (widget.comment.replies > 1)
                     TextButton(
                         onPressed: () {
-                          ref.read(commentProvider.notifier).setComment(widget.comment);
+                          if(widget.inComments) return;
+                          ref
+                              .read(commentProvider.notifier)
+                              .setComment(widget.comment);
                           context.push("/commentReplies");
                         },
                         child: Text(
                           "Show ${widget.comment.replies - 1} more ${widget.comment.replies > 2 ? "replies" : "reply"}",
                         )),
-                  if (widget.comment.replies > 0 && !widget.isReply)
+                  if (widget.comment.repliesList.isNotEmpty && !widget.isReply)
                     CommentBubble(
+                      refresh: widget.refresh,
                       isReply: true,
-                      comment: widget.comment,
+                      comment: widget.comment.repliesList[0],
+                      focusNode: widget.focusNode,
+                      inComments: widget.inComments,
                     ),
                 ],
                 if (widget.allRelies)
                   Column(
                     children: List.generate(
-                      widget.comment.replies,
+                      widget.comment.repliesList.length,
                       (index) => Column(
                         children: [
                           CommentBubble(
+                            refresh: widget.refresh,
                             isReply: true,
-                            comment: widget.comment,
+                            comment: widget.comment.repliesList[index],
+                            focusNode: widget.focusNode,
+                            inComments: widget.inComments,
                           ),
                           SizedBox(
                             height: 10.h,

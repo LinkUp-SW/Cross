@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart' show immutable;
+import 'package:link_up/features/profile/model/education_model.dart';
 
 @immutable
 class UserProfile {
@@ -8,11 +9,15 @@ class UserProfile {
   final String headline;
   final String? countryRegion;
   final String? city;
-  final List<String> experience;
-  final List<String> education;
+  final String? website;
   final String profilePhotoUrl;
   final String coverPhotoUrl;
   final int numberOfConnections;
+   final bool? isInConnections; // Already connected
+  final bool? isInReceivedConnections; // You have a pending request from them
+  final bool? isInSentConnections; // You sent them a pending request
+  final bool? isAlreadyFollowing; // You are following them
+  final bool? allowMessaging; // Can you message them? (Likely if connected)
 
   const UserProfile({
     required this.isMe,
@@ -21,18 +26,24 @@ class UserProfile {
     required this.headline,
     this.countryRegion,
     this.city,
-    required this.experience,
-    required this.education,
+    this.website, 
     required this.profilePhotoUrl,
     required this.coverPhotoUrl,
     required this.numberOfConnections,
+    this.isInConnections,
+    this.isInReceivedConnections,
+    this.isInSentConnections, 
+    this.isAlreadyFollowing,
+    this.allowMessaging,
+
   });
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
     final bio = json['bio'] as Map<String, dynamic>? ?? {};
     final contactInfo = bio['contact_info'] as Map<String, dynamic>? ?? {};
     final location = bio['location'] as Map<String, dynamic>? ?? {};
-
+ 
+  
     return UserProfile(
       isMe: json['is_me'] as bool? ?? false,
       firstName: bio['first_name'] as String? ?? 'N/A',
@@ -40,15 +51,19 @@ class UserProfile {
       headline: bio['headline'] as String? ?? 'No Headline',
       countryRegion: location['country_region'] as String?,
       city: location['city'] as String?,
-      experience: List<String>.from(bio['experience'] as List? ?? []),
-      education: List<String>.from(bio['education'] as List? ?? []),
       profilePhotoUrl: json['profile_photo'] as String? ?? '',
+      website: contactInfo['website'] as String? ?? bio['website'] as String?,     
       coverPhotoUrl: json['cover_photo'] as String? ?? '',
       numberOfConnections: json['number_of_connections'] as int? ?? 0,
+       isInConnections: json['isInConnections'] as bool? ?? false,
+      isInReceivedConnections: json['isInReceivedConnections'] as bool? ?? false,
+      isInSentConnections: json['isInSentConnections'] as bool? ?? false,
+      isAlreadyFollowing: json['isAlreadyFollowing'] as bool? ?? false,
+      allowMessaging: json['allowMessaging'] as bool? ?? false, 
     );
   }
 
-  Map<String, dynamic> toJson() {
+ Map<String, dynamic> toJson() {
     return {
       'is_me': isMe,
       'bio': {
@@ -59,14 +74,14 @@ class UserProfile {
           'country_region': countryRegion,
           'city': city,
         },
-        'experience': experience,
-        'education': education,
+         'website': website,
       },
       'profile_photo': profilePhotoUrl,
       'cover_photo': coverPhotoUrl,
       'number_of_connections': numberOfConnections,
     };
   }
+
 
   factory UserProfile.initial() {
     return const UserProfile(
@@ -76,11 +91,95 @@ class UserProfile {
       headline: '',
       countryRegion: null,
       city: null,
-      experience: [],
-      education: [],
+      website: null,
       profilePhotoUrl: '',
       coverPhotoUrl: '',
       numberOfConnections: 0,
+      isInConnections: false,
+      isInReceivedConnections: false,
+      isInSentConnections: false,
+      isAlreadyFollowing: false,
+      allowMessaging: false,
     );
   }
+  UserProfile copyWith({
+      bool? isMe,
+      String? firstName,
+      String? lastName,
+      String? headline,
+      String? countryRegion,
+      String? city,
+      String? website,
+      String? profilePhotoUrl,
+      String? coverPhotoUrl,
+      int? numberOfConnections,
+
+      bool? isInConnections,
+      bool? isInReceivedConnections,
+      bool? isInSentConnections,  
+      bool? isAlreadyFollowing,
+      bool? allowMessaging,
+
+   }) {
+      return UserProfile(
+ 
+        isMe: isMe ?? this.isMe,
+        firstName: firstName ?? this.firstName,
+        lastName: lastName ?? this.lastName,
+        headline: headline ?? this.headline,
+        countryRegion: countryRegion == const Object() ? this.countryRegion : countryRegion as String?, 
+        city: city == const Object() ? this.city : city as String?,
+        website: website == const Object() ? this.website : website as String?,
+        profilePhotoUrl: profilePhotoUrl ?? this.profilePhotoUrl,
+        coverPhotoUrl: coverPhotoUrl ?? this.coverPhotoUrl,
+        numberOfConnections: numberOfConnections ?? this.numberOfConnections,
+        isInConnections: isInConnections ?? this.isInConnections,
+        isInReceivedConnections: isInReceivedConnections ?? this.isInReceivedConnections,
+        isInSentConnections: isInSentConnections ?? this.isInSentConnections,
+        isAlreadyFollowing: isAlreadyFollowing ?? this.isAlreadyFollowing,
+        allowMessaging: allowMessaging ?? this.allowMessaging,
+
+      );
+   }
+    @override
+   bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UserProfile &&
+          runtimeType == other.runtimeType &&
+          isMe == other.isMe &&
+          firstName == other.firstName &&
+          lastName == other.lastName &&
+          headline == other.headline &&
+          countryRegion == other.countryRegion &&
+          city == other.city &&
+          website == other.website &&
+          profilePhotoUrl == other.profilePhotoUrl &&
+          coverPhotoUrl == other.coverPhotoUrl &&
+          numberOfConnections == other.numberOfConnections &&
+          isInReceivedConnections == other.isInReceivedConnections &&
+          isInSentConnections == other.isInSentConnections &&
+          isAlreadyFollowing == other.isAlreadyFollowing &&
+          allowMessaging == other.allowMessaging &&
+          isInConnections == other.isInConnections;
+          
+
+   @override
+   int get hashCode =>
+       isMe.hashCode ^
+       firstName.hashCode ^
+        lastName.hashCode ^
+        headline.hashCode ^
+        countryRegion.hashCode ^
+        city.hashCode ^
+        website.hashCode ^
+        profilePhotoUrl.hashCode ^
+        coverPhotoUrl.hashCode ^
+        numberOfConnections.hashCode ^
+        isInReceivedConnections.hashCode ^
+        isInSentConnections.hashCode ^
+        isAlreadyFollowing.hashCode ^
+        allowMessaging.hashCode ^
+        isInConnections.hashCode; 
+
+        
 }

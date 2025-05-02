@@ -1,3 +1,5 @@
+// profile/widgets/subpages_app_bar.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/shared/themes/colors.dart';
@@ -33,14 +35,22 @@ class SubPagesAppBar extends StatelessWidget {
             ),
             onPressed: onClosePressed,
           ),
-          Text(
-            title,
-            style: TextStyles.font18_700Weight.copyWith(
-              color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+          // --- Wrap the Text with Flexible ---
+          Flexible( // Or Expanded
+            child: Text(
+              title,
+              style: TextStyles.font18_700Weight.copyWith(
+                color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+              ),
+              textAlign: TextAlign.center, // Center the text if it shrinks
+              overflow: TextOverflow.ellipsis, // Handle overflow if needed
+              maxLines: 1, // Ensure it stays on one line if possible
             ),
           ),
+          // --- End of change ---
           if (action != null) action!,
-          if (action == null) SizedBox(width: 40.w), // Placeholder for spacing
+          // Adjust placeholder if needed, ensure it doesn't take up too much rigid space
+          if (action == null) SizedBox(width: 48.w), // Match IconButton default width roughly
         ],
       ),
     );
