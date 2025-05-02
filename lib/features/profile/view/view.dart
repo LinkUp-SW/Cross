@@ -355,7 +355,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                    SizedBox(
                                      width: double.infinity,
                                      child: TextButton(
-                                       onPressed: () { /* TODO: Implement Show All Skills */ },
+                                       onPressed: () { GoRouter.of(context).push('/skills_list_page'); },
                                        style: TextButton.styleFrom(
                                            padding: EdgeInsets.symmetric(vertical: 8.h),
                                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,

@@ -47,6 +47,7 @@ import 'package:link_up/features/profile/view/add_resume.dart';
 import 'package:link_up/features/profile/view/resume_viewer.dart';
 import 'package:link_up/features/profile/view/add_new_license.dart';
 import 'package:link_up/features/profile/view/add_new_skill.dart';
+import 'package:link_up/features/profile/view/skills_list_page.dart';
 
 
 
@@ -121,6 +122,10 @@ final goRouterProvider = Provider<GoRouter>(
         GoRoute(
           path: "/add_profile_section",
           builder: (context, state) => const AddSectionPage(),
+         ),
+          GoRoute(
+          path: "/skills_list_page",
+          builder: (context, state) => const SkillListPage(),
          ),
           GoRoute(
           path: "/add_new_skill",
