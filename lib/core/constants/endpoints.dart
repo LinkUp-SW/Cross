@@ -32,6 +32,15 @@ class ExternalEndPoints {
   static const connect = 'api/v1/user/connect/:user_id';
   static const peopleYouMayKnow = 'api/v1/user/people-you-may-know';
   static const peopleSearch = 'api/v1/search/users';
+
+  static const getUserEducation = 'api/v1/user/profile/education/:user_id';
+  static const getUserExperience = 'api/v1/user/profile/experience/:user_id';
+  static const userProfileAbout = 'api/v1/user/profile/about/:user_id';
+  static const getUserLicenses = 'api/v1/user/profile/licenses/:user_id';
+  static const addLicense = 'api/v1/user/add-license';
+  static const updateLicense = 'api/v1/user/update-license/:licenseId';
+  static const deleteLicense = 'api/v1/user/delete-license/:licenseId';
+
   static const currentPlan = 'api/v1/user/subscription/status';
   static const subscriptionPaymentSession = 'api/v1/user/subscription/checkout';
   static const cancelPremiumSubscription = 'api/v1/user/subscription/cancel';

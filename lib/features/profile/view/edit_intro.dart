@@ -108,7 +108,7 @@ class _EditIntroPageState extends ConsumerState<EditIntroPage> {
     EditIntroModel? formData;
     bool isLoading = false;
     bool isSaving = false;
-
+    String? errorText;
     if (state is EditIntroLoading || state is EditIntroInitial) {
       isLoading = true;
     } else if (state is EditIntroDataState) {
@@ -124,11 +124,18 @@ class _EditIntroPageState extends ConsumerState<EditIntroPage> {
       });
     } else if (state is EditIntroError) {
       formData = state.previousFormData;
+      errorText = state.message;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) _syncPickerControllers();
       });
     }
-
+     String? getErrorForField(String fieldName) {
+        if (errorText == null) return null;
+        if (errorText!.toLowerCase().contains(fieldName.toLowerCase())) {
+           return errorText;
+        }
+        return null; 
+     }
     ref.listen<EditIntroState>(editIntroViewModelProvider, (previous, next) {
       if (next is EditIntroSuccess) {
         if (previous is! EditIntroSuccess) {
@@ -194,27 +201,84 @@ class _EditIntroPageState extends ConsumerState<EditIntroPage> {
                                 SizedBox(height: 10.h),
                                 SubPagesFormLabel(label: "First Name", isRequired: true),
                                 SizedBox(height: 2.h),
-                                SubPagesCustomTextField(
+                                TextFormField(
                                   controller: viewModel.firstNameController,
                                   enabled: !isSaving,
-                                  hintText: "Enter your first name",
+                                  style: TextStyles.font14_400Weight.copyWith(
+                                      color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+                                   ),
+                                  decoration: InputDecoration(
+                                     hintText: "Enter your first name",
+                                     // Borders moved inside InputDecoration
+                                     border: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.lightGrey)),
+                                     enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.lightGrey)),
+                                     focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.lightBlue)),
+                                     errorText: getErrorForField("First Name"),
+                                     errorStyle: TextStyle(color: Colors.red.shade700, fontSize: 12.sp),
+                                      hintStyle: TextStyles.font14_400Weight.copyWith(
+                                        color: AppColors.lightGrey,
+                                      ),
+                                  ),
                                 ),
                                 SizedBox(height: 20.h),
                                 SubPagesFormLabel(label: "Last Name", isRequired: true),
                                 SizedBox(height: 2.h),
-                                SubPagesCustomTextField(
+                                TextFormField(
                                   controller: viewModel.lastNameController,
                                   enabled: !isSaving,
-                                  hintText: "Enter your last name",
+                                  style: TextStyles.font14_400Weight.copyWith(
+                                      color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+                                   ),
+                                  decoration: InputDecoration(
+                                    hintText: "Enter your last name",
+                                    border: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.lightGrey)),
+                                    enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.lightGrey)),
+                                    focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.lightBlue)),
+                                    errorText: getErrorForField("Last Name"),
+                                    errorStyle: TextStyle(color: Colors.red.shade700, fontSize: 12.sp),
+                                     hintStyle: TextStyles.font14_400Weight.copyWith(
+                                        color: AppColors.lightGrey,
+                                      ),
+                                  ),
                                 ),
                                 SizedBox(height: 20.h),
                                 SubPagesFormLabel(label: "Headline", isRequired: true),
                                 SizedBox(height: 2.h),
-                                SubPagesCustomTextField(
+                                TextFormField(
                                   controller: viewModel.headlineController,
                                   enabled: !isSaving,
-                                  hintText: "Your professional headline",
                                   maxLines: null,
+                                  maxLength: 220,
+                                   style: TextStyles.font14_400Weight.copyWith(
+                                      color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+                                   ),
+                                  decoration: InputDecoration(
+                                    hintText: "Your professional headline",
+                                    border: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.lightGrey)),
+                                    enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.lightGrey)),
+                                    focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.lightBlue)),
+                                    errorText: getErrorForField("Headline"),
+                                    errorStyle: TextStyle(color: Colors.red.shade700, fontSize: 12.sp),
+                                    counterText: "",
+                                     hintStyle: TextStyles.font14_400Weight.copyWith(
+                                        color: AppColors.lightGrey,
+                                      ),
+                                  ),
+                                  onChanged: (_) => setState(() {}),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(top: 4.h, right: 4.w),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        "${viewModel.headlineController.text.length} / 220",
+                                        style: TextStyles.font12_400Weight.copyWith(
+                                          color: AppColors.lightGrey,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                                 SizedBox(height: 20.h),
                                 GestureDetector(
@@ -230,18 +294,18 @@ class _EditIntroPageState extends ConsumerState<EditIntroPage> {
                                   value: formData.selectedEducationId,
                                   hintText: "Select your highest/current education",
                                   items: [
-                                    const DropdownMenuItem<String>(value: null, child: Text("None")),
-                                    ...formData.availableEducations.map((edu) {
-                                      final String? educationId = edu.id;
-                                      if (educationId == null) {
-                                        log("Warning: Education item found without an ID: ${edu.institution}");
-                                        return null;
-                                      }
+                                  const DropdownMenuItem<String>(
+                                  value: null, 
+                                  child: Text("None"),
+                                ),
+                                  ...formData.availableEducations
+                                    .where((edu) => edu.id != null) 
+                                    .map((edu) {
                                       return DropdownMenuItem<String>(
-                                        value: educationId,
+                                        value: edu.id!,
                                         child: Text(edu.institution, overflow: TextOverflow.ellipsis),
                                       );
-                                    }).whereType<DropdownMenuItem<String>>().toList(),
+                                    }).toList(),
                                   ],
                                   onChanged: isSaving ? null : (value) => viewModel.setSelectedEducation(value),
                                 ),
@@ -295,11 +359,26 @@ class _EditIntroPageState extends ConsumerState<EditIntroPage> {
                                 SizedBox(height: 10.h),
                                 SubPagesFormLabel(label: "Personal or Company Website"),
                                 SizedBox(height: 2.h),
-                                SubPagesCustomTextField(
-                                  controller: viewModel.websiteController,
-                                  enabled: !isSaving,
-                                  hintText: "e.g., https://www.yourwebsite.com",
-                                ),
+                                TextFormField(
+                                   controller: viewModel.websiteController,
+                                   enabled: !isSaving,
+                                    keyboardType: TextInputType.url,
+                                    style: TextStyles.font14_400Weight.copyWith(
+                                       color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+                                    ),
+                                   decoration: InputDecoration(
+                                     hintText: "e.g., https://www.yourwebsite.com",
+                                      // Borders moved inside InputDecoration
+                                      border: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.lightGrey)),
+                                      enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.lightGrey)),
+                                      focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.lightBlue)),
+                                     errorText: getErrorForField("Website") ?? getErrorForField("URL"),
+                                      errorStyle: TextStyle(color: Colors.red.shade700, fontSize: 12.sp),
+                                       hintStyle: TextStyles.font14_400Weight.copyWith(
+                                          color: AppColors.lightGrey,
+                                        ),
+                                   ),
+                                 ),
                                 SizedBox(height: 20.h),
                                 SubPagesSectionHeader(title: "Contact info"),
                                 Container(

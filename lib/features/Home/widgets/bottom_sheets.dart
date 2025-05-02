@@ -1,8 +1,11 @@
+import 'dart:convert';
+import 'dart:developer';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:link_up/core/services/base_service.dart';
 import 'package:link_up/core/utils/global_keys.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
 import 'package:link_up/features/Home/post_functions.dart';
@@ -14,7 +17,7 @@ import 'package:link_up/shared/widgets/custom_snackbar.dart';
 import 'package:share_plus/share_plus.dart';
 
 aboutPostBottomSheet(BuildContext context,
-    {bool isAd = false, required PostModel post}) {
+    {bool isAd = false, required PostModel post, bool isAcitvity = false}) {
   showModalBottomSheet(
     context: context,
     useRootNavigator: true,
@@ -67,12 +70,15 @@ aboutPostBottomSheet(BuildContext context,
                     onTap: () {
                       //TODO: unfollow user
                       //Needs to be changed to top id and name
-                      unfollowUser(post.header.userId);
+                      isAcitvity
+                          ? unfollowUser(post.activity.actorUserName)
+                          : unfollowUser(post.header.userId);
                     },
                     leading: Transform.rotate(
                         angle: math.pi / 4,
                         child: const Icon(Icons.control_point_sharp)),
-                    title: Text("Unfollow ${post.header.name}"),
+                    title: Text(
+                        "Unfollow ${isAcitvity ? post.activity.actorName : post.header.name}"),
                   ),
             if (!isAd)
               ListTile(
@@ -260,87 +266,153 @@ myPostBottomSheet(BuildContext context, WidgetRef ref,
 }
 
 shareBottomSheet(BuildContext context) {
+  List<dynamic> users = [];
+  Future<void> getUsers(String query) async {
+    final BaseService baseService = BaseService();
+    await baseService
+        .get('api/v1/search/users?query=$query&limit=25&page=1')
+        .then((value) {
+      if (value.statusCode == 200) {
+        final body = jsonDecode(value.body);
+        //log('Fetched users: $body');
+        users.clear();
+        users = body['people'];
+      } else {
+        log('Failed to fetch users');
+      }
+    }).catchError((error) {
+      log('Error fetching users: $error');
+    });
+  }
+
   showModalBottomSheet(
     context: context,
     useRootNavigator: true,
-    builder: (context) => CustomModalBottomSheet(
-      content: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          const Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              "Send as message",
-              style: TextStyle(fontSize: 20),
-            ),
-          ),
-          SizedBox(height: 15.h),
-          TextField(
-            decoration: InputDecoration(
-              hintText: "Search",
-              border:
-                  OutlineInputBorder(borderRadius: BorderRadius.circular(60.r)),
-            ),
-          ),
-          SizedBox(height: 10.h),
-          SizedBox(
-            height: 80.h,
-            child: ListView.separated(
-                separatorBuilder: (context, index) => SizedBox(
-                      width: 10.w,
-                    ),
-                shrinkWrap: true,
-                scrollDirection: Axis.horizontal,
-                itemCount: 10,
-                itemBuilder: (context, index) {
-                  return SizedBox(
-                    width: 60.w,
-                    child: Column(
-                      children: [
-                        CircleAvatar(
-                          radius: 25.r,
-                          backgroundImage: const NetworkImage(
-                              'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg'),
-                        ),
-                        const Text("Name this is sparta 2",
-                            textAlign: TextAlign.center),
-                      ],
-                    ),
-                  );
-                }),
-          ),
-          const Divider(
-            thickness: 0,
-            color: AppColors.grey,
-          ),
-          SizedBox(
-            height: 80.h,
-            child: ListView.separated(
-                separatorBuilder: (context, index) => SizedBox(
-                      width: 10.w,
-                    ),
-                shrinkWrap: true,
-                scrollDirection: Axis.horizontal,
-                itemCount: 10,
-                itemBuilder: (context, index) {
-                  return SizedBox(
-                    width: 60.w,
-                    child: Column(
-                      children: [
-                        CircleAvatar(
-                          radius: 25.r,
-                          backgroundImage: const NetworkImage(
-                              'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg'),
-                        ),
-                        const Text("Name this is sparta 2",
-                            textAlign: TextAlign.center),
-                      ],
-                    ),
-                  );
-                }),
-          ),
-        ],
-      ),
+    isScrollControlled: true,
+    constraints: BoxConstraints(
+      maxHeight: MediaQuery.of(context).size.height *
+          0.8, // Limit height to 80% of screen
     ),
+    builder: (context) =>
+        StatefulBuilder(builder: (context, StateSetter setState) {
+      if (users.isEmpty) {
+        getUsers(' ').then((value) {
+          if (context.mounted) {
+            setState(() {});
+          }
+        });
+      }
+      return Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context)
+              .viewInsets
+              .bottom, // This is the key line that makes it move up with keyboard
+        ),
+        child: CustomModalBottomSheet(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Send as message",
+                  style: TextStyle(fontSize: 20),
+                ),
+              ),
+              SizedBox(height: 15.h),
+              TextField(
+                onChanged: (value) async {
+                  {
+                    await getUsers(value);
+                    if (context.mounted) {
+                      setState(() {});
+                    }
+                  }
+                },
+                decoration: InputDecoration(
+                  hintText: "Search",
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(60.r)),
+                  focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(60.r),
+                      borderSide: BorderSide(
+                          color:
+                              Theme.of(context).textTheme.bodyLarge!.color!)),
+                ),
+              ),
+              SizedBox(height: 20.h),
+              SizedBox(
+                height: 70.h,
+                child: ListView.separated(
+                    separatorBuilder: (context, index) => SizedBox(
+                          width: 10.w,
+                        ),
+                    shrinkWrap: true,
+                    scrollDirection: Axis.horizontal,
+                    itemCount: users.length,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onTap: () {
+                          //TODO: navigate to user messages page and send the message
+                        },
+                        child: SizedBox(
+                          width: 60.w,
+                          child: Column(
+                            children: [
+                              CircleAvatar(
+                                radius: 20.r,
+                                backgroundImage:
+                                    NetworkImage(users[index]['profile_photo']),
+                              ),
+                              Text(users[index]['name'],
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 10.sp,
+                                  )),
+                            ],
+                          ),
+                        ),
+                      );
+                    }),
+              ),
+              const Divider(
+                thickness: 0,
+                color: AppColors.grey,
+              ),
+              SizedBox(
+                height: 70.h,
+                child: ListView.separated(
+                    separatorBuilder: (context, index) => SizedBox(
+                          width: 10.w,
+                        ),
+                    shrinkWrap: true,
+                    scrollDirection: Axis.horizontal,
+                    itemCount: 10,
+                    itemBuilder: (context, index) {
+                      return SizedBox(
+                        width: 60.w,
+                        child: Column(
+                          children: [
+                            CircleAvatar(
+                              radius: 20.r,
+                              backgroundImage: const NetworkImage(
+                                  'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg'),
+                            ),
+                            Text("Name this is sparta 2",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 10.sp,
+                                )),
+                          ],
+                        ),
+                      );
+                    }),
+              ),
+            ],
+          ),
+        ),
+      );
+    }),
   );
 }

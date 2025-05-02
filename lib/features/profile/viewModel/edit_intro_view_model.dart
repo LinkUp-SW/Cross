@@ -34,6 +34,50 @@ class EditIntroViewModel extends StateNotifier<EditIntroState> {
     websiteController.addListener(() => _updateFormData((current) => current.copyWith(website: websiteController.text)));
   }
 
+  String? _validateName(String? value, String fieldName) {
+    if (value == null || value.trim().isEmpty) {
+      return "$fieldName is required.";
+    }
+    if (value.length > 50) {
+      return "$fieldName cannot exceed 50 characters.";
+    }
+    final nameRegExp = RegExp(r"^[a-zA-Z\s]+$");
+    if (!nameRegExp.hasMatch(value)) {
+      return "$fieldName can only contain letters and spaces.";
+    }
+    return null;
+  }
+
+  String? _validateHeadline(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return "Headline is required.";
+    }
+     if (value.length > 220) {
+       return "Headline cannot exceed 220 characters."; 
+     }
+    final headlineRegExp = RegExp(r"""^[a-zA-Z0-9\s.,!?'\"()\-]+$""");
+
+    if (!headlineRegExp.hasMatch(value)) {
+      return "Headline contains invalid characters.";
+    }
+    return null;
+      }
+
+  String? _validateWebsite(String? value) {
+      if (value == null || value.trim().isEmpty) {
+        return null; 
+      }
+      
+      final urlRegExp = RegExp(
+        r"^(https?:\/\/)?(www\.)?([\w-]+\.)+[\w-]+(\/[\w-.\/?%&=]*)?$",
+        caseSensitive: false, 
+      );
+
+      if (!urlRegExp.hasMatch(value.trim())) {
+        return "Please enter a valid URL (e.g., www.example.com or https://example.com).";
+      }
+      return null;
+    }
   Future<void> _fetchInitialData() async {
     if (_userId.isEmpty) {
       state = const EditIntroError("User not logged in.");
@@ -44,12 +88,10 @@ class EditIntroViewModel extends StateNotifier<EditIntroState> {
     try {
       final fullProfileJson = await _profileService.fetchFullUserProfileJson(_userId);
       _originalBioData = Map<String, dynamic>.from(fullProfileJson['bio'] ?? {});
-      final bio = _originalBioData;
-      final List<dynamic> educationJsonList = bio['education'] as List? ?? [];
-      final List<EducationModel> educations = educationJsonList
-          .map((eduJson) => eduJson is Map<String, dynamic> ? EducationModel.fromJson(eduJson) : null)
-          .whereType<EducationModel>()
-          .toList();
+      final bio = _originalBioData; 
+
+      final List<EducationModel> educations = await _profileService.getUserEducation(_userId);
+
       final location = bio['location'] as Map<String, dynamic>? ?? {};
 
       firstNameController.text = bio['first_name'] as String? ?? '';
@@ -65,8 +107,8 @@ class EditIntroViewModel extends StateNotifier<EditIntroState> {
         headline: headlineController.text,
         countryRegion: countryController.text,
         city: cityController.text,
-        availableEducations: educations,
-        selectedEducationId: null,
+        availableEducations: educations, 
+        selectedEducationId: null, 
         showEducationInIntro: false,
         website: websiteController.text,
       );
@@ -161,22 +203,35 @@ class EditIntroViewModel extends StateNotifier<EditIntroState> {
        return;
      }
 
-    if (currentFormData.firstName.trim().isEmpty) {
-      state = EditIntroError("First name is required.", previousFormData: currentFormData, originalBioData: originalDataForSave);
+    final firstNameError = _validateName(currentFormData.firstName, "First Name");
+    if (firstNameError != null) {
+      state = EditIntroError(firstNameError, previousFormData: currentFormData, originalBioData: originalDataForSave);
       return;
     }
-    if (currentFormData.lastName.trim().isEmpty) {
-       state = EditIntroError("Last name is required.", previousFormData: currentFormData, originalBioData: originalDataForSave);
-       return;
+
+    final lastNameError = _validateName(currentFormData.lastName, "Last Name");
+    if (lastNameError != null) {
+      state = EditIntroError(lastNameError, previousFormData: currentFormData, originalBioData: originalDataForSave);
+      return;
     }
-     if (currentFormData.headline.trim().isEmpty) {
-       state = EditIntroError("Headline is required.", previousFormData: currentFormData, originalBioData: originalDataForSave);
+
+     final headlineError = _validateHeadline(currentFormData.headline);
+     if (headlineError != null) {
+       state = EditIntroError(headlineError, previousFormData: currentFormData, originalBioData: originalDataForSave);
        return;
      }
-      if (currentFormData.countryRegion == null || currentFormData.countryRegion!.trim().isEmpty) {
-        state = EditIntroError("Country/Region is required.", previousFormData: currentFormData, originalBioData: originalDataForSave);
-        return;
-      }
+
+    if (currentFormData.countryRegion == null || currentFormData.countryRegion!.trim().isEmpty) {
+      state = EditIntroError("Country/Region is required.", previousFormData: currentFormData, originalBioData: originalDataForSave);
+      return;
+    }
+
+    final websiteError = _validateWebsite(currentFormData.website);
+     if (websiteError != null) {
+       state = EditIntroError(websiteError, previousFormData: currentFormData, originalBioData: originalDataForSave);
+       return;
+     }
+
 
     state = EditIntroSaving(formData: currentFormData, originalBioData: originalDataForSave);
 

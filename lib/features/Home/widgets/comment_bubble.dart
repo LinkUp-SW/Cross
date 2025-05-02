@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,6 +9,7 @@ import 'package:link_up/features/Home/home_enums.dart';
 import 'package:link_up/features/Home/model/comment_model.dart';
 import 'package:link_up/features/Home/post_functions.dart';
 import 'package:link_up/features/Home/viewModel/comment_vm.dart';
+import 'package:link_up/features/Home/viewModel/reactions_vm.dart';
 import 'package:link_up/features/Home/viewModel/write_comment_vm.dart';
 import 'package:link_up/features/Home/widgets/reactions.dart';
 import 'package:link_up/features/Post/widgets/formatted_richtext.dart';
@@ -21,6 +24,7 @@ class CommentBubble extends ConsumerStatefulWidget {
     required this.comment,
     this.allRelies = false,
     required this.refresh,
+    this.focusNode,
   });
 
   final CommentModel comment;
@@ -28,6 +32,7 @@ class CommentBubble extends ConsumerStatefulWidget {
   final bool isReply;
   final bool allRelies;
   final Function refresh;
+  final FocusNode? focusNode;
 
   @override
   ConsumerState<CommentBubble> createState() => _CommentBubbleState();
@@ -42,9 +47,17 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
       children: [
         Flexible(
           flex: 1,
-          child: CircleAvatar(
-            radius: 20.r,
-            backgroundImage: NetworkImage(widget.comment.header.profileImage),
+          child: GestureDetector(
+            onTap: () {
+              //TODO: navigate to user profile page
+              log('userprofile: ${widget.comment.header.userId}');
+            },
+            child: CircleAvatar(
+              radius: 15.r,
+              backgroundImage: NetworkImage(
+                widget.comment.header.profileImage,
+              ),
+            ),
           ),
         ),
         SizedBox(
@@ -93,11 +106,12 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                                       ],
                                     ),
                                   ),
-                                  Text(
-                                    widget.comment.header.about,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(fontSize: 10.r),
-                                  ),
+                                  if (widget.comment.header.about != '')
+                                    Text(
+                                      widget.comment.header.about,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(fontSize: 10.r),
+                                    ),
                                 ],
                               ),
                             ),
@@ -133,6 +147,9 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                                                                       widget
                                                                           .comment,
                                                                       true);
+                                                              widget
+                                                                  .focusNode
+                                                                  ?.requestFocus();
                                                               context.pop();
                                                             }),
                                                         ListTile(
@@ -147,7 +164,8 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                                                                   builder:
                                                                       (context) {
                                                                     return AlertDialog(
-                                                                      backgroundColor: Theme.of(context)
+                                                                      backgroundColor: Theme.of(
+                                                                              context)
                                                                           .colorScheme
                                                                           .primary,
                                                                       title: const Text(
@@ -167,10 +185,9 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                                                                         TextButton(
                                                                           onPressed:
                                                                               () {
-                                                                            ref.read(commentProvider.notifier).deleteComment(widget.comment.postId,
-                                                                                widget.comment.id).then((_){
-                                                                                  widget.refresh();
-                                                                                });
+                                                                            ref.read(commentProvider.notifier).deleteComment(widget.comment.postId, widget.comment.id).then((_) {
+                                                                              widget.refresh();
+                                                                            });
                                                                             context.pop();
                                                                             context.pop();
                                                                           },
@@ -249,40 +266,65 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                     reaction: widget.comment.reaction,
                     setReaction: (reaction) {
                       setState(() {
-                      Reaction oldReaction = widget.comment.reaction;
-                      if (reaction == Reaction.none) {
-                        widget.comment.reaction = Reaction.none;
-                        removeReaction(widget.comment.postId, "Comment",commentId: widget.comment.id).then((value) {
-                          if (value != -1) {
-                            widget.comment.likes = value;
-                          } else {
-                            widget.comment.reaction = oldReaction;
-                          }
-                          setState(() {});
-                        });
-                      } else {
-                        widget.comment.reaction = reaction;
-                        setReaction(widget.comment.postId, reaction, "Comment",commentId: widget.comment.id)
-                            .then((value) {
-                          if (value != -1) {
-                            widget.comment.likes = value;
-                          } else {
-                            widget.comment.reaction = oldReaction;
-                          }
-                          setState(() {});
-                        });
-                      }
-                    });
+                        Reaction oldReaction = widget.comment.reaction;
+                        if (reaction == Reaction.none) {
+                          widget.comment.reaction = Reaction.none;
+                          removeReaction(widget.comment.postId, "Comment",
+                                  commentId: widget.comment.id)
+                              .then((value) {
+                            if (value.isNotEmpty) {
+                              widget.comment.likes = value['reactions_count'];
+                            } else {
+                              widget.comment.reaction = oldReaction;
+                            }
+                            setState(() {});
+                          });
+                        } else {
+                          widget.comment.reaction = reaction;
+                          setReaction(
+                                  widget.comment.postId, reaction, "Comment",
+                                  commentId: widget.comment.id)
+                              .then((value) {
+                            if (value.isNotEmpty) {
+                              widget.comment.likes = value['reactions_count'];
+                            } else {
+                              widget.comment.reaction = oldReaction;
+                            }
+                            setState(() {});
+                          });
+                        }
+                      });
                     },
-                    child: Text(Reaction.getReactionString(widget.comment.reaction),
+                    child: Text(
+                        Reaction.getReactionString(widget.comment.reaction),
                         style: TextStyle(
                             color: widget.comment.reaction == Reaction.none
                                 ? AppColors.grey
                                 : Reaction.getColor(widget.comment.reaction))),
                   ),
                   if (widget.comment.likes > 0)
-                    Text("  •  ${widget.comment.likes} likes",
-                        style: const TextStyle(color: AppColors.grey)),
+                    GestureDetector(
+                      onTap: () {
+                        ref.read(reactionsProvider.notifier).setComment(
+                            widget.comment.id, widget.comment.postId);
+                        context.push("/reactions");
+                      },
+                      child: Wrap(
+                        children: [
+                          Text(" • ${widget.comment.likes}  ",
+                              style: const TextStyle(color: AppColors.grey)),
+                          for (var i = 0;
+                              i < widget.comment.topReactions.length;
+                              i++) ...[
+                            Align(
+                              widthFactor: 0.7,
+                              child: Reaction.getIcon(
+                                  widget.comment.topReactions[i], 15.r),
+                            )
+                          ],
+                        ],
+                      ),
+                    ),
                   if (!widget.isReply) ...[
                     const Text("  |  ",
                         style: TextStyle(color: AppColors.grey)),
@@ -318,7 +360,7 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
               ),
               if (!widget.isReply) ...[
                 if (!widget.allRelies) ...[
-                  if (widget.comment.repliesList.length > 1)
+                  if (widget.comment.replies > 1)
                     TextButton(
                         onPressed: () {
                           ref
@@ -334,6 +376,7 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                       refresh: widget.refresh,
                       isReply: true,
                       comment: widget.comment.repliesList[0],
+                      focusNode: widget.focusNode,
                     ),
                 ],
                 if (widget.allRelies)
@@ -346,6 +389,7 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                             refresh: widget.refresh,
                             isReply: true,
                             comment: widget.comment.repliesList[index],
+                            focusNode: widget.focusNode,
                           ),
                           SizedBox(
                             height: 10.h,

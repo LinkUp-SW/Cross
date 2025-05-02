@@ -130,7 +130,10 @@ class _EditContactInfoState extends ConsumerState<EditContactInfo> {
     final buttonStyles = LinkUpButtonStyles();
     final state = ref.watch(contactInfoViewModelProvider);
     final viewModel = ref.read(contactInfoViewModelProvider.notifier);
-
+    String? errorText;
+     if (state is EditContactInfoError) {
+        errorText = state.message;
+     }
      ref.listen<EditContactInfoState>(contactInfoViewModelProvider, (previous, next) {
         if (previous is! EditContactInfoError && next is EditContactInfoError) {
            WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -186,6 +189,15 @@ class _EditContactInfoState extends ConsumerState<EditContactInfo> {
     bool isLoading = state is EditContactInfoLoading;
     bool isSaving = state is EditContactInfoSaving;
 
+
+     String? getErrorForField(String fieldName) {
+        if (errorText == null) return null;
+        if (errorText!.toLowerCase().contains(fieldName.toLowerCase()) || errorText!.toLowerCase().contains('url')) {
+           return errorText;
+        }
+        return null;
+     }
+ 
     String initialPhoneNumber = '';
     if (state is EditContactInfoLoaded) {
         initialPhoneNumber = state.contactInfo.phoneNumber ?? '';
@@ -345,11 +357,22 @@ class _EditContactInfoState extends ConsumerState<EditContactInfo> {
 
                             SubPagesFormLabel(label: "Website"),
                             SizedBox(height: 2.h),
-                            SubPagesCustomTextField(
-                              controller: websiteController,
-                              focusNode: _websiteFocusNode,
-                              enabled: !isSaving,
-                            ),
+                                 TextFormField( // Changed to TextFormField
+                               controller: websiteController,
+                               focusNode: _websiteFocusNode,
+                               enabled: !isSaving,
+                               keyboardType: TextInputType.url,
+                               decoration: InputDecoration(
+                                   border: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.lightGrey)),
+                                   enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.lightGrey)),
+                                   focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.lightBlue)),
+                                  errorText: getErrorForField("Website"), // Show validation error
+                                   errorStyle: TextStyle(color: Colors.red.shade700, fontSize: 12.sp),
+                               ),
+                                style: TextStyles.font14_400Weight.copyWith(
+                                   color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+                                ),
+                             ),
                             SizedBox(height: 20.h),
                           ],
                         ),

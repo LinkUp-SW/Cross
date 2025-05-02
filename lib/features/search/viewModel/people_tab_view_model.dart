@@ -36,7 +36,11 @@ class PeopleTabViewModel extends StateNotifier<PeopleTabState> {
       );
     } catch (error) {
       log('Error getting people search list: $error');
-      state = state.copyWith(isLoading: false, isError: true);
+      state = state.copyWith(
+        isLoading: false,
+        isError: true,
+        peopleCount: 0,
+      );
     }
   }
 

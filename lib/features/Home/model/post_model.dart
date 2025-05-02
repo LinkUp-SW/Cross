@@ -1,4 +1,5 @@
 import 'package:link_up/features/Home/home_enums.dart';
+import 'package:link_up/features/Home/model/activity_model.dart';
 import 'package:link_up/features/Home/model/header_model.dart';
 import 'package:link_up/features/Home/model/media_model.dart';
 
@@ -14,9 +15,13 @@ class PostModel {
   int reactions;
   int comments;
   int reposts;
+  String postType = 'Standard';
 
   Reaction reaction;
   List<String> taggedUsers = [];
+  List<dynamic> topReactions = [];
+
+  ActivityModel activity = ActivityModel.initial();
 
   bool saved;
 
@@ -37,16 +42,21 @@ class PostModel {
 
   PostModel.fromJson(Map<String, dynamic> json)
       : id = json['_id'],
+        activity = json['activity_context'] != null ? ActivityModel.fromJson(json['activity_context']): ActivityModel.initial(),
         header = HeaderModel.fromJson(json),
         text = json['content'],
-        media = Media.fromJson(json['media']),
-        reactions = json['reacts'].length,
-        comments = json['comments'].length,
-        reposts = json['reposts'] ?? 0,
-        reaction = Reaction.getReaction(json['reaction'] ?? 'none'),
+        media = Media.fromJson(json['media'],
+            ogPost: json['original_post']),
+        reactions =  json['reactions_count'] ?? 0,
+        comments =  json['comments_count'] ?? 0,
+        reposts = json['reposts_count'] ?? 0,
+        postType = json['post_type'] ?? 'Standard',
+        reaction = Reaction.getReaction(json['user_reaction'] ?? 'none'),
         isAd = json['isAd'] ?? false,
         isCompany = json['isCompany'] ?? false,
-        saved = json['saved'] ?? false,
+        saved = json['is_saved'] ?? false,
+        topReactions = List<Reaction>.from(
+            json['top_reactions']?.map((e) => Reaction.getReaction(e)) ?? []),
         taggedUsers = List<String>.from(json['tagged_users'] ?? []);
 
   Map<String, dynamic> toJson() => {

@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart' show immutable;
+import 'package:link_up/features/profile/model/education_model.dart';
 
 @immutable
 class UserProfile {
@@ -8,8 +9,7 @@ class UserProfile {
   final String headline;
   final String? countryRegion;
   final String? city;
-  final List<String> experience;
-  final List<String> education;
+  final String? website;
   final String profilePhotoUrl;
   final String coverPhotoUrl;
   final int numberOfConnections;
@@ -21,8 +21,7 @@ class UserProfile {
     required this.headline,
     this.countryRegion,
     this.city,
-    required this.experience,
-    required this.education,
+    this.website, 
     required this.profilePhotoUrl,
     required this.coverPhotoUrl,
     required this.numberOfConnections,
@@ -32,7 +31,8 @@ class UserProfile {
     final bio = json['bio'] as Map<String, dynamic>? ?? {};
     final contactInfo = bio['contact_info'] as Map<String, dynamic>? ?? {};
     final location = bio['location'] as Map<String, dynamic>? ?? {};
-
+ 
+  
     return UserProfile(
       isMe: json['is_me'] as bool? ?? false,
       firstName: bio['first_name'] as String? ?? 'N/A',
@@ -40,15 +40,14 @@ class UserProfile {
       headline: bio['headline'] as String? ?? 'No Headline',
       countryRegion: location['country_region'] as String?,
       city: location['city'] as String?,
-      experience: List<String>.from(bio['experience'] as List? ?? []),
-      education: List<String>.from(bio['education'] as List? ?? []),
       profilePhotoUrl: json['profile_photo'] as String? ?? '',
+      website: contactInfo['website'] as String? ?? bio['website'] as String?,     
       coverPhotoUrl: json['cover_photo'] as String? ?? '',
       numberOfConnections: json['number_of_connections'] as int? ?? 0,
     );
   }
 
-  Map<String, dynamic> toJson() {
+ Map<String, dynamic> toJson() {
     return {
       'is_me': isMe,
       'bio': {
@@ -59,14 +58,14 @@ class UserProfile {
           'country_region': countryRegion,
           'city': city,
         },
-        'experience': experience,
-        'education': education,
+         'website': website,
       },
       'profile_photo': profilePhotoUrl,
       'cover_photo': coverPhotoUrl,
       'number_of_connections': numberOfConnections,
     };
   }
+
 
   factory UserProfile.initial() {
     return const UserProfile(
@@ -76,8 +75,7 @@ class UserProfile {
       headline: '',
       countryRegion: null,
       city: null,
-      experience: [],
-      education: [],
+      website: null,
       profilePhotoUrl: '',
       coverPhotoUrl: '',
       numberOfConnections: 0,

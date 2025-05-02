@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/Home/view/saved_posts.dart';
+import 'package:link_up/features/Home/view/user_posts_page.dart';
 import 'package:link_up/features/admin_panel/view/statistics_view.dart';
 import 'package:link_up/features/my-network/view/connections_screen.dart';
 import 'package:link_up/core/utils/global_keys.dart';
@@ -40,6 +41,11 @@ import 'package:link_up/shared/widgets/main_drawer.dart';
 import 'package:link_up/features/jobs/view/view.dart';
 import 'package:link_up/features/profile/view/search_school_page.dart';
 import 'package:link_up/features/profile/view/search_organization.dart';
+import 'package:link_up/features/profile/view/add_section.dart';
+import 'package:link_up/features/profile/view/edit_about.dart';
+import 'package:link_up/features/profile/view/add_resume.dart';
+import 'package:link_up/features/profile/view/resume_viewer.dart';
+import 'package:link_up/features/profile/view/add_new_license.dart';
 
 final goRouterProvider = Provider<GoRouter>(
   (ref) {
@@ -109,6 +115,30 @@ final goRouterProvider = Provider<GoRouter>(
           ),
         ),
         //Profile Page Routes
+        GoRoute(
+          path: "/add_profile_section",
+          builder: (context, state) => const AddSectionPage(),
+         ),
+         GoRoute( 
+           path: "/add_resume",
+           builder: (context, state) => const AddResumePage(),
+         ),
+         GoRoute( 
+           path: "/add_new_license",
+           builder: (context, state) => const AddNewLicensePage(),
+         ),         
+          GoRoute(
+            path: '/resume_viewer', 
+            builder: (context, state) {
+            final String? resumeUrl = state.extra as String?;
+            return ResumeViewerPage(url: resumeUrl); 
+      },
+    ),
+
+          GoRoute( 
+           path: "/edit_about",
+           builder: (context, state) => const EditAboutPage(),
+         ),
         GoRoute(
             path: "/search_school",
             pageBuilder: (context, state) {
@@ -268,6 +298,7 @@ final goRouterProvider = Provider<GoRouter>(
           path: '/savedPosts',
           builder: (context, state) => SavedPostsPage(),
         ),
+        GoRoute(path: '/userPosts', builder: (context, state) => UserPostsPage()),
         GoRoute(
             path: "/messages", builder: (context, state) => ChatListScreen()),
         GoRoute(path: "/chatpage", builder: (context, state) => Container()),
