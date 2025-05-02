@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:link_up/features/jobs/widgets/job_card_refactor.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
@@ -30,8 +30,8 @@ class JobCategoryCard extends ConsumerWidget {
           // Section Header
           Padding(
             padding: EdgeInsets.only(
-              left: 8.w,
-              top: 5.h,
+              left: 8,
+              top: 5,
             ),
             child: Text(
               'Explore with job collections',
@@ -46,9 +46,9 @@ class JobCategoryCard extends ConsumerWidget {
 
           Padding(
             padding: EdgeInsets.only(
-              left: 8.w,
-              top: 4.h,
-              bottom: 12.h,
+              left: 8,
+              top: 4,
+              bottom: 12,
             ),
             child: Text(
               description,
@@ -59,15 +59,15 @@ class JobCategoryCard extends ConsumerWidget {
           ),
           // Categories List
           SizedBox(
-            height: 80.h,
+            height: 80,
             child: ListView(
               scrollDirection: Axis.horizontal,
-              padding: EdgeInsets.symmetric(horizontal: 8.w),
+              padding: EdgeInsets.symmetric(horizontal: 8),
               physics: const NeverScrollableScrollPhysics(),
               children: List.generate(
                 categories.length,
                 (index) => Container(
-                  width: (MediaQuery.of(context).size.width - 32.w) / 4,
+                  width: (MediaQuery.of(context).size.width - 32) / 4,
                   alignment: Alignment.center,
                   child: categories[index],
                 ),
@@ -75,10 +75,10 @@ class JobCategoryCard extends ConsumerWidget {
             ),
           ),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8.w),
+            padding: EdgeInsets.symmetric(horizontal: 8),
             child: Divider(
-              height: 1.h,
-              thickness: 0.3.w,
+              height: 1,
+              thickness: 0.3,
               color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
             ),
           ),

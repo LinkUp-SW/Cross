@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:link_up/shared/themes/colors.dart';
 
 class SuggestionsModel {
@@ -54,18 +54,18 @@ class SuggestionsModel {
           children: [
             TextSpan(
               text: name,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10.r),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
             ),
             if (connectionDegree != null)
               TextSpan(
                 text: ' • ($connectionDegree)',
-                style: TextStyle(color: AppColors.grey, fontSize: 10.r),
+                style: TextStyle(color: AppColors.grey, fontSize: 10),
               ),
             if (desc != null)
               WidgetSpan(
                   child: Text(
                 ' • $desc',
-                style: TextStyle(color: AppColors.grey, fontSize: 10.r),
+                style: TextStyle(color: AppColors.grey, fontSize: 10),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               )),

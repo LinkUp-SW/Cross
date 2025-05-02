@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:link_up/features/jobs/model/jobs_screen_categories_model.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
@@ -30,28 +30,28 @@ class JobCategory extends ConsumerWidget {
         ref.read(selectedCategoryProvider.notifier).state = data;
       },
       child: Padding(
-        padding: EdgeInsets.only(right: 12.w),
+        padding: EdgeInsets.only(right: 12),
         child: Column(
           children: [
             Container(
-              width: 60.w,
-              height: 60.w,
+              width: 60,
+              height: 60,
               decoration: BoxDecoration(
                 color: isSelected 
                     ? Colors.lightBlue.withOpacity(0.2)
                     : (isDarkMode ? AppColors.darkGrey : AppColors.lightGrey),
-                borderRadius: BorderRadius.circular(12.r),
+                borderRadius: BorderRadius.circular(12),
                 border: isSelected
                     ? Border.all(color: Colors.lightBlue, width: 2)
                     : null,
               ),
               child: Image.asset(
                 data.categoryIcon,
-                width: 10.w,
-                height: 10.w,
+                width: 10,
+                height: 10,
               ),
             ),
-            SizedBox(height: 8.h),
+            SizedBox(height: 8),
             Text(
               data.categoryName,
               style: TextStyles.font12_400Weight.copyWith(

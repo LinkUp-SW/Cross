@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:link_up/features/jobs/model/jobs_screen_model.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
@@ -23,7 +23,7 @@ class JobsCard extends ConsumerWidget {
         color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
         border: Border(
           bottom: BorderSide(
-            width: 0.3.w,
+            width: 0.3,
             color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
           ),
         ),
@@ -33,20 +33,20 @@ class JobsCard extends ConsumerWidget {
         children: [
           Padding(
             padding: EdgeInsets.symmetric(
-              horizontal: 12.0.w,
+              horizontal: 12.0,
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
-                  spacing: 8.w,
+                  spacing: 8,
                   children: [
                     Image(
                       image: AssetImage(
                         data.companyPicture,
                       ),
-                      width: 40.w,
-                      height: 40.h,
+                      width: 40,
+                      height: 40,
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,7 +83,7 @@ class JobsCard extends ConsumerWidget {
             ),
           ),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 60.w),
+            padding: EdgeInsets.symmetric(horizontal: 60),
             child: Text(
               '${data.city}, ${data.country}, ${data.workType}',
               style: TextStyles.font15_700Weight.copyWith(
@@ -95,8 +95,8 @@ class JobsCard extends ConsumerWidget {
           ),
           Padding(
             padding: EdgeInsets.only(
-              left: 60.w,
-              bottom: 5.h,
+              left: 60,
+              bottom: 5,
             ),
             child: Text(
               getDaysDifference(data.postDate),

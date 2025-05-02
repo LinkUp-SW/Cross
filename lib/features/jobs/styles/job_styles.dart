@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:link_up/shared/themes/colors.dart';
 
 class JobStyles {
@@ -10,7 +10,7 @@ class JobStyles {
         color: isDarkMode ? AppColors.darkDivider : AppColors.lightDivider,
       ),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24.r),
+        borderRadius: BorderRadius.circular(24),
       ),
     );
   }
@@ -18,14 +18,14 @@ class JobStyles {
   static BoxDecoration searchBarDecoration(bool isDarkMode) {
     return BoxDecoration(
       color: isDarkMode ? AppColors.darkSurface : AppColors.lightSurface,
-      borderRadius: BorderRadius.circular(24.r),
+      borderRadius: BorderRadius.circular(24),
     );
   }
 
   static BoxDecoration collectionItemDecoration(bool isDarkMode) {
     return BoxDecoration(
       color: isDarkMode ? AppColors.darkSurface : AppColors.lightSurface,
-      borderRadius: BorderRadius.circular(12.r),
+      borderRadius: BorderRadius.circular(12),
       border: Border.all(
         color: isDarkMode ? AppColors.darkDivider : AppColors.lightDivider,
       ),
@@ -45,6 +45,6 @@ class JobStyles {
     ) ?? const TextStyle();
   }
 
-  static EdgeInsets defaultPadding = EdgeInsets.all(16.w);
-  static EdgeInsets searchBarPadding = EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h);
+  static EdgeInsets defaultPadding = EdgeInsets.all(16);
+  static EdgeInsets searchBarPadding = EdgeInsets.symmetric(horizontal: 16, vertical: 12);
 } 

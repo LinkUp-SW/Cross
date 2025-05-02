@@ -166,19 +166,19 @@ class _PostPageState extends ConsumerState<PostPage> {
                       // Padding(
                       //   padding: const EdgeInsets.all(10),
                       //   child: SizedBox(
-                      //     height: 40.h,
+                      //     height: 40,
                       //     child: ListView.separated(
                       //         separatorBuilder: (context, index) => SizedBox(
-                      //               width: 10.w,
+                      //               width: 10,
                       //             ),
                       //         shrinkWrap: true,
                       //         scrollDirection: Axis.horizontal,
                       //         itemCount: 10,
                       //         itemBuilder: (context, index) {
                       //           return SizedBox(
-                      //             width: 30.w,
+                      //             width: 30,
                       //             child: CircleAvatar(
-                      //               radius: 15.r,
+                      //               radius: 15,
                       //               backgroundImage: const NetworkImage(
                       //                   'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg'),
                       //             ),

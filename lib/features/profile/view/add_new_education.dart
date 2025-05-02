@@ -1,7 +1,7 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:link_up/features/profile/state/add_education_state.dart';
@@ -150,17 +150,17 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
                child: SingleChildScrollView(
                  padding:
-                     EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                     EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                  child: formData == null
                      ? const Center(child: CircularProgressIndicator())
                      : Column(
                          crossAxisAlignment: CrossAxisAlignment.start,
                          children: [
                            const SubPagesIndicatesRequiredLabel(),
-                           SizedBox(height: 10.h),
+                           SizedBox(height: 10),
                            SubPagesFormLabel(
                                label: "School", isRequired: true),
-                           SizedBox(height: 2.h),
+                           SizedBox(height: 2),
                            GestureDetector(
                              onTap: isSaving ? null : () async {
                                final selectedSchool = await GoRouter.of(context)
@@ -184,15 +184,15 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                                  suffixIcon: Icon(
                                    Icons.search,
                                    color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
-                                   size: 20.sp,
+                                   size: 20,
                                  ),
                                ),
                              ),
                            ),
-                           SizedBox(height: 20.h),
+                           SizedBox(height: 20),
                            SubPagesFormLabel(
                                label: "Degree", isRequired: true),
-                           SizedBox(height: 2.h),
+                           SizedBox(height: 2),
                            SubPagesCustomTextField(
                              controller: formData.degreeController,
                              enabled: !isSaving,
@@ -200,7 +200,7 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                               maxLength: maxDegreeChars, 
                            ),
                             Padding(
-                             padding: EdgeInsets.only(top: 4.h, right: 8.w),
+                             padding: EdgeInsets.only(top: 4, right: 8),
                              child: Row(
                                mainAxisAlignment: MainAxisAlignment.end,
                                children: [
@@ -215,10 +215,10 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                                ],
                              ),
                            ),
-                           SizedBox(height: 20.h),
+                           SizedBox(height: 20),
                            SubPagesFormLabel(
                                label: "Field of Study", isRequired: true),
-                           SizedBox(height: 2.h),
+                           SizedBox(height: 2),
                            SubPagesCustomTextField(
                              controller: formData.fieldOfStudyController,
                              enabled: !isSaving,
@@ -228,7 +228,7 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                            ),
                            // Added character counter for Field of Study
                            Padding(
-                             padding: EdgeInsets.only(top: 4.h, right: 8.w),
+                             padding: EdgeInsets.only(top: 4, right: 8),
                              child: Row(
                                mainAxisAlignment: MainAxisAlignment.end,
                                children: [
@@ -243,7 +243,7 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                                ],
                              ),
                            ),
-                           SizedBox(height: 20.h),
+                           SizedBox(height: 20),
                            SubPagesFormLabel(
                                label: "Start date", isRequired: true),
                            InkWell(
@@ -259,12 +259,12 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                                    color: isDarkMode
                                        ? AppColors.darkTextColor
                                        : AppColors.lightTextColor,
-                                   size: 15.sp,
+                                   size: 15,
                                  ),
                                ),
                              ),
                            ),
-                           SizedBox(height: 20.h),
+                           SizedBox(height: 20),
                            SubPagesFormLabel(
                                label: "End date or expected",
                                isRequired: true),
@@ -285,7 +285,7 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                                    color: formData.isEndDatePresent
                                        ? AppColors.lightGrey
                                        : (isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor),
-                                   size: 15.sp,
+                                   size: 15,
                                  ),
                                ),
                              ),
@@ -312,9 +312,9 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                                ),
                              ],
                            ),
-                           SizedBox(height: 20.h),
+                           SizedBox(height: 20),
                            SubPagesFormLabel(label: "Grade"),
-                           SizedBox(height: 2.h),
+                           SizedBox(height: 2),
                            SubPagesCustomTextField(
                              controller: formData.gradeController,
                              enabled: !isSaving,
@@ -323,7 +323,7 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                            ),
                            // Added character counter for Grade
                            Padding(
-                             padding: EdgeInsets.only(top: 4.h, right: 8.w),
+                             padding: EdgeInsets.only(top: 4, right: 8),
                              child: Row(
                                mainAxisAlignment: MainAxisAlignment.end,
                                children: [
@@ -338,10 +338,10 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                                ],
                              ),
                            ),
-                           SizedBox(height: 20.h),
+                           SizedBox(height: 20),
                            SubPagesFormLabel(
                                label: "Activities and Societies"),
-                           SizedBox(height: 2.h),
+                           SizedBox(height: 2),
                            SubPagesCustomTextField(
                              controller: formData.activitiesController,
                              enabled: !isSaving,
@@ -350,7 +350,7 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                              maxLength: maxActivitiesChars,
                            ),
                            Padding(
-                             padding: EdgeInsets.only(top: 4.h, right: 8.w),
+                             padding: EdgeInsets.only(top: 4, right: 8),
                              child: Row(
                                mainAxisAlignment: MainAxisAlignment.end,
                                children: [
@@ -365,9 +365,9 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                                ],
                              ),
                            ),
-                           SizedBox(height: 20.h),
+                           SizedBox(height: 20),
                            SubPagesFormLabel(label: "Description"),
-                           SizedBox(height: 2.h),
+                           SizedBox(height: 2),
                            SubPagesCustomTextField(
                              controller: formData.descriptionController,
                              enabled: !isSaving,
@@ -376,7 +376,7 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                              maxLength: maxDescriptionChars,
                            ),
                            Padding(
-                             padding: EdgeInsets.only(top: 4.h, right: 8.w),
+                             padding: EdgeInsets.only(top: 4, right: 8),
                              child: Row(
                                mainAxisAlignment: MainAxisAlignment.end,
                                children: [
@@ -391,9 +391,9 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                                ],
                              ),
                            ),
-                           SizedBox(height: 20.h),
+                           SizedBox(height: 20),
                            SubPagesSectionHeader(title: "Skills"),
-                           SizedBox(height: 10.h),
+                           SizedBox(height: 10),
                            Text(
                              "We recommend adding your top 5 used in this role. They'll also appear in your Skills section.",
                              style: TextStyles.font14_400Weight.copyWith(
@@ -402,7 +402,7 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                                    : AppColors.lightTextColor,
                              ),
                            ),
-                           SizedBox(height: 10.h),
+                           SizedBox(height: 10),
                            ElevatedButton(
                              onPressed: isSaving ? null : () {
                                // TODO: Implement Add Skill functionality
@@ -416,9 +416,9 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                                          ? AppColors.darkBlue
                                          : AppColors.lightBlue)),
                            ),
-                           SizedBox(height: 20.h),
+                           SizedBox(height: 20),
                            SubPagesSectionHeader(title: "Media"),
-                           SizedBox(height: 10.h),
+                           SizedBox(height: 10),
                            Text(
                              "Add media like images or sites. Learn more about media file types supported",
                              style: TextStyles.font14_400Weight.copyWith(
@@ -427,7 +427,7 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                                    : AppColors.lightTextColor,
                              ),
                            ),
-                           SizedBox(height: 10.h),
+                           SizedBox(height: 10),
                            ElevatedButton(
                              onPressed: isSaving ? null : () {
                                // TODO: Implement Add Media functionality
@@ -441,21 +441,21 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                                          ? AppColors.darkBlue
                                          : AppColors.lightBlue)),
                            ),
-                           SizedBox(height: 20.h),
+                           SizedBox(height: 20),
                          ],
                        ),
                ),
              ),
            ),
            Padding(
-             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
              child: SizedBox(
                width: double.infinity,
                child: ElevatedButton(
                  style: (isDarkMode
                      ? buttonStyles.wideBlueElevatedButtonDark()
                      : buttonStyles.wideBlueElevatedButton()
-                 ).copyWith(minimumSize: MaterialStateProperty.all(Size.fromHeight(50.h))),
+                 ).copyWith(minimumSize: MaterialStateProperty.all(Size.fromHeight(50))),
                  onPressed: isSaving ? null : () => viewModel.saveEducation(),
                  child: isSaving
                      ? const SizedBox(

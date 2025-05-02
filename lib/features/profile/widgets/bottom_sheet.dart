@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 
@@ -35,7 +35,7 @@ class ReusableBottomSheetContent extends StatelessWidget {
 
     return Container(
       margin: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h), 
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12), 
       child: Column(
         mainAxisSize: MainAxisSize.min, 
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -48,12 +48,12 @@ class ReusableBottomSheetContent extends StatelessWidget {
               itemBuilder: (context, index) {
                 final option = options[index];
                 return ListTile(
-                  contentPadding: EdgeInsets.symmetric(vertical: 4.h, horizontal: 8.w), 
+                  contentPadding: EdgeInsets.symmetric(vertical: 4, horizontal: 8), 
                   leading: option.icon != null
                       ? Icon(
                           option.icon,
                           color: iconColor,
-                          size: 24.sp,
+                          size: 24,
                         )
                       : null, 
                   title: Text(
@@ -79,13 +79,13 @@ class ReusableBottomSheetContent extends StatelessWidget {
                 );
               },
               separatorBuilder: (context, index) => Divider( 
-                height: 1.h,
+                height: 1,
                 thickness: 0.5,
                 color: AppColors.darkGrey,
               ),
             ),
           ),
-          SizedBox(height: 8.h), 
+          SizedBox(height: 8), 
         ],
       ),
     );
@@ -103,7 +103,7 @@ void showReusableBottomSheet({
     isScrollControlled: true, 
     backgroundColor: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)), 
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)), 
     ),
     builder: (BuildContext context) {
       return Padding(

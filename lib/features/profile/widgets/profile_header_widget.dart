@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/profile/model/profile_model.dart';
@@ -161,7 +161,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final buttonStyles = LinkUpButtonStyles();
-    final double backgroundHeight = 70.h;
+    final double backgroundHeight = 70;
 
     String locationString = '';
     if (userProfile.city != null && userProfile.city!.isNotEmpty) {
@@ -254,12 +254,12 @@ class ProfileHeaderWidget extends ConsumerWidget {
                               child: Padding(
                                 padding: const EdgeInsets.all(4.0),
                                 child: CircleAvatar(
-                                  radius: 12.r,
+                                  radius: 12,
                                   backgroundColor: Colors.black.withOpacity(0.4),
                                   child: Icon(
                                     Icons.camera_alt_rounded,
                                     color: Colors.white,
-                                    size: 14.sp,
+                                    size: 14,
                                   ),
                                 ),
                               ),
@@ -281,14 +281,14 @@ class ProfileHeaderWidget extends ConsumerWidget {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(top: 30.h, left: 16.w),
+                padding: EdgeInsets.only(top: 30, left: 16),
                 child: GestureDetector(
                   onTap: () => _handleProfilePicTap(context, ref),
                   child: Stack(
                     clipBehavior: Clip.none,
                     children: [
                       CircleAvatar(
-                        radius: 50.r,
+                        radius: 50,
                         backgroundColor: Colors.white,
                         child: Consumer(
                           builder: (context, ref, _) {
@@ -297,7 +297,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
                             bool hasUrl = userProfile.profilePhotoUrl.isNotEmpty;
 
                             return CircleAvatar(
-                              radius: 48.r,
+                              radius: 48,
                               backgroundColor: Colors.grey[300],
                               child: hasUrl
                                   ? ClipOval(
@@ -310,7 +310,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
                                             errorBuilder: (context, error, stackTrace) => Center(
                                               child: Icon(
                                                 Icons.person_outline,
-                                                size: 48.r,
+                                                size: 48,
                                                 color: Colors.grey[600],
                                               ),
                                             ),
@@ -333,7 +333,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
                                   : Center(
                                       child: Icon(
                                         Icons.person,
-                                        size: 48.r,
+                                        size: 48,
                                         color: Colors.grey[600],
                                       ),
                                     ),
@@ -345,9 +345,9 @@ class ProfileHeaderWidget extends ConsumerWidget {
                         bottom: 0,
                         right: 0,
                         child: CircleAvatar(
-                          radius: 10.r,
+                          radius: 10,
                           backgroundColor: AppColors.lightBlue,
-                          child: Icon(Icons.add, size: 14.sp, color: AppColors.lightMain),
+                          child: Icon(Icons.add, size: 14, color: AppColors.lightMain),
                         ),
                       ),
                     ],
@@ -355,28 +355,28 @@ class ProfileHeaderWidget extends ConsumerWidget {
                 ),
               ),
               Positioned(
-                top: backgroundHeight + 5.h,
-                right: 16.w,
+                top: backgroundHeight + 5,
+                right: 16,
                 child: GestureDetector(
                   onTap: () {
                     GoRouter.of(context).push('/edit_intro');
                   },
                   child: CircleAvatar(
-                    radius: 16.r,
+                    radius: 16,
                     backgroundColor: AppColors.lightMain,
                     child: Icon(
                       Icons.edit,
                       color: AppColors.lightSecondaryText,
-                      size: 20.sp,
+                      size: 20,
                     ),
                   ),
                 ),
               ),
             ],
           ),
-          SizedBox(height: 20.h),
+          SizedBox(height: 20),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            padding: EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -392,7 +392,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
                     color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightTextColor,
                   ),
                 ),
-                SizedBox(height: 5.h),
+                SizedBox(height: 5),
                 if (selectedEducation != null)
                   Text(
                     selectedEducation.institution,
@@ -405,14 +405,14 @@ class ProfileHeaderWidget extends ConsumerWidget {
                   ),
                 if (userProfile.website != null && userProfile.website!.isNotEmpty)
                   Padding(
-                    padding: EdgeInsets.only(top: 4.h),
+                    padding: EdgeInsets.only(top: 4),
                     child: InkWell(
                       onTap: () => _launchUrl(context, userProfile.website!),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.link, color: AppColors.lightBlue, size: 16.sp),
-                          SizedBox(width: 4.w),
+                          Icon(Icons.link, color: AppColors.lightBlue, size: 16),
+                          SizedBox(width: 4),
                           Flexible(
                             child: Text(
                               userProfile.website!,
@@ -426,17 +426,17 @@ class ProfileHeaderWidget extends ConsumerWidget {
                       ),
                     ),
                   ),
-                SizedBox(height: 10.h),
+                SizedBox(height: 10),
                 Text(
                   '${userProfile.numberOfConnections} connections',
                   style: TextStyles.font14_400Weight.copyWith(color: AppColors.lightGrey),
                 ),
-                SizedBox(height: 8.h),
+                SizedBox(height: 8),
               ],
             ),
           ),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            padding: EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -457,7 +457,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
                         ),
                       ),
                     ),
-                    SizedBox(width: 6.w),
+                    SizedBox(width: 6),
                     Expanded(
                       flex: 4,
                       child: OutlinedButton(
@@ -473,10 +473,10 @@ class ProfileHeaderWidget extends ConsumerWidget {
                         ),
                       ),
                     ),
-                    SizedBox(width: 6.w),
+                    SizedBox(width: 6),
                     SizedBox(
-                      width: 30.r,
-                      height: 35.r,
+                      width: 30,
+                      height: 35,
                       child: OutlinedButton(
                         onPressed: () {},
                         style: isDarkMode
@@ -490,7 +490,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
                     ),
                   ],
                 ),
-                SizedBox(height: 5.h),
+                SizedBox(height: 5),
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton(
@@ -506,7 +506,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
                     ),
                   ),
                 ),
-                SizedBox(height: 15.h),
+                SizedBox(height: 15),
               ],
             ),
           ),

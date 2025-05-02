@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 
@@ -25,16 +25,16 @@ class SectionWidget extends ConsumerWidget {
 
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
-      margin: EdgeInsets.only(top: 10.h),
+      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      margin: EdgeInsets.only(top: 10),
       decoration: BoxDecoration(
         color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
-        borderRadius: BorderRadius.circular(8.r),
+        borderRadius: BorderRadius.circular(8),
         // Removed shadow to match image more closely, add back if needed
         // boxShadow: [
         //   BoxShadow(
         //     color: Colors.black12,
-        //     blurRadius: 4.r,
+        //     blurRadius: 4,
         //     offset: const Offset(0, 2),
         //   ),
         // ],
@@ -59,25 +59,25 @@ class SectionWidget extends ConsumerWidget {
                 children: [
                   if (onAddPressed != null)
                     IconButton(
-                      icon: Icon(Icons.add, color: iconColor, size: 24.sp),
+                      icon: Icon(Icons.add, color: iconColor, size: 24),
                       onPressed: onAddPressed,
-                      splashRadius: 20.r,
+                      splashRadius: 20,
                       constraints: const BoxConstraints(), // Remove extra padding
                       padding: EdgeInsets.zero, // Remove extra padding
                     ),
                   if (onEditPressed != null)
                     IconButton(
-                      icon: Icon(Icons.edit, color: iconColor, size: 20.sp), // Smaller edit icon
+                      icon: Icon(Icons.edit, color: iconColor, size: 20), // Smaller edit icon
                       onPressed: onEditPressed,
-                      splashRadius: 20.r,
+                      splashRadius: 20,
                       constraints: const BoxConstraints(), // Remove extra padding
-                      padding: EdgeInsets.only(left: onAddPressed != null ? 8.w : 0), // Space if Add is present
+                      padding: EdgeInsets.only(left: onAddPressed != null ? 8 : 0), // Space if Add is present
                     ),
                 ],
               ),
             ],
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: 8),
           child, // Dynamic content inside the section
         ],
       ),

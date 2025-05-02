@@ -3,7 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:link_up/features/signUp/viewModel/past_job_details_provider.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
@@ -141,7 +141,7 @@ class _SearchSchoolPageState extends ConsumerState<SearchSchoolPage> {
      if (_error != null && _results.isEmpty) {
        return Center(
           child: Padding(
-             padding: EdgeInsets.all(16.w),
+             padding: EdgeInsets.all(16),
              child: Text(
                _error!,
                textAlign: TextAlign.center,
@@ -175,11 +175,11 @@ class _SearchSchoolPageState extends ConsumerState<SearchSchoolPage> {
 
           return ListTile(
              leading: CircleAvatar(
-                radius: 20.r,
+                radius: 20,
                 backgroundColor: isDarkMode ? AppColors.darkGrey.withOpacity(0.3) : AppColors.lightGrey.withOpacity(0.3),
                 backgroundImage: (logo != null && logo.isNotEmpty) ? NetworkImage(logo) : null,
                 child: (logo == null || logo.isEmpty)
-                    ? Icon(Icons.school, size: 20.sp, color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey)
+                    ? Icon(Icons.school, size: 20, color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey)
                     : null,
              ),
              title: Text(

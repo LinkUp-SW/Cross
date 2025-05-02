@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:link_up/features/Home/model/post_model.dart';
 import 'package:link_up/features/Home/viewModel/posts_vm.dart';
 import 'package:link_up/features/Home/widgets/deleted_post.dart';
@@ -81,7 +81,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   color: AppColors.red,
                 ),
                 SizedBox(
-                  width: 10.w,
+                  width: 10,
                 ),
                 Text("No Internet Connection",
                     style: TextStyle(

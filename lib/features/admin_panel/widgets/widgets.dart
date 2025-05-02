@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:go_router/go_router.dart';
 import 'package:link_up/core/services/storage.dart';
 import 'package:link_up/shared/themes/colors.dart';
@@ -16,7 +16,7 @@ class AdminDrawer extends StatelessWidget {
     return Drawer(
       backgroundColor: Theme.of(context).colorScheme.primary,
       child: Padding(
-        padding: EdgeInsets.all(15.r),
+        padding: EdgeInsets.all(15),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -35,21 +35,21 @@ class AdminDrawer extends StatelessWidget {
                         Icon(
                           Icons.bar_chart_rounded,
                           color: AppColors.grey,
-                          size: 30.r,
+                          size: 30,
                         ),
                         SizedBox(
-                          width: 10.w,
+                          width: 10,
                         ),
                         Text(
                           'Statistics',
                           style: TextStyle(
-                              fontSize: 20.r, fontWeight: FontWeight.bold),
+                              fontSize: 20, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
                   ),
                   SizedBox(
-                    height: 10.h,
+                    height: 10,
                   ),
                   GestureDetector(
                     onTap: () {
@@ -60,15 +60,15 @@ class AdminDrawer extends StatelessWidget {
                         Icon(
                           Icons.admin_panel_settings,
                           color: AppColors.grey,
-                          size: 30.r,
+                          size: 30,
                         ),
                         SizedBox(
-                          width: 10.w,
+                          width: 10,
                         ),
                         Text(
                           'Privileges',
                           style: TextStyle(
-                              fontSize: 20.r, fontWeight: FontWeight.bold),
+                              fontSize: 20, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -87,15 +87,15 @@ class AdminDrawer extends StatelessWidget {
                   Icon(
                     Icons.logout,
                     color: AppColors.grey,
-                    size: 30.r,
+                    size: 30,
                   ),
                   SizedBox(
-                    width: 10.w,
+                    width: 10,
                   ),
                   Text(
                     'Logout',
                     style:
-                        TextStyle(fontSize: 20.r, fontWeight: FontWeight.bold),
+                        TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),

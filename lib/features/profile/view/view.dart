@@ -1,7 +1,7 @@
 // profile/view/view.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:link_up/features/profile/model/education_model.dart';
@@ -83,12 +83,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
      final secondaryTextColor = AppColors.lightGrey;
 
      return Padding(
-       padding: EdgeInsets.only(top: 6.h),
+       padding: EdgeInsets.only(top: 6),
        child: Row(
          crossAxisAlignment: CrossAxisAlignment.start,
          children: [
-           Icon(Icons.star_outline, size: 14.sp, color: secondaryTextColor),
-           SizedBox(width: 6.w),
+           Icon(Icons.star_outline, size: 14, color: secondaryTextColor),
+           SizedBox(width: 6),
            Expanded(
              child: Text(
                skillsText,
@@ -146,26 +146,26 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
 
      return Padding(
-       padding: EdgeInsets.symmetric(vertical: 8.h),
+       padding: EdgeInsets.symmetric(vertical: 8),
        child: Row(
          crossAxisAlignment: CrossAxisAlignment.start,
          children: [
            Container(
-             width: 40.w,
-             height: 40.h,
-             margin: EdgeInsets.only(right: 12.w),
+             width: 40,
+             height: 40,
+             margin: EdgeInsets.only(right: 12),
              decoration: BoxDecoration(
                color: isDarkMode ? AppColors.darkGrey.withOpacity(0.3) : AppColors.lightGrey.withOpacity(0.1),
-               borderRadius: BorderRadius.circular(4.r),
+               borderRadius: BorderRadius.circular(4),
              ),
              child: logoUrl != null && logoUrl.isNotEmpty
                  ? CachedNetworkImage(
                      imageUrl: logoUrl,
-                     placeholder: (context, url) => Icon(Icons.school_outlined, color: secondaryTextColor, size: 20.sp),
-                     errorWidget: (context, url, error) => Icon(Icons.school_outlined, color: secondaryTextColor, size: 20.sp),
+                     placeholder: (context, url) => Icon(Icons.school_outlined, color: secondaryTextColor, size: 20),
+                     errorWidget: (context, url, error) => Icon(Icons.school_outlined, color: secondaryTextColor, size: 20),
                      fit: BoxFit.contain,
                    )
-                 : Center(child: Icon(Icons.school_outlined, color: secondaryTextColor, size: 20.sp)),
+                 : Center(child: Icon(Icons.school_outlined, color: secondaryTextColor, size: 20)),
            ),
            Expanded(
              child: Column(
@@ -175,18 +175,18 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                    edu.institution,
                    style: TextStyles.font18_600Weight.copyWith(color: textColor),
                  ),
-                 SizedBox(height: 2.h),
+                 SizedBox(height: 2),
                  if (edu.degree.isNotEmpty || edu.fieldOfStudy.isNotEmpty)
                    Text(
                      '${edu.degree}${edu.degree.isNotEmpty && edu.fieldOfStudy.isNotEmpty ? ', ' : ''}${edu.fieldOfStudy}',
                      style: TextStyles.font14_400Weight.copyWith(color: textColor),
                    ),
-                 SizedBox(height: 2.h),
+                 SizedBox(height: 2),
                  Text(
                   _formatDateRange(startDate, endDate, isCurrent: isCurrentlyStudying, doesNotExist: false),
                    style: TextStyles.font12_400Weight.copyWith(color: secondaryTextColor),
                  ),
-                 SizedBox(height: 4.h),
+                 SizedBox(height: 4),
                  if (edu.grade != null && edu.grade!.isNotEmpty)
                    Text(
                      'Grade: ${edu.grade}',
@@ -194,7 +194,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                    ),
                  if (edu.activitesAndSocials != null && edu.activitesAndSocials!.isNotEmpty)
                    Padding(
-                     padding: EdgeInsets.only(top: edu.grade != null && edu.grade!.isNotEmpty ? 4.h : 0),
+                     padding: EdgeInsets.only(top: edu.grade != null && edu.grade!.isNotEmpty ? 4 : 0),
                      child: Text(
                        'Activities and societies: ${edu.activitesAndSocials}',
                        style: TextStyles.font12_400Weight.copyWith(color: secondaryTextColor),
@@ -202,7 +202,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                    ),
                  if (edu.description != null && edu.description!.isNotEmpty)
                    Padding(
-                     padding: EdgeInsets.only(top: 4.h),
+                     padding: EdgeInsets.only(top: 4),
                      child: Text(
                        edu.description!,
                        style: TextStyles.font13_400Weight.copyWith(color: textColor),
@@ -228,26 +228,26 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
 
      return Padding(
-       padding: EdgeInsets.symmetric(vertical: 8.h),
+       padding: EdgeInsets.symmetric(vertical: 8),
        child: Row(
          crossAxisAlignment: CrossAxisAlignment.start,
          children: [
            Container(
-             width: 40.w,
-             height: 40.h,
-             margin: EdgeInsets.only(right: 12.w),
+             width: 40,
+             height: 40,
+             margin: EdgeInsets.only(right: 12),
              decoration: BoxDecoration(
                color: isDarkMode ? AppColors.darkGrey.withOpacity(0.3) : AppColors.lightGrey.withOpacity(0.1),
-               borderRadius: BorderRadius.circular(4.r),
+               borderRadius: BorderRadius.circular(4),
              ),
              child: logoUrl != null && logoUrl.isNotEmpty
                  ? CachedNetworkImage(
                      imageUrl: logoUrl,
-                     placeholder: (context, url) => Icon(Icons.business_center_outlined, color: secondaryTextColor, size: 20.sp),
-                     errorWidget: (context, url, error) => Icon(Icons.business_center_outlined, color: secondaryTextColor, size: 20.sp),
+                     placeholder: (context, url) => Icon(Icons.business_center_outlined, color: secondaryTextColor, size: 20),
+                     errorWidget: (context, url, error) => Icon(Icons.business_center_outlined, color: secondaryTextColor, size: 20),
                      fit: BoxFit.contain,
                    )
-                 : Center(child: Icon(Icons.business_center_outlined, color: secondaryTextColor, size: 20.sp)),
+                 : Center(child: Icon(Icons.business_center_outlined, color: secondaryTextColor, size: 20)),
            ),
            Expanded(
              child: Column(
@@ -257,19 +257,19 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                    exp.title,
                    style: TextStyles.font18_600Weight.copyWith(color: textColor),
                  ),
-                 SizedBox(height: 2.h),
+                 SizedBox(height: 2),
                  Text(
                    '${exp.companyName}${exp.employeeType.isNotEmpty ? ' · ${exp.employeeType}' : ''}',
                    style: TextStyles.font14_400Weight.copyWith(color: textColor),
                  ),
-                 SizedBox(height: 2.h),
+                 SizedBox(height: 2),
                  Text(
                    _formatDateRange(startDate, endDate, isCurrent: exp.isCurrent, doesNotExist: false),
                    style: TextStyles.font12_400Weight.copyWith(color: secondaryTextColor),
                  ),
                  if (exp.location != null && exp.location!.isNotEmpty)
                    Padding(
-                     padding: EdgeInsets.only(top: 4.h),
+                     padding: EdgeInsets.only(top: 4),
                      child: Text(
                        exp.location!,
                        style: TextStyles.font12_400Weight.copyWith(color: secondaryTextColor),
@@ -277,7 +277,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                    ),
                  if (exp.description != null && exp.description!.isNotEmpty)
                    Padding(
-                     padding: EdgeInsets.only(top: 4.h),
+                     padding: EdgeInsets.only(top: 4),
                      child: Text(
                        exp.description!,
                        style: TextStyles.font13_400Weight.copyWith(color: textColor),
@@ -302,26 +302,26 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     final DateTime? expirationDate = lic.expirationDate;
 
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8.h),
+      padding: EdgeInsets.symmetric(vertical: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 40.w,
-            height: 40.h,
-            margin: EdgeInsets.only(right: 12.w),
+            width: 40,
+            height: 40,
+            margin: EdgeInsets.only(right: 12),
             decoration: BoxDecoration(
               color: isDarkMode ? AppColors.darkGrey.withOpacity(0.3) : AppColors.lightGrey.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(4.r),
+              borderRadius: BorderRadius.circular(4),
             ),
             child: logoUrl != null && logoUrl.isNotEmpty
                 ? CachedNetworkImage(
                     imageUrl: logoUrl,
-                    placeholder: (context, url) => Icon(Icons.card_membership_outlined, color: secondaryTextColor, size: 20.sp),
-                    errorWidget: (context, url, error) => Icon(Icons.card_membership_outlined, color: secondaryTextColor, size: 20.sp),
+                    placeholder: (context, url) => Icon(Icons.card_membership_outlined, color: secondaryTextColor, size: 20),
+                    errorWidget: (context, url, error) => Icon(Icons.card_membership_outlined, color: secondaryTextColor, size: 20),
                     fit: BoxFit.contain,
                   )
-                : Center(child: Icon(Icons.card_membership_outlined, color: secondaryTextColor, size: 20.sp)),
+                : Center(child: Icon(Icons.card_membership_outlined, color: secondaryTextColor, size: 20)),
           ),
           Expanded(
             child: Column(
@@ -331,12 +331,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                   lic.name,
                   style: TextStyles.font18_600Weight.copyWith(color: textColor),
                 ),
-                SizedBox(height: 2.h),
+                SizedBox(height: 2),
                 Text(
                   lic.issuingOrganizationName,
                   style: TextStyles.font14_400Weight.copyWith(color: textColor),
                 ),
-                SizedBox(height: 2.h),
+                SizedBox(height: 2),
                  Text( 
                    _formatDateRange(
                        issueDate, 
@@ -348,7 +348,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                  ),
                 if (lic.credentialId != null && lic.credentialId!.isNotEmpty)
                   Padding(
-                    padding: EdgeInsets.only(top: 4.h),
+                    padding: EdgeInsets.only(top: 4),
                     child: Text(
                       'Credential ID: ${lic.credentialId}',
                       style: TextStyles.font12_400Weight.copyWith(color: secondaryTextColor),
@@ -356,7 +356,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                   ),
                  if (lic.credentialUrl != null && lic.credentialUrl!.isNotEmpty)
                    Padding(
-                     padding: EdgeInsets.only(top: 4.h),
+                     padding: EdgeInsets.only(top: 4),
                      child: InkWell(
                        onTap: () => _launchUrl(context, lic.credentialUrl),
                        child: Text(
@@ -420,12 +420,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           ProfileLoading() => const Center(child: CircularProgressIndicator()),
           ProfileError(:final message) => Center(
                child: Padding(
-                 padding: EdgeInsets.all(16.w),
+                 padding: EdgeInsets.all(16),
                  child: Column(
                    mainAxisAlignment: MainAxisAlignment.center,
                    children: [
                      Text('Error: $message', textAlign: TextAlign.center, style: TextStyle(color: Colors.red.shade700)),
-                     SizedBox(height: 10.h),
+                     SizedBox(height: 10),
                      ElevatedButton(
                        onPressed: () => ref.read(profileViewModelProvider.notifier).fetchUserProfile(),
                        child: const Text('Retry'),
@@ -455,11 +455,11 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                    Container(
                                      height: 300,
                                      decoration: BoxDecoration(
-                                       borderRadius: BorderRadius.circular(8.r),
+                                       borderRadius: BorderRadius.circular(8),
                                        border: Border.all(color: AppColors.lightGrey.withOpacity(0.5)),
                                      ),
                                      child: ClipRRect(
-                                       borderRadius: BorderRadius.circular(8.r),
+                                       borderRadius: BorderRadius.circular(8),
                                        child: PDF().cachedFromUrl(
                                          resumeUrl!,
                                          placeholder: (progress) => Center(child: Text('Loading: $progress %')),
@@ -467,26 +467,26 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                        ),
                                      ),
                                    ),
-                                   SizedBox(height: 8.h),
+                                   SizedBox(height: 8),
                                    Align(
                                      alignment: Alignment.centerRight,
                                      child: TextButton.icon(
                                        onPressed: () => GoRouter.of(context).push('/resume_viewer', extra: resumeUrl),
-                                       icon: Icon(Icons.open_in_full, size: 16.sp),
+                                       icon: Icon(Icons.open_in_full, size: 16),
                                        label: Text('Open Fullscreen', style: TextStyles.font14_600Weight.copyWith(color: sectionTextColor)),
                                      ),
                                    ),
                                  ],
                                )
                              : Padding( 
-                                 padding: EdgeInsets.symmetric(vertical: 8.h),
+                                 padding: EdgeInsets.symmetric(vertical: 8),
                                  child: Column(
                                    crossAxisAlignment: CrossAxisAlignment.start,
                                    children: [
                                      Text("No resume uploaded.", style: TextStyles.font14_400Weight.copyWith(color: AppColors.lightGrey)),
-                                     SizedBox(height: 8.h),
+                                     SizedBox(height: 8),
                                      OutlinedButton.icon(
-                                       icon: Icon(Icons.add, size: 16.sp, color: addTextColor),
+                                       icon: Icon(Icons.add, size: 16, color: addTextColor),
                                        label: Text("Add Resume", style: TextStyles.font14_600Weight.copyWith(color: addTextColor)),
                                        style: addButtonStyle,
                                        onPressed: () => GoRouter.of(context).push('/add_resume'),
@@ -508,7 +508,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                              children: [
                                if (hasAboutText)
                                  Padding(
-                                   padding: EdgeInsets.only(bottom: hasAboutSkills ? 0 : 8.h),
+                                   padding: EdgeInsets.only(bottom: hasAboutSkills ? 0 : 8),
                                    child: Text(aboutData.about, style: TextStyles.font14_400Weight.copyWith(color: sectionTextColor)),
                                  ),
                                if (hasAboutSkills)
@@ -530,13 +530,13 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                if (displayedExperiences.isNotEmpty)
                                  Column(children: displayedExperiences.map((exp) => _buildExperienceItem(exp, isDarkMode)).toList()),
                                if (showShowAllExperienceButton) ...[
-                                 Padding(padding: EdgeInsets.only(top: 8.h), child: Divider(height: 1.h, thickness: 0.5, color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey.withOpacity(0.3))),
+                                 Padding(padding: EdgeInsets.only(top: 8), child: Divider(height: 1, thickness: 0.5, color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey.withOpacity(0.3))),
                                  SizedBox(
                                    width: double.infinity,
                                    child: TextButton(
                                      onPressed: () { /* TODO: Show All Experience */ },
-                                     style: TextButton.styleFrom(padding: EdgeInsets.symmetric(vertical: 8.h), tapTargetSize: MaterialTapTargetSize.shrinkWrap, alignment: Alignment.center),
-                                     child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Text('Show all $totalExperienceCount experiences', style: TextStyles.font14_600Weight.copyWith(color: sectionTextColor)), SizedBox(width: 4.w), Icon(Icons.arrow_forward, size: 16.sp, color: sectionTextColor)])
+                                     style: TextButton.styleFrom(padding: EdgeInsets.symmetric(vertical: 8), tapTargetSize: MaterialTapTargetSize.shrinkWrap, alignment: Alignment.center),
+                                     child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Text('Show all $totalExperienceCount experiences', style: TextStyles.font14_600Weight.copyWith(color: sectionTextColor)), SizedBox(width: 4), Icon(Icons.arrow_forward, size: 16, color: sectionTextColor)])
                                    ),
                                  ),
                                ]
@@ -557,13 +557,13 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                 if (displayedEducations.isNotEmpty)
                                   Column(children: displayedEducations.map((edu) => _buildEducationItem(edu, isDarkMode)).toList()),
                                 if (showShowAllEducationButton) ...[
-                                  Padding(padding: EdgeInsets.only(top: 8.h), child: Divider(height: 1.h, thickness: 0.5, color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey.withOpacity(0.3))),
+                                  Padding(padding: EdgeInsets.only(top: 8), child: Divider(height: 1, thickness: 0.5, color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey.withOpacity(0.3))),
                                   SizedBox(
                                     width: double.infinity,
                                     child: TextButton(
                                       onPressed: () { /* TODO: Show All Education */ },
-                                      style: TextButton.styleFrom(padding: EdgeInsets.symmetric(vertical: 8.h), tapTargetSize: MaterialTapTargetSize.shrinkWrap, alignment: Alignment.center),
-                                      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Text('Show all $totalEducationCount educations', style: TextStyles.font14_600Weight.copyWith(color: sectionTextColor)), SizedBox(width: 4.w), Icon(Icons.arrow_forward, size: 16.sp, color: sectionTextColor)])
+                                      style: TextButton.styleFrom(padding: EdgeInsets.symmetric(vertical: 8), tapTargetSize: MaterialTapTargetSize.shrinkWrap, alignment: Alignment.center),
+                                      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Text('Show all $totalEducationCount educations', style: TextStyles.font14_600Weight.copyWith(color: sectionTextColor)), SizedBox(width: 4), Icon(Icons.arrow_forward, size: 16, color: sectionTextColor)])
                                     ),
                                   ),
                                 ]
@@ -592,15 +592,15 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                  ),
                                if (showShowAllLicensesButton) ...[
                                  Padding(
-                                   padding: EdgeInsets.only(top: 8.h),
-                                   child: Divider(height: 1.h, thickness: 0.5, color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey.withOpacity(0.3))
+                                   padding: EdgeInsets.only(top: 8),
+                                   child: Divider(height: 1, thickness: 0.5, color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey.withOpacity(0.3))
                                  ),
                                  SizedBox(
                                    width: double.infinity,
                                    child: TextButton(
                                      onPressed: () { /* TODO: Implement Show All Licenses */ },
                                      style: TextButton.styleFrom(
-                                         padding: EdgeInsets.symmetric(vertical: 8.h),
+                                         padding: EdgeInsets.symmetric(vertical: 8),
                                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                          alignment: Alignment.center
                                       ),
@@ -611,8 +611,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                            'Show all $totalLicenseCount licenses',
                                            style: TextStyles.font14_600Weight.copyWith(color: sectionTextColor)
                                          ),
-                                         SizedBox(width: 4.w),
-                                         Icon(Icons.arrow_forward, size: 16.sp, color: sectionTextColor)
+                                         SizedBox(width: 4),
+                                         Icon(Icons.arrow_forward, size: 16, color: sectionTextColor)
                                        ]
                                      ),
                                    ),
@@ -623,7 +623,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                    ),
 
 
-                  SizedBox(height: 20.h),
+                  SizedBox(height: 20),
                 ],
               ),
             ),

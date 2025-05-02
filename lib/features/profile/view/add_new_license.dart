@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -135,22 +135,22 @@ class _AddNewLicensePageState extends ConsumerState<AddNewLicensePage> {
                 child: formData == null
                     ? const Center(child: CircularProgressIndicator())
                     : SingleChildScrollView(
-                        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const SubPagesIndicatesRequiredLabel(),
-                            SizedBox(height: 10.h),
+                            SizedBox(height: 10),
                             SubPagesFormLabel(label: "Name", isRequired: true),
-                            SizedBox(height: 2.h),
+                            SizedBox(height: 2),
                             SubPagesCustomTextField(
                               controller: formData.nameController,
                               enabled: !isSaving,
                               hintText: "Ex: Certified Cloud Practitioner",
                             ),
-                            SizedBox(height: 20.h),
+                            SizedBox(height: 20),
                             SubPagesFormLabel(label: "Issuing Organization", isRequired: true),
-                            SizedBox(height: 2.h),
+                            SizedBox(height: 2),
                             GestureDetector(
                               onTap: isSaving
                                   ? null
@@ -172,12 +172,12 @@ class _AddNewLicensePageState extends ConsumerState<AddNewLicensePage> {
                                   suffixIcon: Icon(
                                     Icons.search,
                                     color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
-                                    size: 20.sp,
+                                    size: 20,
                                   ),
                                 ),
                               ),
                             ),
-                            SizedBox(height: 10.h),
+                            SizedBox(height: 10),
                             Row(
                               children: [
                                 Checkbox(
@@ -200,7 +200,7 @@ class _AddNewLicensePageState extends ConsumerState<AddNewLicensePage> {
                                 ),
                               ],
                             ),
-                            SizedBox(height: 10.h),
+                            SizedBox(height: 10),
                             SubPagesFormLabel(label: "Issue date", isRequired: true),
                             InkWell(
                               onTap: isSaving ? null : () => _selectDate(context, true),
@@ -213,12 +213,12 @@ class _AddNewLicensePageState extends ConsumerState<AddNewLicensePage> {
                                   suffixIcon: Icon(
                                     Icons.calendar_today,
                                     color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
-                                    size: 15.sp,
+                                    size: 15,
                                   ),
                                 ),
                               ),
                             ),
-                            SizedBox(height: 20.h),
+                            SizedBox(height: 20),
                             SubPagesFormLabel(label: "Expiration date", isRequired: !formData.doesNotExpire),
                             InkWell(
                               onTap: (isSaving || formData.doesNotExpire) ? null : () => _selectDate(context, false),
@@ -233,39 +233,39 @@ class _AddNewLicensePageState extends ConsumerState<AddNewLicensePage> {
                                     color: (isSaving || formData.doesNotExpire)
                                         ? AppColors.lightGrey
                                         : (isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor),
-                                    size: 15.sp,
+                                    size: 15,
                                   ),
                                 ),
                               ),
                             ),
-                            SizedBox(height: 20.h),
+                            SizedBox(height: 20),
                             SubPagesFormLabel(label: "Credential ID"),
-                            SizedBox(height: 2.h),
+                            SizedBox(height: 2),
                             SubPagesCustomTextField(
                               controller: formData.credentialIdController,
                               enabled: !isSaving,
                               hintText: "Enter credential ID (optional)",
                               focusNode: _credentialIdFocusNode,
                             ),
-                            SizedBox(height: 20.h),
+                            SizedBox(height: 20),
                             SubPagesFormLabel(label: "Credential URL"),
-                            SizedBox(height: 2.h),
+                            SizedBox(height: 2),
                             SubPagesCustomTextField(
                               controller: formData.credentialUrlController,
                               enabled: !isSaving,
                               hintText: "Enter URL (optional, e.g., https://verify.com/123)",
                               focusNode: _credentialUrlFocusNode,
                             ),
-                            SizedBox(height: 20.h),
+                            SizedBox(height: 20),
                             SubPagesSectionHeader(title: "Skills"),
-                            SizedBox(height: 10.h),
+                            SizedBox(height: 10),
                             Text(
                               "Add skills related to this license or certification.",
                               style: TextStyles.font14_400Weight.copyWith(
                                 color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
                               ),
                             ),
-                            SizedBox(height: 10.h),
+                            SizedBox(height: 10),
                             ElevatedButton(
                               onPressed: isSaving ? null : () {},
                               style: isDarkMode
@@ -278,16 +278,16 @@ class _AddNewLicensePageState extends ConsumerState<AddNewLicensePage> {
                                 ),
                               ),
                             ),
-                            SizedBox(height: 20.h),
+                            SizedBox(height: 20),
                             SubPagesSectionHeader(title: "Media"),
-                            SizedBox(height: 10.h),
+                            SizedBox(height: 10),
                             Text(
                               "Add or link to external documents, photos, sites, videos, or presentations.",
                               style: TextStyles.font14_400Weight.copyWith(
                                 color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
                               ),
                             ),
-                            SizedBox(height: 10.h),
+                            SizedBox(height: 10),
                             ElevatedButton(
                               onPressed: isSaving ? null : () {},
                               style: isDarkMode
@@ -300,7 +300,7 @@ class _AddNewLicensePageState extends ConsumerState<AddNewLicensePage> {
                                 ),
                               ),
                             ),
-                            SizedBox(height: 20.h),
+                            SizedBox(height: 20),
                           ],
                         ),
                       ),
@@ -308,7 +308,7 @@ class _AddNewLicensePageState extends ConsumerState<AddNewLicensePage> {
             ),
             if (formData != null)
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 child: SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -316,7 +316,7 @@ class _AddNewLicensePageState extends ConsumerState<AddNewLicensePage> {
                     style: (isDarkMode
                             ? buttonStyles.wideBlueElevatedButtonDark()
                             : buttonStyles.wideBlueElevatedButton())
-                        .copyWith(minimumSize: MaterialStateProperty.all(Size.fromHeight(50.h))),
+                        .copyWith(minimumSize: MaterialStateProperty.all(Size.fromHeight(50))),
                     child: isSaving
                         ? const SizedBox(
                             height: 20,

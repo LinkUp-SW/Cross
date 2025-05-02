@@ -1,6 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/services.dart';
@@ -222,15 +222,15 @@ class _EditContactInfoState extends ConsumerState<EditContactInfo> {
                  child: isLoading
                     ? const Center(child: CircularProgressIndicator())
                     : SingleChildScrollView(
-                       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const SubPagesIndicatesRequiredLabel(),
-                            SizedBox(height: 10.h),
+                            SizedBox(height: 10),
 
                              SubPagesFormLabel(label: "Profile URL"),
-                             SizedBox(height: 2.h),
+                             SizedBox(height: 2),
                              GestureDetector(
                                onTap: () => _copyToClipboard(context, profileUrl),
                                child: Row(
@@ -245,14 +245,14 @@ class _EditContactInfoState extends ConsumerState<EditContactInfo> {
                                        overflow: TextOverflow.ellipsis,
                                      ),
                                    ),
-                                   Icon(Icons.open_in_new, color: AppColors.lightBlue, size: 20.sp),
+                                   Icon(Icons.open_in_new, color: AppColors.lightBlue, size: 20),
                                  ],
                                ),
                              ),
-                             SizedBox(height: 20.h),
+                             SizedBox(height: 20),
 
                              SubPagesFormLabel(label: "Email"),
-                             SizedBox(height: 2.h),
+                             SizedBox(height: 2),
                              GestureDetector(
                                onTap: () => _copyToClipboard(context, email),
                                child: Row(
@@ -267,14 +267,14 @@ class _EditContactInfoState extends ConsumerState<EditContactInfo> {
                                        overflow: TextOverflow.ellipsis,
                                      ),
                                    ),
-                                   Icon(Icons.open_in_new, color: AppColors.lightBlue, size: 20.sp),
+                                   Icon(Icons.open_in_new, color: AppColors.lightBlue, size: 20),
                                  ],
                                ),
                              ),
-                             SizedBox(height: 20.h),
+                             SizedBox(height: 20),
 
                             SubPagesFormLabel(label: "Phone number"),
-                            SizedBox(height: 2.h),
+                            SizedBox(height: 2),
                             if (_initialCountryCode != null) 
                                 IntlPhoneField(
                                    key: ValueKey(_initialCountryCode), 
@@ -307,11 +307,11 @@ class _EditContactInfoState extends ConsumerState<EditContactInfo> {
                                 ),
                             if (_initialCountryCode == null && !isLoading)
                                  Container(height: 60, alignment: Alignment.center, child: Text("Loading phone info...")),
-                             SizedBox(height: 20.h),
+                             SizedBox(height: 20),
 
 
                             SubPagesFormLabel(label: "Phone type"),
-                            SizedBox(height: 2.h),
+                            SizedBox(height: 2),
                             SubPagesCustomDropdownFormField<String>(
                               value: selectedPhoneType,
                               hintText: "Please select",
@@ -322,10 +322,10 @@ class _EditContactInfoState extends ConsumerState<EditContactInfo> {
                               ],
                               onChanged: isSaving ? null : (value) => viewModel.setPhoneType(value),
                             ),
-                            SizedBox(height: 20.h),
+                            SizedBox(height: 20),
 
                             SubPagesFormLabel(label: "Address"),
-                            SizedBox(height: 2.h),
+                            SizedBox(height: 2),
                             SubPagesCustomTextField(
                               controller: addressController,
                               focusNode: _addressFocusNode,
@@ -333,10 +333,10 @@ class _EditContactInfoState extends ConsumerState<EditContactInfo> {
                               maxLines: null, 
                               maxLength: 220,
                             ),
-                            SizedBox(height: 20.h),
+                            SizedBox(height: 20),
 
                             SubPagesFormLabel(label: "Birthday"),
-                            SizedBox(height: 2.h),
+                            SizedBox(height: 2),
                              InkWell(
                                 onTap: isSaving ? null : () => _selectBirthday(context),
                                 child: AbsorbPointer(
@@ -348,15 +348,15 @@ class _EditContactInfoState extends ConsumerState<EditContactInfo> {
                                       suffixIcon: Icon(
                                          Icons.calendar_today,
                                          color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
-                                         size: 20.sp,
+                                         size: 20,
                                       ),
                                   ),
                                 ),
                              ),
-                            SizedBox(height: 20.h),
+                            SizedBox(height: 20),
 
                             SubPagesFormLabel(label: "Website"),
-                            SizedBox(height: 2.h),
+                            SizedBox(height: 2),
                                  TextFormField( // Changed to TextFormField
                                controller: websiteController,
                                focusNode: _websiteFocusNode,
@@ -367,13 +367,13 @@ class _EditContactInfoState extends ConsumerState<EditContactInfo> {
                                    enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.lightGrey)),
                                    focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.lightBlue)),
                                   errorText: getErrorForField("Website"), // Show validation error
-                                   errorStyle: TextStyle(color: Colors.red.shade700, fontSize: 12.sp),
+                                   errorStyle: TextStyle(color: Colors.red.shade700, fontSize: 12),
                                ),
                                 style: TextStyles.font14_400Weight.copyWith(
                                    color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
                                 ),
                              ),
-                            SizedBox(height: 20.h),
+                            SizedBox(height: 20),
                           ],
                         ),
                     ),
@@ -382,7 +382,7 @@ class _EditContactInfoState extends ConsumerState<EditContactInfo> {
 
             if (!isLoading)
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 child: SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -390,7 +390,7 @@ class _EditContactInfoState extends ConsumerState<EditContactInfo> {
                      style: (isDarkMode
                            ? buttonStyles.wideBlueElevatedButtonDark()
                            : buttonStyles.wideBlueElevatedButton()
-                     ).copyWith(minimumSize: MaterialStateProperty.all(Size.fromHeight(50.h))), 
+                     ).copyWith(minimumSize: MaterialStateProperty.all(Size.fromHeight(50))), 
                     child: isSaving
                         ? const SizedBox(
                             height: 20,

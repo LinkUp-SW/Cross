@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:link_up/shared/themes/text_styles.dart';
 
 final searchQueryProvider = StateProvider<String>((ref) => '');
@@ -16,28 +16,28 @@ class ProfileAppBar extends ConsumerWidget implements PreferredSizeWidget {
       elevation: 0,
       automaticallyImplyLeading: false,
       title: Padding(
-        padding: EdgeInsets.only(top: 13.h), 
+        padding: EdgeInsets.only(top: 13), 
         child: Row(
           children: [
      
             IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.black54, size: 28.sp),
+              icon: Icon(Icons.arrow_back, color: Colors.black54, size: 28),
               onPressed: () => Navigator.pop(context),
             ),
 
      
             Expanded(
               child: Container(
-                height: 36.h, 
-                padding: EdgeInsets.symmetric(horizontal: 10.w),
+                height: 36, 
+                padding: EdgeInsets.symmetric(horizontal: 10),
                 decoration: BoxDecoration(
                   color: const Color(0xFFEAF3FC), 
-                  borderRadius: BorderRadius.circular(6.r), 
+                  borderRadius: BorderRadius.circular(6), 
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.search, color: Colors.black54, size: 22.sp),
-                    SizedBox(width: 8.w),
+                    Icon(Icons.search, color: Colors.black54, size: 22),
+                    SizedBox(width: 8),
                     Expanded(
                       child: TextField(
                         onChanged: (value) =>
@@ -56,7 +56,7 @@ class ProfileAppBar extends ConsumerWidget implements PreferredSizeWidget {
             ),
 
             IconButton(
-              icon: Icon(Icons.settings, color: Colors.black54, size: 28.sp),
+              icon: Icon(Icons.settings, color: Colors.black54, size: 28),
               onPressed: () {
               },
             ),
@@ -68,5 +68,5 @@ class ProfileAppBar extends ConsumerWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(kToolbarHeight.h);
+  Size get preferredSize => Size.fromHeight(kToolbarHeight);
 }

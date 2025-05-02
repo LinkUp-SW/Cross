@@ -2,7 +2,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:go_router/go_router.dart';
 import 'package:dotted_border/dotted_border.dart'; // Import dotted_border
 import 'package:link_up/features/profile/state/add_resume_state.dart';
@@ -98,18 +98,18 @@ class AddResumePage extends ConsumerWidget {
               child: Container(
                 width: double.infinity, // Ensure container takes full width
                 color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     // Display current resume info if present
                     if(resumeState is ResumePresent || resumeState is ResumeUploadSuccess)
                       Padding(
-                         padding: EdgeInsets.only(bottom: 20.h),
+                         padding: EdgeInsets.only(bottom: 20),
                          child: Column(
                             children: [
                               Text("Current Resume:", style: TextStyles.font16_600Weight.copyWith(color: theme.textTheme.bodyLarge?.color)),
-                              SizedBox(height: 8.h),
+                              SizedBox(height: 8),
                               InkWell(
                                  onTap: () => _launchUrl(context, currentResumeUrl),
                                  child: Text(
@@ -118,7 +118,7 @@ class AddResumePage extends ConsumerWidget {
                                     textAlign: TextAlign.center,
                                  ),
                               ),
-                              SizedBox(height: 10.h),
+                              SizedBox(height: 10),
                               IconButton(
                                 icon: Icon(Icons.delete_outline, color: Colors.red.shade700),
                                 tooltip: "Delete Resume",
@@ -143,9 +143,9 @@ class AddResumePage extends ConsumerWidget {
                                    );
                                 },
                               ),
-                              Divider(height: 20.h, thickness: 1, color: AppColors.lightGrey.withOpacity(0.5)),
+                              Divider(height: 20, thickness: 1, color: AppColors.lightGrey.withOpacity(0.5)),
                               Text("Upload a new PDF to replace the current one.", style: TextStyles.font14_400Weight.copyWith(color: AppColors.lightGrey), textAlign: TextAlign.center),
-                              SizedBox(height: 10.h),
+                              SizedBox(height: 10),
                             ],
                          ),
                       ),
@@ -159,7 +159,7 @@ class AddResumePage extends ConsumerWidget {
                            style: TextStyles.font14_400Weight.copyWith(color: AppColors.lightGrey),
                            textAlign: TextAlign.center,
                         ),
-                        SizedBox(height: 20.h),
+                        SizedBox(height: 20),
 
                         // File Picker Area
                         InkWell(
@@ -169,14 +169,14 @@ class AddResumePage extends ConsumerWidget {
                             strokeWidth: 1,
                             dashPattern: const [6, 6],
                             borderType: BorderType.RRect,
-                            radius: Radius.circular(12.r),
-                            padding: EdgeInsets.all(20.w),
+                            radius: Radius.circular(12),
+                            padding: EdgeInsets.all(20),
                             child: Center(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.upload_file, size: 40.sp, color: AppColors.lightGrey),
-                                  SizedBox(height: 10.h),
+                                  Icon(Icons.upload_file, size: 40, color: AppColors.lightGrey),
+                                  SizedBox(height: 10),
                                   Text(
                                     selectedFile != null
                                       ? selectedFile.path.split('/').last // Show selected filename
@@ -184,7 +184,7 @@ class AddResumePage extends ConsumerWidget {
                                     style: TextStyles.font14_500Weight.copyWith(color: theme.textTheme.bodyLarge?.color),
                                     textAlign: TextAlign.center,
                                   ),
-                                  SizedBox(height: 4.h),
+                                  SizedBox(height: 4),
                                    if(selectedFile == null) // Only show format text if no file selected
                                      Text(
                                        "PDF format only, max 2MB",
@@ -196,7 +196,7 @@ class AddResumePage extends ConsumerWidget {
                             ),
                           ),
                         ),
-                        SizedBox(height: 30.h),
+                        SizedBox(height: 30),
 
                         // Upload Button
                        SizedBox(
@@ -209,7 +209,7 @@ class AddResumePage extends ConsumerWidget {
                             style: (isDarkMode
                                 ? buttonStyles.wideBlueElevatedButtonDark()
                                 : buttonStyles.wideBlueElevatedButton())
-                                .copyWith(minimumSize: MaterialStateProperty.all(Size.fromHeight(50.h))),
+                                .copyWith(minimumSize: MaterialStateProperty.all(Size.fromHeight(50))),
                             child: (resumeState is ResumeUploading)
                                 ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.0))
                                 : Text(

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -135,30 +135,30 @@ class _AddNewPositionState extends ConsumerState<AddNewPosition> {
                 child: formData == null
                     ? const Center(child: CircularProgressIndicator())
                     : SingleChildScrollView(
-                        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const SubPagesIndicatesRequiredLabel(),
-                            SizedBox(height: 10.h),
+                            SizedBox(height: 10),
                             SubPagesFormLabel(label: "Title", isRequired: true),
-                            SizedBox(height: 2.h),
+                            SizedBox(height: 2),
                             SubPagesCustomTextField(
                               controller: formData.titleController,
                               hintText: "Ex: Retail Sales Manager",
                             ),
-                            SizedBox(height: 20.h),
+                            SizedBox(height: 20),
                             SubPagesFormLabel(label: "Employment type"),
-                            SizedBox(height: 2.h),
+                            SizedBox(height: 2),
                             SubPagesCustomDropdownFormField<String>(
                               value: formData.selectedEmploymentType,
                               hintText: "Please select",
                               items: jobTypes.map((type) => DropdownMenuItem(value: type, child: Text(type))).toList(),
                               onChanged: (value) => viewModel.setEmploymentType(value),
                             ),
-                            SizedBox(height: 20.h),
+                            SizedBox(height: 20),
                             SubPagesFormLabel(label: "Company name", isRequired: true),
-                            SizedBox(height: 2.h),
+                            SizedBox(height: 2),
                             GestureDetector(
                               onTap: () async {
                                 final selectedOrg = await GoRouter.of(context).push<Map<String, dynamic>>(
@@ -177,12 +177,12 @@ class _AddNewPositionState extends ConsumerState<AddNewPosition> {
                                   suffixIcon: Icon(
                                     Icons.search,
                                     color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
-                                    size: 20.sp,
+                                    size: 20,
                                   ),
                                 ),
                               ),
                             ),
-                            SizedBox(height: 10.h),
+                            SizedBox(height: 10),
                             Row(
                               children: [
                                 Checkbox(
@@ -202,7 +202,7 @@ class _AddNewPositionState extends ConsumerState<AddNewPosition> {
                                 ),
                               ],
                             ),
-                            SizedBox(height: 10.h),
+                            SizedBox(height: 10),
                             SubPagesFormLabel(label: "Start date", isRequired: true),
                             InkWell(
                               onTap: () => _selectDate(context, true),
@@ -214,12 +214,12 @@ class _AddNewPositionState extends ConsumerState<AddNewPosition> {
                                   suffixIcon: Icon(
                                     Icons.calendar_today,
                                     color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
-                                    size: 15.sp,
+                                    size: 15,
                                   ),
                                 ),
                               ),
                             ),
-                            SizedBox(height: 20.h),
+                            SizedBox(height: 20),
                             SubPagesFormLabel(label: "End date", isRequired: !formData.isCurrentPosition),
                             InkWell(
                               onTap: formData.isCurrentPosition ? null : () => _selectDate(context, false),
@@ -234,14 +234,14 @@ class _AddNewPositionState extends ConsumerState<AddNewPosition> {
                                     color: formData.isCurrentPosition
                                         ? AppColors.lightGrey
                                         : (isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor),
-                                    size: 15.sp,
+                                    size: 15,
                                   ),
                                 ),
                               ),
                             ),
-                            SizedBox(height: 20.h),
+                            SizedBox(height: 20),
                             SubPagesFormLabel(label: "Location type"),
-                            SizedBox(height: 2.h),
+                            SizedBox(height: 2),
                             SubPagesCustomDropdownFormField<String>(
                               value: formData.selectedLocationType,
                               hintText: "Please select",
@@ -252,16 +252,16 @@ class _AddNewPositionState extends ConsumerState<AddNewPosition> {
                               ],
                               onChanged: (value) => viewModel.setLocationType(value),
                             ),
-                            SizedBox(height: 20.h),
+                            SizedBox(height: 20),
                             SubPagesFormLabel(label: "Location"),
-                            SizedBox(height: 2.h),
+                            SizedBox(height: 2),
                             SubPagesCustomTextField(
                               controller: formData.locationController,
                               hintText: "Ex: London, United Kingdom",
                             ),
-                            SizedBox(height: 20.h),
+                            SizedBox(height: 20),
                             SubPagesFormLabel(label: "Description"),
-                            SizedBox(height: 2.h),
+                            SizedBox(height: 2),
                             SubPagesCustomTextField(
                               controller: formData.descriptionController,
                               hintText: "Add details about your role...",
@@ -269,7 +269,7 @@ class _AddNewPositionState extends ConsumerState<AddNewPosition> {
                               maxLength: maxDescriptionChars,
                             ),
                             Padding(
-                              padding: EdgeInsets.only(top: 4.h, right: 8.w),
+                              padding: EdgeInsets.only(top: 4, right: 8),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
@@ -284,9 +284,9 @@ class _AddNewPositionState extends ConsumerState<AddNewPosition> {
                                 ],
                               ),
                             ),
-                            SizedBox(height: 20.h),
+                            SizedBox(height: 20),
                             SubPagesSectionHeader(title: "Skills"),
-                            SizedBox(height: 10.h),
+                            SizedBox(height: 10),
                             Text(
                               "We recommend adding skills related to this position.",
                               style: TextStyles.font14_400Weight.copyWith(
@@ -295,7 +295,7 @@ class _AddNewPositionState extends ConsumerState<AddNewPosition> {
                                     : AppColors.lightTextColor,
                               ),
                             ),
-                            SizedBox(height: 10.h),
+                            SizedBox(height: 10),
                             ElevatedButton(
                               onPressed: () {
 
@@ -312,9 +312,9 @@ class _AddNewPositionState extends ConsumerState<AddNewPosition> {
                                 ),
                               ),
                             ),
-                            SizedBox(height: 20.h),
+                            SizedBox(height: 20),
                               SubPagesSectionHeader(title: "Media"),
-                              SizedBox(height: 10.h),
+                              SizedBox(height: 10),
                               Text(
                                 "Add media like images or sites. Learn more about media file types supported",
                                 style: TextStyles.font14_400Weight.copyWith(
@@ -323,7 +323,7 @@ class _AddNewPositionState extends ConsumerState<AddNewPosition> {
                                       : AppColors.lightTextColor,
                                 ),
                               ),
-                                SizedBox(height: 10.h),
+                                SizedBox(height: 10),
                               ElevatedButton(
                                 onPressed: () {
                                   },
@@ -336,7 +336,7 @@ class _AddNewPositionState extends ConsumerState<AddNewPosition> {
                                             ? AppColors.darkBlue
                                             : AppColors.lightBlue)),
                               ),
-                               SizedBox(height: 20.h),
+                               SizedBox(height: 20),
                           ],
                         ),
                       ),
@@ -344,7 +344,7 @@ class _AddNewPositionState extends ConsumerState<AddNewPosition> {
             ),
             if (formData != null)
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 child: SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -352,7 +352,7 @@ class _AddNewPositionState extends ConsumerState<AddNewPosition> {
                     style: (isDarkMode
                         ? buttonStyles.wideBlueElevatedButtonDark()
                         : buttonStyles.wideBlueElevatedButton())
-                        .copyWith(minimumSize: MaterialStateProperty.all(Size.fromHeight(50.h))),
+                        .copyWith(minimumSize: MaterialStateProperty.all(Size.fromHeight(50))),
                     child: state is AddPositionLoading
                         ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: AppColors.lightMain, strokeWidth: 2.0))
                         : Text(

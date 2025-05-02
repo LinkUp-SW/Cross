@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:link_up/features/jobs/model/jobs_screen_model.dart';
 import 'package:link_up/features/jobs/widgets/job_card_refactor.dart';
 import 'package:link_up/features/jobs/widgets/jobs_section.dart';
@@ -30,7 +30,7 @@ class JobsScreen extends ConsumerWidget {
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 5.h,
+          spacing: 5,
           children: [
             DecoratedBox(
               decoration: BoxDecoration(

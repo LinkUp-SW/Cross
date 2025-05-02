@@ -1,7 +1,7 @@
 // profile/view/add_section.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/profile/widgets/subpages_app_bar.dart';
 import 'package:link_up/shared/themes/colors.dart';
@@ -91,7 +91,7 @@ class _AddSectionPageState extends ConsumerState<AddSectionPage> {
                     : addSectionState.error != null
                         ? Center(
                             child: Padding(
-                              padding: EdgeInsets.all(16.w),
+                              padding: EdgeInsets.all(16),
                               child: Text(
                                 "Error loading section status: ${addSectionState.error}",
                                 textAlign: TextAlign.center,
@@ -123,7 +123,7 @@ class _AddSectionPageState extends ConsumerState<AddSectionPage> {
                                 ),
                               if (filteredCoreItems.isEmpty && filteredRecommendedItems.isEmpty && !addSectionState.isLoading)
                                 Padding(
-                                  padding: EdgeInsets.all(20.w),
+                                  padding: EdgeInsets.all(20),
                                   child: Center(
                                       child: Text("All available sections seem to be added!",
                                           style: TextStyles.font16_500Weight.copyWith(color: AppColors.lightGrey),
@@ -163,8 +163,8 @@ class _AddSectionPageState extends ConsumerState<AddSectionPage> {
         onExpansionChanged: onExpansionChanged,
         iconColor: textColor,
         collapsedIconColor: textColor,
-        tilePadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 0),
-        childrenPadding: EdgeInsets.only(left: 16.w, right: 16.w, bottom: 10.h),
+        tilePadding: EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+        childrenPadding: EdgeInsets.only(left: 16, right: 16, bottom: 10),
         children: items.map((item) => _buildSectionItem(context, item)).toList(),
       ),
     );
@@ -178,11 +178,11 @@ class _AddSectionPageState extends ConsumerState<AddSectionPage> {
 
     return ListTile(
       leading: item.icon != null
-          ? Icon(item.icon, color: iconColor, size: 22.sp)
-          : SizedBox(width: 24.w),
+          ? Icon(item.icon, color: iconColor, size: 22)
+          : SizedBox(width: 24),
       title: Text(item.title, style: TextStyles.font15_500Weight.copyWith(color: textColor)),
       contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
-      minLeadingWidth: 10.w,
+      minLeadingWidth: 10,
       dense: true,
       onTap: () {
         try {

@@ -1,7 +1,7 @@
 // lib/features/profile/view/edit_about_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/profile/state/edit_about_state.dart';
 import 'package:link_up/features/profile/viewModel/edit_about_view_model.dart';
@@ -95,12 +95,12 @@ class _EditAboutPageState extends ConsumerState<EditAboutPage> {
                     : state is EditAboutError && state.previousAboutText == null // Handle initial load error specifically
                         ? Center(
                             child: Padding(
-                              padding: EdgeInsets.all(16.w),
+                              padding: EdgeInsets.all(16),
                               child: Text("Error loading data: ${state.message}", style: TextStyle(color: Colors.red)),
                             )
                           )
                         : SingleChildScrollView(
-                            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
+                            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -110,7 +110,7 @@ class _EditAboutPageState extends ConsumerState<EditAboutPage> {
                                     color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
                                   ),
                                 ),
-                                SizedBox(height: 15.h),
+                                SizedBox(height: 15),
                                 TextField(
                                   controller: viewModel.aboutController,
                                   focusNode: _aboutFocusNode,
@@ -135,7 +135,7 @@ class _EditAboutPageState extends ConsumerState<EditAboutPage> {
                                       borderSide: BorderSide(color: AppColors.lightBlue, width: 1.5),
                                     ),
                                     counterText: "", // Hide default counter
-                                    contentPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+                                    contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                                   ),
                                   onChanged: (value) {
                                      // Trigger rebuild to update character count display
@@ -144,7 +144,7 @@ class _EditAboutPageState extends ConsumerState<EditAboutPage> {
                                 ),
                                 // Custom Character Count Display
                                 Padding(
-                                  padding: EdgeInsets.only(top: 4.h, right: 4.w),
+                                  padding: EdgeInsets.only(top: 4, right: 4),
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
@@ -159,17 +159,17 @@ class _EditAboutPageState extends ConsumerState<EditAboutPage> {
                                     ],
                                   ),
                                 ),
-                                SizedBox(height: 15.h),
+                                SizedBox(height: 15),
 
                                 SubPagesSectionHeader(title: "Skills"),
-                                SizedBox(height: 10.h),
+                                SizedBox(height: 10),
                                 Text(
                                   "Show your top skills – add up to 5 skills you want to be known for. They'll also appear in your Skills section.",
                                   style: TextStyles.font14_400Weight.copyWith(
                                     color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
                                   ),
                                 ),
-                                SizedBox(height: 10.h),
+                                SizedBox(height: 10),
                                 ElevatedButton(
                                   onPressed: isSaving ? null : () {
                                      // Navigate to Add Skills page
@@ -193,7 +193,7 @@ class _EditAboutPageState extends ConsumerState<EditAboutPage> {
             // Save Button Footer
             if (!isLoading)
               Container(
-                 padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                  color: isDarkMode ? AppColors.darkMain : AppColors.lightMain, // Match background
                  child: SizedBox(
                    width: double.infinity,
@@ -205,7 +205,7 @@ class _EditAboutPageState extends ConsumerState<EditAboutPage> {
                            ? buttonStyles.wideBlueElevatedButtonDark()
                            : buttonStyles.wideBlueElevatedButton()
                      ).copyWith(
-                         minimumSize: MaterialStateProperty.all(Size.fromHeight(50.h)),
+                         minimumSize: MaterialStateProperty.all(Size.fromHeight(50)),
                          // Grey out button if disabled
                          backgroundColor: MaterialStateProperty.resolveWith<Color?>(
                            (Set<MaterialState> states) {

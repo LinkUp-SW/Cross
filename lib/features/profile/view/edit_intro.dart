@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/profile/model/education_model.dart';
@@ -183,7 +183,7 @@ class _EditIntroPageState extends ConsumerState<EditIntroPage> {
                                     state is EditIntroError ? state.message : "Could not load profile data.",
                                     textAlign: TextAlign.center,
                                   ),
-                                  SizedBox(height: 10.h),
+                                  SizedBox(height: 10),
                                   ElevatedButton(
                                     onPressed: () => viewModel.refetchForRetry(),
                                     child: const Text("Retry"),
@@ -193,14 +193,14 @@ class _EditIntroPageState extends ConsumerState<EditIntroPage> {
                             ),
                           )
                         : SingleChildScrollView(
-                            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const SubPagesIndicatesRequiredLabel(),
-                                SizedBox(height: 10.h),
+                                SizedBox(height: 10),
                                 SubPagesFormLabel(label: "First Name", isRequired: true),
-                                SizedBox(height: 2.h),
+                                SizedBox(height: 2),
                                 TextFormField(
                                   controller: viewModel.firstNameController,
                                   enabled: !isSaving,
@@ -214,15 +214,15 @@ class _EditIntroPageState extends ConsumerState<EditIntroPage> {
                                      enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.lightGrey)),
                                      focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.lightBlue)),
                                      errorText: getErrorForField("First Name"),
-                                     errorStyle: TextStyle(color: Colors.red.shade700, fontSize: 12.sp),
+                                     errorStyle: TextStyle(color: Colors.red.shade700, fontSize: 12),
                                       hintStyle: TextStyles.font14_400Weight.copyWith(
                                         color: AppColors.lightGrey,
                                       ),
                                   ),
                                 ),
-                                SizedBox(height: 20.h),
+                                SizedBox(height: 20),
                                 SubPagesFormLabel(label: "Last Name", isRequired: true),
-                                SizedBox(height: 2.h),
+                                SizedBox(height: 2),
                                 TextFormField(
                                   controller: viewModel.lastNameController,
                                   enabled: !isSaving,
@@ -235,15 +235,15 @@ class _EditIntroPageState extends ConsumerState<EditIntroPage> {
                                     enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.lightGrey)),
                                     focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.lightBlue)),
                                     errorText: getErrorForField("Last Name"),
-                                    errorStyle: TextStyle(color: Colors.red.shade700, fontSize: 12.sp),
+                                    errorStyle: TextStyle(color: Colors.red.shade700, fontSize: 12),
                                      hintStyle: TextStyles.font14_400Weight.copyWith(
                                         color: AppColors.lightGrey,
                                       ),
                                   ),
                                 ),
-                                SizedBox(height: 20.h),
+                                SizedBox(height: 20),
                                 SubPagesFormLabel(label: "Headline", isRequired: true),
-                                SizedBox(height: 2.h),
+                                SizedBox(height: 2),
                                 TextFormField(
                                   controller: viewModel.headlineController,
                                   enabled: !isSaving,
@@ -258,7 +258,7 @@ class _EditIntroPageState extends ConsumerState<EditIntroPage> {
                                     enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.lightGrey)),
                                     focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.lightBlue)),
                                     errorText: getErrorForField("Headline"),
-                                    errorStyle: TextStyle(color: Colors.red.shade700, fontSize: 12.sp),
+                                    errorStyle: TextStyle(color: Colors.red.shade700, fontSize: 12),
                                     counterText: "",
                                      hintStyle: TextStyles.font14_400Weight.copyWith(
                                         color: AppColors.lightGrey,
@@ -267,7 +267,7 @@ class _EditIntroPageState extends ConsumerState<EditIntroPage> {
                                   onChanged: (_) => setState(() {}),
                                 ),
                                 Padding(
-                                  padding: EdgeInsets.only(top: 4.h, right: 4.w),
+                                  padding: EdgeInsets.only(top: 4, right: 4),
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
@@ -280,16 +280,16 @@ class _EditIntroPageState extends ConsumerState<EditIntroPage> {
                                     ],
                                   ),
                                 ),
-                                SizedBox(height: 20.h),
+                                SizedBox(height: 20),
                                 GestureDetector(
                                   onTap: isSaving ? null : () => GoRouter.of(context).push('/add_new_position'),
                                   child: Text("+ Add new position", style: TextStyles.font14_400Weight.copyWith(color: AppColors.lightBlue)),
                                 ),
-                                SizedBox(height: 20.h),
+                                SizedBox(height: 20),
                                 SubPagesSectionHeader(title: "Education"),
-                                SizedBox(height: 10.h),
+                                SizedBox(height: 10),
                                 SubPagesFormLabel(label: "School"),
-                                SizedBox(height: 2.h),
+                                SizedBox(height: 2),
                                 SubPagesCustomDropdownFormField<String>(
                                   value: formData.selectedEducationId,
                                   hintText: "Select your highest/current education",
@@ -309,12 +309,12 @@ class _EditIntroPageState extends ConsumerState<EditIntroPage> {
                                   ],
                                   onChanged: isSaving ? null : (value) => viewModel.setSelectedEducation(value),
                                 ),
-                                SizedBox(height: 10.h),
+                                SizedBox(height: 10),
                                 GestureDetector(
                                   onTap: isSaving ? null : () => GoRouter.of(context).push('/add_new_education'),
                                   child: Text("+ Add new education", style: TextStyles.font14_400Weight.copyWith(color: AppColors.lightBlue)),
                                 ),
-                                SizedBox(height: 10.h),
+                                SizedBox(height: 10),
                                 Row(
                                   children: [
                                     Checkbox(
@@ -333,18 +333,18 @@ class _EditIntroPageState extends ConsumerState<EditIntroPage> {
                                     ),
                                   ],
                                 ),
-                                SizedBox(height: 20.h),
+                                SizedBox(height: 20),
                                 SubPagesSectionHeader(title: "Location"),
-                                SizedBox(height: 10.h),
+                                SizedBox(height: 10),
                                 SubPagesFormLabel(label: "Country/Region", isRequired: true),
-                                SizedBox(height: 2.h),
+                                SizedBox(height: 2),
                                 CountryStateCityPicker(
                                     country: _countryPickerController,
                                     state: _statePickerController,
                                     city: _cityPickerController,
                                     textFieldDecoration: InputDecoration(
                                       isDense: true,
-                                      contentPadding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 10.w),
+                                      contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
                                       filled: false,
                                       border: UnderlineInputBorder(borderSide: BorderSide(color: AppColors.lightGrey)),
                                       enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppColors.lightGrey)),
@@ -354,11 +354,11 @@ class _EditIntroPageState extends ConsumerState<EditIntroPage> {
                                     ),
                                     dialogColor: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
                                 ),
-                                SizedBox(height: 20.h),
+                                SizedBox(height: 20),
                                 SubPagesSectionHeader(title: "Website"),
-                                SizedBox(height: 10.h),
+                                SizedBox(height: 10),
                                 SubPagesFormLabel(label: "Personal or Company Website"),
-                                SizedBox(height: 2.h),
+                                SizedBox(height: 2),
                                 TextFormField(
                                    controller: viewModel.websiteController,
                                    enabled: !isSaving,
@@ -373,16 +373,16 @@ class _EditIntroPageState extends ConsumerState<EditIntroPage> {
                                       enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.lightGrey)),
                                       focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.lightBlue)),
                                      errorText: getErrorForField("Website") ?? getErrorForField("URL"),
-                                      errorStyle: TextStyle(color: Colors.red.shade700, fontSize: 12.sp),
+                                      errorStyle: TextStyle(color: Colors.red.shade700, fontSize: 12),
                                        hintStyle: TextStyles.font14_400Weight.copyWith(
                                           color: AppColors.lightGrey,
                                         ),
                                    ),
                                  ),
-                                SizedBox(height: 20.h),
+                                SizedBox(height: 20),
                                 SubPagesSectionHeader(title: "Contact info"),
                                 Container(
-                                  padding: EdgeInsets.symmetric(vertical: 10.h),
+                                  padding: EdgeInsets.symmetric(vertical: 10),
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
@@ -390,7 +390,7 @@ class _EditIntroPageState extends ConsumerState<EditIntroPage> {
                                         "Add or edit your profile URL, email, and more",
                                         style: TextStyles.font14_400Weight.copyWith(color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor)
                                       ),
-                                      SizedBox(height: 10.h),
+                                      SizedBox(height: 10),
                                       GestureDetector(
                                         onTap: isSaving ? null : () => GoRouter.of(context).push('/edit_contact_info'),
                                         child: Text("Edit contact info", style: TextStyles.font14_400Weight.copyWith(color: AppColors.lightBlue)),
@@ -398,7 +398,7 @@ class _EditIntroPageState extends ConsumerState<EditIntroPage> {
                                     ],
                                   ),
                                 ),
-                                SizedBox(height: 20.h),
+                                SizedBox(height: 20),
                               ],
                             ),
                           ),
@@ -406,7 +406,7 @@ class _EditIntroPageState extends ConsumerState<EditIntroPage> {
             ),
             if (!isLoading)
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 child: SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -414,7 +414,7 @@ class _EditIntroPageState extends ConsumerState<EditIntroPage> {
                     style: (isDarkMode
                         ? buttonStyles.wideBlueElevatedButtonDark()
                         : buttonStyles.wideBlueElevatedButton()
-                    ).copyWith(minimumSize: MaterialStateProperty.all(Size.fromHeight(50.h))),
+                    ).copyWith(minimumSize: MaterialStateProperty.all(Size.fromHeight(50))),
                     child: isSaving
                         ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.0))
                         : Text("Save", style: TextStyles.font15_500Weight.copyWith(color: isDarkMode ? AppColors.darkMain : AppColors.lightMain)),

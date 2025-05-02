@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:go_router/go_router.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
@@ -27,12 +27,12 @@ class JobsSection extends ConsumerWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 8.h,
+        spacing: 8,
         children: [
           Padding(
             padding: EdgeInsets.only(
-              left: 8.w,
-              top: 5.h,
+              left: 8,
+              top: 5,
             ),
             child: Text(
               title,
@@ -45,7 +45,7 @@ class JobsSection extends ConsumerWidget {
           ),
           Padding(
             padding: EdgeInsets.symmetric(
-              horizontal: 8.w,
+              horizontal: 8,
             ),
             child: Text(
               description,
@@ -58,14 +58,14 @@ class JobsSection extends ConsumerWidget {
           ),
           ...jobs,
           Padding(
-            padding: EdgeInsets.symmetric(vertical: 5.h),
+            padding: EdgeInsets.symmetric(vertical: 5),
             child: InkWell(
               onTap: () {
                  context.go('/jobs/all');
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                spacing: 5.w,
+                spacing: 5,
                 children: [
                   Text(
                     "Show all",
@@ -80,7 +80,7 @@ class JobsSection extends ConsumerWidget {
                     color: isDarkMode
                         ? AppColors.darkTextColor
                         : AppColors.lightSecondaryText,
-                    size: 20.h,
+                    size: 20,
                   ),
                 ],
               ),
