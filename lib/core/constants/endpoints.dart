@@ -35,4 +35,5 @@ class ExternalEndPoints {
   static const currentPlan = 'api/v1/user/subscription/status';
   static const subscriptionPaymentSession = 'api/v1/user/subscription/checkout';
   static const cancelPremiumSubscription = 'api/v1/user/subscription/cancel';
+  static const resumePremiumSubscription = 'api/v1/user/subscription/resume';
 }

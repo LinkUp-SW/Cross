@@ -265,6 +265,16 @@ class _SubscriptionManagementScreenScreenState
                               : AppColors.lightBlue,
                         ),
                       ),
+                      trailing: state.isLoading
+                          ? CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                isDarkMode
+                                    ? AppColors.darkBlue
+                                    : AppColors.lightBlue,
+                              ),
+                            )
+                          : SizedBox(),
                       onTap: () async {
                         await ref
                             .read(subscriptionManagementScreenViewModelProvider
@@ -373,15 +383,34 @@ class _SubscriptionManagementScreenScreenState
                             : AppColors.lightTextColor,
                       ),
                     ),
-                    trailing: Switch(
-                      value: state.currentPlan.autoRenewal != null
-                          ? !state.currentPlan.autoRenewal!
-                          : false,
-                      onChanged: (bool value) {},
-                      activeColor: isDarkMode
-                          ? AppColors.darkGreen
-                          : AppColors.lightGreen,
-                    ),
+                    trailing: state.isLoading
+                        ? CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              isDarkMode
+                                  ? AppColors.darkBlue
+                                  : AppColors.lightBlue,
+                            ),
+                          )
+                        : Switch(
+                            value: state.currentPlan.autoRenewal ?? false,
+                            onChanged: (bool value) async {
+                              value
+                                  ? await ref
+                                      .read(
+                                          subscriptionManagementScreenViewModelProvider
+                                              .notifier)
+                                      .resumePremiumSubscription()
+                                  : await ref
+                                      .read(
+                                          subscriptionManagementScreenViewModelProvider
+                                              .notifier)
+                                      .cancelPremiumSubscription();
+                            },
+                            activeColor: isDarkMode
+                                ? AppColors.darkGreen
+                                : AppColors.lightGreen,
+                          ),
                   ),
                 ),
               ],

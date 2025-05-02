@@ -36,14 +36,46 @@ class SubscriptionManagementScreenViewModel
   }
 
   Future<void> startSubscriptionPaymentSession() async {
+    state = state.copyWith(isLoading: true);
     try {
       final startSubscriptionPaymentSessionResponse =
           await _subscriptionManagementScreenServices
               .startSubscriptionPaymentSession();
       final Uri uri = Uri.parse(startSubscriptionPaymentSessionResponse['url']);
-      await launchUrl(uri);
+      final launched = await launchUrl(uri);
+
+      if (!launched) {
+        throw Exception('Could not open payment page. Please try again.');
+      }
+      state = state.copyWith(isLoading: false);
     } catch (e) {
       log('Error redirecting to subscription payment session $e');
+      state = state.copyWith(isLoading: false, isError: true);
+    }
+  }
+
+  Future<void> cancelPremiumSubscription() async {
+    state = state.copyWith(isLoading: true);
+    try {
+      await _subscriptionManagementScreenServices
+          .cancelSubscriptionPaymentSession();
+
+      await getCurrentPlan();
+    } catch (e) {
+      log("Error toggling switch button $e");
+      state = state.copyWith(isLoading: false, isError: true);
+    }
+  }
+
+  Future<void> resumePremiumSubscription() async {
+    state = state.copyWith(isLoading: true);
+    try {
+      await _subscriptionManagementScreenServices
+          .resumeSubscriptionPaymentSession();
+
+      await getCurrentPlan();
+    } catch (e) {
+      log("Error toggling switch button $e");
       state = state.copyWith(isLoading: false, isError: true);
     }
   }
