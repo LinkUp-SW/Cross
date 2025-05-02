@@ -15,6 +15,7 @@ import 'package:link_up/features/profile/model/profile_model.dart';
 import 'package:link_up/features/profile/model/position_model.dart'; 
 import 'package:link_up/features/profile/model/about_model.dart';
 import 'package:link_up/features/profile/model/license_model.dart';
+import 'package:link_up/features/profile/model/skills_model.dart';
 import 'package:mime/mime.dart';
 
 class ProfileService extends BaseService {
@@ -752,7 +753,204 @@ Future<AboutModel> getUserAboutAndSkills(String userId) async {
        rethrow;
      }
    }
+    // --- NEW: Get User Skills ---
+  Future<List<SkillModel>> getUserSkills(String userId) async {
+    final String endpointTemplate = 'api/v1/user/profile/skills/:user_id'; // Use provided GET endpoint
+    log('ProfileService: Fetching skills for user ID: $userId');
+    try {
+      final response = await super.get(
+        endpointTemplate,
+        routeParameters: {'user_id': userId},
+      );
+      log('ProfileService: getUserSkills API Response Status Code: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonData = jsonDecode(response.body);
+        // Assuming the API returns skills under a 'skills' key, adjust if different
+        final List<dynamic> skillsJsonList = jsonData['skills'] as List? ?? [];
+        final List<SkillModel> skills = skillsJsonList
+            .map((skillJson) => skillJson is Map<String, dynamic> ? SkillModel.fromJson(skillJson) : null)
+            .whereType<SkillModel>()
+            .toList();
+        log('ProfileService: Fetched ${skills.length} skills.');
+        return skills;
+      } else if (response.statusCode == 404) {
+         log('ProfileService: No skills found for user $userId (404).');
+         return []; // Return empty list if not found
+      } else {
+        log('ProfileService: getUserSkills API Error: Status Code ${response.statusCode}, Body: ${response.body}');
+        throw Exception('Failed to load skills (Status code: ${response.statusCode})');
+      }
+    } catch (e) {
+      log('ProfileService: Error in getUserSkills: $e');
+      rethrow; // Or return empty list: return [];
+    }
+  }
+
+  // --- NEW: Add Skill ---
+  Future<bool> addSkill(SkillModel skill) async {
+    const String endpoint = 'api/v1/user/add-skill'; // Use provided POST endpoint
+    log('ProfileService: Adding skill: ${skill.name}');
+    log('ProfileService: Skill data to send: ${jsonEncode(skill.toJson())}');
+    try {
+      final response = await post(endpoint, body: skill.toJson());
+      log('ProfileService: addSkill API Response Status Code: ${response.statusCode}');
+      log('ProfileService: addSkill API Response Body: ${response.body}');
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        log('ProfileService: Skill added successfully.');
+        return true;
+      } else {
+        log('ProfileService: Add Skill Error: Status Code ${response.statusCode}, Body: ${response.body}');
+        String errorMessage = 'Failed to add skill (Status code: ${response.statusCode})';
+        try {
+           final errorJson = jsonDecode(response.body);
+           errorMessage = errorJson['message'] ?? errorMessage;
+        } catch (_) {}
+        throw Exception(errorMessage);
+      }
+    } catch (e) {
+      log('ProfileService: Error adding skill: $e');
+      rethrow;
+    }
+  }
+
+  // --- NEW: Update Skill ---
+  Future<bool> updateSkill(String skillId, SkillModel skill) async {
+    final String endpointTemplate = 'api/v1/user/update-skill/:skillId'; // Use provided PUT endpoint
+    final String endpoint = endpointTemplate.replaceFirst(':skillId', skillId);
+    log('ProfileService: Updating skill ID: $skillId with name: ${skill.name}');
+    log('ProfileService: Skill data to send: ${jsonEncode(skill.toJson())}');
+    try {
+      final response = await put(endpoint, skill.toJson());
+      log('ProfileService: updateSkill API Response Status Code: ${response.statusCode}');
+      log('ProfileService: updateSkill API Response Body: ${response.body}');
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        log('ProfileService: Skill updated successfully.');
+        return true;
+      } else {
+        log('ProfileService: Update Skill Error: Status Code ${response.statusCode}, Body: ${response.body}');
+         String errorMessage = 'Failed to update skill (Status code: ${response.statusCode})';
+         try {
+            final errorJson = jsonDecode(response.body);
+            errorMessage = errorJson['message'] ?? errorMessage;
+         } catch (_) {}
+         throw Exception(errorMessage);
+      }
+    } catch (e) {
+      log('ProfileService: Error updating skill: $e');
+      rethrow;
+    }
+  }
+
+  // --- NEW: Delete Skill ---
+  Future<bool> deleteSkill(String skillId) async {
+    final String endpointTemplate = 'api/v1/user/delete-skill/:skillId'; // Use provided DELETE endpoint
+    final String endpoint = endpointTemplate.replaceFirst(':skillId', skillId);
+    log('ProfileService: Deleting skill ID: $skillId');
+    try {
+      final response = await super.delete(endpoint, null);
+      log('ProfileService: deleteSkill API Response Status Code: ${response.statusCode}');
+      log('ProfileService: deleteSkill API Response Body: ${response.body}');
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        log('ProfileService: Skill deleted successfully.');
+        return true;
+      } else {
+        log('ProfileService: Delete Skill Error: Status Code ${response.statusCode}, Body: ${response.body}');
+        String errorMessage = 'Failed to delete skill (Status code: ${response.statusCode})';
+        try {
+           final errorJson = jsonDecode(response.body);
+           errorMessage = errorJson['message'] ?? errorMessage;
+        } catch (_) {}
+        throw Exception(errorMessage);
+      }
+    } catch (e) {
+      log('ProfileService: Error deleting skill: $e');
+      rethrow;
+    }
+  }
+
+  // --- NEW: Get User Sections for Linking ---
+  // Adjust the return type based on the actual API response structure
+    Future<Map<String, List<LinkableItem>>> getUserSections() async {
+    // Endpoint remains the same as provided by backend
+    const String endpoint = 'api/v1/user/get-user-sections';
+    log('ProfileService: Fetching user sections for skill linking (simplified parsing)');
+    try {
+      final response = await super.get(endpoint);
+      log('ProfileService: getUserSections API Response Status Code: ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonData = jsonDecode(response.body);
+        log('ProfileService: Fetched sections JSON (simplified): ${jsonData.toString().substring(jsonData.toString().length, )}...');
+
+        // Expecting arrays of { _id: string, name: string } from the backend
+        final List<dynamic> experiencesJson = jsonData['experiences'] as List? ?? []; // Key might be 'experiences' from backend log
+        final List<dynamic> educationsJson = jsonData['educations'] as List? ?? [];
+        final List<dynamic> licensesJson = jsonData['licenses'] as List? ?? [];
+
+        // --- PARSE SIMPLIFIED DATA ---
+        final List<LinkableItem> experiences = experiencesJson
+            .map((exp) {
+              if (exp is Map<String, dynamic> && exp['_id'] != null && exp['name'] != null) {
+                return LinkableItem(
+                  id: exp['_id'] as String,
+                  title: exp['name'] as String, // Use job title (from 'name') as title
+                  subtitle: 'Experience', // Placeholder or generic subtitle
+                  type: 'experience',
+                );
+              }
+              return null;
+            })
+            .whereType<LinkableItem>() // Filter out any nulls from failed parsing
+            .toList();
+
+        final List<LinkableItem> educations = educationsJson
+            .map((edu) {
+              if (edu is Map<String, dynamic> && edu['_id'] != null && edu['name'] != null) {
+                return LinkableItem(
+                  id: edu['_id'] as String,
+                  title: 'Education', // Placeholder title (degree is missing)
+                  subtitle: edu['name'] as String, // Use school name (from 'name') as subtitle
+                  type: 'education',
+                );
+              }
+              return null;
+            })
+            .whereType<LinkableItem>()
+            .toList();
+
+        final List<LinkableItem> licenses = licensesJson
+            .map((lic) {
+               if (lic is Map<String, dynamic> && lic['_id'] != null && lic['name'] != null) {
+                 return LinkableItem(
+                   id: lic['_id'] as String,
+                   title: lic['name'] as String, // Use license name (from 'name') as title
+                   subtitle: 'License/Certification', // Placeholder subtitle (issuing org is missing)
+                   type: 'license',
+                 );
+               }
+               return null;
+            })
+            .whereType<LinkableItem>()
+            .toList();
+        // --- END OF SIMPLIFIED PARSING ---
+
+        log('ProfileService: Parsed (simplified) ${experiences.length} experiences, ${educations.length} educations, ${licenses.length} licenses for linking.');
+        return {
+          'experience': experiences,
+          'education': educations,
+          'license': licenses,
+        };
+      } else {
+        log('ProfileService: getUserSections API Error: Status Code ${response.statusCode}, Body: ${response.body}');
+        throw Exception('Failed to load sections (Status code: ${response.statusCode})');
+      }
+    } catch (e) {
+      log('ProfileService: Error in getUserSections: $e');
+      rethrow;
+    }
+  }
 }
+
 
 final profileServiceProvider = Provider<ProfileService>((ref) {
   return ProfileService();

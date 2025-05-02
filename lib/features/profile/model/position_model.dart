@@ -52,7 +52,6 @@ class PositionModel {
       if (skills != null && skills!.isNotEmpty) 'skills': skills,
       if (media != null && media!.isNotEmpty) 'media': media,
     };
-    log('PositionModel toJson: $data');
     return data;
   }
 
@@ -67,14 +66,11 @@ class PositionModel {
         orgId = organizationData?['_id'] as String? ?? organizationData?['id'] as String?;
         orgName = organizationData?['name'] as String?;
         orgLogo = organizationData?['logo'] as String?;
-        log("Experience fromJson: Found nested organization data. Name: $orgName, Logo: $orgLogo");
     } else if (json['organization'] is String) {
         orgId = json['organization'] as String?;
-        log("Experience fromJson: Found organization ID string: $orgId");
     }
 
     orgName ??= json['company_name'] as String? ?? json['organization_name'] as String?;
-    log("Experience fromJson: Final company name: $orgName");
 
     List<String>? parsedSkills = (json['skills'] as List?)?.map((item) => item.toString()).toList();
 

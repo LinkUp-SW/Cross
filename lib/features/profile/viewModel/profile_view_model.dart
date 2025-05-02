@@ -8,13 +8,14 @@ import 'package:link_up/features/profile/state/profile_state.dart';
 import 'package:link_up/core/constants/endpoints.dart';
 import 'package:link_up/features/profile/model/profile_model.dart';
 import 'package:link_up/features/profile/model/about_model.dart';
+import 'package:link_up/features/profile/model/skills_model.dart';
 
 final experienceDataProvider = StateProvider<List<PositionModel>?>((ref) => null);
 final educationDataProvider = StateProvider<List<EducationModel>?>((ref) => null);
 final aboutDataProvider = StateProvider<AboutModel?>((ref) => null);
 final resumeUrlProvider = StateProvider<String?>((ref) => null);
 final licenseDataProvider = StateProvider<List<LicenseModel>?>((ref) => null); 
-
+final skillsDataProvider = StateProvider<List<SkillModel>?>((ref) => null);
 class ProfileViewModel extends StateNotifier<ProfileState> {
   final ProfileService _profileService;
   final Ref _ref;
@@ -40,7 +41,7 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
     _ref.read(aboutDataProvider.notifier).state = null;
     _ref.read(resumeUrlProvider.notifier).state = null;
     _ref.read(licenseDataProvider.notifier).state = null; 
-
+    _ref.read(skillsDataProvider.notifier).state = null;
     try {
       final userProfileFuture = _profileService.getUserProfile(idToFetch);
       final educationFuture = _profileService.getUserEducation(idToFetch);
@@ -48,6 +49,7 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
       final aboutFuture = _profileService.getUserAboutAndSkills(idToFetch);
       final resumeUrlFuture = _profileService.getCurrentResumeUrl(idToFetch);
       final licensesFuture = _profileService.getUserLicenses(idToFetch); 
+      final skillsFuture = _profileService.getUserSkills(idToFetch);
 
       final results = await Future.wait([
         userProfileFuture,
@@ -55,10 +57,11 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
         experienceFuture,
         aboutFuture,
         resumeUrlFuture,
-        licensesFuture 
+        licensesFuture ,
+        skillsFuture
       ]);
 
-      if (results.length < 6) { 
+      if (results.length < 7) { 
          throw Exception("One or more profile fetch operations failed to return.");
       }
 
@@ -68,6 +71,7 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
       final aboutData = results[3] as AboutModel;
       final resumeUrl = results[4] as String?;
       final licenseData = results[5] as List<LicenseModel>; 
+      final skillsData = results[6] as List<SkillModel>;
 
       if (mounted) {
         if (userProfile.profilePhotoUrl.isNotEmpty) {
@@ -81,12 +85,14 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
         _ref.read(aboutDataProvider.notifier).state = aboutData;
         _ref.read(resumeUrlProvider.notifier).state = resumeUrl;
         _ref.read(licenseDataProvider.notifier).state = licenseData; 
+        _ref.read(skillsDataProvider.notifier).state = skillsData;
 
         log("ProfileViewModel: Updated experienceDataProvider with ${experienceData.length} items.");
         log("ProfileViewModel: Updated educationDataProvider with ${educationData.length} items.");
         log("ProfileViewModel: Updated aboutDataProvider. About text length: ${aboutData.about.length}, Skills count: ${aboutData.skills.length}");
         log("ProfileViewModel: Updated resumeUrlProvider. URL: $resumeUrl");
-        log("ProfileViewModel: Updated licenseDataProvider with ${licenseData.length} items.");  
+        log("ProfileViewModel: Updated licenseDataProvider with ${licenseData.length} items."); 
+        log("ProfileViewModel: Updated skillsDataProvider with ${skillsData.length} items."); 
 
 
         state = ProfileLoaded(userProfile);
@@ -100,6 +106,7 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
          _ref.read(aboutDataProvider.notifier).state = null;
          _ref.read(resumeUrlProvider.notifier).state = null;
          _ref.read(licenseDataProvider.notifier).state = null; 
+          _ref.read(skillsDataProvider.notifier).state = null;
        }
     }
   }

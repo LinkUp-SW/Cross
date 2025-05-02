@@ -45,6 +45,9 @@ import 'package:link_up/features/profile/view/edit_about.dart';
 import 'package:link_up/features/profile/view/add_resume.dart';
 import 'package:link_up/features/profile/view/resume_viewer.dart';
 import 'package:link_up/features/profile/view/add_new_license.dart';
+import 'package:link_up/features/profile/view/add_new_skill.dart';
+
+
 
 final goRouterProvider = Provider<GoRouter>((ref) {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
@@ -116,6 +119,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         GoRoute(
           path: "/add_profile_section",
           builder: (context, state) => const AddSectionPage(),
+         ),
+          GoRoute(
+          path: "/add_new_skill",
+          builder: (context, state) => const AddSkillPage(),
          ),
          GoRoute( 
            path: "/add_resume",

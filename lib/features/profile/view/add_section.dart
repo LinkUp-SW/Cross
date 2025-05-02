@@ -34,7 +34,7 @@ class _AddSectionPageState extends ConsumerState<AddSectionPage> {
     SectionItem(title: "Add about", route: "/edit_about", icon: Icons.info_outline, type: "about"),
     SectionItem(title: "Add education", route: "/add_new_education", icon: Icons.school_outlined, type: "education"),
     SectionItem(title: "Add position", route: "/add_new_position", icon: Icons.work_outline, type: "position"),
-    SectionItem(title: "Add skills", route: "/add_skills", icon: Icons.star_outline, type: "skills"),
+    SectionItem(title: "Add skills", route: "/add_new_skill", icon: Icons.star_outline, type: "skills"),
   ];
 
   final List<SectionItem> allRecommendedItems = [
@@ -48,13 +48,17 @@ class _AddSectionPageState extends ConsumerState<AddSectionPage> {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final theme = Theme.of(context);
     final addSectionState = ref.watch(addSectionViewModelProvider);
-    log("[AddSectionPage] Build triggered. State: isLoading=${addSectionState.isLoading}, hasAboutInfo=${addSectionState.hasAboutInfo}, hasResume=${addSectionState.hasResume}, hasLicenses=${addSectionState.hasLicenses}, error=${addSectionState.error}");
+    log("[AddSectionPage] Build triggered. State: isLoading=${addSectionState.isLoading}, hasAboutInfo=${addSectionState.hasAboutInfo}, hasSkills=${addSectionState.hasSkills}, hasResume=${addSectionState.hasResume}, hasLicenses=${addSectionState.hasLicenses}, error=${addSectionState.error}");
 
     List<SectionItem> filteredCoreItems = allCoreItems.where((item) {
       if (item.type == "about" && addSectionState.hasAboutInfo) {
         log("[AddSectionPage] Filtering out '${item.title}' because hasAboutInfo is true.");
         return false;
       }
+      if (item.type == "skills" && addSectionState.hasSkills) { 
+          log("[AddSectionPage] Filtering out '${item.title}' because skills already exist.");
+          return false;
+       }
       return true;
     }).toList();
 
