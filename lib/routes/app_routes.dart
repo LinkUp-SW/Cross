@@ -48,8 +48,6 @@ import 'package:link_up/features/profile/view/resume_viewer.dart';
 import 'package:link_up/features/profile/view/add_new_license.dart';
 import 'package:link_up/features/profile/view/add_new_skill.dart';
 
-
-
 final goRouterProvider = Provider<GoRouter>(
   (ref) {
     final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
@@ -58,7 +56,11 @@ final goRouterProvider = Provider<GoRouter>(
       navigatorKey: navigatorKey,
       initialLocation: '/login',
       routes: <RouteBase>[
-        GoRoute(path: "/profile", builder: (context, state) => ProfilePage()),
+        GoRoute(
+            path: "/profile",
+            builder: (context, state) => ProfilePage(
+                  userId: state.extra as String,
+                )),
         GoRoute(
             path: "/login",
             builder: (context, state) => const LoginPage(),
@@ -121,31 +123,31 @@ final goRouterProvider = Provider<GoRouter>(
         GoRoute(
           path: "/add_profile_section",
           builder: (context, state) => const AddSectionPage(),
-         ),
-          GoRoute(
+        ),
+        GoRoute(
           path: "/add_new_skill",
           builder: (context, state) => const AddSkillPage(),
-         ),
-         GoRoute( 
-           path: "/add_resume",
-           builder: (context, state) => const AddResumePage(),
-         ),
-         GoRoute( 
-           path: "/add_new_license",
-           builder: (context, state) => const AddNewLicensePage(),
-         ),         
-          GoRoute(
-            path: '/resume_viewer', 
-            builder: (context, state) {
+        ),
+        GoRoute(
+          path: "/add_resume",
+          builder: (context, state) => const AddResumePage(),
+        ),
+        GoRoute(
+          path: "/add_new_license",
+          builder: (context, state) => const AddNewLicensePage(),
+        ),
+        GoRoute(
+          path: '/resume_viewer',
+          builder: (context, state) {
             final String? resumeUrl = state.extra as String?;
-            return ResumeViewerPage(url: resumeUrl); 
-      },
-    ),
+            return ResumeViewerPage(url: resumeUrl);
+          },
+        ),
 
-          GoRoute( 
-           path: "/edit_about",
-           builder: (context, state) => const EditAboutPage(),
-         ),
+        GoRoute(
+          path: "/edit_about",
+          builder: (context, state) => const EditAboutPage(),
+        ),
         GoRoute(
             path: "/search_school",
             pageBuilder: (context, state) {
@@ -305,7 +307,8 @@ final goRouterProvider = Provider<GoRouter>(
           path: '/savedPosts',
           builder: (context, state) => SavedPostsPage(),
         ),
-        GoRoute(path: '/userPosts', builder: (context, state) => UserPostsPage()),
+        GoRoute(
+            path: '/userPosts', builder: (context, state) => UserPostsPage()),
         GoRoute(
             path: "/messages", builder: (context, state) => ChatListScreen()),
         GoRoute(path: "/chatpage", builder: (context, state) => Container()),
