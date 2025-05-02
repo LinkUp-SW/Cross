@@ -1,4 +1,4 @@
-import 'dart:math';
+import 'dart:math' as Math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -8,6 +8,7 @@ import 'package:link_up/features/search/model/people_search_card_model.dart';
 import 'package:link_up/shared/themes/button_styles.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
+import "dart:developer";
 
 class PeopleSearchCard extends ConsumerStatefulWidget {
   final PeopleCardModel data;
@@ -43,13 +44,19 @@ class _PeopleSearchCardState extends ConsumerState<PeopleSearchCard> {
           children: [
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 7.w),
-              child: CircleAvatar(
-                radius: 30.r,
-                foregroundImage: widget.data.profilePhoto != null &&
-                        widget.data.profilePhoto!.isNotEmpty
-                    ? NetworkImage(widget.data.profilePhoto!)
-                    : AssetImage('assets/images/default-profile-picture.png')
-                        as ImageProvider,
+              child: InkWell(
+                onTap: () {
+                  log('Card Id: ${widget.data.cardId}');
+                  context.push('/profile', extra: widget.data.cardId);
+                },
+                child: CircleAvatar(
+                  radius: 30.r,
+                  foregroundImage: widget.data.profilePhoto != null &&
+                          widget.data.profilePhoto!.isNotEmpty
+                      ? NetworkImage(widget.data.profilePhoto!)
+                      : AssetImage('assets/images/default-profile-picture.png')
+                          as ImageProvider,
+                ),
               ),
             ),
             Expanded(
@@ -190,8 +197,8 @@ class _PeopleSearchCardState extends ConsumerState<PeopleSearchCard> {
                               ? IconButton(
                                   onPressed: () {},
                                   icon: Transform.rotate(
-                                    angle:
-                                        -pi / 4, // 45 degrees counterclockwise
+                                    angle: -Math.pi /
+                                        4, // 45 degrees counterclockwise
                                     child: Icon(
                                       Icons.send,
                                       size: 20.r,

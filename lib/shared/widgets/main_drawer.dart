@@ -53,8 +53,9 @@ class _MainDrawerState extends ConsumerState<MainDrawer> {
               children: [
                 GestureDetector(
                   onTap: () {
+                    final userId = InternalEndPoints.userId;
                     context.pop();
-                    context.push('/profile');
+                    context.push('/profile', extra: userId);
                   },
                   child: Align(
                     alignment: Alignment.centerLeft,
