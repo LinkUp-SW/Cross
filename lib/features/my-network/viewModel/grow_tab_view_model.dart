@@ -132,9 +132,14 @@ class GrowTabViewModel extends Notifier<GrowTabState> {
     }
   }
 
-  Future<void> sendConnectionRequest(String userId) async {
+  Future<void> sendConnectionRequest(
+    String userId, {
+    Map<String, dynamic>? body,
+  }) async {
     try {
-      await ref.read(growTabServicesProvider).sendConnectionRequest(userId);
+      await ref
+          .read(growTabServicesProvider)
+          .sendConnectionRequest(userId, body: body);
     } catch (e) {
       log('Error sending connection request: $e');
     }
