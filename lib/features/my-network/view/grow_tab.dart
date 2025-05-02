@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/my-network/viewModel/grow_tab_view_model.dart';
 import 'package:link_up/features/my-network/widgets/grow_tab_navigation_row.dart';
@@ -75,80 +74,87 @@ class _GrowTabState extends ConsumerState<GrowTab> {
       },
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
-        child: Column(
-          spacing: 10.h,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            GrowTabNavigationRow(
-              title: 'Invitations',
-              onTap: () => context.push('/invitations'),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: 600,
             ),
-            if (state.isLoading && state.receivedInvitations == null)
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: 3,
-                itemBuilder: (context, index) =>
-                    ReceivedInvitationsCardLoadingSkeleton(),
-              )
-            else if (state.receivedInvitations != null &&
-                state.receivedInvitations!.isNotEmpty)
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: state.receivedInvitations!.length,
-                itemBuilder: (context, index) {
-                  return ReceivedInvitationsCard(
-                    data: state.receivedInvitations!.elementAt(index),
-                    onAccept: (userId) {
-                      ref
-                          .read(growTabViewModelProvider.notifier)
-                          .acceptInvitation(userId);
+            child: Column(
+              spacing: 10,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                GrowTabNavigationRow(
+                  title: 'Invitations',
+                  onTap: () => context.push('/invitations'),
+                ),
+                if (state.isLoading && state.receivedInvitations == null)
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: 3,
+                    itemBuilder: (context, index) =>
+                        ReceivedInvitationsCardLoadingSkeleton(),
+                  )
+                else if (state.receivedInvitations != null &&
+                    state.receivedInvitations!.isNotEmpty)
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: state.receivedInvitations!.length,
+                    itemBuilder: (context, index) {
+                      return ReceivedInvitationsCard(
+                        data: state.receivedInvitations!.elementAt(index),
+                        onAccept: (userId) {
+                          ref
+                              .read(growTabViewModelProvider.notifier)
+                              .acceptInvitation(userId);
+                        },
+                        onIgnore: (userId) {
+                          ref
+                              .read(growTabViewModelProvider.notifier)
+                              .ignoreInvitation(userId);
+                        },
+                      );
                     },
-                    onIgnore: (userId) {
-                      ref
-                          .read(growTabViewModelProvider.notifier)
-                          .ignoreInvitation(userId);
-                    },
-                  );
-                },
-              ),
-            GrowTabNavigationRow(
-              title: 'Manage my network',
-              onTap: () => context.push('/manage-network'),
+                  ),
+                GrowTabNavigationRow(
+                  title: 'Manage my network',
+                  onTap: () => context.push('/manage-network'),
+                ),
+                state.isLoading && state.workTitle == null
+                    ? SectionLoadingSkeleton(
+                        title: 'People you may know from Global Solutions Ltd')
+                    : (state.workTitle != null &&
+                            state.peopleYouMayKnowFromWork != null &&
+                            state.peopleYouMayKnowFromWork!.isNotEmpty)
+                        ? Section(
+                            title: "People you may know from ${state.workTitle}",
+                            cards: state.peopleYouMayKnowFromWork!
+                                .map((person) => PeopleCard(
+                                      data: person,
+                                      isEducationCard: false,
+                                    ))
+                                .toSet())
+                        : SizedBox(),
+                state.isLoading && state.educationTitle == null
+                    ? SectionLoadingSkeleton(
+                        title: 'People you may know from Global Solutions Ltd')
+                    : (state.educationTitle != null &&
+                            state.peopleYouMayKnowFromEducation != null &&
+                            state.peopleYouMayKnowFromEducation!.isNotEmpty)
+                        ? Section(
+                            title:
+                                "People you may know from ${state.educationTitle}",
+                            cards: state.peopleYouMayKnowFromEducation!
+                                .map((person) => PeopleCard(
+                                      data: person,
+                                      isEducationCard: true,
+                                    ))
+                                .toSet())
+                        : SizedBox()
+              ],
             ),
-            state.isLoading && state.workTitle == null
-                ? SectionLoadingSkeleton(
-                    title: 'People you may know from Global Solutions Ltd')
-                : (state.workTitle != null &&
-                        state.peopleYouMayKnowFromWork != null &&
-                        state.peopleYouMayKnowFromWork!.isNotEmpty)
-                    ? Section(
-                        title: "People you may know from ${state.workTitle}",
-                        cards: state.peopleYouMayKnowFromWork!
-                            .map((person) => PeopleCard(
-                                  data: person,
-                                  isEducationCard: false,
-                                ))
-                            .toSet())
-                    : SizedBox(),
-            state.isLoading && state.educationTitle == null
-                ? SectionLoadingSkeleton(
-                    title: 'People you may know from Global Solutions Ltd')
-                : (state.educationTitle != null &&
-                        state.peopleYouMayKnowFromEducation != null &&
-                        state.peopleYouMayKnowFromEducation!.isNotEmpty)
-                    ? Section(
-                        title:
-                            "People you may know from ${state.educationTitle}",
-                        cards: state.peopleYouMayKnowFromEducation!
-                            .map((person) => PeopleCard(
-                                  data: person,
-                                  isEducationCard: true,
-                                ))
-                            .toSet())
-                    : SizedBox()
-          ],
+          ),
         ),
       ),
     );

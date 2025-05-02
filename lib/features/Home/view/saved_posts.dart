@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
 import 'package:link_up/features/Home/post_functions.dart';
@@ -93,17 +92,17 @@ class _RepostsPageState extends State<SavedPostsPage> {
           icon: const Icon(Icons.arrow_back),
         ),
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(40.h),
+          preferredSize: Size.fromHeight(40),
           child: Column(
             children: [
               Divider(
-                indent: 5.w,
-                endIndent: 5.w,
+                indent: 5,
+                endIndent: 5,
                 thickness: 0,
                 color: AppColors.grey,
               ),
               Padding(
-                padding: EdgeInsets.all(5.w).copyWith(left: 15.w),
+                padding: EdgeInsets.all(5).copyWith(left: 15),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
@@ -134,13 +133,13 @@ class _RepostsPageState extends State<SavedPostsPage> {
                           child: Text(
                             'No saved posts yet',
                             style: TextStyle(
-                              fontSize: 30.sp,
+                              fontSize: 30,
                             ),
                           ),
                         ),
                       )
                     : Padding(
-                        padding: EdgeInsets.only(top: 5.h),
+                        padding: EdgeInsets.only(top: 5),
                         child: ListView.separated(
                           controller: scrollController,
                           physics: const AlwaysScrollableScrollPhysics(),
@@ -159,9 +158,16 @@ class _RepostsPageState extends State<SavedPostsPage> {
                             if (index == posts.length) {
                               return const SizedBox.shrink();
                             }
-                            return Card(
-                              child: Posts(
-                                post: posts[index],
+                            return Center(
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  maxWidth: 600, // Typical mobile phone width
+                                ),
+                                child: Card(
+                                  child: Posts(
+                                    post: posts[index],
+                                  ),
+                                ),
                               ),
                             );
                           },

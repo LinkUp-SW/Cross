@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomModalBottomSheet extends ConsumerWidget {
   final Widget content;
@@ -11,7 +10,7 @@ class CustomModalBottomSheet extends ConsumerWidget {
     return SizedBox(
       width: double.infinity,
       child: Padding(
-        padding: EdgeInsets.all(16.w),
+        padding: EdgeInsets.all(16),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,

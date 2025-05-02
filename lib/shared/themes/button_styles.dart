@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 
@@ -48,8 +47,8 @@ class LinkUpButtonStyles {
     BorderRadius? borderRadius,
     TextStyle? textStyle,
   }) {
-    padding ??= EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h);
-    borderRadius ??= BorderRadius.all(Radius.circular(20.r));
+    padding ??= EdgeInsets.symmetric(horizontal: 10, vertical: 8);
+    borderRadius ??= BorderRadius.all(Radius.circular(20));
     textStyle ??= TextStyles.font13_700Weight;
 
     return ButtonStyle(
@@ -66,8 +65,8 @@ class LinkUpButtonStyles {
     BorderRadius? borderRadius,
     TextStyle? textStyle,
   }) {
-    padding ??= EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h);
-    borderRadius ??= BorderRadius.all(Radius.circular(20.r));
+    padding ??= EdgeInsets.symmetric(horizontal: 10, vertical: 8);
+    borderRadius ??= BorderRadius.all(Radius.circular(20));
     textStyle ??= TextStyles.font13_700Weight;
 
     return ButtonStyle(
@@ -84,8 +83,8 @@ class LinkUpButtonStyles {
     BorderRadius? borderRadius,
     TextStyle? textStyle,
   }) {
-    padding ??= EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h);
-    borderRadius ??= BorderRadius.all(Radius.circular(20.r));
+    padding ??= EdgeInsets.symmetric(horizontal: 10, vertical: 8);
+    borderRadius ??= BorderRadius.all(Radius.circular(20));
     textStyle ??= TextStyles.font13_700Weight;
 
     return ElevatedButton.styleFrom(
@@ -97,7 +96,7 @@ class LinkUpButtonStyles {
         borderRadius: borderRadius,
         side: BorderSide(
           color: AppColors.lightBlue,
-          width: 1.w,
+          width: 1,
         ),
       ),
       textStyle: textStyle,
@@ -110,8 +109,8 @@ class LinkUpButtonStyles {
     BorderRadius? borderRadius,
     TextStyle? textStyle,
   }) {
-    padding ??= EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h);
-    borderRadius ??= BorderRadius.all(Radius.circular(20.r));
+    padding ??= EdgeInsets.symmetric(horizontal: 10, vertical: 8);
+    borderRadius ??= BorderRadius.all(Radius.circular(20));
     textStyle ??= TextStyles.font13_700Weight;
 
     return ElevatedButton.styleFrom(
@@ -123,7 +122,7 @@ class LinkUpButtonStyles {
         borderRadius: borderRadius,
         side: BorderSide(
           color: AppColors.darkBlue,
-          width: 1.w,
+          width: 1,
         ),
       ),
       textStyle: textStyle,
@@ -136,8 +135,8 @@ class LinkUpButtonStyles {
     BorderRadius? borderRadius,
     TextStyle? textStyle,
   }) {
-    padding ??= EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h);
-    borderRadius ??= BorderRadius.all(Radius.circular(20.r));
+    padding ??= EdgeInsets.symmetric(horizontal: 10, vertical: 5);
+    borderRadius ??= BorderRadius.all(Radius.circular(20));
     textStyle ??= TextStyles.font15_700Weight;
 
     return ElevatedButton.styleFrom(
@@ -145,12 +144,12 @@ class LinkUpButtonStyles {
       backgroundColor: AppColors.lightMain,
       elevation: elevation,
       padding: padding,
-      minimumSize: Size(double.infinity, 5.h),
+      minimumSize: Size(double.infinity, 5),
       shape: RoundedRectangleBorder(
         borderRadius: borderRadius,
         side: BorderSide(
           color: AppColors.lightBlue,
-          width: 1.0.w,
+          width: 1.0,
         ),
       ),
       textStyle: textStyle,
@@ -163,8 +162,8 @@ class LinkUpButtonStyles {
     BorderRadius? borderRadius,
     TextStyle? textStyle,
   }) {
-    padding ??= EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h);
-    borderRadius ??= BorderRadius.all(Radius.circular(20.r));
+    padding ??= EdgeInsets.symmetric(horizontal: 10, vertical: 5);
+    borderRadius ??= BorderRadius.all(Radius.circular(20));
     textStyle ??= TextStyles.font15_700Weight;
 
     return ElevatedButton.styleFrom(
@@ -172,12 +171,12 @@ class LinkUpButtonStyles {
       backgroundColor: AppColors.lightMain,
       elevation: elevation,
       padding: padding,
-      minimumSize: Size(double.infinity, 5.h),
+      minimumSize: Size(double.infinity, 5),
       shape: RoundedRectangleBorder(
         borderRadius: borderRadius,
         side: BorderSide(
           color: AppColors.lightGrey,
-          width: 1.0.w,
+          width: 1.0,
         ),
       ),
       textStyle: textStyle,
@@ -190,8 +189,8 @@ class LinkUpButtonStyles {
     BorderRadius? borderRadius,
     TextStyle? textStyle,
   }) {
-    padding ??= EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h);
-    borderRadius ??= BorderRadius.all(Radius.circular(20.r));
+    padding ??= EdgeInsets.symmetric(horizontal: 10, vertical: 5);
+    borderRadius ??= BorderRadius.all(Radius.circular(20));
     textStyle ??= TextStyles.font15_700Weight;
 
     return ElevatedButton.styleFrom(
@@ -199,12 +198,12 @@ class LinkUpButtonStyles {
       backgroundColor: AppColors.darkMain,
       elevation: elevation,
       padding: padding,
-      minimumSize: Size(double.infinity, 5.h),
+      minimumSize: Size(double.infinity, 5),
       shape: RoundedRectangleBorder(
         borderRadius: borderRadius,
         side: BorderSide(
           color: AppColors.darkBlue,
-          width: 1.0.w,
+          width: 1.0,
         ),
       ),
       textStyle: textStyle,
@@ -217,8 +216,8 @@ class LinkUpButtonStyles {
     BorderRadius? borderRadius,
     TextStyle? textStyle,
   }) {
-    padding ??= EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h);
-    borderRadius ??= BorderRadius.all(Radius.circular(20.r));
+    padding ??= EdgeInsets.symmetric(horizontal: 10, vertical: 5);
+    borderRadius ??= BorderRadius.all(Radius.circular(20));
     textStyle ??= TextStyles.font15_700Weight;
 
     return ElevatedButton.styleFrom(
@@ -226,12 +225,12 @@ class LinkUpButtonStyles {
       backgroundColor: AppColors.darkMain,
       elevation: elevation,
       padding: padding,
-      minimumSize: Size(double.infinity, 5.h),
+      minimumSize: Size(double.infinity, 5),
       shape: RoundedRectangleBorder(
         borderRadius: borderRadius,
         side: BorderSide(
           color: AppColors.darkGrey,
-          width: 1.0.w,
+          width: 1.0,
         ),
       ),
       textStyle: textStyle,
@@ -244,15 +243,15 @@ class LinkUpButtonStyles {
     return ElevatedButton.styleFrom(
       backgroundColor: AppColors.lightBlue,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24.r),
+        borderRadius: BorderRadius.circular(24),
       ),
-      padding: EdgeInsets.symmetric(vertical: 5.h),
+      padding: EdgeInsets.symmetric(vertical: 5),
     );
   }
 
   ButtonStyle circularButton() {
     return OutlinedButton.styleFrom(
-      side: BorderSide(color: AppColors.lightTextColor, width: 1.2.r),
+      side: BorderSide(color: AppColors.lightTextColor, width: 1.2),
       shape: const CircleBorder(),
       padding: EdgeInsets.zero,
       backgroundColor: Colors.transparent,
@@ -263,10 +262,10 @@ class LinkUpButtonStyles {
     return OutlinedButton.styleFrom(
       backgroundColor: AppColors.lightMain,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24.r),
+        borderRadius: BorderRadius.circular(24),
       ),
-      side: BorderSide(color: AppColors.lightBlue, width: 1.2.r),
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+      side: BorderSide(color: AppColors.lightBlue, width: 1.2),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
     );
   }
 
@@ -275,15 +274,15 @@ class LinkUpButtonStyles {
     return ElevatedButton.styleFrom(
       backgroundColor: AppColors.darkBlue,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24.r),
+        borderRadius: BorderRadius.circular(24),
       ),
-      padding: EdgeInsets.symmetric(vertical: 5.h),
+      padding: EdgeInsets.symmetric(vertical: 5),
     );
   }
 
   ButtonStyle circularButtonDark() {
     return OutlinedButton.styleFrom(
-      side: BorderSide(color: AppColors.darkTextColor, width: 1.2.r),
+      side: BorderSide(color: AppColors.darkTextColor, width: 1.2),
       shape: const CircleBorder(),
       padding: EdgeInsets.zero,
       backgroundColor: Colors.transparent,
@@ -294,10 +293,10 @@ class LinkUpButtonStyles {
     return OutlinedButton.styleFrom(
       backgroundColor: AppColors.darkMain,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24.r),
+        borderRadius: BorderRadius.circular(24),
       ),
-      side: BorderSide(color: AppColors.darkBlue, width: 1.2.r),
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+      side: BorderSide(color: AppColors.darkBlue, width: 1.2),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
     );
   }
 
@@ -307,8 +306,8 @@ class LinkUpButtonStyles {
     BorderRadius? borderRadius,
     TextStyle? textStyle,
   }) {
-    padding ??= EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h);
-    borderRadius ??= BorderRadius.all(Radius.circular(20.r));
+    padding ??= EdgeInsets.symmetric(horizontal: 10, vertical: 8);
+    borderRadius ??= BorderRadius.all(Radius.circular(20));
     textStyle ??= TextStyles.font13_700Weight;
 
     return ButtonStyle(
@@ -321,7 +320,7 @@ class LinkUpButtonStyles {
           borderRadius: borderRadius,
           side: BorderSide(
             color: AppColors.lightGrey,
-            width: 0.5.w,
+            width: 0.5,
           ),
         ),
       ),
@@ -335,8 +334,8 @@ class LinkUpButtonStyles {
     BorderRadius? borderRadius,
     TextStyle? textStyle,
   }) {
-    padding ??= EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h);
-    borderRadius ??= BorderRadius.all(Radius.circular(20.r));
+    padding ??= EdgeInsets.symmetric(horizontal: 10, vertical: 8);
+    borderRadius ??= BorderRadius.all(Radius.circular(20));
     textStyle ??= TextStyles.font13_700Weight;
 
     return ButtonStyle(
@@ -349,7 +348,7 @@ class LinkUpButtonStyles {
           borderRadius: borderRadius,
           side: BorderSide(
             color: AppColors.darkGrey,
-            width: 0.5.w,
+            width: 0.5,
           ),
         ),
       ),

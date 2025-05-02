@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/logIn/state/forgot_password_state.dart';
 import 'package:link_up/features/logIn/viewModel/forgot_password_view_model.dart';
@@ -39,73 +38,80 @@ class _ForgotPasswordViewState extends ConsumerState<ForgotPasswordView> {
     });
 
     return Scaffold(
-      body: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: SingleChildScrollView(
-              child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Image(
-                width: 100,
-                height: 100,
-                image: AssetImage('assets/images/Logo.png'),
-              ),
-              const Text(
-                'Forgot Password',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 30,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(
-                height: 5.h,
-              ),
-              SizedBox(
-                height: 5.h,
-              ),
-              Form(
-                  key: _formKey,
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            maxWidth: 600,
+          ),
+          child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: SingleChildScrollView(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      TextFormField(
-                        key: const Key('emailTextField'),
-                        controller: _emailController,
-                        decoration: const InputDecoration(
-                          labelText: 'Email',
-                          hintText: 'Enter your email',
-                        ),
-                        validator: (value) => validateEmail(value),
-                      ),
-                      SizedBox(
-                        height: 30.h,
-                      ),
-                      ElevatedButton(
-                        key: const Key('sendEmailButton'),
-                        onPressed: () {
-                          if (_formKey.currentState?.validate() != false) {
-                            forgotPasswordNotifier
-                                .forgotPassword(_emailController.text);
-                          }
-                          _emailController.clear();
-                        },
-                        child: forgotPasswordState is ForgotPasswordLoading
-                            ? const CircularProgressIndicator()
-                            : const Text(
-                                'Send Email',
-                                style: TextStyle(fontSize: 20),
-                              ),
-                      ),
-                    ],
-                  )),
-              SizedBox(
-                height: 5.h,
-              ),
-            ],
-          ))),
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Image(
+                    width: 100,
+                    height: 100,
+                    image: AssetImage('assets/images/Logo.png'),
+                  ),
+                  const Text(
+                    'Forgot Password',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 30,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          TextFormField(
+                            key: const Key('emailTextField'),
+                            controller: _emailController,
+                            decoration: const InputDecoration(
+                              labelText: 'Email',
+                              hintText: 'Enter your email',
+                            ),
+                            validator: (value) => validateEmail(value),
+                          ),
+                          SizedBox(
+                            height: 30,
+                          ),
+                          ElevatedButton(
+                            key: const Key('sendEmailButton'),
+                            onPressed: () {
+                              if (_formKey.currentState?.validate() != false) {
+                                forgotPasswordNotifier
+                                    .forgotPassword(_emailController.text);
+                              }
+                              _emailController.clear();
+                            },
+                            child: forgotPasswordState is ForgotPasswordLoading
+                                ? const CircularProgressIndicator()
+                                : const Text(
+                                    'Send Email',
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                          ),
+                        ],
+                      )),
+                  SizedBox(
+                    height: 5,
+                  ),
+                ],
+              ))),
+        ),
+      ),
     );
   }
 }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/core/constants/endpoints.dart';
 
@@ -22,15 +21,15 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
       leading: GestureDetector(
         onTap: leadingAction,
         child: Padding(
-          padding: EdgeInsets.all(5.r),
+          padding: EdgeInsets.all(5),
           child: CircleAvatar(
-            radius: 20.r,
+            radius: 20,
             backgroundImage: NetworkImage(InternalEndPoints.profileUrl),
           ),
         ),
       ),
       title: SizedBox(
-        height: 35.h,
+        height: 35,
         child: searchBar,
       ),
       actions: [

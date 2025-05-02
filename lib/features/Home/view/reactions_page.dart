@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/Home/home_enums.dart';
 import 'package:link_up/features/Home/model/reaction_tile_model.dart';
@@ -123,7 +122,7 @@ class _ReactionsPageState extends ConsumerState<ReactionsPage> {
                     Tab(
                       icon: Row(
                         children: [
-                          Reaction.getIcon(reaction, 20.r),
+                          Reaction.getIcon(reaction, 20),
                           Text(
                             '  ${reactionsCount[reaction].toString()}',
                           ),
@@ -173,13 +172,13 @@ class ReactionTile extends StatelessWidget {
       leading: Stack(
         children: [
           CircleAvatar(
-            radius: 25.r,
+            radius: 25,
             backgroundImage: NetworkImage(reactionTile.header.profileImage),
           ),
           Positioned(
             bottom: 0,
             right: 0,
-            child: Reaction.getIcon(reactionTile.reaction, 25.r),
+            child: Reaction.getIcon(reactionTile.reaction, 25),
           ),
         ],
       ),
@@ -192,7 +191,7 @@ class ReactionTile extends StatelessWidget {
             ),
             TextSpan(
               text: ' • ${reactionTile.header.connectionDegree}',
-              style: TextStyle(color: AppColors.grey, fontSize: 10.r),
+              style: TextStyle(color: AppColors.grey, fontSize: 10),
             ),
           ],
         ),

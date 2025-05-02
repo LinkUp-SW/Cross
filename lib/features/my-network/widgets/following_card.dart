@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/my-network/model/people_i_follow_screen_model.dart';
 import 'package:link_up/features/my-network/viewModel/people_i_follow_screen_view_model.dart';
 import 'package:link_up/features/my-network/widgets/confirmation_pop_up.dart';
@@ -22,26 +21,26 @@ class FollowingCard extends ConsumerWidget {
         color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
         border: Border(
           bottom: BorderSide(
-            width: 0.3.w,
+            width: 0.3,
             color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
           ),
         ),
       ),
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 5.h),
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 5),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
-          spacing: 10.w,
+          spacing: 10,
           children: [
             Expanded(
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.start,
-                spacing: 8.w,
+                spacing: 8,
                 children: [
                   CircleAvatar(
-                    radius: 30.r,
+                    radius: 30,
                     foregroundImage: NetworkImage(
                       data.profilePicture,
                     ),

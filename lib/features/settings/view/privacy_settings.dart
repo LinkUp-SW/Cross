@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/Home/home_enums.dart';
 import 'package:link_up/features/settings/viewModel/privacy_settings_vm.dart';
@@ -32,13 +31,13 @@ class _PrivacySettingsState extends ConsumerState<PrivacySettings> {
           color: Theme.of(context).colorScheme.primary,
         ),
         child: Column(
-          spacing: 5.h,
+          spacing: 5,
           children: [
             ListTile(
               dense: true,
               title: Text("Profile Visibility",
                   style: TextStyle(
-                    fontSize: 20.sp,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                   )),
               trailing: DropdownButton(
@@ -64,7 +63,7 @@ class _PrivacySettingsState extends ConsumerState<PrivacySettings> {
               dense: true,
               title: Text("Invitation Requests",
                   style: TextStyle(
-                    fontSize: 20.sp,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                   )),
               trailing: DropdownButton(
@@ -90,7 +89,7 @@ class _PrivacySettingsState extends ConsumerState<PrivacySettings> {
               dense: true,
               title: Text("Follow Requests",
                   style: TextStyle(
-                    fontSize: 20.sp,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                   )),
               trailing: DropdownButton(
@@ -124,14 +123,14 @@ class _PrivacySettingsState extends ConsumerState<PrivacySettings> {
               },
               title: Text("Follow Primary",
                   style: TextStyle(
-                    fontSize: 20.sp,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                   )),
               subtitle: Text(
                   "The follow button will be the primary (instead of connect button)",
                   style: TextStyle(
                     color: AppColors.grey,
-                    fontSize: 12.sp,
+                    fontSize: 12,
                   )),
               activeColor: Theme.of(context).colorScheme.tertiary,
             ),
@@ -147,14 +146,14 @@ class _PrivacySettingsState extends ConsumerState<PrivacySettings> {
               },
               title: Text("Messaging Requests",
                   style: TextStyle(
-                    fontSize: 20.sp,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                   )),
               subtitle: Text(
                   "Users who are not connections can send message requests",
                   style: TextStyle(
                     color: AppColors.grey,
-                    fontSize: 12.sp,
+                    fontSize: 12,
                   )),
               activeColor: Theme.of(context).colorScheme.tertiary,
             ),
@@ -170,13 +169,13 @@ class _PrivacySettingsState extends ConsumerState<PrivacySettings> {
               },
               title: Text("Read Reciepts",
                   style: TextStyle(
-                    fontSize: 20.sp,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                   )),
               subtitle: Text("Allow others to see when you read their messages",
                   style: TextStyle(
                     color: AppColors.grey,
-                    fontSize: 12.sp,
+                    fontSize: 12,
                   )),
               activeColor: Theme.of(context).colorScheme.tertiary,
             ),

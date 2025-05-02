@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/shared/themes/colors.dart';
 
 class CarouselImages extends StatefulWidget {
@@ -39,8 +38,8 @@ class _CarouselImagesState extends State<CarouselImages> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 400.w,
-      height: 300.h,
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.width * 0.4,
       child: ValueListenableBuilder(
         valueListenable: _positionNotifier,
         builder: (context, value, child) => Stack(
@@ -48,7 +47,7 @@ class _CarouselImagesState extends State<CarouselImages> {
             CarouselView(
               controller: _carouselController,
               itemSnapping: true,
-              itemExtent: 400.r,
+              itemExtent: MediaQuery.of(context).size.width,
               children: List<Widget>.generate(
                 widget.images.length,
                 (int index) {
@@ -64,15 +63,15 @@ class _CarouselImagesState extends State<CarouselImages> {
               ),
             ),
             Positioned(
-              top: 15.h,
-              right: 15.w,
+              top: 15,
+              right: 15,
               child: Container(
                 decoration: BoxDecoration(
                   color: AppColors.darkBackground.withValues(alpha: 0.5),
-                  borderRadius: BorderRadius.circular(10.r),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 child: Padding(
-                  padding: EdgeInsets.all(4.r),
+                  padding: EdgeInsets.all(4),
                   child: Text(
                     '${_positionNotifier.value.ceil() == 0 ? '1' : _positionNotifier.value.ceil()} / ${widget.images.length}',
                     style: const TextStyle(color: AppColors.lightMain),

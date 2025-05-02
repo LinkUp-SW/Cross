@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
@@ -18,15 +17,15 @@ class StandardEmptyListMessage extends ConsumerWidget {
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Padding(
       padding: EdgeInsets.symmetric(
-        horizontal: 10.w,
+        horizontal: 10,
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SvgPicture.asset(
             'assets/images/man_on_chair.svg',
-            width: 300.w,
-            height: 200.h,
+            width: 300,
+            height: 200,
             fit: BoxFit.cover,
           ),
           Text(

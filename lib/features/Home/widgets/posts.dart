@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/core/utils/global_keys.dart';
 import 'package:link_up/features/Home/home_enums.dart';
@@ -58,8 +57,8 @@ class _PostsState extends ConsumerState<Posts> {
                   post: widget.post,
                 ),
                 Divider(
-                  indent: 10.w,
-                  endIndent: 10.w,
+                  indent: 10,
+                  endIndent: 10,
                   thickness: 0,
                   color: AppColors.grey,
                 ),
@@ -73,10 +72,10 @@ class _PostsState extends ConsumerState<Posts> {
           Align(
             alignment: Alignment.centerLeft,
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10.r),
+              padding: EdgeInsets.symmetric(horizontal: 10),
               child: FormattedRichText(
                 defaultStyle: TextStyle(
-                  fontSize: 14.r,
+                  fontSize: 14,
                 ),
                 text: widget.post.text,
                 enableReadMore: true,
@@ -85,20 +84,20 @@ class _PostsState extends ConsumerState<Posts> {
                 readLessText: '',
                 readMoreStyle: TextStyle(
                   color: Theme.of(context).colorScheme.secondary,
-                  fontSize: 12.sp,
+                  fontSize: 12,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
           ),
-          SizedBox(height: 10.h),
+          SizedBox(height: 10),
           if (widget.post.media.type != MediaType.none) ...[
             widget.post.media.getMedia(),
-            SizedBox(height: 10.h),
+            SizedBox(height: 10),
           ],
           if (widget.showBottom) ...[
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10.w),
+              padding: EdgeInsets.symmetric(horizontal: 10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -119,12 +118,12 @@ class _PostsState extends ConsumerState<Posts> {
                               Align(
                                 widthFactor: 0.7,
                                 child: Reaction.getIcon(
-                                    widget.post.topReactions[i], 15.r),
+                                    widget.post.topReactions[i], 15),
                               )
                             ],
                           ],
                         ),
-                        SizedBox(width: 5.w),
+                        SizedBox(width: 5),
                         if (widget.post.reactions > 0)
                           Text(widget.post.reactions.toString()),
                       ],
@@ -162,10 +161,10 @@ class _PostsState extends ConsumerState<Posts> {
                 ],
               ),
             ),
-            SizedBox(height: 10.h),
+            SizedBox(height: 10),
             Divider(
-              indent: 10.w,
-              endIndent: 10.w,
+              indent: 10,
+              endIndent: 10,
               thickness: 0,
               color: AppColors.grey,
             ),
@@ -173,7 +172,7 @@ class _PostsState extends ConsumerState<Posts> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Reactions(
-                  offset: 100.h,
+                  offset: 100,
                   reaction: widget.post.reaction,
                   setReaction: (reaction) {
                     setState(() {
@@ -210,10 +209,10 @@ class _PostsState extends ConsumerState<Posts> {
                     });
                   },
                   child: SizedBox(
-                    width: 60.w,
+                    width: 65,
                     child: Column(
                       children: [
-                        Reaction.getIcon(widget.post.reaction, 20.r),
+                        Reaction.getIcon(widget.post.reaction, 20),
                         Text(
                           Reaction.getReactionString(widget.post.reaction),
                           style: TextStyle(
@@ -300,7 +299,7 @@ class _PostsState extends ConsumerState<Posts> {
                                               ? "Reposted ${widget.post.header.name}'s post"
                                               : "Failed to repost ${widget.post.header.name}'s post",
                                           style: TextStyle(
-                                            fontSize: 14.sp,
+                                            fontSize: 14,
                                             color: Theme.of(navigatorKey
                                                     .currentContext!)
                                                 .textTheme
@@ -345,11 +344,11 @@ class _PostsState extends ConsumerState<Posts> {
                 ),
               ],
             ),
-            SizedBox(height: 10.h),
+            SizedBox(height: 10),
             if (widget.post.activity.show &&
                 widget.post.activity.type == ActitvityType.comment)
               Padding(
-                padding: EdgeInsets.all(8.r),
+                padding: EdgeInsets.all(8),
                 child: CommentBubble(
                     comment: widget.post.activity.comment, refresh: () {}),
               )

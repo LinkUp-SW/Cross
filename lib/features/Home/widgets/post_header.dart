@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/core/constants/endpoints.dart';
 import 'package:link_up/features/Home/home_enums.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
@@ -49,14 +48,14 @@ class _PostHeaderState extends ConsumerState<PostHeader> {
             child: ListTile(
               leading: !widget.post.isCompany
                   ? CircleAvatar(
-                      radius: 20.r,
+                      radius: 20,
                       backgroundImage:
                           NetworkImage(widget.post.header.profileImage),
                     )
                   : ClipRRect(
-                      borderRadius: BorderRadius.circular(5.r),
+                      borderRadius: BorderRadius.circular(5),
                       child: Image.network(widget.post.header.profileImage,
-                          width: 40.h, height: 40.h, fit: BoxFit.cover,
+                          width: 40, height: 40, fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) {
                         return const Icon(Icons.error);
                       }),
@@ -67,20 +66,20 @@ class _PostHeaderState extends ConsumerState<PostHeader> {
                     WidgetSpan(
                         child: Container(
                       constraints: BoxConstraints(
-                        maxWidth: 100.w,
+                        maxWidth: 100,
                       ),
                       child: Text(
                         widget.post.header.name,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                         style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 12.r),
+                            fontWeight: FontWeight.bold, fontSize: 12),
                       ),
                     )),
                     if (!widget.post.isCompany)
                       TextSpan(
                         text: ' • ${widget.post.header.connectionDegree}',
-                        style: TextStyle(color: AppColors.grey, fontSize: 10.r),
+                        style: TextStyle(color: AppColors.grey, fontSize: 10),
                       ),
                   ],
                 ),
@@ -92,7 +91,7 @@ class _PostHeaderState extends ConsumerState<PostHeader> {
                     Text(
                       widget.post.header.about,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize: 10.r, color: AppColors.grey),
+                      style: TextStyle(fontSize: 10, color: AppColors.grey),
                     ),
                   if (!widget.post.isCompany)
                     Text.rich(
@@ -101,13 +100,13 @@ class _PostHeaderState extends ConsumerState<PostHeader> {
                           TextSpan(
                             text: '${widget.post.header.getTime()} • ',
                             style: TextStyle(
-                                color: AppColors.grey, fontSize: 10.r),
+                                color: AppColors.grey, fontSize: 10),
                           ),
                           if (widget.post.header.edited)
                             TextSpan(
                               text: 'Edited • ',
                               style: TextStyle(
-                                  color: AppColors.grey, fontSize: 10.r),
+                                  color: AppColors.grey, fontSize: 10),
                             ),
                           WidgetSpan(
                             child: Icon(
@@ -115,7 +114,7 @@ class _PostHeaderState extends ConsumerState<PostHeader> {
                                       Visibilities.anyone
                                   ? Icons.public
                                   : Icons.people,
-                              size: 10.r,
+                              size: 10,
                               color: AppColors.grey,
                             ),
                           ),
@@ -153,7 +152,7 @@ class _PostHeaderState extends ConsumerState<PostHeader> {
                                     _following ? Icons.check : Icons.add,
                                     color: _following ? AppColors.grey : null,
                                   ),
-                                  SizedBox(width: 5.w),
+                                  SizedBox(width: 5),
                                   Text(
                                     _following ? 'Following' : 'Follow',
                                     style: TextStyle(
@@ -181,7 +180,7 @@ class _PostHeaderState extends ConsumerState<PostHeader> {
                                         : Icons.person_add_alt_1,
                                     color: _following ? AppColors.grey : null,
                                   ),
-                                  SizedBox(width: 5.w),
+                                  SizedBox(width: 5),
                                   Text(
                                     _following ? 'Pending' : 'Connect',
                                     style: TextStyle(

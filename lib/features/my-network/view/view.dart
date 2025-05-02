@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/my-network/view/grow_tab.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/widgets/custom_app_bar.dart';
@@ -22,7 +21,7 @@ class MyNetworkScreen extends ConsumerWidget {
       child: Scaffold(
         appBar: PreferredSize(
           preferredSize: Size.fromHeight(
-              kToolbarHeight + 48.h), // Proper height for app bar + tabs
+              kToolbarHeight + 48), // Proper height for app bar + tabs
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:link_up/core/constants/endpoints.dart';
 import 'package:link_up/features/Home/home_enums.dart';
@@ -55,7 +54,7 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
 
   @override
   Widget build(BuildContext context) {
-    final height = widget.showSuggestions ? 120.h : 70.h;
+    final double height = widget.showSuggestions ? 120.0 : 70.0;
     final writeComment = ref.watch(writeCommentProvider);
     return Container(
       decoration: BoxDecoration(
@@ -65,13 +64,13 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
       ),
       height: widget.focusNode.hasFocus
           ? _showTags
-              ? height + 245.h
-              : height + 45.h
+              ? height + 245.0
+              : height + 45.0
           : _showTags
-              ? height + 210.h
+              ? height + 210.0
               : height,
       child: Padding(
-        padding: EdgeInsets.all(10.r),
+        padding: EdgeInsets.all(10),
         child: Focus(
           onFocusChange: (hasFocus) {
             setState(() {});
@@ -87,11 +86,11 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                           decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.surface,
                             borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(20.r),
-                              topRight: Radius.circular(20.r),
+                              topLeft: Radius.circular(20),
+                              topRight: Radius.circular(20),
                             ),
                           ),
-                          height: 200.h,
+                          height: 200,
                           child: ListView.separated(
                             shrinkWrap: true,
                             physics: const ClampingScrollPhysics(),
@@ -99,7 +98,7 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                             itemBuilder: (context, index) {
                               return ListTile(
                                 leading: CircleAvatar(
-                                  radius: 20.r,
+                                  radius: 20,
                                   backgroundImage: NetworkImage(
                                       users[index]['profile_photo']),
                                 ),
@@ -138,34 +137,34 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                           height: 0,
                         ),
                         SizedBox(
-                          height: 10.h,
+                          height: 10,
                         ),
                       ],
                       if (widget.showSuggestions)
                         SizedBox(
-                          height: 50.h,
+                          height: 50,
                           child: ListView.separated(
                               scrollDirection: Axis.horizontal,
                               itemCount: 10,
                               shrinkWrap: true,
                               separatorBuilder: (context, index) =>
-                                  SizedBox(width: 5.w),
+                                  SizedBox(width: 5),
                               itemBuilder: (context, index) {
                                 //TODO: Suggestions
                                 return Chip(label: Text("label $index"));
                               }),
                         ),
                       SizedBox(
-                        height: 10.h,
+                        height: 10,
                       ),
                       Flex(
                         direction: Axis.horizontal,
-                        spacing: 10.w,
+                        spacing: 10,
                         children: [
                           Flexible(
                             flex: 1,
                             child: CircleAvatar(
-                              radius: 20.r,
+                              radius: 20,
                               backgroundImage:
                                   NetworkImage(InternalEndPoints.profileUrl),
                             ),
@@ -174,7 +173,7 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                             flex: 8,
                             child: Container(
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.r),
+                                borderRadius: BorderRadius.circular(10),
                                 border: Border.all(
                                   color: AppColors.lightGrey,
                                 ),
@@ -184,7 +183,7 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Padding(
-                                      padding: EdgeInsets.all(10.r),
+                                      padding: EdgeInsets.all(10),
                                       child: FormattedInput(
                                         controller: writeComment.controller,
                                         focusNode: widget.focusNode,
@@ -197,7 +196,7 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                                         MediaType.none)
                                       Padding(
                                         padding: EdgeInsets.all(
-                                          10.r,
+                                          10,
                                         ),
                                         child: Row(
                                           crossAxisAlignment:
@@ -205,9 +204,9 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                                           children: [
                                             ClipRRect(
                                               borderRadius:
-                                                  BorderRadius.circular(10.r),
+                                                  BorderRadius.circular(10),
                                               child: SizedBox(
-                                                  height: 120.h,
+                                                  height: 120,
                                                   child: writeComment.media
                                                       .getMedia()),
                                             ),
@@ -298,7 +297,7 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                       ),
                       if (widget.focusNode.hasFocus)
                         SizedBox(
-                          height: 40.h,
+                          height: 40,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -331,7 +330,7 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                                       },
                                       child: const Icon(Icons.image)),
                                   SizedBox(
-                                    width: 10.w,
+                                    width: 10,
                                   ),
                                   GestureDetector(
                                       onTap: () {

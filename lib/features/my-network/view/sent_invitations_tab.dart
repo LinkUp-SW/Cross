@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/my-network/viewModel/sent_invitations_tab_view_model.dart';
 import 'package:link_up/features/my-network/widgets/retry_error_message.dart';
 import 'package:link_up/features/my-network/widgets/sent_invitation_card_loading_skeleton.dart';
@@ -43,67 +42,74 @@ class _SentInvitationsTabState extends ConsumerState<SentInvitationsTab> {
   Widget build(BuildContext context) {
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final state = ref.watch(sentInvitationsTabViewModelProvider);
-    return NotificationListener<ScrollNotification>(
-      onNotification: (notification) {
-        if (notification is ScrollEndNotification &&
-            notification.metrics.pixels >=
-                notification.metrics.maxScrollExtent - 200) {
-          ref
-              .read(sentInvitationsTabViewModelProvider.notifier)
-              .loadMoreSentInvitations(
-                paginationLimit: widget.paginationLimit,
-              );
-        }
-        return false;
-      },
-      child: state.isLoading && state.sent == null
-          ? ListView.builder(
-              shrinkWrap: true,
-              itemCount: 3,
-              itemBuilder: (context, index) =>
-                  SentInvitationsCardLoadingSkeleton(),
-            )
-          : state.error
-              ? RetryErrorMessage(
-                  errorMessage: "Failed to load sent connection invitations :(",
-                  buttonFunctionality: () async {
-                    await ref
-                        .read(sentInvitationsTabViewModelProvider.notifier)
-                        .getSentInvitations(
-                      {
-                        'limit': '${widget.paginationLimit}',
-                        'cursor': null,
-                      },
-                    );
-                  },
+    return Center(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: 600,
+        ),
+        child: NotificationListener<ScrollNotification>(
+          onNotification: (notification) {
+            if (notification is ScrollEndNotification &&
+                notification.metrics.pixels >=
+                    notification.metrics.maxScrollExtent - 200) {
+              ref
+                  .read(sentInvitationsTabViewModelProvider.notifier)
+                  .loadMoreSentInvitations(
+                    paginationLimit: widget.paginationLimit,
+                  );
+            }
+            return false;
+          },
+          child: state.isLoading && state.sent == null
+              ? ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: 3,
+                  itemBuilder: (context, index) =>
+                      SentInvitationsCardLoadingSkeleton(),
                 )
-              : state.sent == null || state.sent!.isEmpty
-                  ? StandardEmptyListMessage(
-                      message: 'No sent connection invitations',
-                    )
-                  : ListView.builder(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      itemCount:
-                          state.sent!.length + (state.isLoadingMore ? 1 : 0),
-                      itemBuilder: (context, index) {
-                        if (index == state.sent!.length) {
-                          // Show loading indicator at the bottom when loading more
-                          return Padding(
-                            padding: EdgeInsets.symmetric(vertical: 16.h),
-                            child: Center(
-                              child: CircularProgressIndicator(
-                                color: isDarkMode
-                                    ? AppColors.darkBlue
-                                    : AppColors.lightBlue,
-                              ),
-                            ),
-                          );
-                        }
-                        return SentInvitationsCard(
-                          data: state.sent![index],
+              : state.error
+                  ? RetryErrorMessage(
+                      errorMessage: "Failed to load sent connection invitations :(",
+                      buttonFunctionality: () async {
+                        await ref
+                            .read(sentInvitationsTabViewModelProvider.notifier)
+                            .getSentInvitations(
+                          {
+                            'limit': '${widget.paginationLimit}',
+                            'cursor': null,
+                          },
                         );
                       },
-                    ),
+                    )
+                  : state.sent == null || state.sent!.isEmpty
+                      ? StandardEmptyListMessage(
+                          message: 'No sent connection invitations',
+                        )
+                      : ListView.builder(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          itemCount:
+                              state.sent!.length + (state.isLoadingMore ? 1 : 0),
+                          itemBuilder: (context, index) {
+                            if (index == state.sent!.length) {
+                              // Show loading indicator at the bottom when loading more
+                              return Padding(
+                                padding: EdgeInsets.symmetric(vertical: 16),
+                                child: Center(
+                                  child: CircularProgressIndicator(
+                                    color: isDarkMode
+                                        ? AppColors.darkBlue
+                                        : AppColors.lightBlue,
+                                  ),
+                                ),
+                              );
+                            }
+                            return SentInvitationsCard(
+                              data: state.sent![index],
+                            );
+                          },
+                        ),
+        ),
+      ),
     );
   }
 }

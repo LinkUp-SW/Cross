@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/core/constants/endpoints.dart';
 import 'package:link_up/features/Home/home_enums.dart';
@@ -53,7 +52,7 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
               log('userprofile: ${widget.comment.header.userId}');
             },
             child: CircleAvatar(
-              radius: 15.r,
+              radius: 15,
               backgroundImage: NetworkImage(
                 widget.comment.header.profileImage,
               ),
@@ -61,7 +60,7 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
           ),
         ),
         SizedBox(
-          width: 10.w,
+          width: 10,
         ),
         Flexible(
           flex: widget.isReply ? 9 : 10,
@@ -76,7 +75,7 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                 },
                 child: Card(
                   child: Padding(
-                    padding: EdgeInsets.all(5.r),
+                    padding: EdgeInsets.all(5),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -84,7 +83,7 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             SizedBox(
-                              width: 150.w,
+                              width: 150,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -101,7 +100,7 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                                               ' • ${widget.comment.header.connectionDegree}',
                                           style: TextStyle(
                                               color: AppColors.grey,
-                                              fontSize: 10.r),
+                                              fontSize: 10),
                                         ),
                                       ],
                                     ),
@@ -110,7 +109,7 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                                     Text(
                                       widget.comment.header.about,
                                       overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(fontSize: 10.r),
+                                      style: TextStyle(fontSize: 10),
                                     ),
                                 ],
                               ),
@@ -119,7 +118,7 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                               children: [
                                 Text(
                                   widget.comment.header.getTime(),
-                                  style: TextStyle(fontSize: 10.r),
+                                  style: TextStyle(fontSize: 10),
                                 ),
                                 IconButton(
                                   onPressed: () {
@@ -233,18 +232,18 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                         ),
                         FormattedRichText(
                           text: widget.comment.text,
-                          defaultStyle: TextStyle(fontSize: 12.r),
+                          defaultStyle: TextStyle(fontSize: 12),
                         ),
                         if (widget.comment.media.type != MediaType.none) ...[
                           SizedBox(
-                            height: 10.h,
+                            height: 10,
                           ),
                           ClipRRect(
-                            borderRadius: BorderRadius.circular(10.r),
+                            borderRadius: BorderRadius.circular(10),
                             child: Image.network(
                               widget.comment.media.urls[0],
                               fit: BoxFit.fitHeight,
-                              height: 120.h,
+                              height: 120,
                             ),
                           ),
                         ]
@@ -254,15 +253,15 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                 ),
               ),
               SizedBox(
-                height: 5.h,
+                height: 5,
               ),
               Row(
                 children: [
                   SizedBox(
-                    width: 10.w,
+                    width: 10,
                   ),
                   Reactions(
-                    offset: 80.h,
+                    offset: 80,
                     reaction: widget.comment.reaction,
                     setReaction: (reaction) {
                       setState(() {
@@ -319,7 +318,7 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                             Align(
                               widthFactor: 0.7,
                               child: Reaction.getIcon(
-                                  widget.comment.topReactions[i], 15.r),
+                                  widget.comment.topReactions[i], 15),
                             )
                           ],
                         ],
@@ -356,7 +355,7 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                 ],
               ),
               SizedBox(
-                height: 10.h,
+                height: 10,
               ),
               if (!widget.isReply) ...[
                 if (!widget.allRelies) ...[
@@ -392,7 +391,7 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                             focusNode: widget.focusNode,
                           ),
                           SizedBox(
-                            height: 10.h,
+                            height: 10,
                           ),
                         ],
                       ),

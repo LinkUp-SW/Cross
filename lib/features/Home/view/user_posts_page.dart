@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/core/constants/endpoints.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
@@ -112,13 +111,13 @@ class _RepostsPageState extends State<UserPostsPage> {
                           child: Text(
                             'No user posts yet',
                             style: TextStyle(
-                              fontSize: 30.sp,
+                              fontSize: 30,
                             ),
                           ),
                         ),
                       )
                     : Padding(
-                        padding: EdgeInsets.only(top: 5.h),
+                        padding: EdgeInsets.only(top: 5),
                         child: ListView.separated(
                           controller: scrollController,
                           physics: const AlwaysScrollableScrollPhysics(),

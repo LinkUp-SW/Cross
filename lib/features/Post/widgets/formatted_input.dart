@@ -1,7 +1,6 @@
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/Post/widgets/formatting_styles.dart';
 
 class FormattedInput extends StatelessWidget {
@@ -18,7 +17,7 @@ class FormattedInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(10.r),
+      padding: EdgeInsets.all(10),
       child: TextField(
         controller: controller,
         focusNode: focusNode,

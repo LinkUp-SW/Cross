@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:link_up/features/signUp/viewModel/phone_number_provider.dart';
@@ -36,90 +35,97 @@ class _GetPhoneNumberState extends ConsumerState<GetPhoneNumber> {
     });
 
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(10),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                "Just a quick Step",
-                style: TextStyle(
-                  fontSize: 25,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              const Text(
-                'we need your phone number to make it easy for opportunities to find you',
-                style: TextStyle(fontSize: 15),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IntlPhoneField(
-                      key: const Key('phoneNumberField'),
-                      decoration: const InputDecoration(
-                        labelText: 'Phone Number',
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(),
-                        ),
-                      ),
-                      initialCountryCode: 'EG',
-                      onChanged: (phone) {
-                        _countryCode = phone.countryCode;
-                        _phoneNumber = phone.number;
-                      },
-                      validator: (value) {
-                        if (value == null || value.number.isEmpty) {
-                          return "Please enter a valid phone number";
-                        }
-                        return null;
-                      },
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            maxWidth: 600,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    "Just a quick Step",
+                    style: TextStyle(
+                      fontSize: 25,
                     ),
-                    SizedBox(
-                      height: 30.h,
-                    ),
-                    ElevatedButton(
-                      key: const Key('submitButton'),
-                      onPressed: phoneNumberState is LoadingPhoneNumber
-                          ? null
-                          : () async {
-                              if (_formKey.currentState!.validate()) {
-                                if (_countryCode != null &&
-                                    _phoneNumber != null) {
-                                  await phoneNumberNotifier.setPhoneNumber(
-                                    _countryCode!,
-                                    _phoneNumber!,
-                                  );
-                                }
-                              }
-                            },
-                      child: phoneNumberState is LoadingPhoneNumber
-                          ? const CircularProgressIndicator(
-                              color: Colors.white,
-                            )
-                          : const Text(
-                              'Submit',
-                              style: TextStyle(
-                                fontSize: 20,
-                              ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  const Text(
+                    'we need your phone number to make it easy for opportunities to find you',
+                    style: TextStyle(fontSize: 15),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IntlPhoneField(
+                          key: const Key('phoneNumberField'),
+                          decoration: const InputDecoration(
+                            labelText: 'Phone Number',
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(),
                             ),
+                          ),
+                          initialCountryCode: 'EG',
+                          onChanged: (phone) {
+                            _countryCode = phone.countryCode;
+                            _phoneNumber = phone.number;
+                          },
+                          validator: (value) {
+                            if (value == null || value.number.isEmpty) {
+                              return "Please enter a valid phone number";
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(
+                          height: 30,
+                        ),
+                        ElevatedButton(
+                          key: const Key('submitButton'),
+                          onPressed: phoneNumberState is LoadingPhoneNumber
+                              ? null
+                              : () async {
+                                  if (_formKey.currentState!.validate()) {
+                                    if (_countryCode != null &&
+                                        _phoneNumber != null) {
+                                      await phoneNumberNotifier.setPhoneNumber(
+                                        _countryCode!,
+                                        _phoneNumber!,
+                                      );
+                                    }
+                                  }
+                                },
+                          child: phoneNumberState is LoadingPhoneNumber
+                              ? const CircularProgressIndicator(
+                                  color: Colors.white,
+                                )
+                              : const Text(
+                                  'Submit',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                  ),
+                                ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              )
-            ],
+                  )
+                ],
+              ),
+            ),
           ),
         ),
       ),

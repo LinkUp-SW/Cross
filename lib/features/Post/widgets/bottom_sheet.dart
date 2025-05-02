@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/Home/home_enums.dart' show Visibilities;
 import 'package:link_up/shared/themes/colors.dart';
 
@@ -23,7 +22,7 @@ postVisibiltyBottomSheet(
     builder: (context) =>
         StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
       return Padding(
-        padding: EdgeInsets.all(10.r),
+        padding: EdgeInsets.all(10),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

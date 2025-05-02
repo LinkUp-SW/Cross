@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/Home/home_enums.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
 import 'package:link_up/features/Home/viewModel/posts_vm.dart';
@@ -22,18 +21,18 @@ class PostTop extends ConsumerWidget {
         Row(
           children: [
             SizedBox(
-              width: 10.w,
+              width: 10,
             ),
             CircleAvatar(
-              radius: 12.r,
+              radius: 12,
               backgroundImage: NetworkImage(post.activity.actorProfileImage),
             ),
             SizedBox(
-              width: 10.w,
+              width: 10,
             ),
             Text.rich(
               TextSpan(
-                style: TextStyle(fontSize: 10.sp),
+                style: TextStyle(fontSize: 10),
                 children: [
                   TextSpan(
                     text: post.activity.actorName,

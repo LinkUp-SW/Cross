@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 
@@ -24,14 +23,14 @@ class ConfirmationPopUp extends ConsumerWidget {
     return Dialog(
       backgroundColor: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.r),
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Padding(
-        padding: EdgeInsets.all(15.w),
+        padding: EdgeInsets.all(15),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 5.h,
+          spacing: 5,
           children: [
             Text(
               title,
@@ -51,7 +50,7 @@ class ConfirmationPopUp extends ConsumerWidget {
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
-              spacing: 15.w,
+              spacing: 15,
               children: [
                 Material(
                   color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,

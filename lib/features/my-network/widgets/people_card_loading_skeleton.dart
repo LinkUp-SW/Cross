@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -16,16 +15,16 @@ class GrowTabPeopleCardLoadingSkeleton extends ConsumerWidget {
         enabled: true,
         child: Card(
           shadowColor: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
-          elevation: 3.0.r,
+          elevation: 3.0,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(6.r),
+            borderRadius: BorderRadius.circular(6),
             side: BorderSide(
               color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
-              width: 0.5.w,
+              width: 0.5,
             ),
           ),
           child: Column(
-            spacing: 15.h,
+            spacing: 15,
             children: [
               Stack(
                 clipBehavior: Clip.none, // Important to allow overflow
@@ -35,43 +34,43 @@ class GrowTabPeopleCardLoadingSkeleton extends ConsumerWidget {
                   // Cover image
                   ClipRRect(
                     borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(6.r),
-                      topRight: Radius.circular(6.r),
+                      topLeft: Radius.circular(6),
+                      topRight: Radius.circular(6),
                     ),
                     child: Image(
                       image:
                           AssetImage('assets/images/default-cover-picture.png'),
                       width: double.infinity,
-                      height: 60.h,
+                      height: 60,
                       fit: BoxFit.cover,
                     ),
                   ),
 
                   // Profile image - positioned to overlap
                   Positioned(
-                    bottom: -25.h,
-                    right: 32.w,
+                    bottom: -25,
+                    right: 32,
                     child: CircleAvatar(
-                      radius: 45.r,
+                      radius: 45,
                       foregroundImage: AssetImage(
                           'assets/images/default-profile-picture.png'),
                     ),
                   ),
                   // Cancel Button
                   Positioned(
-                    top: 5.h,
-                    right: 3.w,
+                    top: 5,
+                    right: 3,
                     child: InkWell(
                       onTap: () {},
                       child: Container(
-                        padding: EdgeInsets.all(2.r),
+                        padding: EdgeInsets.all(2),
                         decoration: const BoxDecoration(
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
                           Icons.close,
                           color: Colors.white,
-                          size: 20.h,
+                          size: 20,
                         ),
                       ),
                     ),
@@ -86,7 +85,7 @@ class GrowTabPeopleCardLoadingSkeleton extends ConsumerWidget {
                   ),
                   Padding(
                     padding: EdgeInsets.symmetric(
-                      horizontal: 6.0.w,
+                      horizontal: 6.0,
                     ),
                     child: Text(
                       'AI Engineer @ OpenAI',
@@ -94,7 +93,7 @@ class GrowTabPeopleCardLoadingSkeleton extends ConsumerWidget {
                   ),
                   Padding(
                     padding: EdgeInsets.symmetric(
-                      horizontal: 6.w,
+                      horizontal: 6,
                     ),
                     child: ElevatedButton(
                       style: ButtonStyle(),

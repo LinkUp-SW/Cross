@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/my-network/widgets/people_card_loading_skeleton.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
@@ -23,17 +22,17 @@ class SectionLoadingSkeleton extends ConsumerWidget {
         color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
         child: Padding(
           padding: EdgeInsets.symmetric(
-            horizontal: 5.w,
-            vertical: 5.h,
+            horizontal: 5,
+            vertical: 5,
           ),
           child: Column(
-            spacing: 5.h,
+            spacing: 5,
             children: [
               Align(
                 alignment: Alignment.topLeft,
                 child: Padding(
                   padding: EdgeInsets.only(
-                    left: 5.w,
+                    left: 5,
                   ),
                   child: Text(
                     title,

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/search/view/people_tab.dart';
 import 'package:link_up/features/search/viewModel/search_vm.dart';
@@ -48,7 +47,7 @@ class _SearchPageState extends ConsumerState<SearchPage>
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
         title: SizedBox(
-          height: 35.h,
+          height: 35,
           child: CustomSearchBar(
             inSearch: true,
           ),
@@ -62,25 +61,28 @@ class _SearchPageState extends ConsumerState<SearchPage>
         actions: [
           Tooltip(
             message: 'Search for jobs',
-            child: IconButton(
-                style: ButtonStyle(
-                  backgroundColor: WidgetStateProperty.all<Color>(
-                    Theme.of(context).colorScheme.tertiary,
-                  ),
-                ),
-                icon: Icon(
-                  Icons.work,
-                  shadows: [
-                    Shadow(
-                      color: Colors.black,
-                      offset: Offset(0, 0),
-                      blurRadius: 10.r,
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: IconButton(
+                  style: ButtonStyle(
+                    backgroundColor: WidgetStateProperty.all<Color>(
+                      Theme.of(context).colorScheme.tertiary,
                     ),
-                  ],
-                ),
-                onPressed: () {
-                  //TODO: goto jobs search page
-                }),
+                  ),
+                  icon: Icon(
+                    Icons.work,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black,
+                        offset: Offset(0, 0),
+                        blurRadius: 10,
+                      ),
+                    ],
+                  ),
+                  onPressed: () {
+                    //TODO: goto jobs search page
+                  }),
+            ),
           ),
         ],
         bottom: TabBar(

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/shared/themes/button_styles.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
@@ -19,13 +18,13 @@ class RetryErrorMessage extends ConsumerWidget {
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Padding(
       padding: EdgeInsets.symmetric(
-        horizontal: 10.w,
+        horizontal: 10,
       ),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
-          spacing: 10.w,
+          spacing: 10,
           children: [
             Text(
               errorMessage,
@@ -39,14 +38,14 @@ class RetryErrorMessage extends ConsumerWidget {
               style: isDarkMode
                   ? LinkUpButtonStyles().profileOpenToDark(
                       padding: EdgeInsets.symmetric(
-                        vertical: 8.h,
-                        horizontal: 15.w,
+                        vertical: 8,
+                        horizontal: 15,
                       ),
                     )
                   : LinkUpButtonStyles().profileOpenToLight(
                       padding: EdgeInsets.symmetric(
-                        vertical: 8.h,
-                        horizontal: 15.w,
+                        vertical: 8,
+                        horizontal: 15,
                       ),
                     ),
               onPressed: buttonFunctionality,

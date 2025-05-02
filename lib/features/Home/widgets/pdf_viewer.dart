@@ -3,7 +3,6 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_cached_pdfview/flutter_cached_pdfview.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/shared/themes/colors.dart';
 
 class PDFViewer extends StatefulWidget {
@@ -26,7 +25,7 @@ class _PDFViewerState extends State<PDFViewer> {
     return Stack(
       children: [
         SizedBox(
-          height: 420.h,
+          height: 420,
           child: widget.network
               ? PDF(
                   backgroundColor: Theme.of(context)
@@ -98,7 +97,7 @@ class _PDFViewerState extends State<PDFViewer> {
         ),
         if (currentPage! > 0)
         Positioned(
-          left: 5.w,
+          left: 5,
           top: 0,
           bottom: 0,
           child: GestureDetector(
@@ -111,19 +110,19 @@ class _PDFViewerState extends State<PDFViewer> {
               });
             },
             child: CircleAvatar(
-              radius: 25.r,
+              radius: 25,
               backgroundColor: AppColors.darkBackground.withValues(alpha: 0.5),
               child: Icon(
                 Icons.keyboard_arrow_left_rounded,
                 color: AppColors.lightMain,
-                size: 30.r,
+                size: 30,
               ),
             ),
           ),
         ),
         if((currentPage! < pages! - 1))
         Positioned(
-          right: 5.w,
+          right: 5,
           top: 0,
           bottom: 0,
           child: GestureDetector(
@@ -136,26 +135,26 @@ class _PDFViewerState extends State<PDFViewer> {
               });
             },
             child: CircleAvatar(
-              radius: 25.r,
+              radius: 25,
               backgroundColor: AppColors.darkBackground.withValues(alpha: 0.5),
               child: Icon(
                 Icons.keyboard_arrow_right_rounded,
                 color: AppColors.lightMain,
-                size: 30.r,
+                size: 30,
               ),
             ),
           ),
         ),
         Positioned(
-          top: 15.h,
-          right: 15.w,
+          top: 15,
+          right: 15,
           child: Container(
             decoration: BoxDecoration(
               color: AppColors.darkBackground.withValues(alpha: 0.5),
-              borderRadius: BorderRadius.circular(10.r),
+              borderRadius: BorderRadius.circular(10),
             ),
             child: Padding(
-              padding: EdgeInsets.all(4.r),
+              padding: EdgeInsets.all(4),
               child: Text(
                 '${currentPage! + 1} / $pages',
                 style: const TextStyle(color: AppColors.lightMain),

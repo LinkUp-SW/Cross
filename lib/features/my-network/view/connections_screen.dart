@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/my-network/viewModel/connections_screen_view_model.dart';
 import 'package:link_up/features/my-network/viewModel/manage_my_network_screen_view_model.dart';
 import 'package:link_up/features/my-network/widgets/connections_card.dart';
@@ -66,7 +65,7 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back,
-            size: 25.w,
+            size: 25,
             color: isDarkMode
                 ? AppColors.darkSecondaryText
                 : AppColors.lightSecondaryText,
@@ -79,362 +78,369 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
           },
         ),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
-              border: Border(
-                bottom: BorderSide(
-                  width: 0.3.w,
-                  color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
-                ),
-              ),
-            ),
-            child: Padding(
-              padding: EdgeInsets.only(
-                top: 5.w,
-              ),
-            ),
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            maxWidth: 600,
           ),
-          Container(
-            decoration: BoxDecoration(
-              color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
-              border: Border(
-                bottom: BorderSide(
-                  width: 0.3.w,
-                  color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+                  border: Border(
+                    bottom: BorderSide(
+                      width: 0.3,
+                      color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
+                    ),
+                  ),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    top: 5,
+                  ),
                 ),
               ),
-            ),
-            height: 40.h,
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8.w),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  if (state.isLoading)
-                    SizedBox(
-                      width: 16.w,
-                      height: 16.w,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2.w,
-                        color: isDarkMode
-                            ? AppColors.darkGrey
-                            : AppColors.lightSecondaryText,
-                      ),
-                    )
-                  else if (state.connectionsCount != null)
-                    Text(
-                      '${parseIntegerToCommaSeparatedString(state.connectionsCount ?? 0)} connections',
-                      style: TextStyles.font18_500Weight.copyWith(
-                        color: isDarkMode
-                            ? AppColors.darkGrey
-                            : AppColors.lightSecondaryText,
-                      ),
+              Container(
+                decoration: BoxDecoration(
+                  color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+                  border: Border(
+                    bottom: BorderSide(
+                      width: 0.3,
+                      color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
                     ),
-                  Row(
+                  ),
+                ),
+                height: 40,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      IconButton(
-                        onPressed: () => {},
-                        icon: Icon(
-                          Icons.search,
-                          size: 25.r,
-                          color: isDarkMode
-                              ? AppColors.darkTextColor
-                              : AppColors.lightTextColor,
+                      if (state.isLoading)
+                        SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: isDarkMode
+                                ? AppColors.darkGrey
+                                : AppColors.lightSecondaryText,
+                          ),
+                        )
+                      else if (state.connectionsCount != null)
+                        Text(
+                          '${parseIntegerToCommaSeparatedString(state.connectionsCount ?? 0)} connections',
+                          style: TextStyles.font18_500Weight.copyWith(
+                            color: isDarkMode
+                                ? AppColors.darkGrey
+                                : AppColors.lightSecondaryText,
+                          ),
                         ),
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          showModalBottomSheet(
-                            context: context,
-                            useRootNavigator: true,
-                            builder: (context) => Column(
-                              mainAxisSize: MainAxisSize.min,
-                              spacing: 5.h,
-                              children: [
-                                Container(
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    color: isDarkMode
-                                        ? AppColors.darkMain
-                                        : AppColors.lightMain,
-                                    border: Border(
-                                      bottom: BorderSide(
-                                        width: 1.w,
-                                        color: isDarkMode
-                                            ? AppColors.darkGrey
-                                            : AppColors.lightGrey,
-                                      ),
-                                    ),
-                                  ),
-                                  child: Padding(
-                                    padding: EdgeInsets.only(
-                                      bottom: 20.w,
-                                    ),
-                                    child: Text(
-                                      'Sort By',
-                                      style:
-                                          TextStyles.font18_500Weight.copyWith(
-                                        color: isDarkMode
-                                            ? AppColors.darkSecondaryText
-                                            : AppColors.lightTextColor,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 16.w,
-                                    vertical: 8.h,
-                                  ),
-                                  child: Wrap(
-                                    spacing: 8.w,
-                                    runSpacing: 8.h,
-                                    children: [
-                                      // Newest First
-                                      FilterChip(
-                                        selected: _selectedSortOption == 0,
-                                        backgroundColor: isDarkMode
-                                            ? AppColors.darkMain
-                                            : AppColors.lightMain,
-                                        selectedColor: isDarkMode
-                                            ? AppColors.darkGreen
-                                            : AppColors.lightGreen,
-                                        label: Text(
-                                          'Recently added',
-                                          style: TextStyles.font14_500Weight
-                                              .copyWith(
-                                                  color: _selectedSortOption ==
-                                                          0
-                                                      ? isDarkMode
-                                                          ? AppColors
-                                                              .darkBackground
-                                                          : AppColors
-                                                              .lightBackground
-                                                      : isDarkMode
-                                                          ? AppColors
-                                                              .darkTextColor
-                                                          : AppColors
-                                                              .lightSecondaryText),
-                                        ),
-                                        onSelected: (bool selected) {
-                                          if (selected) {
-                                            setState(() {
-                                              _selectedSortOption = 0;
-                                            });
-                                            ref
-                                                .read(
-                                                    connectionsScreenViewModelProvider
-                                                        .notifier)
-                                                .sortConnections(0);
-                                            Navigator.pop(context);
-                                          }
-                                        },
-                                      ),
-
-                                      // Oldest First
-                                      FilterChip(
-                                        selected: _selectedSortOption == 1,
-                                        backgroundColor: isDarkMode
-                                            ? AppColors.darkMain
-                                            : AppColors.lightMain,
-                                        selectedColor: isDarkMode
-                                            ? AppColors.darkGreen
-                                            : AppColors.lightGreen,
-                                        label: Text(
-                                          'Firstly added',
-                                          style: TextStyles.font14_500Weight
-                                              .copyWith(
-                                            color: _selectedSortOption == 1
-                                                ? isDarkMode
-                                                    ? AppColors.darkBackground
-                                                    : AppColors.lightBackground
-                                                : isDarkMode
-                                                    ? AppColors.darkTextColor
-                                                    : AppColors
-                                                        .lightSecondaryText,
-                                          ),
-                                        ),
-                                        onSelected: (bool selected) {
-                                          if (selected) {
-                                            setState(() {
-                                              _selectedSortOption = 1;
-                                            });
-                                            ref
-                                                .read(
-                                                    connectionsScreenViewModelProvider
-                                                        .notifier)
-                                                .sortConnections(1);
-                                            Navigator.pop(context);
-                                          }
-                                        },
-                                      ),
-
-                                      // Name A-Z
-                                      FilterChip(
-                                        selected: _selectedSortOption == 2,
-                                        backgroundColor: isDarkMode
-                                            ? AppColors.darkMain
-                                            : AppColors.lightMain,
-                                        selectedColor: isDarkMode
-                                            ? AppColors.darkGreen
-                                            : AppColors.lightGreen,
-                                        label: Text(
-                                          'Name (A-Z)',
-                                          style: TextStyles.font14_500Weight
-                                              .copyWith(
-                                            color: _selectedSortOption == 2
-                                                ? isDarkMode
-                                                    ? AppColors.darkBackground
-                                                    : AppColors.lightBackground
-                                                : isDarkMode
-                                                    ? AppColors.darkTextColor
-                                                    : AppColors
-                                                        .lightSecondaryText,
-                                          ),
-                                        ),
-                                        onSelected: (bool selected) {
-                                          if (selected) {
-                                            setState(() {
-                                              _selectedSortOption = 2;
-                                            });
-                                            ref
-                                                .read(
-                                                    connectionsScreenViewModelProvider
-                                                        .notifier)
-                                                .sortConnections(2);
-                                            Navigator.pop(context);
-                                          }
-                                        },
-                                      ),
-
-                                      // Name Z-A
-                                      FilterChip(
-                                        selected: _selectedSortOption == 3,
-                                        backgroundColor: isDarkMode
-                                            ? AppColors.darkMain
-                                            : AppColors.lightMain,
-                                        selectedColor: isDarkMode
-                                            ? AppColors.darkGreen
-                                            : AppColors.lightGreen,
-                                        label: Text(
-                                          'Name (Z-A)',
-                                          style: TextStyles.font14_500Weight
-                                              .copyWith(
-                                            color: _selectedSortOption == 3
-                                                ? isDarkMode
-                                                    ? AppColors.darkBackground
-                                                    : AppColors.lightBackground
-                                                : isDarkMode
-                                                    ? AppColors.darkTextColor
-                                                    : AppColors
-                                                        .lightSecondaryText,
-                                          ),
-                                        ),
-                                        onSelected: (bool selected) {
-                                          if (selected) {
-                                            setState(() {
-                                              _selectedSortOption = 3;
-                                            });
-                                            ref
-                                                .read(
-                                                    connectionsScreenViewModelProvider
-                                                        .notifier)
-                                                .sortConnections(3);
-                                            Navigator.pop(context);
-                                          }
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
+                      Row(
+                        children: [
+                          IconButton(
+                            onPressed: () => {},
+                            icon: Icon(
+                              Icons.search,
+                              size: 25,
+                              color: isDarkMode
+                                  ? AppColors.darkTextColor
+                                  : AppColors.lightTextColor,
                             ),
-                          );
-                        },
-                        icon: Icon(
-                          Icons.tune,
-                          size: 25.r,
-                          color: isDarkMode
-                              ? AppColors.darkTextColor
-                              : AppColors.lightTextColor,
-                        ),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              showModalBottomSheet(
+                                context: context,
+                                useRootNavigator: true,
+                                builder: (context) => Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  spacing: 5,
+                                  children: [
+                                    Container(
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        color: isDarkMode
+                                            ? AppColors.darkMain
+                                            : AppColors.lightMain,
+                                        border: Border(
+                                          bottom: BorderSide(
+                                            width: 1,
+                                            color: isDarkMode
+                                                ? AppColors.darkGrey
+                                                : AppColors.lightGrey,
+                                          ),
+                                        ),
+                                      ),
+                                      child: Padding(
+                                        padding: EdgeInsets.only(
+                                          bottom: 20,
+                                        ),
+                                        child: Text(
+                                          'Sort By',
+                                          style:
+                                              TextStyles.font18_500Weight.copyWith(
+                                            color: isDarkMode
+                                                ? AppColors.darkSecondaryText
+                                                : AppColors.lightTextColor,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 8,
+                                      ),
+                                      child: Wrap(
+                                        spacing: 8,
+                                        runSpacing: 8,
+                                        children: [
+                                          // Newest First
+                                          FilterChip(
+                                            selected: _selectedSortOption == 0,
+                                            backgroundColor: isDarkMode
+                                                ? AppColors.darkMain
+                                                : AppColors.lightMain,
+                                            selectedColor: isDarkMode
+                                                ? AppColors.darkGreen
+                                                : AppColors.lightGreen,
+                                            label: Text(
+                                              'Recently added',
+                                              style: TextStyles.font14_500Weight
+                                                  .copyWith(
+                                                      color: _selectedSortOption ==
+                                                              0
+                                                          ? isDarkMode
+                                                              ? AppColors
+                                                                  .darkBackground
+                                                              : AppColors
+                                                                  .lightBackground
+                                                          : isDarkMode
+                                                              ? AppColors
+                                                                  .darkTextColor
+                                                              : AppColors
+                                                                  .lightSecondaryText),
+                                            ),
+                                            onSelected: (bool selected) {
+                                              if (selected) {
+                                                setState(() {
+                                                  _selectedSortOption = 0;
+                                                });
+                                                ref
+                                                    .read(
+                                                        connectionsScreenViewModelProvider
+                                                            .notifier)
+                                                    .sortConnections(0);
+                                                Navigator.pop(context);
+                                              }
+                                            },
+                                          ),
+          
+                                          // Oldest First
+                                          FilterChip(
+                                            selected: _selectedSortOption == 1,
+                                            backgroundColor: isDarkMode
+                                                ? AppColors.darkMain
+                                                : AppColors.lightMain,
+                                            selectedColor: isDarkMode
+                                                ? AppColors.darkGreen
+                                                : AppColors.lightGreen,
+                                            label: Text(
+                                              'Firstly added',
+                                              style: TextStyles.font14_500Weight
+                                                  .copyWith(
+                                                color: _selectedSortOption == 1
+                                                    ? isDarkMode
+                                                        ? AppColors.darkBackground
+                                                        : AppColors.lightBackground
+                                                    : isDarkMode
+                                                        ? AppColors.darkTextColor
+                                                        : AppColors
+                                                            .lightSecondaryText,
+                                              ),
+                                            ),
+                                            onSelected: (bool selected) {
+                                              if (selected) {
+                                                setState(() {
+                                                  _selectedSortOption = 1;
+                                                });
+                                                ref
+                                                    .read(
+                                                        connectionsScreenViewModelProvider
+                                                            .notifier)
+                                                    .sortConnections(1);
+                                                Navigator.pop(context);
+                                              }
+                                            },
+                                          ),
+          
+                                          // Name A-Z
+                                          FilterChip(
+                                            selected: _selectedSortOption == 2,
+                                            backgroundColor: isDarkMode
+                                                ? AppColors.darkMain
+                                                : AppColors.lightMain,
+                                            selectedColor: isDarkMode
+                                                ? AppColors.darkGreen
+                                                : AppColors.lightGreen,
+                                            label: Text(
+                                              'Name (A-Z)',
+                                              style: TextStyles.font14_500Weight
+                                                  .copyWith(
+                                                color: _selectedSortOption == 2
+                                                    ? isDarkMode
+                                                        ? AppColors.darkBackground
+                                                        : AppColors.lightBackground
+                                                    : isDarkMode
+                                                        ? AppColors.darkTextColor
+                                                        : AppColors
+                                                            .lightSecondaryText,
+                                              ),
+                                            ),
+                                            onSelected: (bool selected) {
+                                              if (selected) {
+                                                setState(() {
+                                                  _selectedSortOption = 2;
+                                                });
+                                                ref
+                                                    .read(
+                                                        connectionsScreenViewModelProvider
+                                                            .notifier)
+                                                    .sortConnections(2);
+                                                Navigator.pop(context);
+                                              }
+                                            },
+                                          ),
+          
+                                          // Name Z-A
+                                          FilterChip(
+                                            selected: _selectedSortOption == 3,
+                                            backgroundColor: isDarkMode
+                                                ? AppColors.darkMain
+                                                : AppColors.lightMain,
+                                            selectedColor: isDarkMode
+                                                ? AppColors.darkGreen
+                                                : AppColors.lightGreen,
+                                            label: Text(
+                                              'Name (Z-A)',
+                                              style: TextStyles.font14_500Weight
+                                                  .copyWith(
+                                                color: _selectedSortOption == 3
+                                                    ? isDarkMode
+                                                        ? AppColors.darkBackground
+                                                        : AppColors.lightBackground
+                                                    : isDarkMode
+                                                        ? AppColors.darkTextColor
+                                                        : AppColors
+                                                            .lightSecondaryText,
+                                              ),
+                                            ),
+                                            onSelected: (bool selected) {
+                                              if (selected) {
+                                                setState(() {
+                                                  _selectedSortOption = 3;
+                                                });
+                                                ref
+                                                    .read(
+                                                        connectionsScreenViewModelProvider
+                                                            .notifier)
+                                                    .sortConnections(3);
+                                                Navigator.pop(context);
+                                              }
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                            icon: Icon(
+                              Icons.tune,
+                              size: 25,
+                              color: isDarkMode
+                                  ? AppColors.darkTextColor
+                                  : AppColors.lightTextColor,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
-          NotificationListener<ScrollNotification>(
-            onNotification: (notification) {
-              if (notification is ScrollEndNotification &&
-                  notification.metrics.pixels >=
-                      notification.metrics.maxScrollExtent - 200) {
-                ref
-                    .read(connectionsScreenViewModelProvider.notifier)
-                    .loadMoreConnections(
-                        paginationLimit: widget.paginationLimit);
-              }
-              return false;
-            },
-            child: Expanded(
-              child: state.isLoading && state.connections == null
-                  ? ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: 3,
-                      itemBuilder: (context, index) =>
-                          ConnectionsCardLoadingSkeleton(),
-                    )
-                  : state.isError
-                      ? RetryErrorMessage(
-                          errorMessage: "Failed to load connections :(",
-                          buttonFunctionality: () async {
-                            await ref
-                                .read(
-                                    connectionsScreenViewModelProvider.notifier)
-                                .getConnectionsList(
-                              {
-                                'limit': '${widget.paginationLimit}',
-                                'cursor': null,
-                              },
-                            );
-                          },
+              NotificationListener<ScrollNotification>(
+                onNotification: (notification) {
+                  if (notification is ScrollEndNotification &&
+                      notification.metrics.pixels >=
+                          notification.metrics.maxScrollExtent - 200) {
+                    ref
+                        .read(connectionsScreenViewModelProvider.notifier)
+                        .loadMoreConnections(
+                            paginationLimit: widget.paginationLimit);
+                  }
+                  return false;
+                },
+                child: Expanded(
+                  child: state.isLoading && state.connections == null
+                      ? ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: 3,
+                          itemBuilder: (context, index) =>
+                              ConnectionsCardLoadingSkeleton(),
                         )
-                      : state.connections == null || state.connections!.isEmpty
-                          ? StandardEmptyListMessage(message: 'No connections')
-                          : ListView.builder(
-                              physics: const AlwaysScrollableScrollPhysics(),
-                              itemCount: state.connections!.length +
-                                  (state.isLoadingMore ? 1 : 0),
-                              itemBuilder: (context, index) {
-                                if (index == state.connections!.length) {
-                                  // Show loading indicator at the bottom when loading more
-                                  return Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(vertical: 16.h),
-                                    child: Center(
-                                      child: CircularProgressIndicator(
-                                        color: isDarkMode
-                                            ? AppColors.darkBlue
-                                            : AppColors.lightBlue,
-                                      ),
-                                    ),
-                                  );
-                                }
-                                return ConnectionsCard(
-                                  data: state.connections![index],
+                      : state.isError
+                          ? RetryErrorMessage(
+                              errorMessage: "Failed to load connections :(",
+                              buttonFunctionality: () async {
+                                await ref
+                                    .read(
+                                        connectionsScreenViewModelProvider.notifier)
+                                    .getConnectionsList(
+                                  {
+                                    'limit': '${widget.paginationLimit}',
+                                    'cursor': null,
+                                  },
                                 );
                               },
-                            ),
-            ),
+                            )
+                          : state.connections == null || state.connections!.isEmpty
+                              ? StandardEmptyListMessage(message: 'No connections')
+                              : ListView.builder(
+                                  physics: const AlwaysScrollableScrollPhysics(),
+                                  itemCount: state.connections!.length +
+                                      (state.isLoadingMore ? 1 : 0),
+                                  itemBuilder: (context, index) {
+                                    if (index == state.connections!.length) {
+                                      // Show loading indicator at the bottom when loading more
+                                      return Padding(
+                                        padding:
+                                            EdgeInsets.symmetric(vertical: 16),
+                                        child: Center(
+                                          child: CircularProgressIndicator(
+                                            color: isDarkMode
+                                                ? AppColors.darkBlue
+                                                : AppColors.lightBlue,
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                    return ConnectionsCard(
+                                      data: state.connections![index],
+                                    );
+                                  },
+                                ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

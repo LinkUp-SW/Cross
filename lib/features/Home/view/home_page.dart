@@ -140,9 +140,16 @@ class _HomePageState extends ConsumerState<HomePage> {
                     child: Column(
                       children: [
                         for (int i = 0; i < 5; i++)
-                          Card(
-                            child: Posts(
-                              post: PostModel.initial(),
+                          Center(
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxWidth: 600, // Typical mobile phone width
+                              ),
+                              child: Card(
+                                child: Posts(
+                                  post: PostModel.initial(),
+                                ),
+                              ),
                             ),
                           ),
                       ],
@@ -165,16 +172,23 @@ class _HomePageState extends ConsumerState<HomePage> {
                         ),
                       );
                     }
-                    return Card(
-                        child: !posts[index].showUndo
-                            ? Posts(
-                                post: posts[index].post,
-                                inFeed: true,
-                              )
-                            : DeletedPost(
-                                userName: posts[index].post.header.name,
-                                id: posts[index].post.id,
-                              ));
+                    return Center(
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxWidth: 600, // Typical mobile phone width in logical pixels
+                        ),
+                        child: Card(
+                          child: !posts[index].showUndo
+                              ? Posts(
+                                  post: posts[index].post,
+                                  inFeed: true,
+                                )
+                              : DeletedPost(
+                                  userName: posts[index].post.header.name,
+                                  id: posts[index].post.id,
+                                )),
+                      ),
+                    );
                   });
             }),
           ),

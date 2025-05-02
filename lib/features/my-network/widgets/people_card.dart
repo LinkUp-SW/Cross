@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/my-network/model/people_card_model.dart';
 import 'package:link_up/features/my-network/viewModel/grow_tab_view_model.dart';
@@ -31,16 +30,16 @@ class _PeopleCardState extends ConsumerState<PeopleCard> {
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Card(
       shadowColor: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
-      elevation: 3.0.r,
+      elevation: 3.0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(6.r),
+        borderRadius: BorderRadius.circular(6),
         side: BorderSide(
           color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
-          width: 0.5.w,
+          width: 0.5,
         ),
       ),
       child: Column(
-        spacing: 15.h,
+        spacing: 15,
         children: [
           Stack(
             clipBehavior: Clip.none, // Important to allow overflow
@@ -50,8 +49,8 @@ class _PeopleCardState extends ConsumerState<PeopleCard> {
               // Cover image
               ClipRRect(
                 borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(6.r),
-                  topRight: Radius.circular(6.r),
+                  topLeft: Radius.circular(6),
+                  topRight: Radius.circular(6),
                 ),
                 child: Image(
                   image: widget.data.coverPicture != null
@@ -59,17 +58,17 @@ class _PeopleCardState extends ConsumerState<PeopleCard> {
                       : AssetImage('assets/images/default-cover-picture.png')
                           as ImageProvider,
                   width: double.infinity,
-                  height: 60.h,
+                  height: 60,
                   fit: BoxFit.cover,
                 ),
               ),
 
               // Profile image - positioned to overlap
               Positioned(
-                bottom: -25.h,
-                right: 32.w,
+                bottom: -25,
+                right: 32,
                 child: CircleAvatar(
-                  radius: 45.r,
+                  radius: 45,
                   foregroundImage: widget.data.profilePicture != null
                       ? NetworkImage(widget.data.profilePicture!)
                       : AssetImage('assets/images/default-profile-picture.png')
@@ -78,8 +77,8 @@ class _PeopleCardState extends ConsumerState<PeopleCard> {
               ),
               // Cancel Button
               Positioned(
-                top: 5.h,
-                right: 3.w,
+                top: 5,
+                right: 3,
                 child: InkWell(
                   onTap: () async {
                     final isEducationCard = widget.isEducationCard ?? false;
@@ -96,7 +95,7 @@ class _PeopleCardState extends ConsumerState<PeopleCard> {
                     }
                   },
                   child: Container(
-                    padding: EdgeInsets.all(2.r),
+                    padding: EdgeInsets.all(2),
                     decoration: const BoxDecoration(
                       color: AppColors.fineLinesGrey,
                       shape: BoxShape.circle,
@@ -104,7 +103,7 @@ class _PeopleCardState extends ConsumerState<PeopleCard> {
                     child: Icon(
                       Icons.close,
                       color: Colors.white,
-                      size: 20.h,
+                      size: 20,
                     ),
                   ),
                 ),
@@ -120,7 +119,7 @@ class _PeopleCardState extends ConsumerState<PeopleCard> {
               ),
               Padding(
                 padding: EdgeInsets.symmetric(
-                  horizontal: 6.0.w,
+                  horizontal: 6.0,
                 ),
                 child: Text(
                   widget.data.title ?? '',
@@ -135,7 +134,7 @@ class _PeopleCardState extends ConsumerState<PeopleCard> {
               ),
               Padding(
                 padding: EdgeInsets.symmetric(
-                  horizontal: 6.w,
+                  horizontal: 6,
                 ),
                 child: ElevatedButton(
                   onPressed: () {
@@ -154,11 +153,11 @@ class _PeopleCardState extends ConsumerState<PeopleCard> {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              spacing: 5.h,
+                              spacing: 5,
                               children: [
                                 Padding(
                                   padding:
-                                      EdgeInsets.symmetric(horizontal: 10.w),
+                                      EdgeInsets.symmetric(horizontal: 10),
                                   child: Text(
                                     'Withdraw Invitation',
                                     style: TextStyles.font15_700Weight.copyWith(
@@ -170,7 +169,7 @@ class _PeopleCardState extends ConsumerState<PeopleCard> {
                                 ),
                                 Padding(
                                   padding:
-                                      EdgeInsets.symmetric(horizontal: 10.w),
+                                      EdgeInsets.symmetric(horizontal: 10),
                                   child: Text(
                                     "If you withdraw now, you won't be able to resend to ${widget.data.firstName} ${widget.data.lastName} for up to 3 weeks",
                                     style: TextStyles.font13_500Weight.copyWith(
@@ -187,7 +186,7 @@ class _PeopleCardState extends ConsumerState<PeopleCard> {
                                     Expanded(
                                       child: Padding(
                                         padding: EdgeInsets.symmetric(
-                                            horizontal: 10.w, vertical: 5.h),
+                                            horizontal: 10, vertical: 5),
                                         child: ElevatedButton(
                                           onPressed: () {
                                             context.pop();
@@ -204,7 +203,7 @@ class _PeopleCardState extends ConsumerState<PeopleCard> {
                                     Expanded(
                                       child: Padding(
                                         padding: EdgeInsets.symmetric(
-                                            horizontal: 10.w, vertical: 5.h),
+                                            horizontal: 10, vertical: 5),
                                         child: ElevatedButton(
                                           onPressed: () {
                                             ref

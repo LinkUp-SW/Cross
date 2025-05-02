@@ -10,6 +10,7 @@ import 'package:link_up/features/logIn/view/forgot_pasword_view.dart';
 import 'package:link_up/features/logIn/view/login_view.dart';
 import 'package:link_up/features/profile/view/view.dart';
 import 'package:link_up/features/search/view/search_page.dart';
+import 'package:link_up/features/settings/view/privacy_settings.dart';
 import 'package:link_up/features/settings/view/settings.dart';
 import 'package:link_up/features/signUp/view/userInfo/names_view.dart';
 import 'package:link_up/features/signUp/view/userInfo/past_job_details.dart';
@@ -31,7 +32,6 @@ import 'package:link_up/features/my-network/view/people_i_follow_screen.dart';
 import 'package:link_up/features/my-network/view/view.dart';
 import 'package:link_up/features/chat/view/chat_list_page.dart';
 import 'package:link_up/shared/dummy_page.dart';
-import 'package:link_up/shared/widgets/bottom_navigation_bar.dart';
 import 'package:link_up/features/profile/view/edit_intro.dart';
 import 'package:link_up/features/profile/view/edit_contact_info.dart';
 import 'package:link_up/features/profile/view/add_new_position.dart';
@@ -45,6 +45,7 @@ import 'package:link_up/features/profile/view/edit_about.dart';
 import 'package:link_up/features/profile/view/add_resume.dart';
 import 'package:link_up/features/profile/view/resume_viewer.dart';
 import 'package:link_up/features/profile/view/add_new_license.dart';
+import 'package:link_up/shared/widgets/responsive_navigation.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
@@ -176,10 +177,24 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           builder: (context, state, navigationShell) => Scaffold(
             key: scaffoldKey,
             drawer: const MainDrawer(),
-            body: navigationShell,
-            bottomNavigationBar: CustomBottomNavigationBar(
-              navigationShell: navigationShell,
+            body: Row(
+              children: [
+                if (MediaQuery.of(context).size.width > 600)
+                  ResponsiveNavigation(
+                    navigationShell: navigationShell,
+                    scaffoldKey: scaffoldKey,
+                  ),
+                Expanded(
+                  child: navigationShell,
+                ),
+              ],
             ),
+            bottomNavigationBar: MediaQuery.of(context).size.width <= 600
+                ? ResponsiveNavigation(
+                    navigationShell: navigationShell,
+                    scaffoldKey: scaffoldKey,
+                  )
+                : null,
           ),
           branches: <StatefulShellBranch>[
             // The route branch for the first tab of the bottom navigation bar.
@@ -306,6 +321,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             searchKeyWord: state.extra as String?,
           ),
         ),
-        GoRoute(path: "/settings", builder: (context, state) => SettingsPage()),
-      ]);
+        GoRoute(path: "/settings", builder: (context, state) => SettingsPage(),
+        routes: [
+          GoRoute(
+            path: 'privacy',
+            builder: (context, state) => const PrivacySettings(),
+        ),
+      ])]);
 });

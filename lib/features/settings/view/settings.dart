@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/core/constants/endpoints.dart';
 import 'package:link_up/core/services/base_service.dart';
@@ -37,7 +36,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           color: Theme.of(context).colorScheme.primary,
         ),
         child: Column(
-          spacing: 5.h,
+          spacing: 5,
           children: [
             ListTile(
               leading: CircleAvatar(
@@ -70,7 +69,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                               ListTile(
                                 title: Text("Display",
                                     style: TextStyle(
-                                        fontSize: 20.r,
+                                        fontSize: 20,
                                         fontWeight: FontWeight.bold)),
                               ),
                               RadioListTile(

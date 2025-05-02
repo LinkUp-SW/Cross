@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:video_player/video_player.dart';
@@ -76,13 +75,13 @@ class _VideoPlayerHomeState extends State<VideoPlayerHome> {
           ),
           if (!_videoController.value.isPlaying)
             CircleAvatar(
-              radius: 25.r,
+              radius: 25,
               backgroundColor:
                   AppColors.darkBackground.withValues(alpha: 0.5),
               child: Icon(
                 Icons.play_arrow,
                 color: AppColors.lightMain,
-                size: 30.r,
+                size: 30,
               ),
             ),
           ValueListenableBuilder(
@@ -91,13 +90,13 @@ class _VideoPlayerHomeState extends State<VideoPlayerHome> {
               if (_videoController.value.position ==
                   _videoController.value.duration) {
                 return CircleAvatar(
-                  radius: 25.r,
+                  radius: 25,
                   backgroundColor:
                       AppColors.darkBackground.withValues(alpha: 0.5),
                   child: Icon(
                     Icons.replay,
                     color: AppColors.lightMain,
-                    size: 30.r,
+                    size: 30,
                   ),
                 );
               }
@@ -108,15 +107,15 @@ class _VideoPlayerHomeState extends State<VideoPlayerHome> {
             valueListenable: _videoController,
             builder: (context, VideoPlayerValue value, child) {
               return Positioned(
-                top: 5.h,
-                right: 5.w,
+                top: 5,
+                right: 5,
                 child: Container(
                   decoration: BoxDecoration(
                     color: AppColors.darkBackground.withValues(alpha: 0.5),
-                    borderRadius: BorderRadius.circular(10.r),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   child: Padding(
-                    padding: EdgeInsets.all(4.r),
+                    padding: EdgeInsets.all(4),
                     child: Text(
                       getVideoPosition(),
                       style: const TextStyle(color: AppColors.lightMain),
@@ -127,7 +126,7 @@ class _VideoPlayerHomeState extends State<VideoPlayerHome> {
             },
           ),
           Positioned(
-            bottom: 5.h,
+            bottom: 5,
             right: 0,
             child: IconButton(
               onPressed: () {
@@ -142,13 +141,13 @@ class _VideoPlayerHomeState extends State<VideoPlayerHome> {
               icon: CircleAvatar(
                 backgroundColor:
                     AppColors.darkBackground.withValues(alpha: 0.5),
-                radius: 10.r,
+                radius: 10,
                 child: Icon(
                   _videoController.value.volume == 0
                       ? Icons.volume_off
                       : Icons.volume_up,
                   color: AppColors.lightMain,
-                  size: 15.r,
+                  size: 15,
                 ),
               ),
             ),

@@ -1,7 +1,6 @@
 // The font and colors for each of the themes of the app
 
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/shared/themes/button_styles.dart';
 import 'package:link_up/shared/themes/chip_styles.dart';
 import 'package:link_up/shared/themes/colors.dart';
@@ -79,7 +78,7 @@ class AppThemes {
     ),
     tabBarTheme: TabBarThemeData(
       dividerColor: AppColors.lightGrey,
-      dividerHeight: 0.2.h,
+      dividerHeight: 0.2,
       indicator: const UnderlineTabIndicator(
         borderSide: BorderSide(
           color: AppColors.lightGreen,
@@ -161,11 +160,11 @@ class AppThemes {
       ),
     ),
     tabBarTheme: TabBarThemeData(
-      dividerHeight: 0.2.h,
+      dividerHeight: 0.2,
       indicator: UnderlineTabIndicator(
         borderSide: BorderSide(
           color: AppColors.darkGreen,
-          width: 2.0.w,
+          width: 2.0,
         ),
       ),
       indicatorColor: AppColors.darkGreen,

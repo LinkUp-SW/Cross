@@ -5,8 +5,6 @@ import 'package:link_up/features/notifications/viewModel/notification_view_model
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/widgets/tab_provider.dart';
 
-
-
 class CustomBottomNavigationBar extends ConsumerWidget {
   const CustomBottomNavigationBar({required this.navigationShell, super.key});
 
@@ -128,6 +126,115 @@ class CustomBottomNavigationBar extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class CustomNavigationRail extends ConsumerWidget {
+  const CustomNavigationRail({required this.navigationShell, super.key});
+
+  final StatefulNavigationShell navigationShell;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentIndex = navigationShell.currentIndex;
+
+    return NavigationRail(
+      selectedIndex: currentIndex,
+      onDestinationSelected: (int index) {
+        index == currentIndex
+            ? ref.read(currentTabProvider.notifier).state = true
+            : navigationShell.goBranch(index);
+      },
+      labelType: NavigationRailLabelType.all,
+      backgroundColor: Theme.of(context).colorScheme.primary,
+      elevation: 10,
+      destinations: [
+        _buildNavDestination(
+          context,
+          currentIndex: currentIndex,
+          index: 0,
+          icon: Icons.home,
+          label: 'Home',
+        ),
+        _buildNavDestination(
+          context,
+          currentIndex: currentIndex,
+          index: 1,
+          icon: Icons.people,
+          label: 'My Network',
+        ),
+        NavigationRailDestination(
+          icon: GestureDetector(
+            onTap: () {
+              context.push('/writePost');
+            },
+            child: SizedBox(
+              height: 30,
+              width: 30,
+              child: Icon(
+                Icons.add_box,
+                size: 24,
+              ),
+            ),
+          ),
+          label: const Text('Post'),
+        ),
+        NavigationRailDestination(
+          icon: Consumer(
+            builder: (context, ref, child) {
+              final notificationState =
+                  ref.watch(notificationsViewModelProvider);
+              final unreadCount = notificationState.notifications
+                  .where((n) => !n.isRead)
+                  .length;
+
+              return Badge(
+                backgroundColor: AppColors.red,
+                textColor: AppColors.lightMain,
+                label: Text(unreadCount.toString()),
+                offset: const Offset(10, 0),
+                child: SizedBox(
+                  height: 30,
+                  width: 30,
+                  child: Icon(
+                    Icons.notifications,
+                    size: 24,
+                  ),
+                ),
+              );
+            },
+          ),
+          label: const Text('Notifications'),
+        ),
+        _buildNavDestination(
+          context,
+          currentIndex: currentIndex,
+          index: 4,
+          icon: Icons.work,
+          label: 'Jobs',
+        ),
+      ],
+    );
+  }
+
+  NavigationRailDestination _buildNavDestination(
+    BuildContext context, {
+    required int currentIndex,
+    required int index,
+    required IconData icon,
+    required String label,
+  }) {
+    return NavigationRailDestination(
+      icon: SizedBox(
+        height: 30,
+        width: 30,
+        child: Icon(
+          icon,
+          size: 24,
+        ),
+      ),
+      label: Text(label),
     );
   }
 }

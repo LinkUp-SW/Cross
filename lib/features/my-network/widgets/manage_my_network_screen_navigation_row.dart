@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 
@@ -31,25 +30,25 @@ class ManageMyNetworkScreenNavigationRow extends ConsumerWidget {
           decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(
-                width: 0.3.w,
+                width: 0.3,
                 color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
               ),
             ),
           ),
-          height: 40.h,
+          height: 40,
           child: Padding(
             padding: EdgeInsets.symmetric(
-              horizontal: 12.w,
+              horizontal: 12,
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
-                  spacing: 8.w,
+                  spacing: 8,
                   children: [
                     Icon(
                       icon,
-                      size: 20.h,
+                      size: 20,
                     ),
                     Text(
                       title,
@@ -63,10 +62,10 @@ class ManageMyNetworkScreenNavigationRow extends ConsumerWidget {
                 ),
                 if (isLoading)
                   SizedBox(
-                    width: 16.w,
-                    height: 16.w,
+                    width: 16,
+                    height: 16,
                     child: CircularProgressIndicator(
-                      strokeWidth: 2.w,
+                      strokeWidth: 2,
                       color: isDarkMode
                           ? AppColors.darkSecondaryText
                           : AppColors.lightTextColor,

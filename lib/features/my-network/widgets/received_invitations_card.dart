@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/my-network/model/invitations_screen_model.dart';
 import 'package:link_up/features/my-network/widgets/snackbar_content.dart';
 import 'package:link_up/shared/themes/colors.dart';
@@ -27,13 +26,13 @@ class ReceivedInvitationsCard extends ConsumerWidget {
         color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
         border: Border(
           bottom: BorderSide(
-            width: 0.3.w,
+            width: 0.3,
             color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
           ),
         ),
       ),
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 5.h),
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 5),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -42,10 +41,10 @@ class ReceivedInvitationsCard extends ConsumerWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.start,
-                spacing: 12.w,
+                spacing: 12,
                 children: [
                   CircleAvatar(
-                    radius: 30.r,
+                    radius: 30,
                     foregroundImage: NetworkImage(
                       data.profilePicture,
                     ),
@@ -89,12 +88,12 @@ class ReceivedInvitationsCard extends ConsumerWidget {
               ),
             ),
             Row(
-              spacing: 8.w,
+              spacing: 8,
               children: [
                 Material(
                   color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
                   child: InkWell(
-                    borderRadius: BorderRadius.circular(8.r),
+                    borderRadius: BorderRadius.circular(8),
                     onTap: () {
                       onAccept(data.cardId);
                       openSnackbar(
@@ -105,7 +104,7 @@ class ReceivedInvitationsCard extends ConsumerWidget {
                       ));
                     },
                     child: Container(
-                      padding: EdgeInsets.all(2.r),
+                      padding: EdgeInsets.all(2),
                       decoration: BoxDecoration(
                         color: isDarkMode
                             ? AppColors.darkMain
@@ -122,7 +121,7 @@ class ReceivedInvitationsCard extends ConsumerWidget {
                         color: isDarkMode
                             ? AppColors.darkBlue
                             : AppColors.lightBlue,
-                        size: 21.h,
+                        size: 21,
                       ),
                     ),
                   ),
@@ -130,7 +129,7 @@ class ReceivedInvitationsCard extends ConsumerWidget {
                 Material(
                   color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
                   child: InkWell(
-                    borderRadius: BorderRadius.circular(8.r),
+                    borderRadius: BorderRadius.circular(8),
                     onTap: () {
                       onIgnore(data.cardId);
                       openSnackbar(
@@ -141,7 +140,7 @@ class ReceivedInvitationsCard extends ConsumerWidget {
                       ));
                     },
                     child: Container(
-                      padding: EdgeInsets.all(2.r),
+                      padding: EdgeInsets.all(2),
                       decoration: BoxDecoration(
                         color: isDarkMode
                             ? AppColors.darkMain
@@ -158,7 +157,7 @@ class ReceivedInvitationsCard extends ConsumerWidget {
                         color: isDarkMode
                             ? AppColors.darkGrey
                             : AppColors.lightGrey,
-                        size: 21.h,
+                        size: 21,
                       ),
                     ),
                   ),

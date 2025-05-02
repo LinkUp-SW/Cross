@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/my-network/model/connections_screen_model.dart';
 import 'package:link_up/features/my-network/viewModel/connections_screen_view_model.dart';
 import 'package:link_up/features/my-network/widgets/confirmation_pop_up.dart';
@@ -24,13 +23,13 @@ class ConnectionsCard extends ConsumerWidget {
         color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
         border: Border(
           bottom: BorderSide(
-            width: 0.3.w,
+            width: 0.3,
             color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
           ),
         ),
       ),
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 5.h),
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 5),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -39,10 +38,10 @@ class ConnectionsCard extends ConsumerWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.start,
-                spacing: 12.w,
+                spacing: 12,
                 children: [
                   CircleAvatar(
-                    radius: 30.r,
+                    radius: 30,
                     foregroundImage: NetworkImage(
                       data.profilePicture,
                     ),
@@ -101,7 +100,7 @@ class ConnectionsCard extends ConsumerWidget {
                   },
                   icon: Icon(
                     Icons.more_vert,
-                    size: 25.r,
+                    size: 25,
                     color: isDarkMode
                         ? AppColors.darkTextColor
                         : AppColors.lightTextColor,
@@ -113,7 +112,7 @@ class ConnectionsCard extends ConsumerWidget {
                     angle: -pi / 4, // 45 degrees counterclockwise
                     child: Icon(
                       Icons.send,
-                      size: 25.r,
+                      size: 25,
                       color: isDarkMode
                           ? AppColors.darkTextColor
                           : AppColors.lightTextColor,

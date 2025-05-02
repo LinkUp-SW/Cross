@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/Home/viewModel/posts_vm.dart';
 import 'package:link_up/shared/themes/colors.dart';
 
@@ -22,7 +21,7 @@ class _DeletedPostState extends ConsumerState<DeletedPost> {
       "Not appriopriate for LinkUp",
     ];
     return Padding(
-      padding: EdgeInsets.all(10.r),
+      padding: EdgeInsets.all(10),
       child: Column(
         children: [
           Row(
@@ -36,7 +35,7 @@ class _DeletedPostState extends ConsumerState<DeletedPost> {
             ],
           ),
           Column(
-            spacing: 5.h,
+            spacing: 5,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Divider(
@@ -57,7 +56,7 @@ class _DeletedPostState extends ConsumerState<DeletedPost> {
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: AppColors.grey),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.r),
+                      borderRadius: BorderRadius.circular(20),
                     ),
                   ),
                   child: Text(buttonTexts[i]),

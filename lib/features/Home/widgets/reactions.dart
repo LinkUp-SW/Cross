@@ -1,7 +1,6 @@
 
 
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/Home/home_enums.dart';
 
 class Reactions extends StatefulWidget {
@@ -56,19 +55,19 @@ class _ReactionsState extends State<Reactions> with SingleTickerProviderStateMix
                 left: 0,
                 right: 0,
                 child: Padding(
-                  padding: EdgeInsets.all(15.r),
+                  padding: EdgeInsets.all(15),
                   child: Column(
                     children: [
                       Card(
                         color: Theme.of(context).colorScheme.primary,
                         elevation: 10,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(100.r),
+                          borderRadius: BorderRadius.circular(100),
                         ),
                         child: Padding(
-                          padding: EdgeInsets.all(5.r),
+                          padding: EdgeInsets.all(5),
                           child: Wrap(
-                            spacing: 5.w,
+                            spacing: 5,
                             children: [
                               for (var i = 0;
                                   i < Reaction.values.length - 1;
@@ -84,9 +83,9 @@ class _ReactionsState extends State<Reactions> with SingleTickerProviderStateMix
                                   child: AnimatedScale(
                                     scale: !_selected
                                         ? 1.0
-                                        : _offset.dx > i * 40.w + 60.w &&
+                                        : _offset.dx > i * 40 + 60 &&
                                                 _offset.dx <
-                                                    (i + 1) * 40.w + 60.w
+                                                    (i + 1) * 40 + 60
                                             ? 1.5
                                             : 0.8,
                                     duration:
@@ -99,7 +98,7 @@ class _ReactionsState extends State<Reactions> with SingleTickerProviderStateMix
                                           widget.setReaction(reaction);
                                         },
                                         child: Reaction.getIcon(
-                                            Reaction.values[i], 40.w)),
+                                            Reaction.values[i], 40)),
                                   ),
                                 ),
                               ],
@@ -118,14 +117,14 @@ class _ReactionsState extends State<Reactions> with SingleTickerProviderStateMix
       child: GestureDetector(
         onLongPressMoveUpdate: (details) {
           if (details.offsetFromOrigin.dy < 0 &&
-              details.offsetFromOrigin.dy > -100.h) {
+              details.offsetFromOrigin.dy > -100) {
             setState(() {
               _selected = true;
               _offset = details.globalPosition;
               Tooltip.dismissAllToolTips();
               for (var i = 0; i < Reaction.values.length - 1; i++) {
-                if (_offset.dx > i * 40.w + 60.w &&
-                    _offset.dx < (i + 1) * 40.w + 60.w) {
+                if (_offset.dx > i * 40 + 60 &&
+                    _offset.dx < (i + 1) * 40 + 60) {
                   _tooltipKeys[i].currentState?.ensureTooltipVisible();
                   reaction = Reaction.values[i];
                 }

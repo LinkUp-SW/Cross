@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/core/services/base_service.dart';
 import 'package:link_up/core/utils/global_keys.dart';
@@ -103,8 +102,8 @@ myPostBottomSheet(BuildContext context, WidgetRef ref,
     useRootNavigator: true,
     builder: (context) => StatefulBuilder(
       builder: (context, StateSetter setState) => Padding(
-        padding: EdgeInsets.all(10.r),
-        child: Column(
+        padding: EdgeInsets.all(10),
+        child: ListView(
           children: [
             ListTile(
               onTap: () {
@@ -320,7 +319,7 @@ shareBottomSheet(BuildContext context) {
                   style: TextStyle(fontSize: 20),
                 ),
               ),
-              SizedBox(height: 15.h),
+              SizedBox(height: 15),
               TextField(
                 onChanged: (value) async {
                   {
@@ -333,20 +332,20 @@ shareBottomSheet(BuildContext context) {
                 decoration: InputDecoration(
                   hintText: "Search",
                   border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(60.r)),
+                      borderRadius: BorderRadius.circular(60)),
                   focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(60.r),
+                      borderRadius: BorderRadius.circular(60),
                       borderSide: BorderSide(
                           color:
                               Theme.of(context).textTheme.bodyLarge!.color!)),
                 ),
               ),
-              SizedBox(height: 20.h),
+              SizedBox(height: 20),
               SizedBox(
-                height: 70.h,
+                height: 70,
                 child: ListView.separated(
                     separatorBuilder: (context, index) => SizedBox(
-                          width: 10.w,
+                          width: 10,
                         ),
                     shrinkWrap: true,
                     scrollDirection: Axis.horizontal,
@@ -357,18 +356,18 @@ shareBottomSheet(BuildContext context) {
                           //TODO: navigate to user messages page and send the message
                         },
                         child: SizedBox(
-                          width: 60.w,
+                          width: 60,
                           child: Column(
                             children: [
                               CircleAvatar(
-                                radius: 20.r,
+                                radius: 20,
                                 backgroundImage:
                                     NetworkImage(users[index]['profile_photo']),
                               ),
                               Text(users[index]['name'],
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                    fontSize: 10.sp,
+                                    fontSize: 10,
                                   )),
                             ],
                           ),
@@ -381,28 +380,28 @@ shareBottomSheet(BuildContext context) {
                 color: AppColors.grey,
               ),
               SizedBox(
-                height: 70.h,
+                height: 70,
                 child: ListView.separated(
                     separatorBuilder: (context, index) => SizedBox(
-                          width: 10.w,
+                          width: 10,
                         ),
                     shrinkWrap: true,
                     scrollDirection: Axis.horizontal,
                     itemCount: 10,
                     itemBuilder: (context, index) {
                       return SizedBox(
-                        width: 60.w,
+                        width: 60,
                         child: Column(
                           children: [
                             CircleAvatar(
-                              radius: 20.r,
+                              radius: 20,
                               backgroundImage: const NetworkImage(
                                   'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg'),
                             ),
                             Text("Name this is sparta 2",
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  fontSize: 10.sp,
+                                  fontSize: 10,
                                 )),
                           ],
                         ),

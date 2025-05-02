@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/Home/model/comment_model.dart';
 import 'package:link_up/features/Home/viewModel/comment_vm.dart';
@@ -104,23 +103,23 @@ class _CommentRepliesPageState extends ConsumerState<CommentRepliesPage> {
           icon: const Icon(Icons.arrow_back),
         ),
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(30.h),
+          preferredSize: Size.fromHeight(30),
           child: Column(
             children: [
               Divider(
-                indent: 5.w,
-                endIndent: 5.w,
+                indent: 5,
+                endIndent: 5,
                 thickness: 0,
                 color: AppColors.grey,
               ),
               Padding(
-                padding: EdgeInsets.all(5.w).copyWith(left: 15.w),
+                padding: EdgeInsets.all(5).copyWith(left: 15),
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
                     'Replies on ${comment.header.name}\'s comment',
                     style:
-                        TextStyle(fontSize: 15.r, fontWeight: FontWeight.bold),
+                        TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                   ),
@@ -142,14 +141,19 @@ class _CommentRepliesPageState extends ConsumerState<CommentRepliesPage> {
                 child: SingleChildScrollView(
                   controller: _scrollController,
                   physics: const AlwaysScrollableScrollPhysics(),
-                  child: Card(
-                    child: Padding(
-                      padding: EdgeInsets.all(5.r),
-                      child: CommentBubble(
-                        refresh: () {},
-                        comment: comment,
-                        allRelies: true,
-                        focusNode: _focusNode,
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 600),
+                      child: Card(
+                        child: Padding(
+                          padding: EdgeInsets.all(5),
+                          child: CommentBubble(
+                            refresh: () {},
+                            comment: comment,
+                            allRelies: true,
+                            focusNode: _focusNode,
+                          ),
+                        ),
                       ),
                     ),
                   ),

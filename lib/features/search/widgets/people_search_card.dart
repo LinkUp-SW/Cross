@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/my-network/viewModel/grow_tab_view_model.dart';
 import 'package:link_up/features/search/model/people_search_card_model.dart';
@@ -35,16 +34,16 @@ class _PeopleSearchCardState extends ConsumerState<PeopleSearchCard> {
       ),
       child: Padding(
         padding: EdgeInsets.only(
-          top: 10.h,
+          top: 10,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 7.w),
+              padding: EdgeInsets.symmetric(horizontal: 7),
               child: CircleAvatar(
-                radius: 30.r,
+                radius: 30,
                 foregroundImage: widget.data.profilePhoto != null &&
                         widget.data.profilePhoto!.isNotEmpty
                     ? NetworkImage(widget.data.profilePhoto!)
@@ -58,21 +57,21 @@ class _PeopleSearchCardState extends ConsumerState<PeopleSearchCard> {
                   color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
                   border: Border(
                     bottom: BorderSide(
-                      width: 0.3.w,
+                      width: 0.3,
                       color:
                           isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
                     ),
                   ),
                 ),
                 child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8.h),
+                  padding: EdgeInsets.symmetric(vertical: 8),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
                         child: Column(
-                          spacing: 4.h,
+                          spacing: 4,
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -118,10 +117,10 @@ class _PeopleSearchCardState extends ConsumerState<PeopleSearchCard> {
                             ),
                             widget.data.mutualConnectionsCount > 0
                                 ? Row(
-                                    spacing: 5.w,
+                                    spacing: 5,
                                     children: [
                                       CircleAvatar(
-                                        radius: 10.r,
+                                        radius: 10,
                                         foregroundImage: widget.data
                                                         .firstMutualConnectionPicture !=
                                                     null &&
@@ -168,10 +167,10 @@ class _PeopleSearchCardState extends ConsumerState<PeopleSearchCard> {
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 7.w),
+                        padding: EdgeInsets.symmetric(horizontal: 7),
                         child: Container(
-                          width: 35.w,
-                          height: 35.h,
+                          width: 35,
+                          height: 35,
                           decoration: BoxDecoration(
                             color: isDarkMode
                                 ? AppColors.darkMain
@@ -194,7 +193,7 @@ class _PeopleSearchCardState extends ConsumerState<PeopleSearchCard> {
                                         -pi / 4, // 45 degrees counterclockwise
                                     child: Icon(
                                       Icons.send,
-                                      size: 20.r,
+                                      size: 20,
                                       color: isDarkMode
                                           ? AppColors.darkTextColor
                                           : AppColors.lightTextColor,
@@ -227,11 +226,11 @@ class _PeopleSearchCardState extends ConsumerState<PeopleSearchCard> {
                                             mainAxisSize: MainAxisSize.min,
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
-                                            spacing: 5.h,
+                                            spacing: 5,
                                             children: [
                                               Padding(
                                                 padding: EdgeInsets.symmetric(
-                                                    horizontal: 10.w),
+                                                    horizontal: 10),
                                                 child: Text(
                                                   'Withdraw Invitation',
                                                   style: TextStyles
@@ -247,7 +246,7 @@ class _PeopleSearchCardState extends ConsumerState<PeopleSearchCard> {
                                               ),
                                               Padding(
                                                 padding: EdgeInsets.symmetric(
-                                                    horizontal: 10.w),
+                                                    horizontal: 10),
                                                 child: Text(
                                                   "If you withdraw now, you won't be able to resend to ${widget.data.name} for up to 3 weeks",
                                                   style: TextStyles
@@ -270,8 +269,8 @@ class _PeopleSearchCardState extends ConsumerState<PeopleSearchCard> {
                                                     child: Padding(
                                                       padding:
                                                           EdgeInsets.symmetric(
-                                                              horizontal: 10.w,
-                                                              vertical: 5.h),
+                                                              horizontal: 10,
+                                                              vertical: 5),
                                                       child: ElevatedButton(
                                                         onPressed: () {
                                                           context.pop();
@@ -289,8 +288,8 @@ class _PeopleSearchCardState extends ConsumerState<PeopleSearchCard> {
                                                     child: Padding(
                                                       padding:
                                                           EdgeInsets.symmetric(
-                                                              horizontal: 10.w,
-                                                              vertical: 5.h),
+                                                              horizontal: 10,
+                                                              vertical: 5),
                                                       child: ElevatedButton(
                                                         onPressed: () {
                                                           ref
@@ -330,7 +329,7 @@ class _PeopleSearchCardState extends ConsumerState<PeopleSearchCard> {
                                     isConnecting
                                         ? Icons.schedule
                                         : Icons.person_add,
-                                    size: 20.r,
+                                    size: 20,
                                     color: isDarkMode
                                         ? AppColors.darkTextColor
                                         : AppColors.lightTextColor,

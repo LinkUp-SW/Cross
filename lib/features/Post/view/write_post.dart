@@ -4,7 +4,6 @@ import 'dart:developer';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:link_up/core/constants/endpoints.dart';
@@ -67,7 +66,7 @@ class _WritePostState extends ConsumerState<WritePost> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primary,
       appBar: AppBar(
-        toolbarHeight: 60.h,
+        toolbarHeight: 60,
         backgroundColor: Theme.of(context).colorScheme.primary,
         leading: IconButton(
           icon: const Icon(Icons.close),
@@ -85,14 +84,14 @@ class _WritePostState extends ConsumerState<WritePost> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('Save this post for later?',
-                          style: TextStyle(fontSize: 18.r)),
+                          style: TextStyle(fontSize: 18)),
                       IconButton(
                         onPressed: () {
                           context.pop();
                         },
                         icon: Icon(
                           Icons.close,
-                          size: 18.r,
+                          size: 18,
                         ),
                       ),
                     ],
@@ -128,11 +127,11 @@ class _WritePostState extends ConsumerState<WritePost> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CircleAvatar(
-              radius: 20.r,
+              radius: 20,
               backgroundImage: NetworkImage(InternalEndPoints.profileUrl),
             ),
             SizedBox(
-              width: 10.w,
+              width: 10,
             ),
             TextButton(
               onPressed: () {
@@ -150,7 +149,7 @@ class _WritePostState extends ConsumerState<WritePost> {
                 alignment: WrapAlignment.end,
                 children: [
                   SizedBox(
-                    width: 50.w,
+                    width: 50,
                     child: Text(
                         postData.visbilityPost == Visibilities.anyone
                             ? 'Anyone'
@@ -161,10 +160,10 @@ class _WritePostState extends ConsumerState<WritePost> {
                         )),
                   ),
                   SizedBox(
-                    width: 5.w,
+                    width: 5,
                   ),
                   Transform.translate(
-                    offset: Offset(0, -2.h),
+                    offset: Offset(0, -2),
                     child: const Icon(
                       Icons.arrow_drop_down,
                       color: AppColors.grey,
@@ -209,7 +208,7 @@ class _WritePostState extends ConsumerState<WritePost> {
                               children: [
                                 Icon(Icons.error_sharp, color: AppColors.red),
                                 SizedBox(
-                                  width: 10.w,
+                                  width: 10,
                                 ),
                                 Text(
                                   'Error occured! Couldn\'t create post. Try again',
@@ -236,7 +235,7 @@ class _WritePostState extends ConsumerState<WritePost> {
                                 color: Theme.of(context).colorScheme.tertiary,
                               ),
                               SizedBox(
-                                width: 10.w,
+                                width: 10,
                               ),
                               Text('Post created successfully',
                                   style: TextStyle(
@@ -260,7 +259,7 @@ class _WritePostState extends ConsumerState<WritePost> {
                 : const Text('Post'),
           ),
           SizedBox(
-            width: 5.w,
+            width: 5,
           )
         ],
       ),
@@ -297,14 +296,14 @@ class _WritePostState extends ConsumerState<WritePost> {
                         ],
                       ),
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(20.r),
+                        borderRadius: BorderRadius.circular(20),
                         child: Padding(
-                          padding: EdgeInsets.all(5.r),
+                          padding: EdgeInsets.all(5),
                           child: postData.media.getMedia(),
                         ),
                       ),
                       SizedBox(
-                        height: 10.h,
+                        height: 10,
                       ),
                     ],
                   ),
@@ -317,11 +316,11 @@ class _WritePostState extends ConsumerState<WritePost> {
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20.r),
-                topRight: Radius.circular(20.r),
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
               ),
             ),
-            height: 200.h,
+            height: 200,
             child: ListView.separated(
               shrinkWrap: true,
               physics: const ClampingScrollPhysics(),
@@ -329,7 +328,7 @@ class _WritePostState extends ConsumerState<WritePost> {
               itemBuilder: (context, index) {
                 return ListTile(
                   leading: CircleAvatar(
-                    radius: 20.r,
+                    radius: 20,
                     backgroundImage: NetworkImage(_listtiles[index]['profile_photo']),
                   ),
                   title: Text(_listtiles[index]['name'],
@@ -359,7 +358,7 @@ class _WritePostState extends ConsumerState<WritePost> {
           ),
         if (postData.media.type == MediaType.none)
           Padding(
-            padding: EdgeInsets.all(10.r),
+            padding: EdgeInsets.all(10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -380,7 +379,7 @@ class _WritePostState extends ConsumerState<WritePost> {
                   },
                   icon: Icon(
                     Icons.photo,
-                    size: 25.r,
+                    size: 25,
                   ),
                 ),
                 IconButton(
@@ -401,7 +400,7 @@ class _WritePostState extends ConsumerState<WritePost> {
                       }
                     });
                   },
-                  icon: Icon(Icons.video_collection, size: 25.r),
+                  icon: Icon(Icons.video_collection, size: 25),
                 ),
                 IconButton(
                   onPressed: () async {
@@ -424,7 +423,7 @@ class _WritePostState extends ConsumerState<WritePost> {
                       }
                     });
                   },
-                  icon: Icon(Icons.picture_as_pdf, size: 25.r),
+                  icon: Icon(Icons.picture_as_pdf, size: 25),
                 ),
               ],
             ),
