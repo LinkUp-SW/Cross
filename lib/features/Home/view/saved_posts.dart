@@ -117,28 +117,26 @@ class _RepostsPageState extends State<SavedPostsPage> {
           ),
         ),
       ),
-      body: Scrollbar(
-        child: isLoading
-            ? Center(
-                child: CircularProgressIndicator(
-                color: Theme.of(context).colorScheme.secondary,
-              ))
-            : RefreshIndicator(
-                color: Theme.of(context).colorScheme.secondary,
-                onRefresh: refreshPosts,
-                child: posts.isEmpty
-                    ? Center(
-                        child: SingleChildScrollView(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          child: Text(
-                            'No saved posts yet',
-                            style: TextStyle(
-                              fontSize: 30,
-                            ),
-                          ),
+      body: isLoading
+          ? Center(
+              child: CircularProgressIndicator(
+              color: Theme.of(context).colorScheme.secondary,
+            ))
+          : RefreshIndicator(
+              color: Theme.of(context).colorScheme.secondary,
+              onRefresh: refreshPosts,
+              child: posts.isEmpty
+                  ? Center(
+                      child: Text(
+                        'No saved posts yet',
+                        style: TextStyle(
+                          fontSize: 30,
                         ),
-                      )
-                    : Padding(
+                      ),
+                    )
+                  : Scrollbar(
+                    controller: scrollController,
+                    child: Padding(
                         padding: EdgeInsets.only(top: 5),
                         child: ListView.separated(
                           controller: scrollController,
@@ -173,8 +171,8 @@ class _RepostsPageState extends State<SavedPostsPage> {
                           },
                         ),
                       ),
-              ),
-      ),
+                  ),
+            ),
     );
   }
 }

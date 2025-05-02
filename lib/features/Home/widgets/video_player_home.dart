@@ -35,6 +35,10 @@ class _VideoPlayerHomeState extends State<VideoPlayerHome> {
   @override
   void initState() {
     super.initState();
+    if(Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+      return;
+    }
+    
     if (widget.network) {
       _videoController =
           VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl!))
@@ -54,6 +58,18 @@ class _VideoPlayerHomeState extends State<VideoPlayerHome> {
 
   @override
   Widget build(BuildContext context) {
+    if(Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+      return Placeholder(
+        child: SizedBox(
+          width: double.infinity,
+          height: 200,
+          child: Center(
+            child: Text("Video not supported on this platform",
+            style: TextStyle(color: AppColors.red, fontSize: 20,fontWeight: FontWeight.bold),),
+          ),
+        ),
+      );
+    }
     return GestureDetector(
       onTap: () {
         setState(() {

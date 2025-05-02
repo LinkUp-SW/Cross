@@ -38,8 +38,8 @@ class _CarouselImagesState extends State<CarouselImages> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.width * 0.4,
+      width: MediaQuery.of(context).size.width > 600 ? 550 : 400,
+      height: MediaQuery.of(context).size.width > 600 ? 400 : 300,
       child: ValueListenableBuilder(
         valueListenable: _positionNotifier,
         builder: (context, value, child) => Stack(
@@ -47,7 +47,7 @@ class _CarouselImagesState extends State<CarouselImages> {
             CarouselView(
               controller: _carouselController,
               itemSnapping: true,
-              itemExtent: MediaQuery.of(context).size.width,
+              itemExtent: MediaQuery.of(context).size.width > 600 ? 550 : 400,
               children: List<Widget>.generate(
                 widget.images.length,
                 (int index) {

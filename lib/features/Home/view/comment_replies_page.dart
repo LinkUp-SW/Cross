@@ -138,6 +138,7 @@ class _CommentRepliesPageState extends ConsumerState<CommentRepliesPage> {
               color: Theme.of(context).colorScheme.secondary,
               onRefresh: () => refresh(),
               child: Scrollbar(
+                controller: _scrollController,
                 child: SingleChildScrollView(
                   controller: _scrollController,
                   physics: const AlwaysScrollableScrollPhysics(),
