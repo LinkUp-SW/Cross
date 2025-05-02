@@ -15,12 +15,14 @@ class CommentsTextField extends ConsumerStatefulWidget {
   final String buttonName;
   final bool showSuggestions;
   final String postId;
+  final String userName;
   final Function refresh;
   final String? commentId;
   const CommentsTextField(
       {super.key,
       required this.postId,
       required this.refresh,
+      required this.userName,
       required this.focusNode,
       required this.buttonName,
       this.commentId,
@@ -35,9 +37,29 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
   bool _sending = false;
   List<dynamic> users = [];
 
+  final List<String> commSuggestions = [];
+
   @override
   void initState() {
     super.initState();
+    commSuggestions.addAll([
+      "Congratulations, ${widget.userName}",
+      "Thank you for sharing, ${widget.userName}",
+      "Great insight, ${widget.userName}",
+      "Well explained, ${widget.userName}",
+      "I appreciate this!",
+      "Useful takeaway",
+      "Valuable content",
+      "Inspiring work",
+      "Excellent point",
+      "Good perspective",
+      "Very informative",
+      "Insightful analysis",
+      "Well articulated",
+      "Important message",
+      "Thought-provoking",
+      "Impressive work",
+    ]);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(writeCommentProvider.notifier).setController(
         (showTags, data) {
@@ -146,13 +168,20 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                           height: 50.h,
                           child: ListView.separated(
                               scrollDirection: Axis.horizontal,
-                              itemCount: 10,
+                              itemCount: commSuggestions.length,
                               shrinkWrap: true,
                               separatorBuilder: (context, index) =>
                                   SizedBox(width: 5.w),
                               itemBuilder: (context, index) {
-                                //TODO: Suggestions
-                                return Chip(label: Text("label $index"));
+                                return GestureDetector(
+                                  onTap: () {
+                                    writeComment.controller.text +=
+                                        '${commSuggestions[index]} ';
+                                    setState(() {});
+                                  },
+                                  child:
+                                      Chip(label: Text(commSuggestions[index])),
+                                );
                               }),
                         ),
                       SizedBox(
@@ -304,32 +333,32 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                             children: [
                               Row(
                                 children: [
-                                  if(writeComment.media.type == MediaType.none)
-                                  GestureDetector(
-                                      onTap: () async {
-                                        final ImagePicker picker =
-                                            ImagePicker();
-                                        final image = await picker.pickImage(
-                                            source: ImageSource.gallery);
-                                        setState(() {
-                                          if (image != null) {
-                                            ref
-                                                .read(writeCommentProvider
-                                                    .notifier)
-                                                .setMedia(
-                                                  Media(
-                                                      isLocal: true,
-                                                      urls: [],
-                                                      type: MediaType.image,
-                                                      files: [image]),
-                                                );
-                                          } else {
-                                            throw Exception(
-                                                'Could not add image');
-                                          }
-                                        });
-                                      },
-                                      child: const Icon(Icons.image)),
+                                  if (writeComment.media.type == MediaType.none)
+                                    GestureDetector(
+                                        onTap: () async {
+                                          final ImagePicker picker =
+                                              ImagePicker();
+                                          final image = await picker.pickImage(
+                                              source: ImageSource.gallery);
+                                          setState(() {
+                                            if (image != null) {
+                                              ref
+                                                  .read(writeCommentProvider
+                                                      .notifier)
+                                                  .setMedia(
+                                                    Media(
+                                                        isLocal: true,
+                                                        urls: [],
+                                                        type: MediaType.image,
+                                                        files: [image]),
+                                                  );
+                                            } else {
+                                              throw Exception(
+                                                  'Could not add image');
+                                            }
+                                          });
+                                        },
+                                        child: const Icon(Icons.image)),
                                   SizedBox(
                                     width: 10.w,
                                   ),
@@ -372,7 +401,7 @@ class _CommentsTextFieldState extends ConsumerState<CommentsTextField> {
                                                     .read(writeCommentProvider
                                                         .notifier)
                                                     .clearWriteComment();
-                                                    setState(() {});
+                                                setState(() {});
                                               },
                                     child: Text('Cancel'),
                                   ),

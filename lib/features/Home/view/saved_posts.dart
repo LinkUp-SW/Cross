@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
 import 'package:link_up/features/Home/post_functions.dart';
@@ -37,7 +38,8 @@ class _RepostsPageState extends State<SavedPostsPage> {
     });
     scrollController.addListener(() async {
       if (scrollController.position.pixels ==
-          scrollController.position.maxScrollExtent && cursor != null) {
+              scrollController.position.maxScrollExtent &&
+          cursor != null) {
         await loadMorePosts();
       }
     });
@@ -119,55 +121,66 @@ class _RepostsPageState extends State<SavedPostsPage> {
         ),
       ),
       body: Scrollbar(
-        child: isLoading
-            ? Center(
-                child: CircularProgressIndicator(
-                color: Theme.of(context).colorScheme.secondary,
-              ))
-            : RefreshIndicator(
-                color: Theme.of(context).colorScheme.secondary,
-                onRefresh: refreshPosts,
-                child: posts.isEmpty
-                    ? Center(
-                        child: SingleChildScrollView(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          child: Text(
-                            'No saved posts yet',
-                            style: TextStyle(
-                              fontSize: 30.sp,
-                            ),
-                          ),
-                        ),
-                      )
-                    : Padding(
-                        padding: EdgeInsets.only(top: 5.h),
-                        child: ListView.separated(
-                          controller: scrollController,
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: posts.length,
-                          separatorBuilder: (context, index) =>
-                              const SizedBox(height: 10),
-                          itemBuilder: (context, index) {
-                            if (index == posts.length && isLoadingMore) {
-                              return Center(
-                                child: CircularProgressIndicator(
-                                  color: Theme.of(context).colorScheme.secondary,
-                                ),
-                              );
-                            }
-                            if (index == posts.length) {
-                              return const SizedBox.shrink();
-                            }
-                            return Card(
-                              child: Posts(
-                                post: posts[index],
+        child: RefreshIndicator(
+          color: Theme.of(context).colorScheme.secondary,
+          onRefresh: refreshPosts,
+          child: posts.isEmpty
+              ? Center(
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: isLoading
+                        ? Center(
+                            child: CircularProgressIndicator(
+                            color: Theme.of(context).colorScheme.secondary,
+                          ))
+                        : Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SvgPicture.asset(
+                                'assets/images/man_on_chair.svg',
+                                height: 200,
+                                width: 200,
                               ),
-                            );
-                          },
+                              SizedBox(height: 10),
+                              Text(
+                                'No saved posts yet',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                ),
+                              ),
+                            ],
+                          ),
+                  ),
+                )
+              : Padding(
+                  padding: EdgeInsets.only(top: 5.h),
+                  child: ListView.separated(
+                    controller: scrollController,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: posts.length,
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 10),
+                    itemBuilder: (context, index) {
+                      if (index == posts.length && isLoadingMore) {
+                        return Center(
+                          child: CircularProgressIndicator(
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
+                        );
+                      }
+                      if (index == posts.length) {
+                        return const SizedBox.shrink();
+                      }
+                      return Card(
+                        child: Posts(
+                          post: posts[index],
                         ),
-                      ),
-              ),
+                      );
+                    },
+                  ),
+                ),
+        ),
       ),
     );
   }

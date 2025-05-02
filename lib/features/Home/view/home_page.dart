@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
 import 'package:link_up/features/Home/viewModel/posts_vm.dart';
 import 'package:link_up/features/Home/widgets/deleted_post.dart';
@@ -41,7 +42,8 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   void _scrollListener() {
     if (scrollController.position.pixels ==
-        scrollController.position.maxScrollExtent && PostsState.nextCursor != -1) {
+            scrollController.position.maxScrollExtent &&
+        PostsState.nextCursor != -1) {
       ref.read(postsProvider.notifier).fetchPosts().then((value) {
         ref.read(postsProvider.notifier).addPosts(value);
       });
@@ -134,9 +136,10 @@ class _HomePageState extends ConsumerState<HomePage> {
               await ref.read(postsProvider.notifier).refreshPosts();
             },
             child: Builder(builder: (context) {
-              if (posts.isEmpty) {
+              if (PostsState.isLoading) {
                 return Skeletonizer(
                   child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
                     child: Column(
                       children: [
                         for (int i = 0; i < 5; i++)
@@ -145,6 +148,33 @@ class _HomePageState extends ConsumerState<HomePage> {
                               post: PostModel.initial(),
                             ),
                           ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+              if (posts.isEmpty) {
+                return Center(
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SvgPicture.asset(
+                          'assets/images/man_on_chair.svg',
+                          height: 200,
+                          width: 200,
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          'No Posts Yet',
+                          style: TextStyle(
+                            fontSize: 20.sp,
+                            color: Theme.of(context).textTheme.bodyLarge!.color,
+                          ),
+                        ),
                       ],
                     ),
                   ),

@@ -64,8 +64,7 @@ class WritePostVm {
                 final String username = regMatch.group(1) ?? '';
                 final String userId = regMatch.group(2) ?? '';
                 log('User deleted: $username with ID: $userId');
-                taggedUsers
-                    .removeWhere((element) => element == userId);
+                taggedUsers.removeWhere((element) => element == userId);
                 log(taggedUsers.toString());
               }
             },
@@ -113,8 +112,8 @@ class WritePostVm {
                     updateTags(false, []);
                     final List<dynamic> users = body['people'];
                     users.removeWhere((user) {
-                      return taggedUsers.any((taggedUser) =>
-                          taggedUser == user['user_id']);
+                      return taggedUsers
+                          .any((taggedUser) => taggedUser == user['user_id']);
                     });
                     log('Fetched users: $users');
                     updateTags(true, users);
@@ -210,27 +209,32 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
     log('Editing post with ID: ${state.postId}');
 
     final mediaContent = await state.media.setToUpload();
+    try {
+      final response =
+          await service.patch('api/v2/post/posts/:postId', routeParameters: {
+        "postId": state.postId
+      }, body: {
+        "content": state.controller.text,
+        "mediaType": state.media.type.name,
+        "media": mediaContent,
+        "commentsDisabled":
+            Visibilities.getVisibilityString(state.visibilityComment),
+        "publicPost": state.visbilityPost == Visibilities.anyone ? true : false,
+        "taggedUsers": state.taggedUsers,
+        "postType":
+            state.media.type == MediaType.post ? "Repost thought" : "Standard",
+      });
 
-    final response =
-        await service.patch('api/v2/post/posts/:postId', routeParameters: {
-      "postId": state.postId
-    }, body: {
-      "content": state.controller.text,
-      "mediaType": state.media.type.name,
-      "media": mediaContent,
-      "commentsDisabled":
-          Visibilities.getVisibilityString(state.visibilityComment),
-      "publicPost": state.visbilityPost == Visibilities.anyone ? true : false,
-      "taggedUsers": state.taggedUsers,
-      "postType": state.media.type == MediaType.post ? "Repost thought" : "Standard",
-    });
-
-    log('Response: ${response.statusCode} - ${response.body}');
-    if (response.statusCode == 200) {
-      log('Post edited successfully: ${response.body}');
-      return state.postId;
-    } else {
-      log('Failed to edit post');
+      log('Response: ${response.statusCode} - ${response.body}');
+      if (response.statusCode == 200) {
+        log('Post edited successfully: ${response.body}');
+        return state.postId;
+      } else {
+        log('Failed to edit post');
+        return 'error';
+      }
+    } catch (error) {
+      log('Error editing post: $error');
       return 'error';
     }
   }
@@ -240,28 +244,31 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
 
     final mediaContent = await state.media.setToUpload();
 
-    log('${state.taggedUsers.map((user) {
-      return user;
-    }).toList()}');
-    final response = await service.post('api/v2/post/posts', body: {
-      "content": state.controller.text,
-      "mediaType": state.media.type.name,
-      "media": mediaContent,
-      "commentsDisabled":
-          Visibilities.getVisibilityString(state.visibilityComment),
-      "publicPost": state.visbilityPost == Visibilities.anyone ? true : false,
-      "taggedUsers": state.taggedUsers,
-      "postType": state.media.type == MediaType.post ? "Repost thought" : "Standard",
-    });
+    try {
+      final response = await service.post('api/v2/post/posts', body: {
+        "content": state.controller.text,
+        "mediaType": state.media.type.name,
+        "media": mediaContent,
+        "commentsDisabled":
+            Visibilities.getVisibilityString(state.visibilityComment),
+        "publicPost": state.visbilityPost == Visibilities.anyone ? true : false,
+        "taggedUsers": state.taggedUsers,
+        "postType":
+            state.media.type == MediaType.post ? "Repost thought" : "Standard",
+      });
 
-    // Rest of the function remains the same
-    log('Response: ${response.statusCode} - ${response.body}');
-    if (response.statusCode == 200) {
-      log('Post created successfully: ${response.body}');
-      final body = jsonDecode(response.body);
-      return body['postId'];
-    } else {
-      log('Failed to create post');
+      // Rest of the function remains the same
+      log('Response: ${response.statusCode} - ${response.body}');
+      if (response.statusCode == 200) {
+        log('Post created successfully: ${response.body}');
+        final body = jsonDecode(response.body);
+        return body['postId'];
+      } else {
+        log('Failed to create post');
+        return 'error';
+      }
+    } catch (error) {
+      log('Error creating post: $error');
       return 'error';
     }
   }
