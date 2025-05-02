@@ -13,6 +13,11 @@ class UserProfile {
   final String profilePhotoUrl;
   final String coverPhotoUrl;
   final int numberOfConnections;
+   final bool? isInConnections; // Already connected
+  final bool? isInReceivedConnections; // You have a pending request from them
+  final bool? isInSentConnections; // You sent them a pending request
+  final bool? isAlreadyFollowing; // You are following them
+  final bool? allowMessaging; // Can you message them? (Likely if connected)
 
   const UserProfile({
     required this.isMe,
@@ -25,6 +30,12 @@ class UserProfile {
     required this.profilePhotoUrl,
     required this.coverPhotoUrl,
     required this.numberOfConnections,
+    this.isInConnections,
+    this.isInReceivedConnections,
+    this.isInSentConnections, 
+    this.isAlreadyFollowing,
+    this.allowMessaging,
+
   });
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
@@ -44,6 +55,11 @@ class UserProfile {
       website: contactInfo['website'] as String? ?? bio['website'] as String?,     
       coverPhotoUrl: json['cover_photo'] as String? ?? '',
       numberOfConnections: json['number_of_connections'] as int? ?? 0,
+       isInConnections: json['isInConnections'] as bool? ?? false,
+      isInReceivedConnections: json['isInReceivedConnections'] as bool? ?? false,
+      isInSentConnections: json['isInSentConnections'] as bool? ?? false,
+      isAlreadyFollowing: json['isAlreadyFollowing'] as bool? ?? false,
+      allowMessaging: json['allowMessaging'] as bool? ?? false, 
     );
   }
 
@@ -79,6 +95,91 @@ class UserProfile {
       profilePhotoUrl: '',
       coverPhotoUrl: '',
       numberOfConnections: 0,
+      isInConnections: false,
+      isInReceivedConnections: false,
+      isInSentConnections: false,
+      isAlreadyFollowing: false,
+      allowMessaging: false,
     );
   }
+  UserProfile copyWith({
+      bool? isMe,
+      String? firstName,
+      String? lastName,
+      String? headline,
+      String? countryRegion,
+      String? city,
+      String? website,
+      String? profilePhotoUrl,
+      String? coverPhotoUrl,
+      int? numberOfConnections,
+
+      bool? isInConnections,
+      bool? isInReceivedConnections,
+      bool? isInSentConnections,  
+      bool? isAlreadyFollowing,
+      bool? allowMessaging,
+
+   }) {
+      return UserProfile(
+ 
+        isMe: isMe ?? this.isMe,
+        firstName: firstName ?? this.firstName,
+        lastName: lastName ?? this.lastName,
+        headline: headline ?? this.headline,
+        countryRegion: countryRegion == const Object() ? this.countryRegion : countryRegion as String?, 
+        city: city == const Object() ? this.city : city as String?,
+        website: website == const Object() ? this.website : website as String?,
+        profilePhotoUrl: profilePhotoUrl ?? this.profilePhotoUrl,
+        coverPhotoUrl: coverPhotoUrl ?? this.coverPhotoUrl,
+        numberOfConnections: numberOfConnections ?? this.numberOfConnections,
+        isInConnections: isInConnections ?? this.isInConnections,
+        isInReceivedConnections: isInReceivedConnections ?? this.isInReceivedConnections,
+        isInSentConnections: isInSentConnections ?? this.isInSentConnections,
+        isAlreadyFollowing: isAlreadyFollowing ?? this.isAlreadyFollowing,
+        allowMessaging: allowMessaging ?? this.allowMessaging,
+
+      );
+   }
+    @override
+   bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UserProfile &&
+          runtimeType == other.runtimeType &&
+          isMe == other.isMe &&
+          firstName == other.firstName &&
+          lastName == other.lastName &&
+          headline == other.headline &&
+          countryRegion == other.countryRegion &&
+          city == other.city &&
+          website == other.website &&
+          profilePhotoUrl == other.profilePhotoUrl &&
+          coverPhotoUrl == other.coverPhotoUrl &&
+          numberOfConnections == other.numberOfConnections &&
+          isInReceivedConnections == other.isInReceivedConnections &&
+          isInSentConnections == other.isInSentConnections &&
+          isAlreadyFollowing == other.isAlreadyFollowing &&
+          allowMessaging == other.allowMessaging &&
+          isInConnections == other.isInConnections;
+          
+
+   @override
+   int get hashCode =>
+       isMe.hashCode ^
+       firstName.hashCode ^
+        lastName.hashCode ^
+        headline.hashCode ^
+        countryRegion.hashCode ^
+        city.hashCode ^
+        website.hashCode ^
+        profilePhotoUrl.hashCode ^
+        coverPhotoUrl.hashCode ^
+        numberOfConnections.hashCode ^
+        isInReceivedConnections.hashCode ^
+        isInSentConnections.hashCode ^
+        isAlreadyFollowing.hashCode ^
+        allowMessaging.hashCode ^
+        isInConnections.hashCode; 
+
+        
 }

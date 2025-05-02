@@ -6,13 +6,16 @@ class AddSectionState {
   final bool hasAboutInfo;
   final bool hasResume;
   final bool hasLicenses;
+  final bool hasSkills;
   final String? error;
 
   const AddSectionState({
     this.isLoading = true,
     this.hasAboutInfo = false,
     this.hasResume = false,
+    this.hasSkills = false,
     this.hasLicenses = false,
+    
     this.error,
   });
 
@@ -21,6 +24,7 @@ class AddSectionState {
     bool? hasAboutInfo,
     bool? hasResume,
     bool? hasLicenses,
+    bool? hasSkills,
     String? error,
     bool clearError = false,
   }) {
@@ -29,6 +33,7 @@ class AddSectionState {
       hasAboutInfo: hasAboutInfo ?? this.hasAboutInfo,
       hasResume: hasResume ?? this.hasResume,
       hasLicenses: hasLicenses ?? this.hasLicenses,
+      hasSkills: hasSkills ?? this.hasSkills,
       error: clearError ? null : error ?? this.error,
     );
   }
@@ -42,6 +47,7 @@ class AddSectionState {
           hasAboutInfo == other.hasAboutInfo &&
           hasResume == other.hasResume &&
           hasLicenses == other.hasLicenses &&
+          hasSkills == other.hasSkills &&
           error == other.error;
 
   @override
@@ -50,5 +56,6 @@ class AddSectionState {
       hasAboutInfo.hashCode ^
       hasResume.hashCode ^
       hasLicenses.hashCode ^
+      hasSkills.hashCode ^
       error.hashCode;
 }
