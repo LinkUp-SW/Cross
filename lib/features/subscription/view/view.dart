@@ -265,16 +265,20 @@ class _SubscriptionManagementScreenScreenState
                               : AppColors.lightBlue,
                         ),
                       ),
-                      onTap: () {},
+                      onTap: () async {
+                        await ref
+                            .read(subscriptionManagementScreenViewModelProvider
+                                .notifier)
+                            .startSubscriptionPaymentSession();
+                      },
                     ),
                   ),
               ],
             ),
           // For premium plan users
-          if (state.currentPlan.plan != 'free')
+          if (state.currentPlan.plan == 'premium')
             Column(
               children: [
-                // Premium plan details remain unchanged
                 Container(
                   decoration: BoxDecoration(
                     color:

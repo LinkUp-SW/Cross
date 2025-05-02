@@ -25,6 +25,25 @@ class SubscriptionManagementScreenServices {
       rethrow;
     }
   }
+
+  Future<Map<String, dynamic>> startSubscriptionPaymentSession() async {
+    try {
+      final response = await _baseService.post(
+        ExternalEndPoints.subscriptionPaymentSession,
+        body: {"platform": "android"},
+      );
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body);
+        log('Response body: ${response.body}');
+        return body;
+      }
+      throw Exception(
+          'Failed to start subscription payment session, Status code: ${response.statusCode} Response body: ${response.body}');
+    } catch (e) {
+      log('Error starting subscription payment session $e');
+      rethrow;
+    }
+  }
 }
 
 final subscriptionManagementScreenServicesProvider =

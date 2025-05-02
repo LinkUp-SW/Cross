@@ -1,19 +1,47 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/core/constants/endpoints.dart';
+import 'package:link_up/features/subscription/model/subscription_card_model.dart';
+import 'package:link_up/features/subscription/services/subscription_management_screen_services.dart';
 import 'package:link_up/shared/themes/colors.dart';
 
-class MainDrawer extends ConsumerWidget {
+class MainDrawer extends ConsumerStatefulWidget {
   const MainDrawer({
     super.key,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MainDrawer> createState() => _MainDrawerState();
+}
+
+class _MainDrawerState extends ConsumerState<MainDrawer> {
+  bool isPremium = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    Future.microtask(() async {
+      final currentPlanResponse = await ref
+          .read(subscriptionManagementScreenServicesProvider)
+          .getCurrentPlan();
+
+      final currentPlan =
+          SubscriptionCardModel.fromJson(currentPlanResponse['subscription']);
+      currentPlan.plan == "premium"
+          ? setState(() {
+              isPremium = true;
+            })
+          : setState(() {
+              isPremium = false;
+            });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Drawer(
       backgroundColor: Theme.of(context).colorScheme.primary,
       child: Padding(
@@ -27,7 +55,6 @@ class MainDrawer extends ConsumerWidget {
                   onTap: () {
                     context.pop();
                     context.push('/profile');
-                    log('Profile tapped');
                   },
                   child: Align(
                     alignment: Alignment.centerLeft,
@@ -99,9 +126,17 @@ class MainDrawer extends ConsumerWidget {
               children: [
                 const Divider(color: AppColors.grey, thickness: 0),
                 ListTile(
-                  title: const Text('Try Premium for 0 EGP'),
+                  title: Text(
+                    isPremium
+                        ? 'You are a Premium member'
+                        : 'Try Premium for 9.99\$',
+                  ),
                   trailing: Image(
-                    image: AssetImage('assets/images/Logo_mini.png'),
+                    image: AssetImage(
+                      isPremium
+                          ? 'assets/images/linkup_premium.png'
+                          : 'assets/images/Logo_mini.png',
+                    ),
                     width: 25.w,
                     height: 25.h,
                   ),
@@ -119,7 +154,7 @@ class MainDrawer extends ConsumerWidget {
                   },
                 ),
               ],
-            )
+            ),
           ],
         ),
       ),

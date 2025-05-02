@@ -1,5 +1,5 @@
 import 'dart:developer';
-
+import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/features/subscription/services/subscription_management_screen_services.dart';
 import 'package:link_up/features/subscription/state/subscription_management_screen_state.dart';
@@ -31,6 +31,19 @@ class SubscriptionManagementScreenViewModel
       );
     } catch (e) {
       log("Error converting response to subscription card model $e");
+      state = state.copyWith(isLoading: false, isError: true);
+    }
+  }
+
+  Future<void> startSubscriptionPaymentSession() async {
+    try {
+      final startSubscriptionPaymentSessionResponse =
+          await _subscriptionManagementScreenServices
+              .startSubscriptionPaymentSession();
+      final Uri uri = Uri.parse(startSubscriptionPaymentSessionResponse['url']);
+      await launchUrl(uri);
+    } catch (e) {
+      log('Error redirecting to subscription payment session $e');
       state = state.copyWith(isLoading: false, isError: true);
     }
   }

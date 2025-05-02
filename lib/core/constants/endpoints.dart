@@ -33,7 +33,6 @@ class ExternalEndPoints {
   static const peopleYouMayKnow = 'api/v1/user/people-you-may-know';
   static const peopleSearch = 'api/v1/search/users';
   static const currentPlan = 'api/v1/user/subscription/status';
-  static const subscriptionPaymentSession =
-      'api/v1//user/subscription/checkout';
-  static const cancelPremiumSubscription = 'api/v1//user/subscription/cancel';
+  static const subscriptionPaymentSession = 'api/v1/user/subscription/checkout';
+  static const cancelPremiumSubscription = 'api/v1/user/subscription/cancel';
 }
