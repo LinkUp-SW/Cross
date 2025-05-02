@@ -1,56 +1,58 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:link_up/features/Home/home_enums.dart';
-import 'package:link_up/features/Home/model/header_model.dart';
-import 'package:link_up/features/Home/model/post_model.dart';
-import 'package:link_up/features/Home/model/reaction_tile_model.dart';
+import 'dart:convert';
+import 'dart:developer';
 
-class PostNotifier extends StateNotifier<PostModel> {
-  PostNotifier() : super(PostModel.initial());
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:link_up/core/services/base_service.dart';
+import 'package:link_up/features/Home/model/post_model.dart';
+
+class PostState {
+  PostModel post;
+  bool isLoading;
+  PostState({required this.post, required this.isLoading});
+  PostState.initial()
+      : post = PostModel.initial(),
+        isLoading = false;
+}
+
+class PostNotifier extends StateNotifier<PostState> {
+  PostNotifier() : super(PostState.initial());
 
   void setPost(PostModel post) {
-    state = post;
+    state.post = post;
+  }
+
+  void setPostId(String postId) {
+    state.post.id = postId;
   }
 
   String getPostId() {
-    return state.id;
+    return state.post.id;
   }
 
-  void fetchPost(String id) {
-    Future.delayed(const Duration(seconds: 2), () {
-      state = PostModel.initial();
-    });
-  }
-
-  Future<Map<String, List<ReactionTileModel>>> fetchReactions() {
-    return Future.delayed(const Duration(seconds: 5), () {
-      return List.generate(100, (index) {
-        return ReactionTileModel(
-          header: HeaderModel(
-            userId: index.toString(),
-            profileImage:
-                'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
-            name: 'John Doe',
-            connectionDegree: 'johndoe',
-            about: 'About John Doe',
-            timeAgo: DateTime.now(),
-            visibilityPost: Visibilities.anyone,
-            visibilityComments: Visibilities.anyone,
-          ),
-          reaction: Reaction.values[index % 6],
-        );
-      });
+  Future<Map<String, dynamic>> getPost(String id) async {
+    log('getPost called with id: $id');
+    state.isLoading = true;
+    final BaseService service = BaseService();
+    return await service.get('api/v2/post/posts/:postId', queryParameters: {
+      'limit': '10',
+      'cursor': '0',
+      'replyLimit': '1',
+    }, routeParameters: {
+      "postId": id
     }).then((value) {
-      return {
-        'All': value,
-        for (var reaction in Reaction.values)
-          if (reaction != Reaction.none)
-            Reaction.getReactionString(reaction):
-                value.where((element) => element.reaction == reaction).toList()
-      };
+      log(value.body);
+      final data = jsonDecode(value.body);
+      state.post = PostModel.fromJson(data['post']);
+      state.isLoading = false;
+      return data['comments'];
+    }).catchError((error) {
+      log('$error');
+      state.isLoading = false;
+      return <String, dynamic>{};
     });
   }
 }
 
-final postProvider = StateNotifierProvider<PostNotifier, PostModel>((ref) {
+final postProvider = StateNotifierProvider<PostNotifier, PostState>((ref) {
   return PostNotifier();
 });

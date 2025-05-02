@@ -6,11 +6,11 @@ enum Visibilities { anyone, connectionsOnly, noOne;
   
     static Visibilities getVisibility(String visibility) {
       switch (visibility) {
-        case 'anyone':
+        case 'anyone' || 'Anyone':
           return Visibilities.anyone;
-        case 'connectionsOnly':
+        case 'connectionsOnly' || 'Connections only':
           return Visibilities.connectionsOnly;
-        case 'noOne':
+        case 'noOne' || 'No one':
           return Visibilities.noOne;
         default:
           return Visibilities.anyone;
@@ -70,17 +70,17 @@ enum Reaction {
 
   static Reaction getReaction(String reaction) {
     switch (reaction) {
-      case 'Like':
+      case 'Like'||'like':
         return Reaction.like;
-      case 'Celebrate':
+      case 'Celebrate'||'celebrate':
         return Reaction.celebrate;
-      case 'Support':
+      case 'Support'||'support':
         return Reaction.support;
-      case 'Love':
+      case 'Love'||'love':
         return Reaction.love;
-      case 'Insightful':
+      case 'Insightful'||'insightful':
         return Reaction.insightful;
-      case 'Funny':
+      case 'Funny'||'funny':
         return Reaction.funny;
       default:
         return Reaction.none;
@@ -143,4 +143,65 @@ enum Reaction {
         return null;
     }
   }
+}
+
+
+
+enum ActitvityType {
+  repost,
+  comment,
+  like,
+  celebrate,
+  support,
+  love,
+  insightful,
+  funny,
+  none;
+
+  static ActitvityType getActivityType(String activityType) {
+    switch (activityType) {
+      case 'repost':
+        return ActitvityType.repost;
+      case 'comment':
+        return ActitvityType.comment;
+      case 'like':
+        return ActitvityType.like;
+      case 'celebrate':
+        return ActitvityType.celebrate;
+      case 'support':
+        return ActitvityType.support;
+      case 'love':
+        return ActitvityType.love;
+      case 'insightful':
+        return ActitvityType.insightful;
+      case 'funny':
+        return ActitvityType.funny;
+      default:
+        return ActitvityType.none;
+    }
+  }
+
+  static String getActivityTypeString(ActitvityType activityType) {
+    switch (activityType) {
+      case ActitvityType.repost:
+        return ' reposted this post';
+      case ActitvityType.comment:
+        return ' commented on this post';
+      case ActitvityType.like:
+        return ' likes this post';
+      case ActitvityType.celebrate:
+        return ' celebrates this post';
+      case ActitvityType.support:
+        return ' supports this post';
+      case ActitvityType.love:
+        return ' loves this post';
+      case ActitvityType.insightful:
+        return ' finds this post insightful';
+      case ActitvityType.funny:
+        return ' finds this post funny';
+      default:
+        return 'none';
+    }
+  }
+
 }

@@ -1,74 +1,71 @@
-
-
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:link_up/features/Home/home_enums.dart';
+import 'package:link_up/core/services/base_service.dart';
 import 'package:link_up/features/Home/model/comment_model.dart';
-import 'package:link_up/features/Home/model/header_model.dart';
-import 'package:link_up/features/Home/model/media_model.dart';
 
-class CommentsProvider extends StateNotifier<List<CommentModel>> {
-  CommentsProvider() : super([]);
+class CommentsProvider extends StateNotifier<Map<String, dynamic>> {
+  CommentsProvider() : super({'comments': [], 'cursor': 0});
 
   void addComments(List<CommentModel> comments) {
-    state = [...state, ...comments];
+    state['comments'].addAll(comments);
   }
 
   void removeComment(CommentModel comment) {
-    state = state.where((element) => element.id != comment.id).toList();
+    state =
+        state['comments'].where((element) => element.id != comment.id).toList();
   }
 
   void updateComment(CommentModel comment) {
-    state = state.map((e) => e.id == comment.id ? comment : e).toList();
+    state =
+        state['comments'].map((e) => e.id == comment.id ? comment : e).toList();
   }
 
   void setComments(List<CommentModel> comments) {
-    state = comments;
+    state['comments'].clear();
+    state['comments'].addAll(comments);
+  }
+
+  void setCommentsFromPost(Map<String, dynamic> comments) {
+    state['comments'].clear();
+    state['comments'].addAll(
+        comments['comments'].map((e) => CommentModel.fromJson(e)).toList());
+    state['cursor'] = comments['next_cursor'];
   }
 
   void clearComments() {
-    state = [];
+    state['comments'].clear();
   }
 
-
-  Future<List<CommentModel>> fetchComments(String postId) {
-      //TODO: Implement fetching comments from the server
-      log(postId);
-      return Future.delayed(const Duration(seconds: 5), () {
-        return List.generate(
-          5,
-          (index) => CommentModel(
-            id: index.toString(),
-            header: HeaderModel(
-              userId: index.toString(),
-              profileImage:
-                  'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
-              name: 'John Doe',
-              connectionDegree: 'johndoe',
-              about: 'About John Doe',
-              timeAgo: DateTime.now(),
-              visibilityPost: Visibilities.anyone,
-              visibilityComments: Visibilities.anyone,
-            ),
-            text: 'This is a comment',
-            likes: 10,
-            replies: 5,
-            media: Media(
-              type: index % 3 == 2
-                      ? MediaType.image
-                      : MediaType.none,
-              urls: [
-                'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg'
-              ],
-            ),
-          ),
-        );
-      });
+  Future<List<CommentModel>> fetchComments(String postId, {int? cursor}) {
+    final BaseService service = BaseService();
+    log('Fetching comments for postId: $postId');
+    return service.get(
+      'api/v2/post/comment/:postId',
+      queryParameters: {
+        'limit': '10',
+        'cursor': (cursor ?? state['cursor']).toString(),
+        'replyLimit': '1',
+      },
+      routeParameters: {
+        'postId': postId,
+      },
+    ).then((value) {
+      final data = jsonDecode(value.body);
+      log('Fetched comments: $data');
+      state['cursor'] = data['next_cursor'];
+      return (data['comments'] as List)
+          .map((e) => CommentModel.fromJson(e))
+          .toList();
+    }).catchError((error) {
+      log('$error');
+      return <CommentModel>[];
+    });
   }
-
 }
 
-final commentsProvider = StateNotifierProvider<CommentsProvider, List<CommentModel>>((ref) {
+final commentsProvider =
+    StateNotifierProvider<CommentsProvider, Map<String, dynamic>>((ref) {
   return CommentsProvider();
 });

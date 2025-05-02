@@ -54,6 +54,53 @@ class GrowTabServices {
       rethrow;
     }
   }
+
+  Future<Map<String, dynamic>> getPeopleYouMayKnow({
+    Map<String, dynamic>? queryParameters,
+  }) async {
+    try {
+      final response = await _baseService.get(
+        ExternalEndPoints.peopleYouMayKnow,
+        queryParameters: queryParameters,
+      );
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+      throw Exception(
+          'Failed to get received connection invitations: ${response.statusCode}');
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // Withdraw an invitation
+  Future<Map<String, dynamic>> withdrawInvitation(String userId) async {
+    try {
+      final response = await _baseService.delete(
+          ExternalEndPoints.withdrawConnectionInvitation, {'user_id': userId});
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+      throw Exception(
+          'Failed to withdraw sent connection invitation: ${response.body} , status code: ${response.statusCode}');
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> sendConnectionRequest(String userId) async {
+    try {
+      final response = await _baseService.post(ExternalEndPoints.connect,
+          routeParameters: {'user_id': userId});
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+      throw Exception(
+          'Failed to send connection request: ${response.body} , status code: ${response.statusCode}');
+    } catch (e) {
+      rethrow;
+    }
+  }
 }
 
 final growTabServicesProvider = Provider<GrowTabServices>(
