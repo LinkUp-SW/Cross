@@ -14,7 +14,6 @@ import 'package:link_up/features/profile/viewModel/cover_photo_view_model.dart';
 import 'package:link_up/features/profile/state/profile_state.dart';
 import 'package:link_up/features/profile/viewModel/profile_view_model.dart';
 import 'package:link_up/features/profile/model/education_model.dart';
-import 'package:link_up/features/profile/viewModel/profile_view_model.dart' show educationDataProvider;
 import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:developer';
@@ -162,6 +161,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final buttonStyles = LinkUpButtonStyles();
     final double backgroundHeight = 70.h;
+    final bool isMe = userProfile.isMe;
 
     String locationString = '';
     if (userProfile.city != null && userProfile.city!.isNotEmpty) {
@@ -227,7 +227,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
             clipBehavior: Clip.none,
             children: [
               GestureDetector(
-                onTap: () => _handleBackgroundPicTap(context, ref),
+                onTap: isMe ? () => _handleBackgroundPicTap(context, ref) : null,
                 child: Consumer(
                   builder: (context, ref, _) {
                     final coverState = ref.watch(coverPhotoViewModelProvider);
@@ -248,7 +248,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
                       ),
                       child: Stack(
                         children: [
-                          if (!isCoverProcessing)
+                          if (isMe && !isCoverProcessing)
                             Align(
                               alignment: Alignment.topRight,
                               child: Padding(
@@ -283,7 +283,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
               Padding(
                 padding: EdgeInsets.only(top: 30.h, left: 16.w),
                 child: GestureDetector(
-                  onTap: () => _handleProfilePicTap(context, ref),
+                  onTap: isMe ? () => _handleProfilePicTap(context, ref) : null,
                   child: Stack(
                     clipBehavior: Clip.none,
                     children: [
@@ -341,6 +341,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
                           },
                         ),
                       ),
+                      if (isMe)
                       Positioned(
                         bottom: 0,
                         right: 0,
@@ -354,6 +355,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
                   ),
                 ),
               ),
+              if (isMe)
               Positioned(
                 top: backgroundHeight + 5.h,
                 right: 16.w,
@@ -435,83 +437,188 @@ class ProfileHeaderWidget extends ConsumerWidget {
               ],
             ),
           ),
-          Padding(
+         Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      flex: 4,
-                      child: ElevatedButton(
-                        onPressed: () => _handleOpenToTap(context),
-                        style: isDarkMode
-                            ? buttonStyles.wideBlueElevatedButtonDark()
-                            : buttonStyles.wideBlueElevatedButton(),
-                        child: Text(
-                          "Open to",
-                          style: TextStyles.font15_500Weight.copyWith(
-                            color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 6.w),
-                    Expanded(
-                      flex: 4,
-                      child: OutlinedButton(
-                        onPressed: () {GoRouter.of(context).push('/add_profile_section');},
-                        style: isDarkMode
-                            ? buttonStyles.blueOutlinedButtonDark()
-                            : buttonStyles.blueOutlinedButton(),
-                        child: Text(
-                          "Add section",
-                          style: TextStyles.font15_500Weight.copyWith(
-                            color: isDarkMode ? AppColors.darkBlue : AppColors.lightBlue,
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 6.w),
-                    SizedBox(
-                      width: 30.r,
-                      height: 35.r,
-                      child: OutlinedButton(
-                        onPressed: () {},
-                        style: isDarkMode
-                            ? buttonStyles.circularButtonDark()
-                            : buttonStyles.circularButton(),
-                        child: Icon(
-                          Icons.more_horiz,
-                          color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 5.h),
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton(
-                    onPressed: () {},
-                    style: isDarkMode
-                        ? buttonStyles.blueOutlinedButtonDark()
-                        : buttonStyles.blueOutlinedButton(),
-                    child: Text(
-                      "Enhance profile",
-                      style: TextStyles.font15_500Weight.copyWith(
-                        color: isDarkMode ? AppColors.darkBlue : AppColors.lightBlue,
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 15.h),
-              ],
-            ),
+            child: isMe
+                ? _buildMyProfileActions(context, ref, buttonStyles, isDarkMode)
+                : _buildOtherProfileActions(context, ref, userProfile, buttonStyles, isDarkMode),
           ),
+          SizedBox(height: 15.h),
         ],
       ),
     );
   }
+
+  Widget _buildMyProfileActions(BuildContext context, WidgetRef ref, LinkUpButtonStyles buttonStyles, bool isDarkMode) {
+       return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                flex: 4,
+                child: ElevatedButton(
+                  onPressed: () => _handleOpenToTap(context),
+                  style: isDarkMode
+                      ? buttonStyles.wideBlueElevatedButtonDark()
+                      : buttonStyles.wideBlueElevatedButton(),
+                  child: Text(
+                    "Open to",
+                    style: TextStyles.font15_500Weight.copyWith(
+                      color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(width: 6.w),
+              Expanded(
+                flex: 4,
+                child: OutlinedButton(
+                  onPressed: () {GoRouter.of(context).push('/add_profile_section');},
+                  style: isDarkMode
+                      ? buttonStyles.blueOutlinedButtonDark()
+                      : buttonStyles.blueOutlinedButton(),
+                  child: Text(
+                    "Add section",
+                    style: TextStyles.font15_500Weight.copyWith(
+                      color: isDarkMode ? AppColors.darkBlue : AppColors.lightBlue,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(width: 6.w),
+              SizedBox(
+                width: 30.r,
+                height: 35.r,
+                child: OutlinedButton(
+                  onPressed: () { /* TODO: Own Profile More Options */ },
+                  style: isDarkMode
+                      ? buttonStyles.circularButtonDark()
+                      : buttonStyles.circularButton(),
+                  child: Icon(
+                    Icons.more_horiz,
+                    color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 5.h),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton(
+              onPressed: () { /* TODO: Enhance Profile Action */ },
+              style: isDarkMode
+                  ? buttonStyles.blueOutlinedButtonDark()
+                  : buttonStyles.blueOutlinedButton(),
+              child: Text(
+                "Enhance profile",
+                style: TextStyles.font15_500Weight.copyWith(
+                  color: isDarkMode ? AppColors.darkBlue : AppColors.lightBlue,
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+
+  Widget _buildOtherProfileActions(BuildContext context, WidgetRef ref, UserProfile otherUserProfile, LinkUpButtonStyles buttonStyles, bool isDarkMode) {
+
+      bool canConnect = !(otherUserProfile.isInConnections ?? false) &&
+                          !(otherUserProfile.isInSentConnections ?? false) &&
+                          !(otherUserProfile.isInReceivedConnections ?? false);
+
+      bool isPending = otherUserProfile.isInSentConnections ?? false;
+
+      bool canMessage = otherUserProfile.isInConnections ?? false;
+
+      // TODO: Add logic for Follow/Unfollow button if needed, using `isAlreadyFollowing` flag
+
+      return Row(
+        children: [
+          if (canConnect)
+            Expanded(
+              flex: 5,
+              child: ElevatedButton.icon(
+                icon: Icon(Icons.person_add_alt_1_rounded, size: 18.sp),
+                label: Text("Connect"),
+                onPressed: () {
+                  // TODO: Implement connect functionality
+                  log('Connect button pressed for ${otherUserProfile.firstName}');
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('TODO: Send connection request to ${otherUserProfile.firstName}')));
+                },
+                style: isDarkMode ? buttonStyles.wideBlueElevatedButtonDark() : buttonStyles.wideBlueElevatedButton(),
+              ),
+            ),
+          if (isPending)
+            Expanded(
+              flex: 5,
+              child: OutlinedButton.icon(
+                icon: Icon(Icons.hourglass_top_rounded, size: 18.sp),
+                label: Text("Pending"),
+                onPressed: () {
+                  // TODO: Implement Withdraw Connection Request
+                  log('Pending button pressed for ${otherUserProfile.firstName}');
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('TODO: Withdraw connection request to ${otherUserProfile.firstName}')));
+                },
+                style: (isDarkMode ? buttonStyles.blueOutlinedButtonDark() : buttonStyles.blueOutlinedButton()).copyWith(
+                  foregroundColor: MaterialStateProperty.all(AppColors.lightGrey),
+                  side: MaterialStateProperty.all(BorderSide(color: AppColors.lightGrey)),
+                ),
+              ),
+            ),
+
+          if (canMessage)
+            SizedBox(width: 8.w),
+            Expanded(
+              flex: 5,
+              child: OutlinedButton.icon(
+                icon: Icon(Icons.send_rounded, size: 18.sp),
+                label: Text("Message"),
+                onPressed: () {
+                  // TODO: Implement message functionality
+                  log('Message button pressed for ${otherUserProfile.firstName}');
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('TODO: Open chat with ${otherUserProfile.firstName}')));
+                },
+                style: isDarkMode ? buttonStyles.blueOutlinedButtonDark() : buttonStyles.blueOutlinedButton(),
+              ),
+            ),
+
+          SizedBox(width: 8.w),
+          SizedBox(
+            width: 40.r,
+            height: 40.r,
+            child: OutlinedButton(
+              onPressed: () {
+                // TODO: Implement 'More' options for other users
+                log('More button pressed for ${otherUserProfile.firstName}');
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('TODO: Show more options for ${otherUserProfile.firstName}')));
+
+                final options = [
+                    if(otherUserProfile.isInConnections ?? false)
+                        ReusableBottomSheetOption(icon: Icons.person_remove_alt_1_outlined, title: 'Remove Connection', onTap: (){ /* TODO */ }),
+                    ReusableBottomSheetOption(icon: Icons.flag_outlined, title: 'Report Profile', onTap: (){ /* TODO */ }),
+                    ReusableBottomSheetOption(icon: Icons.block, title: 'Block User', onTap: (){ /* TODO */ }),
+                    ReusableBottomSheetOption(icon: Icons.share_outlined, title: 'Share Profile via...', onTap: (){ /* TODO */ }),
+                    // TODO: Add more...
+                ];
+                showReusableBottomSheet(context: context, options: options);
+
+
+              },
+              style: (isDarkMode ? buttonStyles.circularButtonDark() : buttonStyles.circularButton()).copyWith(
+                padding: MaterialStateProperty.all(EdgeInsets.zero),
+              ),
+              child: Icon(
+                Icons.more_horiz,
+                color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
 }

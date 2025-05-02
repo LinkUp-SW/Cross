@@ -6,20 +6,22 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:link_up/features/profile/model/education_model.dart';
 import 'package:link_up/features/profile/model/position_model.dart';
-import 'package:link_up/features/profile/model/license_model.dart'; 
+import 'package:link_up/features/profile/model/license_model.dart';
 import 'package:link_up/features/profile/model/about_model.dart';
+import 'package:link_up/features/profile/model/skills_model.dart';
 import 'package:link_up/features/profile/viewModel/profile_view_model.dart';
 import 'package:link_up/features/profile/widgets/profile_app_bar_widget.dart';
 import 'package:link_up/features/profile/widgets/profile_header_widget.dart';
 import 'package:link_up/features/profile/widgets/section_widget.dart';
 import 'package:link_up/features/profile/state/profile_state.dart';
+import 'package:link_up/features/profile/widgets/empty_section_placeholder.dart'; 
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/shared/themes/button_styles.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_cached_pdfview/flutter_cached_pdfview.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'dart:developer'; 
+import 'dart:developer';
 
 class ProfilePage extends ConsumerStatefulWidget {
   const ProfilePage({super.key});
@@ -37,31 +39,27 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     });
   }
 
-  // --- Helper Functions ---
-
-
   String _formatDate(DateTime? date) {
     if (date == null) {
       return '';
     }
     try {
-      return DateFormat('MMM yyyy').format(date); 
+      return DateFormat('MMM yyyy').format(date);
     } catch (e) {
       log("Error formatting date '$date': $e");
       return date.toIso8601String().split('T').first;
     }
   }
 
-  // Format date range for display
   String _formatDateRange(DateTime? startDate, DateTime? endDate, {bool isCurrent = false, bool doesNotExist = false}) {
     final startFormatted = _formatDate(startDate);
 
-    if (startFormatted.isEmpty) return 'Date missing'; 
+    if (startFormatted.isEmpty) return 'Date missing';
 
     if (isCurrent || (endDate == null && !doesNotExist)) {
       return '$startFormatted - Present';
     } else if (doesNotExist) {
-      return '$startFormatted - No Expiration'; 
+      return '$startFormatted - No Expiration';
     } else {
       final endFormatted = _formatDate(endDate);
       if (endFormatted.isNotEmpty) {
@@ -72,12 +70,11 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     }
   }
 
-
   Widget _buildSkillsRowWidget(List<String> skills, bool isDarkMode) {
      if (skills.isEmpty) {
        return const SizedBox.shrink();
      }
-     final displayedSkills = skills.take(5).toList();
+     final displayedSkills = skills.take(2).toList();
      String skillsText = displayedSkills.join(' • ');
      final textColor = isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor;
      final secondaryTextColor = AppColors.lightGrey;
@@ -130,10 +127,131 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Could not launch $url'), backgroundColor: Colors.orange));
     }
   }
+ Widget _buildSkillItem(SkillModel skill, bool isDarkMode, List<EducationModel>? educations, List<PositionModel>? experiences, List<LicenseModel>? licenses) {
+  final textColor = isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor;
+  final secondaryTextColor = AppColors.lightGrey;
+  final iconColor = isDarkMode ? AppColors.darkGrey : AppColors.lightGrey;
 
+  log('[BuildSkillItem:${skill.name}] Received Educations: ${educations?.length ?? 'null'}, Experiences: ${experiences?.length ?? 'null'}, Licenses: ${licenses?.length ?? 'null'}');
 
-  // --- Item Builder Widgets ---
+  Map<String, String?> getLinkedItemDetails(String id, String type) {
+    log('[getLinkedItemDetails] Looking for ID: "$id", Type: "$type"');
+    try {
+      switch (type) {
+        case 'education':
+          final foundEdu = educations?.firstWhere((e) => e.id == id);
+          if (foundEdu != null) {
+            log('[getLinkedItemDetails] Found Education: ${foundEdu.institution}, Logo: ${foundEdu.logoUrl}');
+            return {'name': foundEdu.institution, 'logo': foundEdu.logoUrl};
+          } else {
+            log('[getLinkedItemDetails] Education ID "$id" NOT FOUND in list.');
+            return {'name': 'Item not found', 'logo': null};
+          }
+        case 'license':
+          final foundLic = licenses?.firstWhere((l) => l.id == id);
+          if (foundLic != null) {
+            log('[getLinkedItemDetails] Found License: ${foundLic.issuingOrganizationName}, Logo: ${foundLic.issuingOrganizationLogoUrl}');
+            return {'name': foundLic.issuingOrganizationName, 'logo': foundLic.issuingOrganizationLogoUrl};
+          } else {
+            log('[getLinkedItemDetails] License ID "$id" NOT FOUND in list.');
+            return {'name': 'Item not found', 'logo': null};
+          }
+        default:
+          log('[getLinkedItemDetails] Unknown type "$type" for ID "$id".');
+          return {'name': 'Unknown Item Type', 'logo': null};
+      }
+    } catch (e) {
+      log('[getLinkedItemDetails] Error during lookup for ID "$id", Type "$type": $e');
+      return {'name': 'Item not found', 'logo': null};
+    }
+  }
 
+  List<Widget> linkedItemsWidgets = [];
+
+  Widget buildLinkedItemRow({required String name, String? logoUrl, required IconData fallbackIcon}) {
+    return Padding(
+      padding: EdgeInsets.only(top: 6.h),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: 20.w,
+            height: 20.h,
+            child: logoUrl != null && logoUrl.isNotEmpty
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(4.r),
+                    child: CachedNetworkImage(
+                      imageUrl: logoUrl,
+                      placeholder: (context, url) => Icon(fallbackIcon, color: iconColor, size: 18.sp),
+                      errorWidget: (context, url, error) => Icon(fallbackIcon, color: iconColor, size: 18.sp),
+                      fit: BoxFit.contain,
+                    ),
+                  )
+                : Icon(fallbackIcon, color: iconColor, size: 18.sp),
+          ),
+          SizedBox(width: 8.w),
+          Expanded(
+            child: Text(
+              name,
+              style: TextStyles.font12_400Weight.copyWith(color: secondaryTextColor),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  if (skill.educations != null && skill.educations!.isNotEmpty) {
+    log('[BuildSkillItem:${skill.name}] Processing ${skill.educations!.length} linked Education IDs: ${skill.educations}');
+    linkedItemsWidgets.addAll(skill.educations!.map((id) {
+      final details = getLinkedItemDetails(id, 'education');
+      return buildLinkedItemRow(name: details['name'] ?? 'Error', logoUrl: details['logo'], fallbackIcon: Icons.school_outlined);
+    }));
+  }
+
+  if (skill.licenses != null && skill.licenses!.isNotEmpty) {
+    log('[BuildSkillItem:${skill.name}] Processing ${skill.licenses!.length} linked License IDs: ${skill.licenses}');
+    linkedItemsWidgets.addAll(skill.licenses!.map((id) {
+      final details = getLinkedItemDetails(id, 'license');
+      return buildLinkedItemRow(name: details['name'] ?? 'Error', logoUrl: details['logo'], fallbackIcon: Icons.card_membership_outlined);
+    }));
+  }
+
+  final linkedExperiences = experiences?.where((exp) => exp.skills?.contains(skill.name) ?? false).toList();
+  if (linkedExperiences != null && linkedExperiences.isNotEmpty) {
+    log('[BuildSkillItem:${skill.name}] Found ${linkedExperiences.length} matching Experiences');
+    linkedItemsWidgets.addAll(linkedExperiences.map((exp) {
+      return buildLinkedItemRow(
+        name: '${exp.title} at ${exp.companyName}',
+        logoUrl: exp.companyLogoUrl,
+        fallbackIcon: Icons.business_center_outlined,
+      );
+    }));
+  } else {
+    log('[BuildSkillItem:${skill.name}] No matching experiences found.');
+  }
+
+  return Padding(
+    padding: EdgeInsets.symmetric(vertical: 8.h),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          skill.name,
+          style: TextStyles.font14_600Weight.copyWith(color: textColor),
+        ),
+        if (linkedItemsWidgets.isNotEmpty)
+          Padding(
+            padding: EdgeInsets.only(top: 4.h),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: linkedItemsWidgets,
+            ),
+          ),
+      ],
+    ),
+  );
+}
 
   Widget _buildEducationItem(EducationModel edu, bool isDarkMode) {
      final textColor = isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor;
@@ -142,7 +260,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
      final DateTime? startDate = DateTime.tryParse(edu.startDate);
      final DateTime? endDate = edu.endDate != null ? DateTime.tryParse(edu.endDate!) : null;
-     final bool isCurrentlyStudying = edu.endDate == null; 
+     final bool isCurrentlyStudying = edu.endDate == null || edu.endDate!.isEmpty;
 
 
      return Padding(
@@ -337,12 +455,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                   style: TextStyles.font14_400Weight.copyWith(color: textColor),
                 ),
                 SizedBox(height: 2.h),
-                 Text( 
+                 Text(
                    _formatDateRange(
-                       issueDate, 
+                       issueDate,
                        expirationDate,
-                       isCurrent: false, 
-                       doesNotExist: lic.doesNotExpire 
+                       isCurrent: false,
+                       doesNotExist: lic.doesNotExpire
                     ),
                    style: TextStyles.font12_400Weight.copyWith(color: secondaryTextColor),
                  ),
@@ -384,20 +502,24 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
      final profileState = ref.watch(profileViewModelProvider);
      final allEducations = ref.watch(educationDataProvider);
      final allExperiences = ref.watch(experienceDataProvider);
-     final allLicenses = ref.watch(licenseDataProvider); 
+     final allLicenses = ref.watch(licenseDataProvider);
      final aboutData = ref.watch(aboutDataProvider);
      final resumeUrl = ref.watch(resumeUrlProvider);
      final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final allSkills = ref.watch(skillsDataProvider); 
 
+     final displayedSkills = allSkills?.take(2).toList() ?? []; 
+     final totalSkillCount = allSkills?.length ?? 0;
+     final showShowAllSkillsButton = totalSkillCount > 2;
      final displayedEducations = allEducations?.take(2).toList() ?? [];
      final displayedExperiences = allExperiences?.take(2).toList() ?? [];
-     final displayedLicenses = allLicenses?.take(2).toList() ?? []; 
+     final displayedLicenses = allLicenses?.take(2).toList() ?? [];
      final totalEducationCount = allEducations?.length ?? 0;
      final totalExperienceCount = allExperiences?.length ?? 0;
      final totalLicenseCount = allLicenses?.length ?? 0;
-     final bool showShowAllEducationButton = totalEducationCount > 2;
-     final bool showShowAllExperienceButton = totalExperienceCount > 2;
-     final bool showShowAllLicensesButton = totalLicenseCount > 2; 
+     final showShowAllEducationButton = totalEducationCount > 2;
+     final showShowAllExperienceButton = totalExperienceCount > 2;
+     final showShowAllLicensesButton = totalLicenseCount > 2;
      final bool hasAboutText = aboutData?.about.isNotEmpty ?? false;
      final bool hasAboutSkills = aboutData?.skills.isNotEmpty ?? false;
      final bool showAboutSection = hasAboutText || hasAboutSkills;
@@ -437,66 +559,45 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           ProfileLoaded(:final userProfile) => SingleChildScrollView(
               child: Column(
                 children: [
-                  // --- Header ---
                   ProfileHeaderWidget(userProfile: userProfile),
 
-           
-
-                  // Resume Section
+                  if (hasResume)
                    SectionWidget(
                      title: "Resume",
-                      onEditPressed: () => GoRouter.of(context).push('/add_resume'),
-                     child: profileState is ProfileLoading 
+                     onEditPressed: () => GoRouter.of(context).push('/add_resume'),
+                     child: profileState is ProfileLoading
                          ? const Center(child: CircularProgressIndicator(strokeWidth: 2))
-                         : hasResume
-                             ? Column( 
-                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                 children: [
-                                   Container(
-                                     height: 300,
-                                     decoration: BoxDecoration(
-                                       borderRadius: BorderRadius.circular(8.r),
-                                       border: Border.all(color: AppColors.lightGrey.withOpacity(0.5)),
-                                     ),
-                                     child: ClipRRect(
-                                       borderRadius: BorderRadius.circular(8.r),
-                                       child: PDF().cachedFromUrl(
-                                         resumeUrl!,
-                                         placeholder: (progress) => Center(child: Text('Loading: $progress %')),
-                                         errorWidget: (error) => Center(child: Text('Error loading PDF: ${error.toString()}')),
-                                       ),
-                                     ),
+                         : Column(
+                             crossAxisAlignment: CrossAxisAlignment.start,
+                             children: [
+                               Container(
+                                 height: 300,
+                                 decoration: BoxDecoration(
+                                   borderRadius: BorderRadius.circular(8.r),
+                                   border: Border.all(color: AppColors.lightGrey.withOpacity(0.5)),
+                                 ),
+                                 child: ClipRRect(
+                                   borderRadius: BorderRadius.circular(8.r),
+                                   child: PDF().cachedFromUrl(
+                                     resumeUrl!,
+                                     placeholder: (progress) => Center(child: Text('Loading: $progress %')),
+                                     errorWidget: (error) => Center(child: Text('Error loading PDF: ${error.toString()}')),
                                    ),
-                                   SizedBox(height: 8.h),
-                                   Align(
-                                     alignment: Alignment.centerRight,
-                                     child: TextButton.icon(
-                                       onPressed: () => GoRouter.of(context).push('/resume_viewer', extra: resumeUrl),
-                                       icon: Icon(Icons.open_in_full, size: 16.sp),
-                                       label: Text('Open Fullscreen', style: TextStyles.font14_600Weight.copyWith(color: sectionTextColor)),
-                                     ),
-                                   ),
-                                 ],
-                               )
-                             : Padding( 
-                                 padding: EdgeInsets.symmetric(vertical: 8.h),
-                                 child: Column(
-                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                   children: [
-                                     Text("No resume uploaded.", style: TextStyles.font14_400Weight.copyWith(color: AppColors.lightGrey)),
-                                     SizedBox(height: 8.h),
-                                     OutlinedButton.icon(
-                                       icon: Icon(Icons.add, size: 16.sp, color: addTextColor),
-                                       label: Text("Add Resume", style: TextStyles.font14_600Weight.copyWith(color: addTextColor)),
-                                       style: addButtonStyle,
-                                       onPressed: () => GoRouter.of(context).push('/add_resume'),
-                                     )
-                                   ],
                                  ),
                                ),
+                               SizedBox(height: 8.h),
+                               Align(
+                                 alignment: Alignment.centerRight,
+                                 child: TextButton.icon(
+                                   onPressed: () => GoRouter.of(context).push('/resume_viewer', extra: resumeUrl),
+                                   icon: Icon(Icons.open_in_full, size: 16.sp),
+                                   label: Text('Open Fullscreen', style: TextStyles.font14_600Weight.copyWith(color: sectionTextColor)),
+                                 ),
+                               ),
+                             ],
+                           ),
                    ),
 
-                   // About Section
                     if (showAboutSection)
                       SectionWidget(
                         title: "About",
@@ -517,18 +618,27 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                            )
                       ),
 
-                   // Experience Section
-                   SectionWidget(
-                     title: "Experience",
-                     onAddPressed: () => GoRouter.of(context).push('/add_new_position'),
-                     child: allExperiences == null
-                         ? const Center(child: CircularProgressIndicator(strokeWidth: 2))
-                         : Column(
-                             children: [
-                               if (displayedExperiences.isEmpty)
-                                 const Padding(padding: EdgeInsets.symmetric(vertical: 16.0), child: Text("No experience added yet.")),
-                               if (displayedExperiences.isNotEmpty)
-                                 Column(children: displayedExperiences.map((exp) => _buildExperienceItem(exp, isDarkMode)).toList()),
+                      SectionWidget(
+                            title: "Experience",
+                            onAddPressed: () => GoRouter.of(context).push('/add_new_position'), 
+                            onEditPressed: allExperiences != null && allExperiences.isNotEmpty
+                                ? () => GoRouter.of(context).push('/edit_experience_list')
+                                : null, 
+                            child: allExperiences == null
+                                ? const Center(child: CircularProgressIndicator(strokeWidth: 2)) 
+                                : (allExperiences.isEmpty) 
+                                  ? EmptySectionPlaceholder(
+                                      icon: Icons.business_center_outlined,
+                                      titlePlaceholder: "Job Title",
+                                      subtitlePlaceholder: "Organization",
+                                      datePlaceholder: "YYYY - Present", 
+                                      sectionSubtitle: "Showcase your accomplishments and get up to 2X as many profile views and connections", 
+                                      callToActionText: "Add Experience",
+                                      onAddPressed: () => GoRouter.of(context).push('/add_new_position'),
+                                    )
+                       : Column(
+                           children: [
+                             Column(children: displayedExperiences.map((exp) => _buildExperienceItem(exp, isDarkMode)).toList()),
                                if (showShowAllExperienceButton) ...[
                                  Padding(padding: EdgeInsets.only(top: 8.h), child: Divider(height: 1.h, thickness: 0.5, color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey.withOpacity(0.3))),
                                  SizedBox(
@@ -544,17 +654,27 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                            ),
                    ),
 
-                   // Education Section
-                    SectionWidget(
-                      title: "Education",
-                      onAddPressed: () => GoRouter.of(context).push('/add_new_education'),
-                      child: allEducations == null
-                          ? const Center(child: CircularProgressIndicator(strokeWidth: 2))
-                          : Column(
-                             children: [
-                                if (displayedEducations.isEmpty)
-                                  const Padding(padding: EdgeInsets.symmetric(vertical: 16.0), child: Text("No education added yet.")),
-                                if (displayedEducations.isNotEmpty)
+               SectionWidget(
+                 title: "Education",
+                 onAddPressed: () => GoRouter.of(context).push('/add_new_education'), 
+                  onEditPressed: allEducations != null && allEducations.isNotEmpty
+                     ? () => GoRouter.of(context).push('/edit_education_list')
+                     : null, 
+                 child: allEducations == null
+                     ? const Center(child: CircularProgressIndicator(strokeWidth: 2)) 
+                     : (allEducations.isEmpty) 
+                       
+                       ? EmptySectionPlaceholder(
+                           icon: Icons.business_center_outlined,
+                           titlePlaceholder: "Degree",
+                           subtitlePlaceholder: "School Name",
+                           datePlaceholder: "YYYY - Present", 
+                           sectionSubtitle: "Add your education details to show case your academic background", 
+                           callToActionText: "Add Education",
+                           onAddPressed: () => GoRouter.of(context).push('/add_new_education'),
+                         )
+                       : Column(
+                           children: [
                                   Column(children: displayedEducations.map((edu) => _buildEducationItem(edu, isDarkMode)).toList()),
                                 if (showShowAllEducationButton) ...[
                                   Padding(padding: EdgeInsets.only(top: 8.h), child: Divider(height: 1.h, thickness: 0.5, color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey.withOpacity(0.3))),
@@ -571,58 +691,148 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                            ),
                     ),
 
-                  // Licenses & Certifications Section
+
                    SectionWidget(
                      title: "Licenses & Certifications",
                      onAddPressed: () => GoRouter.of(context).push('/add_new_license'),
-                     child: allLicenses == null
+                     onEditPressed: allLicenses != null && allLicenses.isNotEmpty
+                         ? () => GoRouter.of(context).push('/edit_licenses_list') // TODO: Implement Licenses list editing page
+                         : null,
+                     child: allLicenses == null 
                          ? const Center(child: CircularProgressIndicator(strokeWidth: 2))
-                         : Column(
-                             children: [
-                               if (displayedLicenses.isEmpty)
-                                 const Padding(
-                                     padding: EdgeInsets.symmetric(vertical: 16.0),
-                                     child: Text("No licenses or certifications added yet.")
-                                 ),
-                               if (displayedLicenses.isNotEmpty)
+                         : allLicenses.isEmpty
+                           ? EmptySectionPlaceholder(
+                               icon: Icons.card_membership_outlined, 
+                               titlePlaceholder: "License/Certification Name",
+                               subtitlePlaceholder: "Issuing Organization",
+                               datePlaceholder: "YYYY-Present", 
+                               sectionSubtitle: "Add your licenses details to show case your academic background", 
+                               callToActionText: "Add License", 
+                               onAddPressed: () => GoRouter.of(context).push('/add_new_license'), 
+                             )
+                           : Column(
+                               children: [
                                  Column(
                                    children: displayedLicenses
                                        .map((lic) => _buildLicenseItem(lic, isDarkMode))
                                        .toList(),
                                  ),
-                               if (showShowAllLicensesButton) ...[
-                                 Padding(
-                                   padding: EdgeInsets.only(top: 8.h),
-                                   child: Divider(height: 1.h, thickness: 0.5, color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey.withOpacity(0.3))
-                                 ),
-                                 SizedBox(
-                                   width: double.infinity,
-                                   child: TextButton(
-                                     onPressed: () { /* TODO: Implement Show All Licenses */ },
-                                     style: TextButton.styleFrom(
-                                         padding: EdgeInsets.symmetric(vertical: 8.h),
-                                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                         alignment: Alignment.center
-                                      ),
-                                     child: Row(
-                                       mainAxisAlignment: MainAxisAlignment.center,
-                                       children: [
-                                         Text(
-                                           'Show all $totalLicenseCount licenses',
-                                           style: TextStyles.font14_600Weight.copyWith(color: sectionTextColor)
-                                         ),
-                                         SizedBox(width: 4.w),
-                                         Icon(Icons.arrow_forward, size: 16.sp, color: sectionTextColor)
-                                       ]
+                                 if (showShowAllLicensesButton) ...[
+                                   Padding(
+                                     padding: EdgeInsets.only(top: 8.h),
+                                     child: Divider(height: 1.h, thickness: 0.5, color: isDarkMode ? AppColors.darkGrey.withOpacity(0.5) : AppColors.lightGrey.withOpacity(0.3)) // Adjusted divider color for consistency
+                                   ),
+                                   SizedBox(
+                                     width: double.infinity,
+                                     child: TextButton(
+                                       onPressed: () { /* TODO: Implement Show All Licenses */ },
+                                       style: TextButton.styleFrom(
+                                           padding: EdgeInsets.symmetric(vertical: 8.h),
+                                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                           alignment: Alignment.center
+                                        ),
+                                       child: Row(
+                                         mainAxisAlignment: MainAxisAlignment.center,
+                                         children: [
+                                           Text(
+                                             'Show all $totalLicenseCount licenses', 
+                                             style: TextStyles.font14_600Weight.copyWith(color: sectionTextColor)
+                                           ),
+                                           SizedBox(width: 4.w),
+                                           Icon(Icons.arrow_forward, size: 16.sp, color: sectionTextColor)
+                                         ]
+                                       ),
                                      ),
                                    ),
-                                 ),
-                               ]
-                             ],
-                           ),
+                                 ]
+                               ],
+                             ),
                    ),
 
+                   SectionWidget(
+                     title: "Skills",
+                     onAddPressed: () => GoRouter.of(context).push('/add_new_skill'), 
+                     onEditPressed: allSkills != null && allSkills.isNotEmpty
+                         ? () { /* TODO: Navigate to skills reorder/edit page */ }
+                         : null, 
+                     child: allSkills == null 
+                         ? const Center(child: CircularProgressIndicator(strokeWidth: 2))
+                         : allSkills.isEmpty
+                           ? EmptySectionPlaceholder(
+                               icon: Icons.star_outline, 
+                               titlePlaceholder: "Skill Name", 
+                               subtitlePlaceholder: "e.g., Project Management", 
+                               datePlaceholder: "", 
+                               callToActionText: "Add Skill", 
+                               onAddPressed: () => GoRouter.of(context).push('/add_new_skill'), 
+                             )
+                           : Column(
+                               crossAxisAlignment: CrossAxisAlignment.start,
+                               children: [
+                                 Column(
+                                   crossAxisAlignment: CrossAxisAlignment.start,
+                                   children: displayedSkills.asMap().entries.map((entry) {
+                                     int index = entry.key;
+                                     SkillModel skill = entry.value;
+                                     bool isLastItem = index == displayedSkills.length - 1;
 
+                                     return Column(
+                                       crossAxisAlignment: CrossAxisAlignment.start,
+                                       children: [
+                                         _buildSkillItem(
+                                           skill,
+                                           isDarkMode,
+                                           allEducations,
+                                           allExperiences,
+                                           allLicenses,
+                                         ),
+                                         if (!isLastItem)
+                                           Padding(
+                                             padding: EdgeInsets.symmetric(vertical: 8.h),
+                                             child: Divider(
+                                               height: 1.h,
+                                               thickness: 0.5,
+                                               color: isDarkMode
+                                                   ? AppColors.darkGrey.withOpacity(0.5)
+                                                   : AppColors.lightGrey.withOpacity(0.3),
+                                             ),
+                                           ),
+                                       ],
+                                     );
+                                   }).toList(),
+                                 ),
+                                 if (showShowAllSkillsButton) ...[
+                                   Padding(
+                                     padding: EdgeInsets.only(top: 8.h),
+                                     child: Divider(height: 1.h, thickness: 0.5, color: isDarkMode ? AppColors.darkGrey.withOpacity(0.5) : AppColors.lightGrey.withOpacity(0.3))
+                                   ),
+                                   SizedBox(
+                                     width: double.infinity,
+                                     child: TextButton(
+                                       onPressed: () { /* TODO: Implement Show All Skills */ },
+                                       style: TextButton.styleFrom(
+                                           padding: EdgeInsets.symmetric(vertical: 8.h),
+                                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                           alignment: Alignment.center
+                                        ),
+                                       child: Row(
+                                         mainAxisAlignment: MainAxisAlignment.center,
+                                         children: [
+                                           Text(
+                                             'Show all $totalSkillCount skills',
+                                             style: TextStyles.font14_600Weight.copyWith(color: sectionTextColor)
+                                           ),
+                                           SizedBox(width: 4.w),
+                                           Icon(Icons.arrow_forward, size: 16.sp, color: sectionTextColor)
+                                         ]
+                                       ),
+                                     ),
+                                   ),
+                                 ]
+                               ],
+                             ),
+                   ),
+                   // --- End of Skills Section ---
                   SizedBox(height: 20.h),
                 ],
               ),
