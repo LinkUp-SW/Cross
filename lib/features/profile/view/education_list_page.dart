@@ -16,6 +16,7 @@ class EducationListPage extends ConsumerWidget {
       itemBuilder: (item, isDarkMode, context) => EducationListItem(
         education: item,
         isDarkMode: isDarkMode,
+        showActions: true,
       ),
       addRoute: '/add_new_education', 
       editRoute: '/edit_education_list', 

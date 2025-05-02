@@ -161,7 +161,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                    child: Text(aboutData.about, style: TextStyles.font14_400Weight.copyWith(color: sectionTextColor)),
                                  ),
                                if (hasAboutSkills)
-                                 buildSkillsRowWidget(aboutData.skills, isDarkMode),
+                                 buildSkillsRowWidget(aboutData.skills, isDarkMode,),
                              ],
                            )
                       ),
@@ -170,7 +170,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                             title: "Experience",
                             onAddPressed: () => GoRouter.of(context).push('/add_new_position'), 
                             onEditPressed: allExperiences != null && allExperiences.isNotEmpty
-                                ? () => GoRouter.of(context).push('/edit_experience_list')
+                                ? () => GoRouter.of(context).push('/experience_list_page')
                                 : null, 
                             child: allExperiences == null
                                 ? const Center(child: CircularProgressIndicator(strokeWidth: 2)) 
@@ -186,13 +186,13 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                     )
                        : Column(
                            children: [
-                             Column(children: displayedExperiences.map((exp) => ExperienceListItem(exp:exp, isDarkMode: isDarkMode,)).toList()),
+                             Column(children: displayedExperiences.map((exp) => ExperienceListItem(exp:exp, isDarkMode: isDarkMode, showActions: false,)).toList()),
                                if (showShowAllExperienceButton) ...[
                                  Padding(padding: EdgeInsets.only(top: 8.h), child: Divider(height: 1.h, thickness: 0.5, color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey.withOpacity(0.3))),
                                  SizedBox(
                                    width: double.infinity,
                                    child: TextButton(
-                                     onPressed: () { /* TODO: Show All Experience */ },
+                                     onPressed: () { GoRouter.of(context).push('/experience_list_page'); }, 
                                      style: TextButton.styleFrom(padding: EdgeInsets.symmetric(vertical: 8.h), tapTargetSize: MaterialTapTargetSize.shrinkWrap, alignment: Alignment.center),
                                      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Text('Show all $totalExperienceCount experiences', style: TextStyles.font14_600Weight.copyWith(color: sectionTextColor)), SizedBox(width: 4.w), Icon(Icons.arrow_forward, size: 16.sp, color: sectionTextColor)])
                                    ),
@@ -206,7 +206,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                  title: "Education",
                  onAddPressed: () => GoRouter.of(context).push('/add_new_education'), 
                   onEditPressed: allEducations != null && allEducations.isNotEmpty
-                     ? () => GoRouter.of(context).push('/edit_education_list')
+                     ? () => GoRouter.of(context).push('/education_list_page')
                      : null, 
                  child: allEducations == null
                      ? const Center(child: CircularProgressIndicator(strokeWidth: 2)) 
@@ -223,7 +223,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                          )
                        : Column(
                            children: [
-                                  Column(children: displayedEducations.map((edu) => EducationListItem(education:edu, isDarkMode: isDarkMode,)).toList()),
+                                  Column(children: displayedEducations.map((edu) => EducationListItem(education:edu, isDarkMode: isDarkMode, showActions:false)).toList()),
                                 if (showShowAllEducationButton) ...[
                                   Padding(padding: EdgeInsets.only(top: 8.h), child: Divider(height: 1.h, thickness: 0.5, color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey.withOpacity(0.3))),
                                   SizedBox(
@@ -244,7 +244,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                      title: "Licenses & Certifications",
                      onAddPressed: () => GoRouter.of(context).push('/add_new_license'),
                      onEditPressed: allLicenses != null && allLicenses.isNotEmpty
-                         ? () => GoRouter.of(context).push('/edit_licenses_list') // TODO: Implement Licenses list editing page
+                         ? () => GoRouter.of(context).push('/license_list_page') // TODO: Implement Licenses list editing page
                          : null,
                      child: allLicenses == null 
                          ? const Center(child: CircularProgressIndicator(strokeWidth: 2))
@@ -262,7 +262,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                children: [
                                  Column(
                                    children: displayedLicenses
-                                       .map((lic) => LicenseListItem(license: lic, isDarkMode: isDarkMode,))
+                                       .map((lic) => LicenseListItem(license: lic, isDarkMode: isDarkMode, showActions: false))
                                        .toList(),
                                  ),
                                  if (showShowAllLicensesButton) ...[
@@ -301,7 +301,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                      title: "Skills",
                      onAddPressed: () => GoRouter.of(context).push('/add_new_skill'), 
                      onEditPressed: allSkills != null && allSkills.isNotEmpty
-                         ? () { /* TODO: Navigate to skills reorder/edit page */ }
+                         ? () { GoRouter.of(context).push('/skills_list_page'); } 
                          : null, 
                      child: allSkills == null 
                          ? const Center(child: CircularProgressIndicator(strokeWidth: 2))
@@ -330,6 +330,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                          SkillListItem(
                                            skill: skill,
                                            isDarkMode: isDarkMode,
+                                            showActions: false,
 
                                          ),
                                          if (!isLastItem)

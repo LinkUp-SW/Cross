@@ -16,6 +16,7 @@ class ExperienceListPage extends ConsumerWidget {
       itemBuilder: (item, isDarkMode, context) => ExperienceListItem(
         exp: item,
         isDarkMode: isDarkMode,
+        showActions: true,
       ),
       addRoute: '/add_new_position', 
       editRoute: '/edit_experience_list', 

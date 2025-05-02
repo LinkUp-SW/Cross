@@ -8,6 +8,7 @@ import 'package:link_up/features/my-network/view/connections_screen.dart';
 import 'package:link_up/core/utils/global_keys.dart';
 import 'package:link_up/features/logIn/view/forgot_pasword_view.dart';
 import 'package:link_up/features/logIn/view/login_view.dart';
+import 'package:link_up/features/profile/view/education_list_page.dart';
 import 'package:link_up/features/profile/view/view.dart';
 import 'package:link_up/features/search/view/search_page.dart';
 import 'package:link_up/features/settings/view/settings.dart';
@@ -48,6 +49,9 @@ import 'package:link_up/features/profile/view/resume_viewer.dart';
 import 'package:link_up/features/profile/view/add_new_license.dart';
 import 'package:link_up/features/profile/view/add_new_skill.dart';
 import 'package:link_up/features/profile/view/skills_list_page.dart';
+import 'package:link_up/features/profile/view/experience_list_page.dart';
+import 'package:link_up/features/profile/view/license_list_page.dart';
+
 
 
 
@@ -126,6 +130,18 @@ final goRouterProvider = Provider<GoRouter>(
           GoRoute(
           path: "/skills_list_page",
           builder: (context, state) => const SkillListPage(),
+         ),
+          GoRoute(
+          path: "/experience_list_page",
+          builder: (context, state) => const ExperienceListPage(),
+         ),
+                   GoRoute(
+          path: "/education_list_page",
+          builder: (context, state) => const EducationListPage(),
+         ),
+                   GoRoute(
+          path: "/license_list_page",
+          builder: (context, state) => const LicenseListPage(),
          ),
           GoRoute(
           path: "/add_new_skill",

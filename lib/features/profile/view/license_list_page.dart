@@ -17,6 +17,7 @@ class LicenseListPage extends ConsumerWidget {
       itemBuilder: (item, isDarkMode, context) => LicenseListItem(
         license: item,
         isDarkMode: isDarkMode,
+        showActions: true,
       ),
       addRoute: '/add_new_license', 
       editRoute: '/edit_licenses_list', 

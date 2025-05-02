@@ -6,19 +6,47 @@ import 'package:link_up/features/profile/model/position_model.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/features/profile/utils/profile_view_helpers.dart';
+import 'package:link_up/features/profile/services/profile_services.dart';
+import 'package:link_up/features/profile/viewModel/profile_view_model.dart';
+import 'dart:async';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ExperienceListItem extends StatelessWidget {
+
+class ExperienceListItem extends ConsumerWidget {
   final PositionModel exp;
   final bool isDarkMode;
+  final bool showActions;
 
   const ExperienceListItem({
     super.key,
     required this.exp,
     required this.isDarkMode,
+    this.showActions = true,
   });
-
+Future<bool?> _showDeleteConfirmationDialog(BuildContext context) {
+  return showDialog<bool>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Delete Experience?'),
+        content: const Text('Are you sure you want to delete this experience record? This action cannot be undone.'),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Cancel'),
+            onPressed: () => Navigator.of(context).pop(false), 
+          ),
+          TextButton(
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Delete'),
+            onPressed: () => Navigator.of(context).pop(true), 
+          ),
+        ],
+      );
+    },
+  );
+}
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) { 
     final textColor = isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor;
     final secondaryTextColor = AppColors.lightGrey;
     final logoUrl = exp.companyLogoUrl;
@@ -67,21 +95,59 @@ class ExperienceListItem extends StatelessWidget {
             ],
           ),
         ),
-         IconButton(
-           icon: Icon(Icons.edit, color: secondaryTextColor, size: 20.sp),
-           splashRadius: 20.r,
-           constraints: const BoxConstraints(),
-           padding: EdgeInsets.zero,
-           tooltip: "Edit Experience",
-           onPressed: () {
-             // TODO: Navigate to edit specific experience page
-             // Example: GoRouter.of(context).push('/edit_position/${experience.id}');
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Edit specific item not implemented yet.'))
-             );
-           },
-        ),
-      ],
-    );
-  }
-}
+        if (showActions)
+        Row(
+              mainAxisSize: MainAxisSize.min, 
+              children: [
+                IconButton(
+                  icon: Icon(Icons.edit, color: secondaryTextColor, size: 20.sp),
+                  splashRadius: 20.r,
+                  constraints: const BoxConstraints(),
+                  padding: EdgeInsets.zero,
+                  tooltip: "Edit Experience",
+                  onPressed: () {
+//todo
+                  },
+                ),
+                SizedBox(width: 4.w), 
+                IconButton(
+                  icon: Icon(Icons.delete_outline, color: Colors.red.shade700, size: 20.sp),
+                  splashRadius: 20.r,
+                  constraints: const BoxConstraints(),
+                  padding: EdgeInsets.zero,
+                  tooltip: "Delete Experience",
+                  onPressed: () async {
+                    if (exp.id == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Cannot delete: Item ID is missing.'), backgroundColor: Colors.orange));
+                      return;
+                    }
+                    final confirm = await _showDeleteConfirmationDialog(context);
+                    if (confirm == true && context.mounted) {
+                      try {
+                        final profileService = ref.read(profileServiceProvider);
+                        final success = await profileService.deleteExperience(exp.id!);
+
+                        if (success && context.mounted) { 
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Experience deleted.'), backgroundColor: Colors.green));
+                        unawaited(ref.read(profileViewModelProvider.notifier).fetchUserProfile());
+                        } else if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Failed to delete experience.'), backgroundColor: Colors.red));
+                        }
+                      } catch (e) {
+                        if (context.mounted) { 
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Error deleting experience: ${e.toString()}'), backgroundColor: Colors.red));
+                        }
+                      }
+                    }
+                  },
+                ),
+              ],
+            )
+          ],
+        );
+      }
+    }

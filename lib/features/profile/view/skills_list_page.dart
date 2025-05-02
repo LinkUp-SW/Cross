@@ -10,18 +10,17 @@ class SkillListPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Return the generic page, configured for Skills
-    return FullListPage<SkillModel>( // Specify the data type <SkillModel>
+    return FullListPage<SkillModel>( 
       pageTitle: "Skills",
-      dataProvider: skillsDataProvider, // Provide the specific data provider
-      // Provide the specific item builder widget instance
-      itemBuilder: (item, isDarkMode, context) => SkillListItem( // SkillListItem is a ConsumerWidget, should still work here
+      dataProvider: skillsDataProvider, 
+      itemBuilder: (item, isDarkMode, context) => SkillListItem( 
         skill: item,
         isDarkMode: isDarkMode,
+        showActions: true,
       ),
-      addRoute: '/add_new_skill', // Route for the add button
-      editRoute: '/edit_skills_list', // Route for the edit button (can be null if not implemented)
-      emptyListMessage: "No skills added yet.\nTap '+' to add your first skill.", // Specific empty message
+      addRoute: '/add_new_skill',
+      editRoute: '/edit_skills_list', 
+      emptyListMessage: "No skills added yet.\nTap '+' to add your first skill.", 
     );
   }
 }
