@@ -75,7 +75,7 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                 },
                 child: Card(
                   child: Padding(
-                    padding: EdgeInsets.all(5),
+                    padding: EdgeInsets.all(10),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -83,7 +83,7 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             SizedBox(
-                              width: 150,
+                              width: 200,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [

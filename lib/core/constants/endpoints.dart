@@ -8,8 +8,8 @@ class InternalEndPoints {
 
 class ExternalEndPoints {
   // static const baseUrl = 'https://api.linkup-app.tech/';
-  //static const baseUrl = 'http://10.0.2.2:3000/'; // for localhosting
-  static const baseUrl = 'http://127.0.0.1:3000/'; // for localhosting
+  static const baseUrl = 'http://10.0.2.2:3000/'; // for localhosting
+  //static const baseUrl = 'http://127.0.0.1:3000/'; // for localhosting
   static const receivedConnectionInvitations =
       'api/v1/user/my-network/invitation-manager/received';
   static const sentConnectionInvitations =

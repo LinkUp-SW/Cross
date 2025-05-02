@@ -66,7 +66,7 @@ class _PostHeaderState extends ConsumerState<PostHeader> {
                     WidgetSpan(
                         child: Container(
                       constraints: BoxConstraints(
-                        maxWidth: 100,
+                        maxWidth: 200,
                       ),
                       child: Text(
                         widget.post.header.name,

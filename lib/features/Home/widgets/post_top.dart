@@ -24,7 +24,7 @@ class PostTop extends ConsumerWidget {
               width: 10,
             ),
             CircleAvatar(
-              radius: 12,
+              radius: 15,
               backgroundImage: NetworkImage(post.activity.actorProfileImage),
             ),
             SizedBox(
