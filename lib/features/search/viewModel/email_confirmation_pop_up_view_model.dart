@@ -20,7 +20,7 @@ class EmailConfirmationPopUpViewModel
       await ref
           .read(emailConfirmationPopUpServicesProvider)
           .sendConnectionRequest(userId, body: body);
-      await clearErrorMessage();
+      clearErrorMessage();
     } catch (e) {
       state = state.copyWith(
           isLoading: false,
@@ -30,7 +30,7 @@ class EmailConfirmationPopUpViewModel
     }
   }
 
-  Future<void> validateEmail(String email) async {
+  void validateEmail(String email) {
     if (email.isEmpty) {
       state = state.copyWith(
           isLoading: false,
@@ -49,11 +49,11 @@ class EmailConfirmationPopUpViewModel
       return;
     }
 
-    await clearErrorMessage();
+    clearErrorMessage();
     return;
   }
 
-  Future<void> clearErrorMessage() async {
+  void clearErrorMessage() {
     state =
         state.copyWith(errorMessage: null, isLoading: false, isError: false);
   }

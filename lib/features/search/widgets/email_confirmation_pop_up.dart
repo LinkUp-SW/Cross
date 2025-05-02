@@ -23,6 +23,18 @@ class EmailConfirmationPopUp extends ConsumerStatefulWidget {
 class _EmailConfirmationPopUpState
     extends ConsumerState<EmailConfirmationPopUp> {
   final TextEditingController _emailController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref
+          .read(emailConfirmationPopUpViewModelProvider.notifier)
+          .clearErrorMessage();
+    });
+  }
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -56,7 +68,7 @@ class _EmailConfirmationPopUpState
             TextField(
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
-              style: TextStyle(
+              style: TextStyles.font14_600Weight.copyWith(
                 color: isDarkMode
                     ? AppColors.darkSecondaryText
                     : AppColors.lightTextColor,
@@ -67,6 +79,7 @@ class _EmailConfirmationPopUpState
                   color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
                 ),
                 errorText: state.errorMessage,
+                errorStyle: TextStyles.font12_500Weight,
                 contentPadding: EdgeInsets.symmetric(
                   horizontal: 12.w,
                   vertical: 16.h,
@@ -79,7 +92,7 @@ class _EmailConfirmationPopUpState
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.r),
+                  borderRadius: BorderRadius.circular(16.r),
                   borderSide: BorderSide(
                     color:
                         isDarkMode ? AppColors.darkBlue : AppColors.lightBlue,
@@ -87,9 +100,6 @@ class _EmailConfirmationPopUpState
                   ),
                 ),
               ),
-              onChanged: (_) async => await ref
-                  .read(emailConfirmationPopUpViewModelProvider.notifier)
-                  .clearErrorMessage(),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -98,7 +108,19 @@ class _EmailConfirmationPopUpState
                 Material(
                   color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
                   child: InkWell(
-                    onTap: () => context.pop(),
+                    onTap: () {
+                      // Clear error state
+                      ref
+                          .read(
+                              emailConfirmationPopUpViewModelProvider.notifier)
+                          .clearErrorMessage();
+
+                      // Ensure we're using the updated state before closing
+                      ref.invalidate(emailConfirmationPopUpViewModelProvider);
+
+                      if (!context.mounted) return;
+                      context.pop();
+                    },
                     child: Text(
                       "Cancel",
                       style: TextStyles.font16_500Weight.copyWith(
@@ -113,7 +135,7 @@ class _EmailConfirmationPopUpState
                   color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
                   child: InkWell(
                     onTap: () async {
-                      await ref
+                      ref
                           .read(
                               emailConfirmationPopUpViewModelProvider.notifier)
                           .validateEmail(_emailController.text.trim());

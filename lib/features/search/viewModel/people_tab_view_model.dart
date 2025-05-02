@@ -16,7 +16,7 @@ class PeopleTabViewModel extends StateNotifier<PeopleTabState> {
     try {
       final response = await _peopleTabServices.getPeopleSearch(
           queryParameters: queryParameters);
-      log(response.toString());
+
       final Set<PeopleCardModel> people = (response['people'] as List)
           .map((person) => PeopleCardModel.fromJson(person))
           .toSet();
