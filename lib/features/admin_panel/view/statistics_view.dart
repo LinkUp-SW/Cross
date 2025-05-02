@@ -1,7 +1,9 @@
 //the page ui only and try avoiding any logic here
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:link_up/features/admin_panel/widgets/widgets.dart';
+import 'package:link_up/features/admin_panel/widgets/admin_drawer.dart';
+import 'package:link_up/features/admin_panel/widgets/app_statistics_carousle.dart';
+import 'package:link_up/features/admin_panel/widgets/company_statistics_carousle.dart';
 
 class StatisticsView extends ConsumerStatefulWidget {
   const StatisticsView({super.key});
@@ -24,11 +26,11 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
           ),
         ),
         title: const Text(
-          'Hello Admin',
+          'Statistics',
           style: TextStyle(
             fontSize: 25,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: Colors.black,
           ),
         ),
       ),
@@ -39,7 +41,14 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
-            children: [Text('')],
+            children: [
+              Text('Check Staistics',
+                  style: TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                  )),
+              CompanyStatisticsCarousel(),
+            ],
           ),
         ),
       ),
