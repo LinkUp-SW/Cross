@@ -1,10 +1,12 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:link_up/core/constants/endpoints.dart';
 import 'package:link_up/features/chat/widgets/document_message.dart';
 import '../model/message_model.dart';
 import 'dart:io';
 import '../widgets/video_player.dart';
+import 'package:intl/intl.dart';
 
 class ChatMessageBubble extends StatelessWidget {
   final Message message;
@@ -29,8 +31,8 @@ class ChatMessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-        final displayName = message.isOwnMessage ? currentUserName : message.senderName;
-    final displayPic = message.isOwnMessage ? currentUserProfilePicUrl : chatProfilePicUrl;
+        final displayName = message.senderId == InternalEndPoints.userId ? currentUserName : message.senderName;
+final displayPic = message.senderId == InternalEndPoints.userId ? currentUserProfilePicUrl : chatProfilePicUrl;
 
     
 
@@ -86,13 +88,14 @@ class ChatMessageBubble extends StatelessWidget {
       
   
 
- Widget _buildTimestamp() {
-    final timestamp = message.timestamp;
-    return Text(
-      "${timestamp.hour}:${timestamp.minute.toString().padLeft(2, '0')}",
-      style: const TextStyle(fontSize: 12, color: Colors.grey),
-    );
-  }
+Widget _buildTimestamp() {
+  final localTime = message.timestamp.toLocal();
+  final formattedTime = DateFormat('hh:mm a').format(localTime);
+  return Text(
+    formattedTime,
+    style: const TextStyle(fontSize: 12, color: Colors.grey),
+  );
+}
 
    Widget _buildProfilePicture(String name, String? url) {
     final imageProvider = _getImageProvider(url);

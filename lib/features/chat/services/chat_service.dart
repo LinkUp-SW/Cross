@@ -121,3 +121,4 @@ class ApiChatService {
 final chatServiceProvider = Provider<ApiChatService>((ref) {
   return ApiChatService();
 });
+ 

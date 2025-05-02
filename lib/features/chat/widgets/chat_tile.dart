@@ -41,7 +41,7 @@ class ChatTile extends ConsumerWidget {
         ),
       ),
       subtitle: Text(
-        chat.lastMessage,
+        chat.lastMessage!= null ? chat.lastMessage! : " ",
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: theme.textTheme.bodySmall?.copyWith(

@@ -88,6 +88,7 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => ChatScreen(
+                                    otheruserid: state.chats![index].senderId,
                                     conversationId: state.chats![index].conversationId,
                                     senderName: state.chats![index].sendername,
                                     senderProfilePicUrl: state.chats![index].senderprofilePictureUrl,

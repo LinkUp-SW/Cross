@@ -1,119 +1,98 @@
+// viewmodel/messages_viewmodel.dart
 import 'dart:async';
 import 'dart:developer';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../model/message_model.dart';
 import '../services/messages_service.dart';
 import '../state/messages_state.dart';
+import '../services/socket_service.dart';
 
 class MessagesViewModel extends StateNotifier<MessagesState> {
   final MessagesService _service;
   final String conversationId;
+  final SocketService _socketService;
 
   MessagesViewModel({
     required MessagesService service,
+    required SocketService socketService,
     required this.conversationId,
   })  : _service = service,
-        super(MessagesState.initial());
-
-  /* Future<void> sendMessage(String content, List<String> media) async {
-    try {
-      state = state.copyWith(isSending: true, isError: false);
-
-      // Call the MessagesService with content and media
-      final message = await _service.sendMessage(
-        conversationId: conversationId,
-        content: content,
-        media: media,
-      );
-
-      // Add the new message to the current message list
-      final updatedMessages = [...state.messages ?? [], message];
-
-      state = state.copyWith(
-        messages: updatedMessages,
-        isSending: false,
-        isError: false,
-      );
-
-      // Simulate delivery and read status updates
-      await Future.delayed(const Duration(seconds: 1));
-      _updateMessageDeliveryStatus(message.messageId, DeliveryStatus.delivered);
-
-      await Future.delayed(const Duration(seconds: 1));
-      _updateMessageDeliveryStatus(message.messageId, DeliveryStatus.read);
-    } catch (e) {
-      log('Error sending message: $e');
-      state = state.copyWith(
-        isSending: false,
-        isError: true,
-      );
-      rethrow; // Pass error to UI
-    }
-  } */
-
-  /* void _updateMessageDeliveryStatus(String messageId, DeliveryStatus status) {
-    if (state.messages == null) return;
-
-    final updatedMessages = state.messages!.map((message) {
-      if (message.id == messageId) {
-        return message.copyWith(deliveryStatus: status);
-      }
-      return message;
-    }).toList();
-
-    state = state.copyWith(messages: updatedMessages);
-  } */
-
-  /* Future<void> sendMediaAttachment(String mediaUrl, MessageType type) async {
-    try {
-      state = state.copyWith(isSending: true);
-
-      final message = await _service.sendMessage(
-        conversationId: conversationId,
-        content: mediaUrl,
-      );
-
-      final updatedMessages = [...state.messages ?? [], message];
-
-      state = state.copyWith(
-        messages: updatedMessages,
-        isSending: false,
-        isError: false,
-      );
-    } catch (e) {
-      state = state.copyWith(
-        isSending: false,
-        isError: true,
-      );
-      log('Error sending media: $e');
-    }
+        _socketService = socketService,
+        super(MessagesState.initial()) {
+    _listenToSocket();
+    loadMessages();
   }
- */
+
+  void _listenToSocket() {
+    log('[VIEWMODEL] Setting up socket listener...');
+    _socketService.onMessageReceived((dynamic data) async {
+      log('[VIEWMODEL] Full data received: $data');
+      try {
+        // Reload messages when receiving a new message
+        await loadMessages();
+        log('[VIEWMODEL] Messages reloaded after receiving new message');
+      } catch (e) {
+        log('[VIEWMODEL] Error reloading messages: $e');
+      }
+    });
+  }
+
   Future<void> loadMessages() async {
+    if (state.isLoading) return;
+
     try {
       state = state.copyWith(isLoading: true, isError: false);
-      log('Loading messages for conversation: $conversationId');
-
       final messages = await _service.openExistingChat(conversationId);
+
+      if (!mounted) return;
 
       state = state.copyWith(
         messages: messages,
         isLoading: false,
         isError: false,
       );
-
-      log('Loaded ${messages.length} messages');
+      log('[VIEWMODEL] Successfully loaded ${messages.length} messages');
     } catch (e) {
-      log('Error loading messages: $e');
+      log('[VIEWMODEL] Error loading messages: $e');
+      if (!mounted) return;
+
       state = state.copyWith(
-        isLoading: false,
         isError: true,
+        isLoading: false,
+        errorMessage: 'Failed to load messages',
+      );
+    }
+  }
+
+  Future<void> sendMessage(Message message) async {
+    try {
+      log('[VIEWMODEL] Sending message: ${message.message}');
+
+      // Optimistic update
+      final updatedMessages = [...?state.messages, message]..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+      state = state.copyWith(messages: updatedMessages);
+
+      // Send via socket
+      _socketService.sendMessage(conversationId, message);
+
+      // Reload messages after sending
+      await loadMessages();
+
+      log('[VIEWMODEL] Message sent and messages reloaded');
+    } catch (e) {
+      log('[VIEWMODEL] Failed to send message: $e');
+      // Revert optimistic update on failure
+      final originalMessages = state.messages?.where((m) => m.messageId != message.messageId).toList();
+      state = state.copyWith(
+        messages: originalMessages,
+        errorMessage: 'Failed to send message',
       );
     }
   }
 
   @override
   void dispose() {
+    _socketService.disposeSocket(conversationId);
     super.dispose();
   }
 }
@@ -121,6 +100,7 @@ class MessagesViewModel extends StateNotifier<MessagesState> {
 final messagesViewModelProvider = StateNotifierProvider.family<MessagesViewModel, MessagesState, String>(
   (ref, conversationId) => MessagesViewModel(
     service: ref.watch(messageServiceProvider),
+    socketService: SocketService(conversationId: conversationId), // Create new instance with conversation ID
     conversationId: conversationId,
   ),
 );

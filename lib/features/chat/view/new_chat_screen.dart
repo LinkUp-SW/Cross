@@ -2,8 +2,11 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:link_up/features/chat/model/chat_model.dart';
+import 'package:link_up/features/chat/model/connections_chat_model.dart';
+import 'package:link_up/features/chat/view/chat_screen.dart';
 import 'package:link_up/features/chat/viewModel/newchat_viewmodel.dart';
-import 'package:link_up/features/my-network/viewModel/connections_screen_view_model.dart';
+import 'package:link_up/features/chat/widgets/connection_tile.dart';
 import 'package:link_up/shared/themes/colors.dart';
 
 class NewChatScreen extends ConsumerStatefulWidget {
@@ -18,12 +21,10 @@ class _NewChatScreenState extends ConsumerState<NewChatScreen> {
   void initState() {
     super.initState();
 
-    // Fetch connections and chats when screen initializes
-    Future.microtask(() {
-      ref.read(newChatViewModelProvider.notifier).getConnectionsList({
-        'limit': '10',
-      }); 
-      ref.read(newChatViewModelProvider.notifier).fetchChats();
+    Future.microtask(() async {
+      final notifier = ref.read(newChatViewModelProvider.notifier);
+      await notifier.getConnectionsList({'limit': '10'});
+      await notifier.fetchChats();
     });
   }
 
@@ -31,45 +32,54 @@ class _NewChatScreenState extends ConsumerState<NewChatScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final bool isDarkMode = theme.brightness == Brightness.dark;
-    final connectionState = ref.watch(newChatViewModelProvider);
-    final connections = connectionState.connections ?? [];
+    final state = ref.watch(newChatViewModelProvider);
+    final viewModel = ref.read(newChatViewModelProvider.notifier);
+    final connections = state.connections ?? [];
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('New Message'),
         backgroundColor: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
       ),
-      body: connectionState.isLoading
+      body: state.isLoading
           ? Center(child: CircularProgressIndicator(color: theme.colorScheme.primary))
           : connections.isEmpty
               ? Center(
                   child: Text(
                     'No connections found.',
-                    style: TextStyle(color: isDarkMode ? AppColors.darkMain : AppColors.lightMain, fontSize: 16),
+                    style: TextStyle(
+                      color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+                      fontSize: 16,
+                    ),
                   ),
                 )
-              : ListView.separated(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+              : ListView.builder(
                   itemCount: connections.length,
-                  separatorBuilder: (_, __) => const Divider(indent: 70, endIndent: 16),
                   itemBuilder: (context, index) {
                     final connection = connections[index];
-                    log('Building connection tile: ${connection.firstName}');
-                    return ListTile(
-                      leading: CircleAvatar(
-                        backgroundImage: NetworkImage(connection.profilePicture),
-                        radius: 24,
-                      ),
-                      title: Text('${connection.firstName} ${connection.lastName}'),
-                      subtitle: Text(connection.title),
+                    return ConnectionTile(
+                      connection: connection,
                       onTap: () async {
                         try {
-                          if (!mounted) return;
-                          // Handle chat navigation here
+                          final chatResult = await viewModel.handleChatTap(connection);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ChatScreen(
+                               
+                                  conversationId: chatResult.conversationId,
+                                  senderName: chatResult.senderName,
+                                  senderProfilePicUrl: chatResult.profilePicUrl,
+                                   otheruserid: chatResult.otherUserId ?? '',
+                                ),
+                            
+                              ),
+                            
+                          );
                         } catch (e) {
-                          if (!mounted) return;
+                          log("Failed to open chat: $e");
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(e.toString())),
+                            const SnackBar(content: Text("Failed to open chat")),
                           );
                         }
                       },

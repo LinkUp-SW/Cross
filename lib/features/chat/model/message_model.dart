@@ -3,14 +3,16 @@ import 'dart:developer';
 class Message {
   final String messageId;
   final String senderId;
+  final String? receiverId;
   final String senderName;
   final String message;
   final List<String> media;
   final DateTime timestamp;
   final String reacted;
   final bool isSeen;
-  final bool isOwnMessage;
-  final bool?isEdited;
+
+  final bool? isOwnMessage;
+  final bool? isEdited;
 
   Message({
     required this.messageId,
@@ -21,8 +23,9 @@ class Message {
     required this.timestamp,
     this.reacted = '',
     this.isSeen = false,
-    this.isOwnMessage=false,
+    this.isOwnMessage = false,
     this.isEdited = false,
+    this.receiverId,
   });
 
   factory Message.fromJson(Map<String, dynamic> json) {
@@ -38,6 +41,7 @@ class Message {
         timestamp: DateTime.parse(json['timestamp'] ?? DateTime.now().toIso8601String()),
         reacted: json['reacted']?.toString() ?? '',
         isSeen: json['isSeen'] ?? false,
+        receiverId: json['receiverId'] ?? null,
         isOwnMessage: json['isOwnMessage'] ?? false,
         isEdited: json['isEdited'] ?? false,
       );
@@ -53,6 +57,7 @@ class Message {
     return {
       'messageId': messageId,
       'senderId': senderId,
+      'receiverId': receiverId,
       'senderName': senderName,
       'message': message,
       'media': media,

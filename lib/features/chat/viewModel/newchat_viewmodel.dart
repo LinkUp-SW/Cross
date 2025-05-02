@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/core/constants/endpoints.dart';
 import 'package:link_up/features/chat/model/chat_model.dart';
 import 'package:link_up/features/chat/model/connections_chat_model.dart';
-import 'package:link_up/features/my-network/model/connections_screen_model.dart';
+import 'package:link_up/features/chat/model/message_model.dart';
 import '../state/newchat_state.dart';
 import '../services/newchat_service.dart'; // service for fetching connections
 
@@ -116,6 +116,82 @@ class NewChatViewModel extends StateNotifier<NewChatState> {
       state = state.copyWith(isError: true);
     }
   }
+
+  Future<ChatResult> handleChatTap(ConnectionsChatModel connection) async {
+    try {
+      state = state.copyWith(isLoading: true, isError: false);
+      log('Handling chat tap for user: ${connection.firstName} ${connection.lastName}');
+
+      if (connection.isExistingChat == true) {
+        log('Opening existing chat');
+        Chat? existingChat;
+        try {
+          existingChat = state.chats?.firstWhere(
+            (chat) => chat.senderId == connection.cardId,
+          );
+        } catch (e) {
+          log('No existing chat found in state');
+          existingChat = null;
+        }
+
+        if (existingChat != null) {
+          try {
+            final messages = await service.openExistingChat(existingChat.conversationId);
+            state = state.copyWith(isLoading: false);
+            return ChatResult(
+              conversationId: existingChat.conversationId,
+              messages: messages,
+              senderName: '${connection.firstName} ${connection.lastName}',
+              profilePicUrl: connection.profilePicture,
+              otherUserId: connection.cardId,
+            );
+          } catch (e) {
+            log('Error opening existing chat: $e');
+            // Fall through to create new chat
+          }
+        }
+      }
+
+      // Create new chat if no existing chat found or if opening existing chat failed
+      log('Creating new chat');
+      final newChat = await service.startnewchat(connection.cardId);
+
+      // Update chats list with new chat
+      final updatedChats = [...?state.chats, newChat];
+      state = state.copyWith(
+        chats: updatedChats,
+        isLoading: false,
+      );
+
+      return ChatResult(
+        conversationId: newChat.conversationId,
+        messages: [],
+        senderName: '${connection.firstName} ${connection.lastName}',
+        profilePicUrl: connection.profilePicture,
+      );
+    } catch (e, stackTrace) {
+      log("Error handling chat tap: $e");
+      log("Stack trace: $stackTrace");
+      state = state.copyWith(isLoading: false, isError: true);
+      rethrow;
+    }
+  }
+}
+
+class ChatResult {
+  final String conversationId;
+  final List<Message> messages;
+  final String senderName;
+  final String profilePicUrl;
+  final String? otherUserId; // Added for clarity 
+
+  ChatResult({
+    required this.conversationId,
+    required this.messages,
+    required this.senderName,
+    required this.profilePicUrl,
+    this.otherUserId, 
+  });
 }
 
 final newChatViewModelProvider = StateNotifierProvider<NewChatViewModel, NewChatState>((ref) {

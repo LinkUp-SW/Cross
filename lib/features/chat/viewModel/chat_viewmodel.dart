@@ -11,12 +11,45 @@ class ChatViewModel extends StateNotifier<ChatState> {
   ChatViewModel(this.chatService) : super(ChatState.initial());
 
   Future<void> fetchChats() async {
-    state = state.copyWith(isloading: true, isError: false);
     try {
+      state = state.copyWith(isloading: true, isError: false);
+
       final response = await chatService.fetchChats();
-      final chats = (response['conversations'] as List).map((chat) => Chat.fromJson(chat)).toList();
-      log(chats.toString());
-      state = state.copyWith(chats: chats, isloading: false, isError: false);
+      log('Raw response: ${response.toString()}');
+
+      if (response == null || !response.containsKey('conversations')) {
+        throw Exception('Invalid response format');
+      }
+
+      final conversationsList = response['conversations'] as List;
+      final List<Chat> chats = [];
+      int failedParseCount = 0;
+
+      for (var chatJson in conversationsList) {
+        try {
+          final chat = Chat.fromJson(chatJson as Map<String, dynamic>);
+          chats.add(chat);
+        } catch (e) {
+          failedParseCount++;
+          log('Warning: Failed to parse chat: $e');
+          log('Problematic chat data: $chatJson');
+          // Continue with next chat instead of failing completely
+          continue;
+        }
+      }
+
+      if (failedParseCount > 0) {
+        log('Warning: Failed to parse $failedParseCount chats out of ${conversationsList.length}');
+      }
+
+      state = state.copyWith(
+        chats: chats,
+        isloading: false,
+        isError: false,
+        unreadCount: response['conversationUnreadCount'] as int? ?? 0,
+      );
+
+      log('Successfully loaded ${chats.length} chats');
     } catch (e) {
       log("Error fetching chats: $e");
       state = state.copyWith(isloading: false, isError: true);

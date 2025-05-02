@@ -3,60 +3,77 @@ import 'package:link_up/core/constants/endpoints.dart';
 import 'package:link_up/core/services/base_service.dart';
 import 'package:link_up/features/chat/model/chat_model.dart';
 import 'dart:convert';
-import 'dart:developer';    
+import 'dart:developer';
 import 'package:link_up/features/chat/model/message_model.dart';
 
 class NewChatService {
- BaseService _baseService = BaseService(); 
+  BaseService _baseService = BaseService();
 
- 
   Future<Chat> startnewchat(String userId) async {
     try {
-      final baseService = BaseService();
-      final response = await baseService.post(
+      log('Starting new chat with user: $userId');
+
+      final response = await _baseService.post(
         ExternalEndPoints.startnewchat,
-        routeParameters: {
+        body: {
+          // Changed from routeParameters to body
           'user2ID': userId,
         },
       );
 
+      log('New chat response: ${response.body}');
+
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
+
+        if (data == null) {
+          throw Exception('Empty response received');
+        }
+
+        if (!data.containsKey('conversation')) {
+          throw Exception('No conversation data in response');
+        }
+
         return Chat.fromJson(data['conversation']);
-      } else if (response.statusCode == 404) {
-        throw Exception('User not found');
       } else {
-        throw Exception('Failed to start new chat: ${response.statusCode}');
+        throw Exception('Failed to start chat: ${response.statusCode}');
       }
     } catch (e) {
-      throw Exception('Error starting new chat: $e');
+      log('Error in startnewchat: $e');
+      rethrow;
     }
   }
 
- Future<List<Message>> openExistingChat(String conversationId) async {
+  Future<List<Message>> openExistingChat(String conversationId) async {
     try {
-      final baseService = BaseService();
+      log('Opening existing chat: $conversationId');
       final endpoint = ExternalEndPoints.gotospecificchat.replaceAll(':conversationId', conversationId);
 
-      final response = await baseService.post(
-        endpoint,
-         // Empty body since we're using path parameter
-      );
+      final response = await _baseService.post(endpoint);
+      log('Open chat response: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        final messages = (data['messages'] as List).map((messageJson) => Message.fromJson(messageJson)).toList();
+
+        if (data == null || !data.containsKey('messages')) {
+          throw Exception('Invalid response format');
+        }
+
+        final messagesList = data['messages'] as List;
+        final messages = messagesList.map((messageJson) {
+          messageJson['isOwnMessage'] = messageJson['senderId'] == InternalEndPoints.userId;
+          return Message.fromJson(messageJson);
+        }).toList();
+
+        log('Successfully loaded ${messages.length} messages');
         return messages;
-      } else if (response.statusCode == 404) {
-        log('Chat not found: $conversationId');
-        throw Exception('Chat not found');
       } else {
-        log('Failed to open chat: ${response.statusCode}');
         throw Exception('Failed to open chat: ${response.statusCode}');
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       log('Error opening chat: $e');
-      throw Exception('Error opening chat: $e');
+      log('Stack trace: $stackTrace');
+      rethrow;
     }
   }
 
@@ -70,7 +87,7 @@ class NewChatService {
         queryParameters: queryParameters,
         routeParameters: routeParameters,
       );
-      log (response.body.toString());
+      log(response.body.toString());
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       }
@@ -79,7 +96,7 @@ class NewChatService {
       rethrow;
     }
   }
-  
+
   Future<Map<String, dynamic>> fetchChats() async {
     try {
       final baseService = BaseService();

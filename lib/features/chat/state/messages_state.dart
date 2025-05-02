@@ -4,30 +4,32 @@ class MessagesState {
   final List<Message>? messages;
   final bool isLoading;
   final bool isError;
-  final bool isSending;
+  final String? errorMessage;
 
-  const MessagesState({
-    required this.messages,
-    this.isLoading = true,
+  MessagesState({
+    this.messages,
+    this.isLoading = false,
     this.isError = false,
-    this.isSending = false,
+    this.errorMessage,
   });
 
-  factory MessagesState.initial() {
-    return const MessagesState(messages: [], isLoading: true, isError: false, isSending: false);
-  }
+  factory MessagesState.initial() => MessagesState(
+        messages: [],
+        isLoading: false,
+        isError: false,
+      );
 
   MessagesState copyWith({
     List<Message>? messages,
     bool? isLoading,
     bool? isError,
-    bool? isSending,
+    String? errorMessage,
   }) {
     return MessagesState(
       messages: messages ?? this.messages,
       isLoading: isLoading ?? this.isLoading,
       isError: isError ?? this.isError,
-      isSending: isSending ?? this.isSending,
+      errorMessage: errorMessage ?? this.errorMessage,
     );
   }
 }

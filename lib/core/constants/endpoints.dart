@@ -4,6 +4,7 @@ class InternalEndPoints {
   static String userId = "";
   static String email = "";
   static String profileUrl = "";
+  static const String socketUrl = 'http://10.0.2.2:3000';
 }
 
 class ExternalEndPoints {
