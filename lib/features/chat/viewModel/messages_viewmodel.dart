@@ -29,7 +29,7 @@ class MessagesViewModel extends StateNotifier<MessagesState> {
 
   void _listenToSocket() async {
     log('[VIEWMODEL] Setting up socket listener...');
-    
+    final currentUserId = InternalEndPoints.userId;
 
     _socketService.onMessageReceived((dynamic data) async {
       log('[VIEWMODEL] Full data received: $data');
@@ -87,6 +87,49 @@ class MessagesViewModel extends StateNotifier<MessagesState> {
         }
       } catch (e) {
         log('[VIEWMODEL] Error processing socket message: $e');
+      }
+    });
+
+    // Add these listeners for typing indicators
+    _socketService.onTypingStarted((data) {
+      log('[VIEWMODEL] Typing started: $data');
+
+      // Handle array format like in your log: [{conversationId: id, userId: id}, socketId]
+      String? typingConversationId;
+      String? typingUserId;
+
+      if (data is List && data.isNotEmpty && data[0] is Map) {
+        typingConversationId = data[0]['conversationId'];
+        typingUserId = data[0]['userId'];
+      } else if (data is Map) {
+        typingConversationId = data['conversationId'];
+        typingUserId = data['userId'];
+      }
+
+      if (typingConversationId == conversationId && typingUserId != InternalEndPoints.userId) {
+        log('[VIEWMODEL] Set isOtherUserTyping to true for convo: $conversationId');
+        state = state.copyWith(isOtherUserTyping: true);
+      }
+    });
+
+    _socketService.onTypingStopped((data) {
+      log('[VIEWMODEL] Typing stopped: $data');
+
+      // Handle array format
+      String? typingConversationId;
+      String? typingUserId;
+
+      if (data is List && data.isNotEmpty && data[0] is Map) {
+        typingConversationId = data[0]['conversationId'];
+        typingUserId = data[0]['userId'];
+      } else if (data is Map) {
+        typingConversationId = data['conversationId'];
+        typingUserId = data['userId'];
+      }
+
+      if (typingConversationId == conversationId && typingUserId != InternalEndPoints.userId) {
+        log('[VIEWMODEL] Set isOtherUserTyping to false for convo: $conversationId');
+        state = state.copyWith(isOtherUserTyping: false);
       }
     });
   }
@@ -210,10 +253,10 @@ class MessagesViewModel extends StateNotifier<MessagesState> {
   }
 
   void startTyping() {
-    if (!_isTyping) {
-      _isTyping = true;
-      _socketService.sendTypingIndicator();
-    }
+    // Always send typing indicator when user types, regardless of previous state
+    _socketService.sendTypingIndicator();
+    _isTyping = true;
+    log('[VIEWMODEL] Started typing, sent indicator');
 
     // Reset the timer each time user types
     _typingTimer?.cancel();
@@ -226,7 +269,7 @@ class MessagesViewModel extends StateNotifier<MessagesState> {
     if (_isTyping) {
       _isTyping = false;
       _socketService.sendStopTypingIndicator();
-      _typingTimer?.cancel();
+      log('[VIEWMODEL] Stopped typing, sent indicator');
     }
   }
 

@@ -7,6 +7,7 @@ import 'package:link_up/features/chat/widgets/video_player_screen.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart'; */
 import 'package:link_up/features/chat/model/message_model.dart';
+import 'package:link_up/features/chat/widgets/typing_indicator.dart';
 import '../viewModel/chat_viewmodel.dart';
 import '../widgets/chat_message_bubble.dart';
 import '../widgets/chat_input_field.dart';
@@ -71,6 +72,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final messagesState = ref.watch(messagesViewModelProvider(widget.conversationId));
 
     log('Building chat screen. Messages count: ${messagesState.messages?.length ?? 0}');
+    log('Other user typing: ${messagesState.isOtherUserTyping}');
 
     // Scroll to bottom whenever messages update and loading completes
     if (!messagesState.isLoading && messagesState.messages != null && messagesState.messages!.isNotEmpty) {
@@ -125,21 +127,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   ),
           ),
 
-          // Show typing indicator if other user is typing
+          // Show typing indicator when the other user is typing
           if (messagesState.isOtherUserTyping)
-            Padding(
-              padding: const EdgeInsets.only(left: 16.0, bottom: 8.0),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "${widget.senderName} is typing...",
-                  style: TextStyle(
-                    fontStyle: FontStyle.italic,
-                    fontSize: 12,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ),
+            TypingIndicator(
+              isTyping: true, // Always true here since we're inside the conditional
+              typingUser: widget.senderName,
+              currentUser: "You",
+              theme: theme,
             ),
 
           if (messagesState.isError)
@@ -220,194 +214,3 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     super.dispose();
   }
 }
-
-
-/* 
-  Future<void> _handleMessageTap(Message message) async {
-    if (message.type == MessageType.video) {
-      await _handleVideoMessage(message);
-    } else if (message.type == MessageType.document) {
-      await _openDocument(message);
-    } else if (message.type == MessageType.image) {
-      await _openImage(message);
-    }
-  }
- */
-  /* Future<void> _handleVideoMessage(Message message) async {
-    final theme = Theme.of(context);
-    if (message.sender != InternalEndPoints.userId.split("-")[0].toString()) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => VideoPlayerScreen(
-            videoPath: message.content,
-          ),
-        ),
-      );
-    } else {
-      try {
-        await OpenFilex.open(message.content);
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: theme.colorScheme.error,
-            content: Text(
-              "Failed to open video: $e",
-              style: TextStyle(color: theme.colorScheme.onError),
-            ),
-          ),
-        );
-      }
-    }
-  }
-
-  Future<void> _openDocument(Message message) async {
-    final filePath = message.content;
-    final isUrl = filePath.startsWith('http');
-    final fileName = filePath.split('/').last;
-
-    if (isUrl) {
-      final uri = Uri.parse(filePath);
-      final directory = await getApplicationDocumentsDirectory();
-      final localPath = '${directory.path}/$fileName';
-      final localFile = File(localPath);
-
-      if (await localFile.exists()) {
-        OpenFilex.open(localPath);
-      } else {
-        try {
-          final response = await http.get(uri);
-          await localFile.writeAsBytes(response.bodyBytes);
-          OpenFilex.open(localPath);
-        } catch (e) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Download error: $e")),
-          );
-        }
-      }
-    } else {
-      final file = File(filePath);
-      if (await file.exists()) {
-        OpenFilex.open(file.path);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("File not found")),
-        );
-      }
-    }
-  }
-
-  Future<void> _openImage(Message message) async {
-    final imagePath = message.content;
-    final isUrl = imagePath.startsWith('http');
-
-    if (isUrl) {
-      _showImageInFullScreen(imagePath: imagePath);
-    } else {
-      final file = File(imagePath);
-      if (await file.exists()) {
-        _showImageInFullScreen(imagePath: file.path);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Image not found")),
-        );
-      }
-    }
-  }
-
-  void _showImageInFullScreen({required String imagePath}) {
-    final theme = Theme.of(context);
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => Scaffold(
-        backgroundColor: theme.colorScheme.background,
-        appBar: AppBar(
-          backgroundColor: theme.appBarTheme.backgroundColor ?? theme.colorScheme.surface,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: theme.iconTheme.color),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ),
-        body: Center(
-          child: imagePath.isEmpty
-              ? Text(
-                  "No image available",
-                  style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onBackground),
-                )
-              : imagePath.startsWith('http')
-                  ? Image.network(imagePath, fit: BoxFit.contain)
-                  : Image.file(File(imagePath), fit: BoxFit.contain),
-        ),
-      ),
-    );
-  }
- */
-  /* void _showAttachmentOptions(BuildContext context, WidgetRef ref, int chatIndex) {
-    showModalBottomSheet(
-      context: context,
-      builder: (_) => Wrap(
-        children: [
-          ListTile(
-            leading: const Icon(Icons.insert_drive_file),
-            title: const Text("Send Document"),
-            onTap: () async {
-              final result = await FilePicker.platform.pickFiles();
-              if (result != null && result.files.single.path != null) {
-                final filePath = result.files.single.path!;
-                ref.read(chatViewModelProvider.notifier).sendMediaAttachment(
-                      chatIndex,
-                      filePath,
-                      MessageType.document,
-                    );
-                // Scroll to bottom after sending document
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  _scrollToBottom();
-                });
-              }
-              Navigator.pop(context);
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.photo_library),
-            title: const Text("Send Media from Library"),
-            onTap: () async {
-              final picker = ImagePicker();
-              final pickedFile = await picker.pickMedia();
-
-              if (pickedFile != null) {
-                final isVideo = pickedFile.path.toLowerCase().endsWith(".mp4") ||
-                    pickedFile.path.toLowerCase().endsWith(".mov") ||
-                    pickedFile.path.toLowerCase().endsWith(".avi");
-
-                final messageType = isVideo ? MessageType.video : MessageType.image;
-
-                ref.read(chatViewModelProvider.notifier).sendMediaAttachment(
-                      chatIndex,
-                      pickedFile.path,
-                      messageType,
-                    );
-                // Scroll to bottom after sending media
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  _scrollToBottom();
-                });
-              }
-              Navigator.pop(context);
-            },
-          ),
-        ],
-      ),
-    );
-  } */
-  /* void _handleSendMessage() {
-    if (messageController.text.isEmpty) return;
-
-    /* ref.read(messagesViewModelProvider(widget.conversationId).notifier)
-       .sendMessage(messageController.text, []);
-        */
-    messageController.clear();
-    _scrollToBottom();
-  } */
-
- /*  */

@@ -28,7 +28,8 @@ class ChatInputField extends StatelessWidget {
               textInputAction: TextInputAction.send,
               onSubmitted: (_) => onSendPressed(),
               onChanged: (value) {
-                if (onTyping != null) {
+                // Always call onTyping when the user types anything
+                if (onTyping != null && value.isNotEmpty) {
                   onTyping!();
                 }
               },

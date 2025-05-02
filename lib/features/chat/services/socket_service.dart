@@ -181,11 +181,37 @@ class SocketService {
   }
 
   void sendTypingIndicator() {
-    _socket.emit('typing', {'conversationId': conversationId});
+    if (!_isAuthenticated) {
+      log('[SOCKET] Not authenticated, cannot send typing indicator');
+      return;
+    }
+
+    try {
+      log('[SOCKET] Sending typing indicator for conversation: $conversationId');
+      _socket.emit('typing', {
+        'conversationId': conversationId,
+        'userId': InternalEndPoints.userId,
+      });
+    } catch (e) {
+      log('[SOCKET] Error sending typing indicator: $e');
+    }
   }
 
   void sendStopTypingIndicator() {
-    _socket.emit('stop_typing', {'conversationId': conversationId});
+    if (!_isAuthenticated) {
+      log('[SOCKET] Not authenticated, cannot send stop typing indicator');
+      return;
+    }
+
+    try {
+      log('[SOCKET] Sending stop typing indicator for conversation: $conversationId');
+      _socket.emit('stop_typing', {
+        'conversationId': conversationId,
+        'userId': InternalEndPoints.userId,
+      });
+    } catch (e) {
+      log('[SOCKET] Error sending stop typing indicator: $e');
+    }
   }
 
   void markAsRead() {
