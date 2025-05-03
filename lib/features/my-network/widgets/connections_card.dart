@@ -66,7 +66,7 @@ class ConnectionsCard extends ConsumerWidget {
                         children: [
                           // Name
                           Text(
-                            "${data.firstName} ${data.lastName}",
+                            data.name,
                             style: TextStyles.font15_700Weight,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -104,7 +104,7 @@ class ConnectionsCard extends ConsumerWidget {
                       builder: (context) => ConfirmationPopUp(
                         title: 'Remove connection',
                         content:
-                            'Are you sure you want to remove your connection with ${data.firstName} ${data.lastName}?',
+                            'Are you sure you want to remove your connection with ${data.name} ?',
                         buttonText: 'Remove',
                         buttonFunctionality: () {
                           Navigator.of(context).pop();

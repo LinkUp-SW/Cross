@@ -64,7 +64,7 @@ class FollowingCard extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "${data.firstName} ${data.lastName}",
+                            data.name,
                             style: TextStyles.font14_500Weight,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -95,7 +95,7 @@ class FollowingCard extends ConsumerWidget {
                     builder: (context) => ConfirmationPopUp(
                       title: 'Unfollowing',
                       content:
-                          'Are you sure you want to unfollow ${data.firstName} ${data.lastName}?',
+                          'Are you sure you want to unfollow ${data.name} ?',
                       buttonText: 'Unfollow',
                       buttonFunctionality: () {
                         Navigator.of(context).pop();
