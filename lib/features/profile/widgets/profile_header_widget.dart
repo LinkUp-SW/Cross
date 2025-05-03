@@ -365,10 +365,10 @@ class ProfileHeaderWidget extends ConsumerWidget {
                   },
                   child: CircleAvatar(
                     radius: 16.r,
-                    backgroundColor: AppColors.lightMain,
+                    backgroundColor: isDarkMode ? AppColors.darkMain : AppColors.lightTextColor,
                     child: Icon(
                       Icons.edit,
-                      color: AppColors.lightSecondaryText,
+                    color: isDarkMode ? AppColors.lightMain : AppColors.lightSecondaryText,
                       size: 20.sp,
                     ),
                   ),
