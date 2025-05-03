@@ -67,7 +67,7 @@ final goRouterProvider = Provider<GoRouter>(
         GoRoute(
             path: "/profile",
             builder: (context, state) => ProfilePage(
-                  userId: state.extra as String,
+                  // userId: state.extra as String,
                 )),
         GoRoute(
             path: "/login",
@@ -155,14 +155,14 @@ final goRouterProvider = Provider<GoRouter>(
           path: "/license_list_page",
           builder: (context, state) => const LicenseListPage(),
          ),
-        GoRoute(
-           develop
-          path: "/add_new_skill",
-          builder: (context, state) => const AddSkillPage(),
-        ),
+                  
         GoRoute(
           path: "/add_resume",
           builder: (context, state) => const AddResumePage(),
+        ),
+        GoRoute(
+          path: "/add_new_skill",
+          builder: (context, state) => const AddSkillPage(),
         ),
         GoRoute(
           path: "/add_new_license",
@@ -215,6 +215,7 @@ final goRouterProvider = Provider<GoRouter>(
           path: "/add_new_education",
           builder: (context, state) => const AddNewEducation(),
         ),
+
         StatefulShellRoute.indexedStack(
           builder: (context, state, navigationShell) => Scaffold(
             key: scaffoldKey,

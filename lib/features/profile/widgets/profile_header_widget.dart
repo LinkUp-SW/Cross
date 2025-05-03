@@ -14,6 +14,7 @@ import 'package:link_up/features/profile/viewModel/cover_photo_view_model.dart';
 import 'package:link_up/features/profile/state/profile_state.dart';
 import 'package:link_up/features/profile/viewModel/profile_view_model.dart';
 import 'package:link_up/features/profile/model/education_model.dart';
+import 'package:link_up/features/profile/widgets/premium_plan_sheet.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:developer';
@@ -365,7 +366,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
                   },
                   child: CircleAvatar(
                     radius: 16.r,
-                    backgroundColor: isDarkMode ? AppColors.darkMain : AppColors.lightTextColor,
+                    backgroundColor: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
                     child: Icon(
                       Icons.edit,
                     color: isDarkMode ? AppColors.lightMain : AppColors.lightSecondaryText,
@@ -458,12 +459,13 @@ class ProfileHeaderWidget extends ConsumerWidget {
               Expanded(
                 flex: 4,
                 child: ElevatedButton(
-                  onPressed: () => _handleOpenToTap(context),
-                  style: isDarkMode
+                  onPressed: () {
+                    GoRouter.of(context).push('/user_posts_page');
+                  },                  style: isDarkMode
                       ? buttonStyles.wideBlueElevatedButtonDark()
                       : buttonStyles.wideBlueElevatedButton(),
                   child: Text(
-                    "Open to",
+                    "Find a new job",
                     style: TextStyles.font15_500Weight.copyWith(
                       color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
                     ),
@@ -507,7 +509,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
           SizedBox(
             width: double.infinity,
             child: OutlinedButton(
-              onPressed: () { /* TODO: Enhance Profile Action */ },
+              onPressed: () => showPremiumPlanSheet(context), // Call the function here
               style: isDarkMode
                   ? buttonStyles.blueOutlinedButtonDark()
                   : buttonStyles.blueOutlinedButton(),
