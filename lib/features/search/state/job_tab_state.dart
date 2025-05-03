@@ -56,8 +56,6 @@ class SearchJobState {
     );
   }
 
-  get recentLocationSearches => null;
-
   SearchJobState copyWith({
     bool? isLoading,
     bool? isError,
@@ -70,7 +68,7 @@ class SearchJobState {
     int? limit,
     List<String>? recentSearches,
     List<String>? selectedExperienceLevels,
-    String? selectedLocation,
+    String? selectedLocation, // Fixed: removed 'required'
     int? minSalary,
     int? maxSalary,
   }) {

@@ -2,8 +2,10 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/features/jobs/model/search_job_model.dart';
-import 'package:link_up/features/jobs/services/search_job_service.dart';
-import 'package:link_up/features/jobs/state/search_job_state.dart';
+import 'package:link_up/features/search/state/job_tab_state.dart';
+import 'package:link_up/features/search/service/job_tab_service.dart';
+
+
 import 'dart:developer' as developer;
 
 class SearchJobViewModel extends StateNotifier<SearchJobState> {
@@ -11,7 +13,7 @@ class SearchJobViewModel extends StateNotifier<SearchJobState> {
 
   SearchJobViewModel(this._searchJobService) : super(SearchJobState.initial());
 
-  // Search jobs
+  // Main method for both searching and filtering
   Future<void> searchJobs({
     required Map<String, dynamic> queryParameters,
   }) async {
@@ -26,16 +28,8 @@ class SearchJobViewModel extends StateNotifier<SearchJobState> {
     }
     
     try {
-      developer.log('Using search service with parameters: $queryParameters');
-      
-      // Use search service
       final response = await _searchJobService.searchJobsData(
-        queryParameters: {
-          'query': queryParameters['query'] ?? '',
-          if (queryParameters.containsKey('cursor'))
-            'cursor': queryParameters['cursor'].toString(),
-          'limit': queryParameters['limit']?.toString() ?? '10',
-        },
+        queryParameters: queryParameters,
       );
       
       final List<dynamic> jobsList = response['jobs'] ?? [];
@@ -45,16 +39,26 @@ class SearchJobViewModel extends StateNotifier<SearchJobState> {
           .map((job) => SearchJobModel.fromJson(job))
           .toList();
       
-      // Update state with results
+      // Update state with results and any filters
       state = state.copyWith(
         isLoading: false,
         searchJobs: jobs,
         totalJobs: totalCount,
         currentPage: int.parse(queryParameters['page'] ?? '1'),
         totalPages: (totalCount / (int.parse(queryParameters['limit'] ?? '10'))).ceil(),
+        selectedExperienceLevels: queryParameters.containsKey('experienceLevel')
+            ? queryParameters['experienceLevel'].toString().split(',')
+            : null,
+        selectedLocation: queryParameters['location'],
+        minSalary: queryParameters.containsKey('minSalary')
+            ? int.tryParse(queryParameters['minSalary'].toString())
+            : null,
+        maxSalary: queryParameters.containsKey('maxSalary')
+            ? int.tryParse(queryParameters['maxSalary'].toString())
+            : null,
       );
     } catch (e) {
-      developer.log('Error in search: $e');
+      developer.log('Error in search/filter: $e');
       state = state.copyWith(
         isLoading: false,
         isError: true,
@@ -67,22 +71,40 @@ class SearchJobViewModel extends StateNotifier<SearchJobState> {
   Future<void> loadMoreJobs({
     required Map<String, dynamic> queryParameters,
   }) async {
-    if (state.isLoadingMore || (state.currentPage ?? 0) >= (state.totalPages ?? 0)) {
+    if (state.isLoadingMore || 
+        (state.currentPage ?? 0) >= (state.totalPages ?? 0)) {
       return;
     }
     
     state = state.copyWith(isLoadingMore: true);
     
     try {
-      // Include current page in parameters
-      final Map<String, dynamic> params = {
-        ...queryParameters,
-        'page': '${(state.currentPage ?? 0) + 1}',
-      };
+      final response = await _searchJobService.searchJobsData(
+        queryParameters: queryParameters,
+      );
       
-      await searchJobs(queryParameters: params);
+      final List<dynamic> jobsList = response['jobs'] ?? [];
       
-      state = state.copyWith(isLoadingMore: false);
+      final List<SearchJobModel> newJobs = jobsList
+          .map((job) => SearchJobModel.fromJson(job))
+          .toList();
+      
+      if (newJobs.isEmpty) {
+        state = state.copyWith(isLoadingMore: false);
+        return;
+      }
+      
+      // Combine with existing jobs
+      final List<SearchJobModel> allJobs = [
+        ...(state.searchJobs ?? []),
+        ...newJobs,
+      ];
+      
+      state = state.copyWith(
+        isLoadingMore: false,
+        searchJobs: allJobs,
+        currentPage: (state.currentPage ?? 1) + 1,
+      );
     } catch (e) {
       developer.log('Error loading more jobs: $e');
       state = state.copyWith(
@@ -126,6 +148,50 @@ class SearchJobViewModel extends StateNotifier<SearchJobState> {
     state = state.copyWith(recentSearches: currentSearches);
   }
 
+  // Apply filters to current search
+  void applyFilters({
+    List<String>? experienceLevels,
+    String? location,
+    int? minSalary,
+    int? maxSalary,
+    required String searchQuery,
+  }) {
+    final Map<String, dynamic> queryParams = {
+      'query': searchQuery,
+      'page': '1',
+      'limit': '10',
+    };
+    
+    // Add filters if provided
+    if (experienceLevels != null && experienceLevels.isNotEmpty) {
+      queryParams['experienceLevel'] = experienceLevels.join(',');
+    }
+    
+    if (location != null && location.isNotEmpty) {
+      queryParams['location'] = location;
+    }
+    
+    if (minSalary != null) {
+      queryParams['minSalary'] = minSalary.toString();
+    }
+    
+    if (maxSalary != null) {
+      queryParams['maxSalary'] = maxSalary.toString();
+    }
+    
+    // Perform search with filters
+    searchJobs(queryParameters: queryParams);
+  }
+
+  // Reset all filters
+  void clearFilters(String searchQuery) {
+    searchJobs(queryParameters: {
+      'query': searchQuery,
+      'page': '1',
+      'limit': '10',
+    });
+  }
+
   // Clear current search
   void clearSearch() {
     final currentSearches = state.recentSearches;
@@ -136,7 +202,5 @@ class SearchJobViewModel extends StateNotifier<SearchJobState> {
 }
 
 final searchJobViewModelProvider = StateNotifierProvider<SearchJobViewModel, SearchJobState>(
-  (ref) => SearchJobViewModel(
-    ref.read(searchJobServiceProvider),
-  ),
+  (ref) => SearchJobViewModel(ref.read(searchJobServiceProvider)),
 );

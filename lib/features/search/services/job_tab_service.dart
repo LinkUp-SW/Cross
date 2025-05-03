@@ -16,44 +16,23 @@ class SearchJobService {
     required Map<String, dynamic> queryParameters,
   }) async {
     try {
-      developer.log('Original parameters: $queryParameters');
+      developer.log('Making API call with parameters: $queryParameters');
       
-      // Create search parameters according to API spec
-      final Map<String, String> searchParams = {};
+      // Determine which endpoint to use based on presence of filter params
+      bool hasFilters = queryParameters.containsKey('experienceLevel') || 
+                        queryParameters.containsKey('location') ||
+                        queryParameters.containsKey('minSalary') ||
+                        queryParameters.containsKey('maxSalary');
       
-      // Required: query parameter
-      if (queryParameters.containsKey('query') && queryParameters['query'] != null) {
-        searchParams['query'] = queryParameters['query'].toString();
-      }
-      
-      // Optional: cursor parameter
-      if (queryParameters.containsKey('cursor') && queryParameters['cursor'] != null) {
-        searchParams['cursor'] = queryParameters['cursor'].toString();
-      }
-      
-      // Optional: limit parameter (default is 10)
-      if (queryParameters.containsKey('limit') && queryParameters['limit'] != null) {
-        final limit = int.tryParse(queryParameters['limit'].toString());
-        if (limit != null && limit > 0) {
-          searchParams['limit'] = limit.toString();
-        }
-      }
-      
-      developer.log('Search parameters: $searchParams');
+      String endpoint = hasFilters ? ExternalEndPoints.filterJobs : ExternalEndPoints.searchJobs;
       
       final response = await _baseService.get(
-        ExternalEndPoints.searchJobs,
-        queryParameters: searchParams,
+        endpoint,
+        queryParameters: queryParameters,
       );
-      
-      developer.log('Response status: ${response.statusCode}');
-      if (response.statusCode != 200) {
-        developer.log('Error response body: ${response.body}');
-      }
   
       if (response.statusCode == 200) {
         final decodedResponse = jsonDecode(response.body);
-        developer.log('Success response: $decodedResponse');
         
         // Handle various response formats
         List<dynamic> jobsList;

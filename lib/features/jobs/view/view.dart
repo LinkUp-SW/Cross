@@ -4,13 +4,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/jobs/view/search_jobs_page.dart';
 import 'package:link_up/features/jobs/viewModel/jobs_screen_view_model.dart';
 import 'package:link_up/features/jobs/widgets/job_card_refactor.dart';
+import 'package:link_up/features/jobs/widgets/job_filter_dialog.dart';
 import 'package:link_up/features/jobs/widgets/jobs_section.dart';
 import 'package:link_up/shared/themes/button_styles.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/shared/widgets/custom_app_bar.dart';
 import 'package:link_up/features/jobs/view/my_jobs_screen.dart';
-
+import 'package:link_up/features/search/view/search_jobs_page.dart';
+import 'package:link_up/features/jobs/view/job_filter_page.dart';
 
 class JobsScreen extends ConsumerStatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
@@ -141,17 +143,39 @@ Future<void> _refreshJobs() async {
                       ),
                     ),
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => JobFilterWidget(
+                              allJobs: [...state.topJobPicksForYou, ...state.moreJobsForYou], onFilterApplied: (bool isApplied) {  },
+                            ),
+                          ),
+                        );
+                      },
                       style: isDarkMode
                           ? LinkUpButtonStyles().jobsPreferencesDark()
                           : LinkUpButtonStyles().jobsPreferencesLight(),
-                      child: Text(
-                        'Post a free job',
-                        style: TextStyles.font15_700Weight.copyWith(
-                          color: isDarkMode
-                              ? AppColors.darkGrey
-                              : AppColors.lightGrey,
-                        ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.filter_list,
+                            size: 16.sp,
+                            color: isDarkMode
+                                ? AppColors.darkGrey
+                                : AppColors.lightGrey,
+                          ),
+                          SizedBox(width: 4.w),
+                          Text(
+                            'Filter',
+                            style: TextStyles.font15_700Weight.copyWith(
+                              color: isDarkMode
+                                  ? AppColors.darkGrey
+                                  : AppColors.lightGrey,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],

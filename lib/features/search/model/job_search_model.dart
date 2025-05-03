@@ -39,21 +39,4 @@ class SearchJobModel {
       companyLogo: organization['logo'],
     );
   }
-
-  Map<String, dynamic> toJson() {
-    return {
-      '_id': jobId,
-      'job_title': jobTitle,
-      'location': jobLocation,
-      'workplace_type': workplaceType,
-      'experience_level': experienceLevel,
-      'salary': salary,
-      'timeAgo': timeAgo,
-      'is_saved': isSaved,
-      'organization': {
-        'name': companyName,
-        'logo': companyLogo,
-      },
-    };
-  }
 }

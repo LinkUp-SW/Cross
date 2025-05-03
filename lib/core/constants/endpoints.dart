@@ -37,4 +37,10 @@ class ExternalEndPoints {
   static const unsaveJob = 'api/v1/jobs/unsave-jobs/:jobId';
   static const getSavedJobs = 'api/v1/jobs/get-saved-jobs';
   static const searchJobs = 'api/v1/jobs/search-jobs';
+   static const String applyForJob = 'api/v1/job-application/apply-for-job';
+  static const String createJobApplication = 'api/v1/job-application/create-job-application/{job_id}';
+  static const String getJobApplications = 'api/v1/job-application/get-job-applications/{job_id}';
+  static const String getAppliedJobs = 'api/v1/job-application/get-applied-jobs';
+  static const String updateJobApplicationStatus = 'api/v1/job-application/update-job-application-status/{application_id}';
+ 
 }

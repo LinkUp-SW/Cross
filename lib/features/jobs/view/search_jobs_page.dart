@@ -3,12 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/jobs/viewModel/search_job_view_model.dart';
 import 'package:link_up/features/jobs/widgets/job_search_card.dart';
+import 'package:link_up/features/jobs/view/search_view.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/shared/utils/my_network_utils.dart';
 import 'package:link_up/shared/widgets/custom_app_bar.dart';
 import 'package:link_up/features/jobs/view/search_view.dart';
 import 'dart:developer' as developer;
+import 'package:link_up/features/jobs/viewModel/search_job_view_model.dart';
 
 class SearchJobsPage extends ConsumerStatefulWidget {
   const SearchJobsPage({super.key});
@@ -30,6 +32,26 @@ class _SearchJobsPageState extends ConsumerState<SearchJobsPage> {
   @override
   void initState() {
     super.initState();
+    _setupSearchController();
+    
+    // Initialize filtered suggestions with recent searches
+    Future.microtask(() {
+      final recentSearches = ref.read(searchJobViewModelProvider).recentSearches;
+      setState(() {
+        filteredSuggestions = recentSearches;
+      });
+    });
+    
+    // Give focus to search field when page opens
+    Future.microtask(() => _searchFocusNode.requestFocus());
+    
+    // Clear any previous search state
+    Future.microtask(() {
+      ref.read(searchJobViewModelProvider.notifier).clearSearch();
+    });
+  }
+
+  void _setupSearchController() {
     _searchController.addListener(() {
       setState(() {
         showClearButton = _searchController.text.isNotEmpty;
@@ -75,22 +97,6 @@ class _SearchJobsPageState extends ConsumerState<SearchJobsPage> {
         }
       });
     });
-    
-    // Initialize filtered suggestions with recent searches
-    Future.microtask(() {
-      final recentSearches = ref.read(searchJobViewModelProvider).recentSearches;
-      setState(() {
-        filteredSuggestions = recentSearches;
-      });
-    });
-    
-    // Give focus to search field when page opens
-    Future.microtask(() => _searchFocusNode.requestFocus());
-    
-    // Clear any previous search state
-    Future.microtask(() {
-      ref.read(searchJobViewModelProvider.notifier).clearSearch();
-    });
   }
 
   @override
@@ -100,12 +106,13 @@ class _SearchJobsPageState extends ConsumerState<SearchJobsPage> {
     super.dispose();
   }
 
-  void performSearch(String query) {
+  void performSearch({String? query}) {
     // Hide keyboard
     FocusScope.of(context).unfocus();
     
-    // Trim and validate query
-    final String trimmedQuery = query.trim();
+    // Trim and validate inputs
+    final String trimmedQuery = (query ?? _searchController.text).trim();
+    
     developer.log('Performing search with query: "$trimmedQuery"');
     
     if (trimmedQuery.isEmpty) {
@@ -138,6 +145,7 @@ class _SearchJobsPageState extends ConsumerState<SearchJobsPage> {
       MaterialPageRoute(
         builder: (context) => SearchView(
           searchQuery: trimmedQuery,
+          location: '',
         ),
       ),
     );
@@ -160,79 +168,45 @@ class _SearchJobsPageState extends ConsumerState<SearchJobsPage> {
       body: SafeArea(
         child: Column(
           children: [
-            // Search bar and location
+            // Search bar
             Container(
               color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-              child: Column(
-                children: [
-                  // Search bar
-                  Container(
-                    height: 48.h,
-                    decoration: BoxDecoration(
-                      color: isDarkMode ? Colors.grey[800] : Colors.grey[200],
-                      borderRadius: BorderRadius.circular(8.r),
+              child: Container(
+                height: 48.h,
+                decoration: BoxDecoration(
+                  color: isDarkMode ? Colors.grey[800] : Colors.grey[200],
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                child: TextField(
+                  controller: _searchController,
+                  focusNode: _searchFocusNode,
+                  onSubmitted: (value) => performSearch(),
+                  decoration: InputDecoration(
+                    hintText: 'Search by title, skill, or company',
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
                     ),
-                    child: TextField(
-                      controller: _searchController,
-                      focusNode: _searchFocusNode,
-                      onSubmitted: performSearch,
-                      decoration: InputDecoration(
-                        hintText: 'Search by title, skill, or company',
-                        prefixIcon: Icon(
-                          Icons.search,
-                          color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
-                        ),
-                        suffixIcon: showClearButton
-                            ? IconButton(
-                                icon: Icon(
-                                  Icons.clear,
-                                  color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
-                                ),
-                                onPressed: () {
-                                  _searchController.clear();
-                                  setState(() {
-                                    searchKeyword = '';
-                                    showSuggestions = _searchFocusNode.hasFocus;
-                                  });
-                                },
-                              )
-                            : null,
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 16.w),
-                      ),
-                    ),
+                    suffixIcon: showClearButton
+                        ? IconButton(
+                            icon: Icon(
+                              Icons.clear,
+                              color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                            ),
+                            onPressed: () {
+                              _searchController.clear();
+                              setState(() {
+                                searchKeyword = '';
+                                showSuggestions = _searchFocusNode.hasFocus;
+                              });
+                            },
+                          )
+                        : null,
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.symmetric(horizontal: 16.w),
                   ),
-                  
-                  SizedBox(height: 8.h),
-                  
-                  // Location bar
-                  Container(
-                    height: 48.h,
-                    decoration: BoxDecoration(
-                      color: isDarkMode ? Colors.grey[800] : Colors.grey[200],
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                    child: Row(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 12.w),
-                          child: Icon(
-                            Icons.location_on_outlined,
-                            color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
-                          ),
-                        ),
-                        Text(
-                          'Egypt',
-                          style: TextStyle(
-                            color: isDarkMode ? Colors.white : Colors.black,
-                            fontSize: 16.sp,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
             
@@ -372,6 +346,7 @@ class _SearchJobsPageState extends ConsumerState<SearchJobsPage> {
                           MaterialPageRoute(
                             builder: (context) => SearchView(
                               searchQuery: suggestion,
+                              location: '',
                             ),
                           ),
                         );
@@ -388,99 +363,6 @@ class _SearchJobsPageState extends ConsumerState<SearchJobsPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Filter chips
-        Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
-          ),
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              vertical: 10.h,
-              horizontal: 10.w,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                FilterChip(
-                  selected: true,
-                  backgroundColor:
-                      isDarkMode ? AppColors.darkMain : AppColors.lightMain,
-                  selectedColor:
-                      isDarkMode ? AppColors.darkGreen : AppColors.lightGreen,
-                  label: Text(
-                    'All',
-                    style: TextStyles.font14_500Weight.copyWith(
-                      color: isDarkMode
-                          ? AppColors.darkBackground
-                          : AppColors.lightBackground,
-                    ),
-                  ),
-                  onSelected: (bool selected) {},
-                ),
-                FilterChip(
-                  selected: false,
-                  backgroundColor:
-                      isDarkMode ? AppColors.darkMain : AppColors.lightMain,
-                  selectedColor:
-                      isDarkMode ? AppColors.darkGreen : AppColors.lightGreen,
-                  label: Text(
-                    'Remote',
-                    style: TextStyles.font14_500Weight.copyWith(
-                      color: isDarkMode
-                          ? AppColors.darkTextColor
-                          : AppColors.lightSecondaryText,
-                    ),
-                  ),
-                  onSelected: (bool selected) {
-                    if (selected) {
-                      ref
-                          .read(searchJobViewModelProvider.notifier)
-                          .searchJobs(
-                        queryParameters: {
-                          'query': searchKeyword,
-                          'page': '1',
-                          'limit': '10',
-                          'workplace_type': 'Remote'
-                        },
-                      );
-                    }
-                  },
-                ),
-                FilterChip(
-                  selected: false,
-                  backgroundColor:
-                      isDarkMode ? AppColors.darkMain : AppColors.lightMain,
-                  selectedColor:
-                      isDarkMode ? AppColors.darkGreen : AppColors.lightGreen,
-                  label: Text(
-                    'Entry Level',
-                    style: TextStyles.font14_500Weight.copyWith(
-                      color: isDarkMode
-                          ? AppColors.darkTextColor
-                          : AppColors.lightSecondaryText,
-                    ),
-                  ),
-                  onSelected: (bool selected) {
-                    if (selected) {
-                      ref
-                          .read(searchJobViewModelProvider.notifier)
-                          .searchJobs(
-                        queryParameters: {
-                          'query': searchKeyword,
-                          'page': '1',
-                          'limit': '10',
-                          'experience_level': 'Entry level'
-                        },
-                      );
-                    }
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
-        
         // Results list
         Expanded(
           child: NotificationListener<ScrollNotification>(
@@ -684,4 +566,4 @@ class _SearchJobsPageState extends ConsumerState<SearchJobsPage> {
       ),
     );
   }
-} 
+}

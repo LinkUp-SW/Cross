@@ -8,7 +8,7 @@ import 'package:link_up/core/utils/global_keys.dart';
 import 'package:link_up/features/logIn/view/forgot_pasword_view.dart';
 import 'package:link_up/features/logIn/view/login_view.dart';
 import 'package:link_up/features/profile/view/view.dart';
-import 'package:link_up/features/search/view/search_page.dart';
+import 'package:link_up/features/jobs/view/search_jobs_page.dart';
 import 'package:link_up/features/settings/view/settings.dart';
 import 'package:link_up/features/signUp/view/userInfo/names_view.dart';
 import 'package:link_up/features/signUp/view/userInfo/past_job_details.dart';
@@ -270,7 +270,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         GoRoute(
             path: "/messages", builder: (context, state) => ChatListScreen()),
         GoRoute(path: "/chatpage", builder: (context, state) => Container()),
-        GoRoute(path: "/search", builder: (context, state) => SearchPage()),
+        GoRoute(path: "/search", builder: (context, state) => SearchJobsPage()),
         GoRoute(path: "/settings", builder: (context, state) => SettingsPage()),
       ]);
 });

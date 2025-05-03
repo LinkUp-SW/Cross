@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/jobs/model/job_detail_model.dart';
 import 'package:link_up/features/jobs/viewModel/job_details_view_model.dart';
-import 'package:link_up/features/jobs/view/job_application_view.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 
@@ -162,31 +161,7 @@ class JobDetailsCard extends ConsumerWidget {
               children: [
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (BuildContext context) {
-                          return JobApplicationDialog(
-                            jobId: data.jobId,
-                            jobTitle: data.jobTitle,
-                            companyName: data.organizationName,
-                          );
-                        },
-                      ).then((value) {
-                        // If true is returned, the application was successful
-                        if (value == true) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Application submitted successfully!'),
-                              backgroundColor: Colors.green,
-                              behavior: SnackBarBehavior.floating,
-                              duration: const Duration(seconds: 3),
-                            ),
-                          );
-                        }
-                      });
-                    },
+                    onPressed: () {},
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
                       foregroundColor: Colors.white,

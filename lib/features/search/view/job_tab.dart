@@ -2,19 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/jobs/model/search_job_model.dart';
+import 'package:link_up/features/jobs/view/job_filter_screen.dart';
+import 'package:link_up/features/jobs/view/job_filter_screen.dart';
 import 'package:link_up/features/jobs/viewModel/search_job_view_model.dart';
 import 'package:link_up/features/jobs/widgets/job_search_card.dart';
+import 'package:link_up/features/search/viewModel/jobs_tab_view_model.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/shared/utils/my_network_utils.dart';
 
 class SearchView extends ConsumerWidget {
   final String searchQuery;
+  final String? location;
   
   const SearchView({
     super.key,
     required this.searchQuery,
-    required String location,
+    this.location,
   });
 
   @override
@@ -22,11 +26,9 @@ class SearchView extends ConsumerWidget {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final state = ref.watch(searchJobViewModelProvider);
     
-    // Add to recent searches
+    // Make sure the search is added to recent searches
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (searchQuery.isNotEmpty) {
-        ref.read(searchJobViewModelProvider.notifier).addToRecentSearches(searchQuery);
-      }
+      ref.read(searchJobViewModelProvider.notifier).addToRecentSearches(searchQuery);
     });
     
     return Scaffold(
@@ -82,6 +84,91 @@ class SearchView extends ConsumerWidget {
                     ),
                   ),
                 ],
+              ),
+            ),
+
+            // Location chip
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.location_on_outlined,
+                    size: 20.sp,
+                    color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                  ),
+                  SizedBox(width: 4.w),
+                  Text(
+                    location ?? 'All Locations',
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: isDarkMode ? Colors.grey[300] : Colors.grey[800],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Filter buttons row
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: isDarkMode ? Colors.grey[800]! : Colors.grey[300]!,
+                  ),
+                ),
+              ),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    _buildFilterButton(
+                      context: context,
+                      isDarkMode: isDarkMode,
+                      icon: Icons.work_outline,
+                      label: 'Experience Level',
+                      onTap: () async {
+                        final String? newLocation = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => JobFilterView(searchQuery: searchQuery),
+                          ),
+                        );
+                      },
+                    ),
+                    SizedBox(width: 8.w),
+                    _buildFilterButton(
+                      context: context,
+                      isDarkMode: isDarkMode,
+                      icon: Icons.location_on_outlined,
+                      label: 'Location',
+                      onTap: () async {
+                        final String? newLocation = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => JobFilterView(searchQuery: searchQuery),
+                          ),
+                        );
+                      },
+                    ),
+                    SizedBox(width: 8.w),
+                    _buildFilterButton(
+                      context: context,
+                      isDarkMode: isDarkMode,
+                      icon: Icons.attach_money,
+                      label: 'Salary',
+                      onTap: () async {
+                        final String? newLocation = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => JobFilterView(searchQuery: searchQuery),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
 
@@ -147,17 +234,14 @@ class SearchView extends ConsumerWidget {
                                     !state.isLoadingMore &&
                                     state.currentPage != null &&
                                     state.currentPage! < (state.totalPages ?? 1)) {
-                                  
-                                  // Prepare parameters for pagination
-                                  final Map<String, dynamic> params = {
-                                    "query": searchQuery,
-                                    "page": '${state.currentPage! + 1}',
-                                    "limit": '${state.limit}'
-                                  };
-                                  
-                                  // Load more jobs
                                   ref.read(searchJobViewModelProvider.notifier).loadMoreJobs(
-                                    queryParameters: params,
+                                    queryParameters: {
+                                      "query": searchQuery,
+                                      if (location?.isNotEmpty == true)
+                                        "location": location!,
+                                      "page": '${state.currentPage! + 1}',
+                                      "limit": '${state.limit}'
+                                    },
                                   );
                                 }
                                 return false;
@@ -177,6 +261,51 @@ class SearchView extends ConsumerWidget {
                                 },
                               ),
                             ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFilterButton({
+    required BuildContext context,
+    required bool isDarkMode,
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: isDarkMode ? Colors.grey[700]! : Colors.grey[300]!,
+          ),
+          borderRadius: BorderRadius.circular(20.r),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 18.sp,
+              color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+            ),
+            SizedBox(width: 4.w),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 14.sp,
+                color: isDarkMode ? Colors.grey[300] : Colors.grey[800],
+              ),
+            ),
+            SizedBox(width: 4.w),
+            Icon(
+              Icons.arrow_drop_down,
+              size: 18.sp,
+              color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
             ),
           ],
         ),
