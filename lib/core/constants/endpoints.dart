@@ -7,6 +7,7 @@ class InternalEndPoints {
   static String lastName = "";
   static String profileUrl = "";
   static String profileImage = "";
+  static const String socketUrl = 'http://10.0.2.2:3000';
 }
 
 class ExternalEndPoints {
@@ -27,6 +28,7 @@ class ExternalEndPoints {
       'api/v1/user/my-network/invite-connect/connections/:user_id';
   static const removeConnection =
       'api/v1/user/my-network/connections/remove/:user_id';
+  static const userId = 'api/v1/user/my-network/connections/count';
   static const followingsList =
       'api/v1/user/my-network/network-manager/following';
   static const unfollow = 'api/v1/user/unfollow/:user_id';
@@ -47,6 +49,18 @@ class ExternalEndPoints {
   static const subscriptionPaymentSession = 'api/v1/user/subscription/checkout';
   static const cancelPremiumSubscription = 'api/v1/user/subscription/cancel';
   static const resumePremiumSubscription = 'api/v1/user/subscription/resume';
+
+  static const deleteChat = 'api/v1/conversations/:conversationId';
+  static const blockmessaging = 'api/v1/user/block/:user_id';
+  static const fetchChats = 'api/v1/conversations';
+  static const startnewchat =
+      'api/v1/conversations/start-conversation/:user2ID';
+  static const gotospecificchat = 'api/v1/conversations/:conversationId';
+  static const sendmessage =
+      'api/v1/conversations/:conversationId/send-message';
+  static const markread = 'api/v1/conversations/:conversationId/read';
+  static const getallcounts = 'api/v1/conversation/unread-conversations';
+  static const markunread = 'api/v1/conversations/:conversationId/unread';
 
   static const topJobs = 'api/v1/jobs/get-top-jobs';
   static const jobDetails = 'api/v1/jobs/get-job/:jobId';

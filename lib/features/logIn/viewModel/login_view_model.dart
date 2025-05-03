@@ -8,6 +8,7 @@ import 'package:link_up/core/services/storage.dart';
 import 'package:link_up/features/logIn/model/login_model.dart';
 import 'package:link_up/features/logIn/services/login_service.dart';
 import 'package:link_up/features/logIn/state/login_state.dart';
+import 'package:link_up/features/chat/services/global_socket_service.dart';
 
 final logInServiceProvider = Provider((ref) => LogInService());
 
@@ -34,6 +35,13 @@ class LogInNotifier extends StateNotifier<LogInState> {
         InternalEndPoints.userId = success['user']['id'];
         InternalEndPoints.profileUrl =
             await getProfileUrl(InternalEndPoints.userId);
+
+        // After successful login and token storage
+        await getToken();
+
+        // Initialize the global socket
+        final socketService = ref.read(globalSocketServiceProvider);
+        socketService.initialize();
 
         state = LogInSuccessState(isAdmin: success['user']['isAdmin'] ?? true);
       }

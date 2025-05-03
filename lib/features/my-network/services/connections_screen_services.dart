@@ -36,6 +36,7 @@ class ConnectionsScreenServices {
         queryParameters: queryParameters,
         routeParameters: routeParameters,
       );
+      log (response.body.toString());
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       }
