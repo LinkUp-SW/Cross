@@ -14,6 +14,7 @@ import 'package:link_up/features/profile/viewModel/cover_photo_view_model.dart';
 import 'package:link_up/features/profile/state/profile_state.dart';
 import 'package:link_up/features/profile/viewModel/profile_view_model.dart';
 import 'package:link_up/features/profile/model/education_model.dart';
+import 'package:link_up/features/profile/widgets/premium_plan_sheet.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:developer';
@@ -25,7 +26,84 @@ class ProfileHeaderWidget extends ConsumerWidget {
     super.key,
     required this.userProfile,
   });
+void _showProfileOptionsBottomSheet(BuildContext context, WidgetRef ref, bool isMyProfile) {
+  final List<ReusableBottomSheetOption> options = [];
 
+
+  if (isMyProfile) {
+    options.add(
+      ReusableBottomSheetOption(
+        icon: Icons.block, 
+        title: 'Blocked users',
+        onTap: () {
+          GoRouter.of(context).push('/blocked_users');
+
+        },
+      ),
+    );
+  }
+
+
+  options.add(
+    ReusableBottomSheetOption(
+      icon: Icons.note, 
+      title: 'Contact Info',
+      onTap: () {
+          GoRouter.of(context).push('/contact_info', extra: userProfile);
+      },
+    ),
+  );
+
+
+   if (!isMyProfile) {
+     options.addAll([
+       ReusableBottomSheetOption(
+           icon: Icons.flag_outlined,
+           title: 'Report Profile',
+           onTap: () {
+             /* TODO: Implement Report */
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('TODO: Implement Report'))
+              );
+           }),
+       ReusableBottomSheetOption(
+           icon: Icons.block,
+           title: 'Block User',
+           onTap: () {
+             /* TODO: Implement Block */
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('TODO: Implement Block'))
+              );
+           }),
+       ReusableBottomSheetOption(
+           icon: Icons.add_outlined,
+           title: 'Follow',
+           onTap: () {
+             /* TODO: Implement Share */
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('TODO: Implement Share'))
+              );
+            ReusableBottomSheetOption(
+              icon: Icons.note, 
+              title: 'Contact Info',
+              onTap: () {
+                GoRouter.of(context).push('/contact_info', extra: userProfile);
+
+
+              },
+            );              
+           }),
+           
+           
+     ]);
+   }
+
+
+  showReusableBottomSheet(
+    context: context,
+    options: options,
+  );
+}
   void _handleProfilePicTap(BuildContext context, WidgetRef ref) {
     final ProfileState currentMainState = ref.read(profileViewModelProvider);
     String currentPhotoUrl = "";
@@ -365,7 +443,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
                   },
                   child: CircleAvatar(
                     radius: 16.r,
-                    backgroundColor: isDarkMode ? AppColors.darkMain : AppColors.lightTextColor,
+                    backgroundColor: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
                     child: Icon(
                       Icons.edit,
                     color: isDarkMode ? AppColors.lightMain : AppColors.lightSecondaryText,
@@ -458,12 +536,13 @@ class ProfileHeaderWidget extends ConsumerWidget {
               Expanded(
                 flex: 4,
                 child: ElevatedButton(
-                  onPressed: () => _handleOpenToTap(context),
-                  style: isDarkMode
+                  onPressed: () {
+                    GoRouter.of(context).push('/user_posts_page');
+                  },                  style: isDarkMode
                       ? buttonStyles.wideBlueElevatedButtonDark()
                       : buttonStyles.wideBlueElevatedButton(),
                   child: Text(
-                    "Open to",
+                    "Find a new job",
                     style: TextStyles.font15_500Weight.copyWith(
                       color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
                     ),
@@ -491,7 +570,8 @@ class ProfileHeaderWidget extends ConsumerWidget {
                 width: 30.r,
                 height: 35.r,
                 child: OutlinedButton(
-                  onPressed: () { /* TODO: Own Profile More Options */ },
+                  onPressed: () {     _showProfileOptionsBottomSheet(context, ref, userProfile.isMe);
+ },
                   style: isDarkMode
                       ? buttonStyles.circularButtonDark()
                       : buttonStyles.circularButton(),
@@ -507,7 +587,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
           SizedBox(
             width: double.infinity,
             child: OutlinedButton(
-              onPressed: () { /* TODO: Enhance Profile Action */ },
+              onPressed: () => showPremiumPlanSheet(context), 
               style: isDarkMode
                   ? buttonStyles.blueOutlinedButtonDark()
                   : buttonStyles.blueOutlinedButton(),

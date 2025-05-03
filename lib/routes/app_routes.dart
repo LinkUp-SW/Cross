@@ -54,6 +54,10 @@ import 'package:link_up/features/profile/view/add_new_skill.dart';
 import 'package:link_up/features/profile/view/skills_list_page.dart';
 import 'package:link_up/features/profile/view/experience_list_page.dart';
 import 'package:link_up/features/profile/view/license_list_page.dart';
+import 'package:link_up/features/profile/view/contact_info.dart';
+import 'package:link_up/features/profile/model/profile_model.dart'; 
+import 'package:link_up/features/profile/view/blocked_users_pages.dart';
+
 
 
 final goRouterProvider = Provider<GoRouter>(
@@ -67,7 +71,7 @@ final goRouterProvider = Provider<GoRouter>(
         GoRoute(
             path: "/profile",
             builder: (context, state) => ProfilePage(
-                  userId: state.extra as String,
+                   userId: state.extra as String,
                 )),
         GoRoute(
             path: "/login",
@@ -134,6 +138,12 @@ final goRouterProvider = Provider<GoRouter>(
             title: 'Pages Screen',
           ),
         ),
+        //blocked
+            GoRoute(
+              path: '/blocked_users', 
+              builder: (context, state) => const BlockedUsersPage(), 
+            ),
+
         //Profile Page Routes
         GoRoute(
           path: "/add_profile_section",
@@ -155,14 +165,14 @@ final goRouterProvider = Provider<GoRouter>(
           path: "/license_list_page",
           builder: (context, state) => const LicenseListPage(),
          ),
-        GoRoute(
-           develop
-          path: "/add_new_skill",
-          builder: (context, state) => const AddSkillPage(),
-        ),
+                  
         GoRoute(
           path: "/add_resume",
           builder: (context, state) => const AddResumePage(),
+        ),
+        GoRoute(
+          path: "/add_new_skill",
+          builder: (context, state) => const AddSkillPage(),
         ),
         GoRoute(
           path: "/add_new_license",
@@ -204,6 +214,16 @@ final goRouterProvider = Provider<GoRouter>(
           builder: (context, state) => const EditIntroPage(),
         ),
         GoRoute(
+          path: '/contact_info',
+          builder: (context, state) {
+            final userProfile = state.extra as UserProfile?;
+            if (userProfile == null) {
+              return const Scaffold(body: Center(child: Text("Error: User profile data missing.")));
+            }
+            return ContactInfoPage(userProfile: userProfile);
+          },
+        ),
+        GoRoute(
           path: "/edit_contact_info",
           builder: (context, state) => const EditContactInfo(),
         ),
@@ -215,6 +235,7 @@ final goRouterProvider = Provider<GoRouter>(
           path: "/add_new_education",
           builder: (context, state) => const AddNewEducation(),
         ),
+
         StatefulShellRoute.indexedStack(
           builder: (context, state, navigationShell) => Scaffold(
             key: scaffoldKey,

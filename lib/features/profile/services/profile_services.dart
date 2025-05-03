@@ -16,6 +16,7 @@ import 'package:link_up/features/profile/model/license_model.dart';
 import 'package:link_up/features/profile/model/position_model.dart';
 import 'package:link_up/features/profile/model/profile_model.dart';
 import 'package:link_up/features/profile/model/skills_model.dart';
+import 'package:link_up/features/profile/model/blocked_user_model.dart';
 import 'package:mime/mime.dart';
 
 class ProfileService extends BaseService {
@@ -636,7 +637,7 @@ class ProfileService extends BaseService {
       var request = http.MultipartRequest(httpMethod, uri);
       request.headers['Authorization'] = 'Bearer $token';
 
-      MediaType contentType = MediaType('application', 'pdf'); // Assuming PDF
+      MediaType contentType = MediaType('application', 'pdf'); 
 
       final filePart = await http.MultipartFile.fromPath(
          'resume',
@@ -834,18 +835,18 @@ class ProfileService extends BaseService {
               return imageUrl;
            } else {
               log('ProfileService: Cover photo URL key not found or empty in response: ${response.body}');
-              return ""; // Return empty string if not found/set
+              return ""; 
            }
         } else if (response.statusCode == 404) {
            log('ProfileService: Cover photo not found for user $userId (404).');
-           return ""; // Return empty string if not found
+           return ""; 
         } else {
            log('ProfileService: Failed to fetch cover photo URL (Status: ${response.statusCode}), Body: ${response.body}');
-           return ""; // Return empty string on other errors
+           return ""; 
         }
      } catch (e) {
         log('ProfileService: Error fetching cover photo URL: $e');
-        rethrow; // Rethrow to allow UI to handle error state
+        rethrow; 
      }
   }
 
@@ -1009,7 +1010,111 @@ class ProfileService extends BaseService {
       rethrow;
     }
   }
+
+  Future<List<BlockedUser>> getBlockedUsers() async {
+    const String endpoint = 'api/v1/user/manage-by-blocked-list/blocked';
+    log('ProfileService: Fetching blocked users list from $endpoint');
+
+    try {
+      final response = await super.get(endpoint);
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonData = jsonDecode(response.body);
+        final List<dynamic> blockedListJson = jsonData['blocked_list'] as List? ?? [];
+        final List<BlockedUser> blockedUsers = blockedListJson
+            .map((userJson) => userJson is Map<String, dynamic> ? BlockedUser.fromJson(userJson) : null)
+            .whereType<BlockedUser>()
+            .toList();
+
+        log('ProfileService: Fetched ${blockedUsers.length} blocked users.');
+        return blockedUsers; 
+      }
+    
+      else if (response.statusCode == 404) {
+         log('ProfileService: No blocked users found (404). Returning empty list.');
+         return []; 
+      }
+
+      else {
+        log('ProfileService: getBlockedUsers API Error: Status Code ${response.statusCode}, Body: ${response.body}');
+        throw Exception('Failed to load blocked users list (Status code: ${response.statusCode})');
+      }
+    } catch (e) {
+      log('ProfileService: Error in getBlockedUsers: $e');
+      rethrow;
+    }
+  }
+  Future<bool> unblockUser(String userIdToUnblock, String password) async {
+    final String endpointTemplate = 'api/v1/user/manage-by-blocked-list/unblock/:user_id';
+    final String endpointPath = endpointTemplate.replaceFirst(':user_id', userIdToUnblock);
+    final Uri uri = Uri.parse('${ExternalEndPoints.baseUrl}$endpointPath'); // Construct full URL
+
+    log('ProfileService: Attempting to unblock user ID: $userIdToUnblock via DELETE $uri');
+
+    final Map<String, dynamic> requestBodyMap = {
+      "password": password,
+    };
+    final String requestBodyJson = jsonEncode(requestBodyMap);  
+
+    final String? token = await getToken(); 
+     if (token == null || token.isEmpty) {
+        log('ProfileService: Unblock failed - Auth token not found.');
+       throw Exception("Authentication token not found.");
+     }
+
+    try {
+      final http.Response response = await http.delete(
+        uri,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json; charset=UTF-8', 
+        },
+        body: requestBodyJson, 
+      ).timeout(const Duration(seconds: 15)); 
+
+
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        log('ProfileService: User $userIdToUnblock unblocked successfully.');
+        return true;
+      } else if (response.statusCode == 400) { 
+         log('ProfileService: Unblock failed for user $userIdToUnblock (400 Bad Request): Body: ${response.body}');
+         String errorMessage = 'Bad request during unblock.';
+         try {
+            final errorJson = jsonDecode(response.body);
+            errorMessage = errorJson['message'] ?? errorMessage;
+         } catch (_) {}
+         throw Exception(errorMessage);
+      }
+       else if (response.statusCode == 401) { 
+         log('ProfileService: Unblock failed for user $userIdToUnblock (401 Unauthorized): Incorrect password likely. Body: ${response.body}');
+         String errorMessage = 'Incorrect password.';
+         try {
+             final errorJson = jsonDecode(response.body);
+             errorMessage = errorJson['message'] ?? errorMessage;
+         } catch (_) {}
+         throw Exception(errorMessage);
+      }
+      else {
+        log('ProfileService: Unblock failed for user $userIdToUnblock. Status Code: ${response.statusCode}, Body: ${response.body}');
+         String errorMessage = 'Failed to unblock user (Status code: ${response.statusCode})';
+         try {
+            final errorJson = jsonDecode(response.body);
+            errorMessage = errorJson['message'] ?? errorMessage;
+         } catch (_) {}
+        throw Exception(errorMessage);
+      }
+    } on TimeoutException catch (e) {
+        log('ProfileService: Unblock request timed out for user $userIdToUnblock: $e');
+        throw Exception('Request timed out. Please try again.');
+    } catch (e) {
+      log('ProfileService: Error sending unblock request for $userIdToUnblock: $e');
+
+      rethrow;
+    }
+  }
+
+  
 }
+
 
 
 final profileServiceProvider = Provider<ProfileService>((ref) {
