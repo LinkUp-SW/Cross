@@ -58,7 +58,7 @@ final goRouterProvider = Provider<GoRouter>(
 
     return GoRouter(
       navigatorKey: navigatorKey,
-      initialLocation: '/dashboard',
+      initialLocation: '/login',
       routes: <RouteBase>[
         GoRoute(
             path: "/profile",

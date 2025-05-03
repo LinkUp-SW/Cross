@@ -9,7 +9,10 @@ class LogInLoadingState extends LogInState {
 }
 
 class LogInSuccessState extends LogInState {
-  const LogInSuccessState();
+  final bool isAdmin;
+  const LogInSuccessState(
+    {this.isAdmin = false}
+  );
 }
 
 class LogInErrorState extends LogInState {
