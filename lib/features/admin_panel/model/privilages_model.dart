@@ -3,12 +3,14 @@ class ReportModel {
   final String type; // "Post", "Comment", "Job Listing"
   final List<String> descriptions;
   final String status; // "Pending", "Resolved"
+  final String? contentRef; // Optional field for content ID
 
   ReportModel({
     required this.id,
     required this.type,
     required this.descriptions,
     required this.status,
+    required this.contentRef,
   });
 
   ReportModel copyWith({String? status}) {
@@ -17,15 +19,17 @@ class ReportModel {
       type: type,
       descriptions: descriptions,
       status: status ?? this.status,
+      contentRef: contentRef,
     );
   }
 
   factory ReportModel.fromJson(Map<String, dynamic> json) {
     return ReportModel(
-      id: json['id'],
+      id: json['content_id'],
       type: json['type'],
-      descriptions: List<String>.from(json['descriptions']),
+      descriptions: List<String>.from(json['reasons']),
       status: json['status'],
+      contentRef: json['content_ref'] ?? null,
     );
   }
 }
