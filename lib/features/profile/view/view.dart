@@ -30,7 +30,8 @@ import 'package:link_up/features/profile/utils/profile_view_helpers.dart';
 
 
 class ProfilePage extends ConsumerStatefulWidget {
-  const ProfilePage({super.key});
+  const ProfilePage({super.key, required this.userId});
+  final String userId;
 
   @override
   ConsumerState<ProfilePage> createState() => _ProfilePageState();
@@ -41,7 +42,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      ref.read(profileViewModelProvider.notifier).fetchUserProfile();
+      ref.read(profileViewModelProvider.notifier).fetchUserProfile(widget.userId);
     });
   }
 
@@ -87,7 +88,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       backgroundColor: isDarkMode ? AppColors.darkBackground : AppColors.lightBackground,
       appBar: const ProfileAppBar(),
       body: RefreshIndicator(
-        onRefresh: () async => ref.read(profileViewModelProvider.notifier).fetchUserProfile(),
+        onRefresh: () async => ref.read(profileViewModelProvider.notifier).fetchUserProfile(widget.userId),
         child: switch (profileState) {
           ProfileLoading() => const Center(child: CircularProgressIndicator()),
           ProfileError(:final message) => Center(
@@ -99,7 +100,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                      Text('Error: $message', textAlign: TextAlign.center, style: TextStyle(color: Colors.red.shade700)),
                      SizedBox(height: 10.h),
                      ElevatedButton(
-                       onPressed: () => ref.read(profileViewModelProvider.notifier).fetchUserProfile(),
+                       onPressed: () => ref.read(profileViewModelProvider.notifier).fetchUserProfile(widget.userId),
                        child: const Text('Retry'),
                      )
                    ],
