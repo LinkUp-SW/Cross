@@ -14,7 +14,7 @@ class SearchJobState {
   final int? limit;
   final List<String> recentSearches;
   
-  // Filter states
+
   final List<String>? selectedExperienceLevels;
   final String? selectedLocation;
   final int? minSalary;

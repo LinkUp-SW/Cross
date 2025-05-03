@@ -119,6 +119,83 @@ class JobsScreenViewModel extends StateNotifier<JobsScreenState> {
       );
     }
   }
+  // In your JobsScreenViewModel.dart, add these methods:
+
+Future<void> loadMoreTopJobs() async {
+  developer.log('Loading more top jobs');
+  
+  if (state.topJobsNextCursor == null) {
+    developer.log('No more top jobs to load');
+    return;
+  }
+  
+  try {
+    final response = await _jobScreenService.topJobsData(
+      queryParameters: {
+        'limit': '3',
+        'cursor': state.topJobsNextCursor
+      },
+    );
+    
+    final data = response['data'] as List;
+    final List<JobsCardModel> newJobs = [];
+    
+    for (final job in data) {
+      try {
+        newJobs.add(JobsCardModel.fromJson(job));
+      } catch (e) {
+        developer.log('Error parsing job: $e\nJob data: $job');
+      }
+    }
+    
+    state = state.copyWith(
+      topJobPicksForYou: [...state.topJobPicksForYou, ...newJobs],
+      topJobsNextCursor: response['nextCursor'],
+    );
+    
+    developer.log('Loaded ${newJobs.length} more top jobs');
+  } catch (e) {
+    developer.log('Error loading more top jobs: $e');
+  }
+}
+
+Future<void> loadMoreAllJobs() async {
+  developer.log('Loading more jobs');
+  
+  if (state.moreJobsNextCursor == null) {
+    developer.log('No more jobs to load');
+    return;
+  }
+  
+  try {
+    final response = await _jobScreenService.getAllJobs(
+      queryParameters: {
+        'limit': '10',
+        'cursor': state.moreJobsNextCursor
+      },
+    );
+    
+    final data = response['data'] as List;
+    final List<JobsCardModel> newJobs = [];
+    
+    for (final job in data) {
+      try {
+        newJobs.add(JobsCardModel.fromJson(job));
+      } catch (e) {
+        developer.log('Error parsing job: $e\nJob data: $job');
+      }
+    }
+    
+    state = state.copyWith(
+      moreJobsForYou: [...state.moreJobsForYou, ...newJobs],
+      moreJobsNextCursor: response['nextCursor'],
+    );
+    
+    developer.log('Loaded ${newJobs.length} more jobs');
+  } catch (e) {
+    developer.log('Error loading more jobs: $e');
+  }
+}
 }
 
 final jobsScreenViewModelProvider =

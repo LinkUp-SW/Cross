@@ -6,6 +6,7 @@ import 'package:link_up/features/jobs/model/job_application_user_model.dart';
 import 'package:link_up/features/jobs/viewModel/job_application_view_model.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
+import 'package:go_router/go_router.dart';
 
 class JobApplicationDialog extends ConsumerStatefulWidget {
   final String jobId;
@@ -137,7 +138,7 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
               SizedBox(width: 16.w),
               OutlinedButton(
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  context.pop();
                 },
                 style: OutlinedButton.styleFrom(
                   side: BorderSide(
@@ -264,7 +265,7 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
             children: [
               TextButton(
                 onPressed: isSubmitting ? null : () {
-                  Navigator.of(context).pop();
+                  context.pop();
                 },
                 child: Text(
                   'Cancel',
@@ -555,7 +556,7 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
             ElevatedButton(
               onPressed: () {
                 ref.read(jobApplicationViewModelProvider.notifier).resetState();
-                Navigator.of(context).pop(true); // Return true to indicate successful submission
+                context.pop(true); // Return true to indicate successful submission
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,

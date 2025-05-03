@@ -11,14 +11,14 @@ class SearchJobService {
 
   const SearchJobService(this._baseService);
 
-  // Single method for both search and filter
+ 
   Future<Map<String, dynamic>> searchJobsData({
     required Map<String, dynamic> queryParameters,
   }) async {
     try {
       developer.log('Original parameters: $queryParameters');
       
-      // Create search parameters according to API spec
+
       final Map<String, String> searchParams = {};
       
       // Required: query parameter
@@ -26,12 +26,12 @@ class SearchJobService {
         searchParams['query'] = queryParameters['query'].toString();
       }
       
-      // Optional: cursor parameter
+    
       if (queryParameters.containsKey('cursor') && queryParameters['cursor'] != null) {
         searchParams['cursor'] = queryParameters['cursor'].toString();
       }
       
-      // Optional: limit parameter (default is 10)
+      
       if (queryParameters.containsKey('limit') && queryParameters['limit'] != null) {
         final limit = int.tryParse(queryParameters['limit'].toString());
         if (limit != null && limit > 0) {
@@ -55,7 +55,7 @@ class SearchJobService {
         final decodedResponse = jsonDecode(response.body);
         developer.log('Success response: $decodedResponse');
         
-        // Handle various response formats
+        
         List<dynamic> jobsList;
         int totalCount;
         

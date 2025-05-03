@@ -7,6 +7,7 @@ import 'package:link_up/features/jobs/viewModel/job_filter_view_model.dart';
 import 'package:link_up/features/jobs/widgets/job_card_refactor.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
+import 'package:go_router/go_router.dart';
 
 class JobFilterResultsWidget extends ConsumerWidget {
   final List<JobsCardModel> allJobs;
@@ -25,7 +26,7 @@ class JobFilterResultsWidget extends ConsumerWidget {
     
     return Column(
       children: [
-        // Results header with count and edit button
+   
         Padding(
           padding: EdgeInsets.all(16.w),
           child: Row(
@@ -49,7 +50,7 @@ class JobFilterResultsWidget extends ConsumerWidget {
           ),
         ),
         
-        // Applied filter chips
+
         if (state.hasFilters)
           Padding(
             padding: EdgeInsets.only(left: 16.w, right: 16.w, bottom: 8.h),
@@ -100,7 +101,7 @@ class JobFilterResultsWidget extends ConsumerWidget {
           
         Divider(height: 1.h),
         
-        // Results list
+      
         Expanded(
           child: _buildResultsList(context, state, isDarkMode),
         ),
@@ -176,9 +177,12 @@ class JobFilterResultsWidget extends ConsumerWidget {
       separatorBuilder: (context, index) => SizedBox(height: 16.h),
       itemBuilder: (context, index) {
         final job = state.filteredJobs[index];
-        return JobsCard(
-          isDarkMode: isDarkMode,
-          data: job,
+        return GestureDetector(
+          onTap: () => context.go('details/${job.jobId}'),
+          child: JobsCard(
+            isDarkMode: isDarkMode,
+            data: job,
+          ),
         );
       },
     );

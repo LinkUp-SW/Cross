@@ -31,7 +31,7 @@ class JobScreenService {
         final decodedResponse = jsonDecode(response.body);
         developer.log('Successful response: $decodedResponse');
         
-        // Validate response structure
+        
         if (decodedResponse is! Map<String, dynamic>) {
           throw Exception('Invalid response format: expected Map, got ${decodedResponse.runtimeType}');
         }
@@ -75,7 +75,7 @@ class JobScreenService {
         final decodedResponse = jsonDecode(response.body);
         developer.log('Successful response: $decodedResponse');
         
-        // Validate response structure
+      
         if (decodedResponse is! Map<String, dynamic>) {
           throw Exception('Invalid response format: expected Map, got ${decodedResponse.runtimeType}');
         }

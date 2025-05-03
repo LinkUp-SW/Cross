@@ -310,6 +310,25 @@ final goRouterProvider = Provider<GoRouter>(
                       path: "/searchjobs",
                       builder: (context, state) => const SearchJobsPage(),
                     ),
+                     GoRoute(
+      path: '/jobs/my-jobs',
+      builder: (context, state) => const MyJobsScreen(),
+    ),
+    
+    // Job Details route
+    GoRoute(
+      path: '/jobs/details/:jobId',
+      builder: (context, state) => JobDetailsPage(
+        jobId: state.pathParameters['jobId']!,
+      ),
+    ),
+    
+    // Job Search route
+    GoRoute(
+      path: 'jobs/search',
+      builder: (context, state) => const SearchJobsPage(),
+    ),
+                    
                   ],
                 ),
               ],

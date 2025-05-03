@@ -47,12 +47,12 @@ class JobApplicationService {
     developer.log('Submitting job application for job ID: $jobId');
 
     final endpoint = ExternalEndPoints.createJobApplication
-        .replaceAll('{job_id}', jobId);
+        .replaceAll(':job_id', jobId);
 
-    // Fixed: Use the correct parameter structure
+    
     final response = await _baseService.post(
       endpoint,
-      body: applicationData.toJson(),  // This matches the signature in BaseService
+      body: applicationData.toJson(),  
     );
 
     developer.log('Response status: ${response.statusCode}');
@@ -112,7 +112,7 @@ class JobApplicationService {
       developer.log('Fetching applications for job ID: $jobId');
 
       final endpoint = ExternalEndPoints.getJobApplications
-          .replaceAll('{job_id}', jobId);
+          .replaceAll(':job_id', jobId);
 
       final response = await _baseService.get(endpoint);
 

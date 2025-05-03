@@ -7,10 +7,8 @@ import 'package:link_up/features/jobs/view/search_view.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/shared/utils/my_network_utils.dart';
-import 'package:link_up/shared/widgets/custom_app_bar.dart';
-import 'package:link_up/features/jobs/view/search_view.dart';
 import 'dart:developer' as developer;
-import 'package:link_up/features/jobs/viewModel/search_job_view_model.dart';
+
 
 class SearchJobsPage extends ConsumerStatefulWidget {
   const SearchJobsPage({super.key});

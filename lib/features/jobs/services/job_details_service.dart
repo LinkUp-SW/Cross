@@ -15,7 +15,7 @@ class JobDetailsService {
     try {
       developer.log('Fetching job details for ID: $jobId');
       
-      // The endpoint has :jobId parameter that needs to be replaced
+   
       final response = await _baseService.get(
         ExternalEndPoints.jobDetails,
         routeParameters: {

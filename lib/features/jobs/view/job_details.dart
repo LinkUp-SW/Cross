@@ -5,6 +5,7 @@ import 'package:link_up/features/jobs/viewModel/job_details_view_model.dart';
 import 'package:link_up/features/jobs/widgets/job_view_card.dart';
 import 'package:link_up/shared/widgets/custom_app_bar.dart';
 import 'package:link_up/shared/themes/colors.dart';
+import 'package:go_router/go_router.dart';
 
 class JobDetailsPage extends ConsumerStatefulWidget {
   final String jobId;
@@ -34,7 +35,7 @@ class _JobDetailsPageState extends ConsumerState<JobDetailsPage> {
     
     return Scaffold(
       appBar: CustomAppBar(
-        leadingAction: () => Navigator.pop(context),
+        leadingAction: () => context.pop(),
         searchBar: Container(),
       ),
       body: SafeArea(

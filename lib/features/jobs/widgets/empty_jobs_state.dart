@@ -10,7 +10,7 @@ class EmptyJobsState extends StatelessWidget {
   const EmptyJobsState({
     super.key,
     required this.isDarkMode,
-    required this.onSearchTap,
+    required this.onSearchTap, required String title, required String message,
   });
 
   @override

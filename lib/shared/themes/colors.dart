@@ -46,4 +46,10 @@ class AppColors {
   static var darkSurface;
 
   static var lightSurface;
+
+  static var white;
+
+  static var black;
+
+  static var blue;
 }

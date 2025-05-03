@@ -12,7 +12,7 @@ import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/shared/widgets/custom_app_bar.dart';
 import 'package:link_up/features/jobs/view/my_jobs_screen.dart';
 
-import 'package:link_up/features/jobs/view/job_filter_page.dart';
+
 
 class JobsScreen extends ConsumerStatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
@@ -107,20 +107,7 @@ Future<void> _refreshJobs() async {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    TextButton(
-                      onPressed: () {},
-                      style: isDarkMode
-                          ? LinkUpButtonStyles().jobsPreferencesDark()
-                          : LinkUpButtonStyles().jobsPreferencesLight(),
-                      child: Text(
-                        'Preferences',
-                        style: TextStyles.font15_700Weight.copyWith(
-                          color: isDarkMode
-                              ? AppColors.darkGrey
-                              : AppColors.lightGrey,
-                        ),
-                      ),
-                    ),
+                    
                     TextButton(
                       onPressed: () {
                         Navigator.push(
