@@ -1010,7 +1010,57 @@ class ProfileService extends BaseService {
       rethrow;
     }
   }
+//block
+  Future<bool> blockUser(String userIdToBlock) async {
+    final String endpointTemplate = 'api/v1/user/block/:user_id';
+    final String endpointPath = endpointTemplate.replaceFirst(':user_id', userIdToBlock);
+    final Uri uri = Uri.parse('${ExternalEndPoints.baseUrl}$endpointPath'); // Construct full URL
 
+    log('ProfileService: Attempting to block user ID: $userIdToBlock via POST $uri');
+
+    final String? token = await getToken();
+     if (token == null || token.isEmpty) {
+        log('ProfileService: Block failed - Auth token not found.');
+       throw Exception("Authentication token not found.");
+     }
+
+    try {
+      final http.Response response = await http.post(
+        uri,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+
+      ).timeout(const Duration(seconds: 15));
+
+      log('ProfileService: Block User API Response Status Code: ${response.statusCode}');
+      log('ProfileService: Block User API Response Body: ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        log('ProfileService: User $userIdToBlock blocked successfully.');
+        return true;
+      } else if (response.statusCode == 400 && response.body.contains('User is already blocked')) {
+         log('ProfileService: User $userIdToBlock is already blocked.');
+         return true; 
+      }
+      else {
+        log('ProfileService: Block failed for user $userIdToBlock. Status Code: ${response.statusCode}, Body: ${response.body}');
+         String errorMessage = 'Failed to block user (Status code: ${response.statusCode})';
+         try {
+            final errorJson = jsonDecode(response.body);
+            errorMessage = errorJson['message'] ?? errorMessage;
+         } catch (_) {}
+        throw Exception(errorMessage);
+      }
+    } on TimeoutException catch (e) {
+        log('ProfileService: Block request timed out for user $userIdToBlock: $e');
+        throw Exception('Request timed out. Please try again.');
+    } catch (e) {
+      log('ProfileService: Error sending block request for $userIdToBlock: $e');
+      rethrow; 
+    }
+  }
   Future<List<BlockedUser>> getBlockedUsers() async {
     const String endpoint = 'api/v1/user/manage-by-blocked-list/blocked';
     log('ProfileService: Fetching blocked users list from $endpoint');
@@ -1046,7 +1096,8 @@ class ProfileService extends BaseService {
   Future<bool> unblockUser(String userIdToUnblock, String password) async {
     final String endpointTemplate = 'api/v1/user/manage-by-blocked-list/unblock/:user_id';
     final String endpointPath = endpointTemplate.replaceFirst(':user_id', userIdToUnblock);
-    final Uri uri = Uri.parse('${ExternalEndPoints.baseUrl}$endpointPath'); // Construct full URL
+    final Uri uri = Uri.parse('${ExternalEndPoints.baseUrl}$endpointPath'); 
+    
 
     log('ProfileService: Attempting to unblock user ID: $userIdToUnblock via DELETE $uri');
 
@@ -1111,6 +1162,7 @@ class ProfileService extends BaseService {
       rethrow;
     }
   }
+
 
   
 }

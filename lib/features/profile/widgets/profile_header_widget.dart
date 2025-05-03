@@ -13,21 +13,49 @@ import 'package:link_up/features/profile/state/cover_photo_state.dart';
 import 'package:link_up/features/profile/viewModel/cover_photo_view_model.dart';
 import 'package:link_up/features/profile/state/profile_state.dart';
 import 'package:link_up/features/profile/viewModel/profile_view_model.dart';
+import 'package:link_up/features/profile/viewModel/blocked_users_view_model.dart';
 import 'package:link_up/features/profile/model/education_model.dart';
 import 'package:link_up/features/profile/widgets/premium_plan_sheet.dart';
+import 'package:link_up/features/profile/widgets/block_confirmation_dialog.dart';
+
 import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:developer';
-import 'package:link_up/features/profile/widgets/premium_plan_sheet.dart';
+
 
 
 class ProfileHeaderWidget extends ConsumerWidget {
   final UserProfile userProfile;
+  final String userId;
 
   const ProfileHeaderWidget({
     super.key,
     required this.userProfile,
+    required this.userId,
   });
+Future<void> _handleBlockUser(BuildContext context, WidgetRef ref, UserProfile userToBlock) async {
+    final bool? confirmed = await showBlockConfirmationDialog(context, userToBlock.firstName,);
+
+    if (confirmed == true && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Blocking ${userToBlock.firstName}...'), duration: const Duration(seconds: 1)),
+      );
+      try {
+        final success = await ref.read(blockedUsersViewModelProvider.notifier).blockUser(userId); 
+
+        if (success && context.mounted) {
+          GoRouter.of(context).go('/feed');
+          
+        }
+      } catch (e) {
+         if (context.mounted) {
+             ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Error blocking user: ${e.toString().replaceFirst("Exception: ","")}'), backgroundColor: Colors.red),
+             );
+         }
+      }
+    }
+  }
 void _showProfileOptionsBottomSheet(BuildContext context, WidgetRef ref, bool isMyProfile) {
   final List<ReusableBottomSheetOption> options = [];
 
@@ -57,48 +85,7 @@ void _showProfileOptionsBottomSheet(BuildContext context, WidgetRef ref, bool is
   );
 
 
-   if (!isMyProfile) {
-     options.addAll([
-       ReusableBottomSheetOption(
-           icon: Icons.flag_outlined,
-           title: 'Report Profile',
-           onTap: () {
-             /* TODO: Implement Report */
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('TODO: Implement Report'))
-              );
-           }),
-       ReusableBottomSheetOption(
-           icon: Icons.block,
-           title: 'Block User',
-           onTap: () {
-             /* TODO: Implement Block */
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('TODO: Implement Block'))
-              );
-           }),
-       ReusableBottomSheetOption(
-           icon: Icons.add_outlined,
-           title: 'Follow',
-           onTap: () {
-             /* TODO: Implement Share */
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('TODO: Implement Share'))
-              );
-            ReusableBottomSheetOption(
-              icon: Icons.note, 
-              title: 'Contact Info',
-              onTap: () {
-                GoRouter.of(context).push('/contact_info', extra: userProfile);
-
-
-              },
-            );              
-           }),
-           
-           
-     ]);
-   }
+  
 
 
   showReusableBottomSheet(
@@ -720,7 +707,6 @@ Widget buildProfileActionButton({
             buttonStyles: buttonStyles,
           ),
 
-          // --- Spacer between Connect/Pending and Message ---
           if (showConnectButton || showPendingButton || showFollowButton || showAcceptButton || showUnfollowButton)  
           SizedBox(width: 6.w),
           Expanded(
@@ -820,7 +806,7 @@ Widget buildProfileActionButton({
                         );
                       },
                     ),
-                  ReusableBottomSheetOption(icon: Icons.block, title: 'Block User', onTap: (){ log('Block User option tapped'); /* TODO */ }),
+                  ReusableBottomSheetOption(icon: Icons.block, title: 'Block User', onTap: (){ _handleBlockUser(context, ref, otherUserProfile); }),
                   ReusableBottomSheetOption(icon: Icons.note_outlined, title: 'Contact Info', onTap: () { log('Contact Info option tapped'); GoRouter.of(context).push('/contact_info', extra: otherUserProfile); }),
                 ];
 

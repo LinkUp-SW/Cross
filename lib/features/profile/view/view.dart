@@ -110,7 +110,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           ProfileLoaded(:final userProfile) => SingleChildScrollView(
               child: Column(
                 children: [
-                  ProfileHeaderWidget(userProfile: userProfile),
+                  ProfileHeaderWidget(userProfile: userProfile, userId: widget.userId),
 
                   if (hasResume)
                    SectionWidget(
