@@ -14,9 +14,11 @@ import 'package:link_up/features/profile/widgets/subpages_text_field.dart';
 import 'package:link_up/shared/themes/button_styles.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
+import 'package:link_up/features/profile/model/education_model.dart';
 
 class AddNewEducation extends ConsumerStatefulWidget {
- const AddNewEducation({super.key});
+final EducationModel? educationToEdit;
+ const AddNewEducation({super.key, this.educationToEdit});
 
  @override
  ConsumerState<AddNewEducation> createState() => _AddNewEducationState();
@@ -26,17 +28,31 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
  final FocusNode _startDateFocusNode = FocusNode();
  final FocusNode _endDateFocusNode = FocusNode();
  final FocusNode _schoolFocusNode = FocusNode();
+ EducationModel? _initialEducationData;
+ bool _isEditMode = false;
 
  @override
  void initState() {
    super.initState();
-   WidgetsBinding.instance.addPostFrameCallback((_) {
-     final formData = _getFormDataFromState(ref.read(addEducationViewModelProvider));
-     if (formData == null) {
-       ref.read(addEducationViewModelProvider.notifier).resetForm();
-     }
-   });
- }
+       WidgetsBinding.instance.addPostFrameCallback((_) {
+      final extraData = GoRouterState.of(context).extra;
+      if (extraData is EducationModel) {
+        _initialEducationData = extraData;
+      } else {
+        _initialEducationData = widget.educationToEdit;
+      }
+
+
+      if (_initialEducationData != null) {
+        setState(() {
+           _isEditMode = true; 
+        });
+        ref.read(addEducationViewModelProvider.notifier).initializeForEdit(_initialEducationData!);
+      } else {
+         ref.read(addEducationViewModelProvider.notifier).resetForm();
+      }
+    });
+  }
 
  AddEducationFormData? _getFormDataFromState(AddEducationFormState state) {
    if (state is AddEducationIdle) return state.formData;
@@ -103,26 +119,29 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
 
  @override
  Widget build(BuildContext context) {
-   final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-   final buttonStyles = LinkUpButtonStyles();
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final buttonStyles = LinkUpButtonStyles();
+    final state = ref.watch(addEducationViewModelProvider);
+    final viewModel = ref.read(addEducationViewModelProvider.notifier);
+    final String appBarTitle = _isEditMode ? "Edit Education" : "Add Education";
+    final formData = _getFormDataFromState(state);
 
    ref.listen<AddEducationFormState>(addEducationViewModelProvider,
        (previous, next) {
-     if (next is AddEducationSuccess) {
-       ScaffoldMessenger.of(context).showSnackBar(
-         const SnackBar(content: Text('Education saved successfully!'), backgroundColor: Colors.green),
-       );
-       GoRouter.of(context).pop();
-     } else if (next is AddEducationFailure) {
-       ScaffoldMessenger.of(context).showSnackBar(
-         SnackBar(content: Text('Error: ${next.message}'), backgroundColor: Colors.red),
-       );
+      if (next is AddEducationSuccess) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Education ${_isEditMode ? 'updated' : 'saved'} successfully!'), backgroundColor: Colors.green),
+        );
+
+         if (GoRouter.of(context).canPop()) {
+             GoRouter.of(context).pop();
+         }
+      } else if (next is AddEducationFailure) {
+         ScaffoldMessenger.of(context).showSnackBar(
+           SnackBar(content: Text('Error: ${next.message}'), backgroundColor: Colors.red),
+         );
      }
    });
-
-   final state = ref.watch(addEducationViewModelProvider);
-   final viewModel = ref.read(addEducationViewModelProvider.notifier);
-   final formData = _getFormDataFromState(state);
 
    final maxDescriptionChars = viewModel.maxDescriptionChars;
    final maxActivitiesChars = viewModel.maxActivitiesChars;
@@ -142,7 +161,7 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
        child: Column(
          children: [
            SubPagesAppBar(
-             title: "Add education",
+             title: appBarTitle,
              onClosePressed: () => GoRouter.of(context).pop(),
            ),
            Expanded(
@@ -223,10 +242,8 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                              controller: formData.fieldOfStudyController,
                              enabled: !isSaving,
                              hintText: "Ex: Engineering",
-                             maxLength: maxFieldOfStudyChars, // Added limit
-                             // No built-in counter for maxLength, so add custom one
+                             maxLength: maxFieldOfStudyChars,
                            ),
-                           // Added character counter for Field of Study
                            Padding(
                              padding: EdgeInsets.only(top: 4.h, right: 8.w),
                              child: Row(
@@ -319,9 +336,9 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                              controller: formData.gradeController,
                              enabled: !isSaving,
                              hintText: "Ex: 3.8/4.0 or 85%",
-                             maxLength: maxGradeChars, // Added limit
+                             maxLength: maxGradeChars, 
                            ),
-                           // Added character counter for Grade
+                        
                            Padding(
                              padding: EdgeInsets.only(top: 4.h, right: 8.w),
                              child: Row(
@@ -447,31 +464,33 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                ),
              ),
            ),
+          if (formData != null)
            Padding(
-             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-             child: SizedBox(
-               width: double.infinity,
-               child: ElevatedButton(
-                 style: (isDarkMode
-                     ? buttonStyles.wideBlueElevatedButtonDark()
-                     : buttonStyles.wideBlueElevatedButton()
-                 ).copyWith(minimumSize: MaterialStateProperty.all(Size.fromHeight(50.h))),
-                 onPressed: isSaving ? null : () => viewModel.saveEducation(),
-                 child: isSaving
-                     ? const SizedBox(
-                         height: 20,
-                         width: 20,
-                         child: CircularProgressIndicator(
-                             color: Colors.white, strokeWidth: 2.0))
-                     : Text("Save",
-                         style: TextStyles.font15_500Weight
-                             .copyWith(color: isDarkMode ? AppColors.darkMain : AppColors.lightMain)),
-               ),
-             ),
-           ),
-         ],
-       ),
-     ),
-   );
- }
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: state is AddEducationLoading ? null : () => viewModel.saveEducation(),
+                    style: (isDarkMode
+                        ? buttonStyles.wideBlueElevatedButtonDark()
+                        : buttonStyles.wideBlueElevatedButton())
+                        .copyWith(minimumSize: MaterialStateProperty.all(Size.fromHeight(50.h))),
+                    child: state is AddEducationLoading
+                        ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: AppColors.lightMain, strokeWidth: 2.0))
+                        : Text(
+                            "Save",
+                            style: TextStyles.font15_500Weight.copyWith(
+                              color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+                            ),
+                          ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+
 }

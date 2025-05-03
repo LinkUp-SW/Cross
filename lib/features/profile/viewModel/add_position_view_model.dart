@@ -4,9 +4,15 @@ import 'package:intl/intl.dart';
 import 'package:link_up/features/profile/model/position_model.dart';
 import 'package:link_up/features/profile/services/profile_services.dart';
 import 'package:link_up/features/profile/state/add_position_state.dart';
-
+import 'package:link_up/features/profile/viewModel/profile_view_model.dart';
+import 'dart:async';
+import 'dart:developer';
+import 'package:link_up/features/profile/services/profile_services.dart';
+import 'package:link_up/features/profile/state/add_position_state.dart';
+import 'package:link_up/features/profile/viewModel/profile_view_model.dart'; 
 class AddPositionViewModel extends StateNotifier<AddPositionState> {
   final ProfileService _profileService;
+  final Ref _ref;
   final int maxDescriptionChars = 2000;
 
   final _titleController = TextEditingController();
@@ -24,25 +30,30 @@ class AddPositionViewModel extends StateNotifier<AddPositionState> {
   bool _isCurrentPosition = false;
   List<String>? _skills;
 
-  AddPositionViewModel(this._profileService)
-      : super(AddPositionInitial(AddPositionFormData.initial())) {
-    state = AddPositionInitial(AddPositionFormData(
-      titleController: _titleController,
-      companyNameController: _companyNameController,
-      locationController: _locationController,
-      descriptionController: _descriptionController,
-      startDateController: _startDateController,
-      endDateController: _endDateController,
-      selectedEmploymentType: _selectedEmploymentType,
-      selectedLocationType: _selectedLocationType,
-      selectedOrganization: _selectedOrganization,
-      selectedStartDate: _selectedStartDate,
-      selectedEndDate: _selectedEndDate,
-      isCurrentPosition: _isCurrentPosition,
-      skills: _skills,
-    ));
-  }
+  String? _editingPositionId;
+  bool get isEditMode => _editingPositionId != null;
 
+  AddPositionViewModel(this._profileService, this._ref)
+      : super(AddPositionInitial(AddPositionFormData.initial())) {
+        _updateStateWithFormData(_createFormData());
+  }
+  AddPositionFormData _createFormData() {
+     return AddPositionFormData(
+        titleController: _titleController,
+        companyNameController: _companyNameController,
+        locationController: _locationController,
+        descriptionController: _descriptionController,
+        startDateController: _startDateController,
+        endDateController: _endDateController,
+        selectedEmploymentType: _selectedEmploymentType,
+        selectedLocationType: _selectedLocationType,
+        selectedOrganization: _selectedOrganization,
+        selectedStartDate: _selectedStartDate,
+        selectedEndDate: _selectedEndDate,
+        isCurrentPosition: _isCurrentPosition,
+        skills: _skills,
+      );
+  }
   AddPositionFormData _getCurrentFormData() {
     final currentState = state;
     if (currentState is AddPositionInitial) return currentState.formData;
@@ -52,29 +63,67 @@ class AddPositionViewModel extends StateNotifier<AddPositionState> {
   }
 
   void _updateStateWithFormData(AddPositionFormData updatedData) {
-    final currentState = state;
-    if (currentState is AddPositionInitial || currentState is AddPositionFailure) {
-      state = AddPositionInitial(updatedData);
-    } else if (currentState is AddPositionLoading) {
-      state = AddPositionLoading(updatedData);
-    }
+    if (!mounted) return; 
+      final currentState = state;
+      if (currentState is AddPositionLoading) {
+          state = AddPositionLoading(updatedData);
+      } else if (currentState is AddPositionFailure) {
+          state = AddPositionFailure(updatedData, currentState.message);
+      } else { 
+          state = AddPositionInitial(updatedData);
+      }
   }
+
+  void initializeForEdit(PositionModel position) {
+      log("Initializing ViewModel for Edit: ${position.id}");
+      _editingPositionId = position.id; 
+
+      _titleController.text = position.title;
+      _companyNameController.text = position.companyName;
+      _locationController.text = position.location ?? '';
+      _descriptionController.text = position.description ?? '';
+
+      _selectedEmploymentType = position.employeeType.isNotEmpty ? position.employeeType : null;
+      _selectedLocationType = position.locationType;
+ 
+      _selectedOrganization = position.organizationId != null ? { 
+          '_id': position.organizationId,
+          'name': position.companyName, 
+          'logo': position.companyLogoUrl 
+      } : null;
+      _companyNameController.text = _selectedOrganization?['name'] ?? position.companyName; 
+
+      _isCurrentPosition = position.isCurrent;
+      _skills = position.skills != null ? List<String>.from(position.skills!) : null; 
+
+      _selectedStartDate = DateTime.tryParse(position.startDate);
+      _startDateController.text = _selectedStartDate != null ? DateFormat('yyyy-MM-dd').format(_selectedStartDate!) : '';
+
+      if (_isCurrentPosition) {
+          _selectedEndDate = null;
+          _endDateController.text = 'Present';
+      } else {
+          _selectedEndDate = position.endDate != null ? DateTime.tryParse(position.endDate!) : null;
+          _endDateController.text = _selectedEndDate != null ? DateFormat('yyyy-MM-dd').format(_selectedEndDate!) : '';
+      }
+
+      _updateStateWithFormData(_createFormData());
+      log("ViewModel Initialized: ID=$_editingPositionId, Title=${_titleController.text}");
+  }
+
 
   void setEmploymentType(String? type) {
     _selectedEmploymentType = type;
-    _updateStateWithFormData(_getCurrentFormData().copyWith(selectedEmploymentType: type));
-  }
+    _updateStateWithFormData(_createFormData());  }
 
   void setLocationType(String? type) {
     _selectedLocationType = type;
-    _updateStateWithFormData(_getCurrentFormData().copyWith(selectedLocationType: type));
-  }
+    _updateStateWithFormData(_createFormData());  }
 
   void setOrganization(Map<String, dynamic>? organization) {
     _selectedOrganization = organization;
     _companyNameController.text = organization?['name'] ?? '';
-    _updateStateWithFormData(_getCurrentFormData().copyWith(selectedOrganization: organization));
-  }
+      _updateStateWithFormData(_createFormData());  }
 
   void setDate(DateTime date, bool isStartDate) {
     final formattedDate = DateFormat('yyyy-MM-dd').format(date);
@@ -87,10 +136,7 @@ class AddPositionViewModel extends StateNotifier<AddPositionState> {
         _endDateController.text = formattedDate;
       }
     }
-    _updateStateWithFormData(_getCurrentFormData().copyWith(
-      selectedStartDate: _selectedStartDate,
-      selectedEndDate: _selectedEndDate,
-    ));
+      _updateStateWithFormData(_createFormData());
   }
 
   void setIsCurrentPosition(bool value) {
@@ -105,17 +151,16 @@ class AddPositionViewModel extends StateNotifier<AddPositionState> {
         _endDateController.clear();
       }
     }
-    _updateStateWithFormData(_getCurrentFormData().copyWith(
-      isCurrentPosition: _isCurrentPosition,
-      selectedEndDate: _selectedEndDate,
-    ));
+      _updateStateWithFormData(_createFormData());
   }
 
   String? validateForm() {
     final formData = _getCurrentFormData();
+    final today = DateUtils.dateOnly(DateTime.now());   
     if (formData.titleController.text.trim().isEmpty) return "Title is required.";
     if (formData.companyNameController.text.trim().isEmpty || _selectedOrganization == null) return "Company/Organization is required.";
     if (formData.startDateController.text.isEmpty) return "Start date is required.";
+    if (_selectedStartDate != null && _selectedStartDate!.isAfter(today)) return "Start date cannot be in the future.";
     if (!formData.isCurrentPosition && formData.endDateController.text.isEmpty) return "End date is required (or check 'I am currently working here').";
 
     if (!formData.isCurrentPosition && _selectedStartDate != null && _selectedEndDate != null) {
@@ -133,6 +178,7 @@ class AddPositionViewModel extends StateNotifier<AddPositionState> {
 
   Future<void> savePosition() async {
     final currentFormData = _getCurrentFormData();
+    
     final validationError = validateForm();
 
     if (validationError != null) {
@@ -143,33 +189,42 @@ class AddPositionViewModel extends StateNotifier<AddPositionState> {
     state = AddPositionLoading(currentFormData);
 
     final positionModel = PositionModel(
-      title: currentFormData.titleController.text.trim(),
-      employeeType: currentFormData.selectedEmploymentType ?? '',
-      organizationId: currentFormData.selectedOrganization?['_id'] as String?,
-      companyName: currentFormData.companyNameController.text.trim(),
-      isCurrent: currentFormData.isCurrentPosition,
-      startDate: currentFormData.startDateController.text,
-      endDate: currentFormData.isCurrentPosition ? null : currentFormData.endDateController.text,
-      description: currentFormData.descriptionController.text.isNotEmpty
-          ? currentFormData.descriptionController.text.trim()
-          : null,
-      location: currentFormData.locationController.text.isNotEmpty
-          ? currentFormData.locationController.text.trim()
-          : null,
-      locationType: currentFormData.selectedLocationType,
-    );
+          id: _editingPositionId, 
+          title: _titleController.text.trim(),
+          employeeType: _selectedEmploymentType ?? '', 
+          organizationId: _selectedOrganization?['_id'] as String?,
+          companyName: _companyNameController.text.trim(), 
+          isCurrent: _isCurrentPosition,
+          startDate: _selectedStartDate != null ? DateFormat('yyyy-MM-dd').format(_selectedStartDate!) : '', 
+          endDate: _isCurrentPosition ? null : (_selectedEndDate != null ? DateFormat('yyyy-MM-dd').format(_selectedEndDate!) : null), 
+          description: _descriptionController.text.trim().isNotEmpty ? _descriptionController.text.trim() : null,
+          location: _locationController.text.trim().isNotEmpty ? _locationController.text.trim() : null,
+          locationType: _selectedLocationType,
+          skills: _skills, 
+      );
 
     try {
-      final success = await _profileService.addPosition(positionModel);
-      if (success) {
-        state = const AddPositionSuccess();
-        resetForm();
-      } else {
-        state = AddPositionFailure(currentFormData, "Failed to save position. Server error.");
+          bool success;
+          if (isEditMode) {
+              log("Calling updateExperience for ID: $_editingPositionId");
+              success = await _profileService.updateExperience(_editingPositionId!, positionModel);
+          } else {
+               log("Calling addPosition");
+              success = await _profileService.addPosition(positionModel);
+          }
+
+          if (success && mounted) {
+              unawaited(_ref.read(profileViewModelProvider.notifier).fetchUserProfile());
+              state = const AddPositionSuccess(); 
+              resetForm();
+          } else if (mounted) {
+              state = AddPositionFailure(currentFormData, "Failed to save position. Server error.");
+          }
+      } catch (e) {
+          if (mounted) {
+             state = AddPositionFailure(currentFormData, "An error occurred: ${e.toString()}");
+          }
       }
-    } catch (e) {
-      state = AddPositionFailure(currentFormData, "An error occurred: ${e.toString()}");
-    }
   }
 
   void resetForm() {
@@ -187,6 +242,7 @@ class AddPositionViewModel extends StateNotifier<AddPositionState> {
     _selectedEndDate = null;
     _isCurrentPosition = false;
     _skills = null;
+    _editingPositionId = null;
 
     state = AddPositionInitial(AddPositionFormData(
       titleController: _titleController,
@@ -218,7 +274,7 @@ class AddPositionViewModel extends StateNotifier<AddPositionState> {
 }
 
 final addPositionViewModelProvider =
-    StateNotifierProvider.autoDispose<AddPositionViewModel, AddPositionState>((ref) {
+    StateNotifierProvider.autoDispose<AddPositionViewModel, AddPositionState>((ref) { 
   final profileService = ref.watch(profileServiceProvider);
-  return AddPositionViewModel(profileService);
+  return AddPositionViewModel(profileService, ref); 
 });

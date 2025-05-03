@@ -1,4 +1,3 @@
-// profile/view/add_new_skill.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -15,30 +14,67 @@ import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'dart:developer';
 
-class AddSkillPage extends ConsumerWidget {
-  const AddSkillPage({super.key});
+class AddSkillPage extends ConsumerStatefulWidget {
+  final SkillModel? skillToEdit; 
+  const AddSkillPage({super.key, this.skillToEdit});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AddSkillPage> createState() => _AddSkillPageState();
+}
+
+class _AddSkillPageState extends ConsumerState<AddSkillPage> { 
+  SkillModel? _initialSkillData;
+  bool _isEditMode = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final extraData = GoRouterState.of(context).extra;
+      if (extraData is SkillModel) {
+        _initialSkillData = extraData;
+      } else {
+        _initialSkillData = widget.skillToEdit;
+      }
+
+      if (_initialSkillData != null) {
+         if (mounted) {
+            setState(() {
+               _isEditMode = true;
+            });
+         }
+        ref.read(addSkillViewModelProvider.notifier).initializeForEdit(_initialSkillData!);
+      } else {
+        ref.read(addSkillViewModelProvider.notifier).loadLinkableItems();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final buttonStyles = LinkUpButtonStyles();
     final state = ref.watch(addSkillViewModelProvider);
     final viewModel = ref.read(addSkillViewModelProvider.notifier);
+    final String appBarTitle = _isEditMode ? "Edit Skill" : "Add skill";
+    final String successMessage = _isEditMode ? "Skill updated successfully!" : "Skill added successfully!";
 
     ref.listen<AddSkillState>(addSkillViewModelProvider, (previous, next) {
       if (next is AddSkillSuccess) {
         if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Skill added successfully!'), backgroundColor: Colors.green),
-            );
-            GoRouter.of(context).pop();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(successMessage), backgroundColor: Colors.green),
+          );
+          if (GoRouter.of(context).canPop()) {
+             GoRouter.of(context).pop();
+          }
         }
       } else if (next is AddSkillError) {
-         if (context.mounted && (previous is! AddSkillError || previous.message != next.message)) {
-             ScaffoldMessenger.of(context).showSnackBar(
-               SnackBar(content: Text(next.message), backgroundColor: Colors.red),
-             );
-         }
+        if (context.mounted && (previous is! AddSkillError || previous.message != next.message)) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(next.message), backgroundColor: Colors.red),
+          );
+        }
       }
     });
 
@@ -49,25 +85,25 @@ class AddSkillPage extends ConsumerWidget {
           return const Center(child: CircularProgressIndicator());
 
         case AddSkillError(:final message, :final previousData):
-           return Center(
-              child: Padding(
-                 padding: EdgeInsets.all(20.w),
-                 child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                       Text("Error: $message", style: TextStyle(color: Colors.red.shade700), textAlign: TextAlign.center),
-                       SizedBox(height: 10.h),
-                       if (previousData == null)
-                         ElevatedButton(
-                            onPressed: () => viewModel.loadLinkableItems(),
-                            child: const Text("Retry Loading"),
-                         )
-                       else
-                         Container(),
-                    ],
-                 ),
+          return Center(
+            child: Padding(
+              padding: EdgeInsets.all(20.w),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("Error: $message", style: TextStyle(color: Colors.red.shade700), textAlign: TextAlign.center),
+                  SizedBox(height: 10.h),
+                  if (previousData == null)
+                    ElevatedButton(
+                      onPressed: () => viewModel.loadLinkableItems(),
+                      child: const Text("Retry Loading"),
+                    )
+                  else
+                    Container(),
+                ],
               ),
-           );
+            ),
+          );
 
         case AddSkillSaving(:final previousData):
         case AddSkillDataLoaded():
@@ -75,7 +111,7 @@ class AddSkillPage extends ConsumerWidget {
               ? state
               : (state as AddSkillSaving).previousData;
           final bool isSaving = state is AddSkillSaving;
-          final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+          final localIsDarkMode = Theme.of(context).brightness == Brightness.dark; 
 
           bool hasLinkableItems = data.availableExperiences.isNotEmpty ||
                                   data.availableEducations.isNotEmpty ||
@@ -97,25 +133,25 @@ class AddSkillPage extends ConsumerWidget {
                 ),
                 SizedBox(height: 25.h),
 
-                if (!hasLinkableItems)
+                if (!hasLinkableItems && !_isEditMode) 
                   Padding(
                     padding: EdgeInsets.symmetric(vertical: 20.h),
                     child: Center(
                       child: Text(
-                        "No associated items found.",
+                        "No associated items found.\nAdd Experience, Education, or Licenses first to link skills.",
                         textAlign: TextAlign.center,
                         style: TextStyles.font14_400Weight.copyWith(color: AppColors.lightGrey),
                       ),
                     ),
                   )
-                else
+                else if (hasLinkableItems || _isEditMode) 
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         "Show us where you used this skill",
                          style: TextStyles.font16_600Weight.copyWith(
-                           color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+                           color: localIsDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
                          ),
                       ),
                        SizedBox(height: 4.h),
@@ -197,7 +233,7 @@ class AddSkillPage extends ConsumerWidget {
          child: Column(
            children: [
              SubPagesAppBar(
-               title: "Add skill",
+               title: appBarTitle, 
                onClosePressed: () => GoRouter.of(context).pop(),
              ),
              Expanded(
@@ -217,11 +253,11 @@ class AddSkillPage extends ConsumerWidget {
                              ? buttonStyles.wideBlueElevatedButtonDark()
                              : buttonStyles.wideBlueElevatedButton())
                          .copyWith(
-                           minimumSize: WidgetStateProperty.all(Size.fromHeight(50.h)),
-                            backgroundColor: WidgetStateProperty.resolveWith<Color?>(
+                           minimumSize: MaterialStateProperty.all(Size.fromHeight(50.h)),
+                            backgroundColor: MaterialStateProperty.resolveWith<Color?>(
                               (Set<MaterialState> states) {
                                 if (states.contains(MaterialState.disabled)) {
-                                  return AppColors.lightGrey;
+                                  return AppColors.lightGrey.withOpacity(0.5);
                                 }
                                 return isDarkMode ? AppColors.darkBlue : AppColors.lightBlue;
                               },

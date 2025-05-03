@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:link_up/features/profile/model/profile_model.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
-import 'package:link_up/shared/themes/button_styles.dart';
+import 'package:link_up/shared/themes/button_styles.dart';  
 import 'package:link_up/features/profile/widgets/bottom_sheet.dart';
 import 'package:link_up/features/profile/state/profile_photo_state.dart';
 import 'package:link_up/features/profile/viewModel/profile_photo_view_model.dart';
@@ -365,10 +365,10 @@ class ProfileHeaderWidget extends ConsumerWidget {
                   },
                   child: CircleAvatar(
                     radius: 16.r,
-                    backgroundColor: AppColors.lightMain,
+                    backgroundColor: isDarkMode ? AppColors.darkMain : AppColors.lightTextColor,
                     child: Icon(
                       Icons.edit,
-                      color: AppColors.lightSecondaryText,
+                    color: isDarkMode ? AppColors.lightMain : AppColors.lightSecondaryText,
                       size: 20.sp,
                     ),
                   ),

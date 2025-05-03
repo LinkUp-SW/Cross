@@ -6,9 +6,13 @@ import 'package:intl/intl.dart';
 import 'package:link_up/features/profile/model/education_model.dart';
 import 'package:link_up/features/profile/services/profile_services.dart';
 import 'package:link_up/features/profile/state/add_education_state.dart';
+import 'dart:async';
+import 'package:link_up/features/profile/viewModel/profile_view_model.dart';
+import 'dart:convert';
 
 class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
   final ProfileService _profileService;
+  final Ref _ref;
 
   final int maxDescriptionChars = 2000;
   final int maxActivitiesChars = 500;
@@ -28,8 +32,10 @@ class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
   DateTime? _selectedEndDate;
   bool _isEndDatePresent = false;
   Map<String, String>? _selectedSchoolData;
+  String? _editingEducationId;
+  bool get isEditMode => _editingEducationId != null;
 
-  AddEducationViewModel(this._profileService)
+  AddEducationViewModel(this._profileService, this._ref)
       : super(AddEducationIdle(AddEducationFormData(
           schoolController: TextEditingController(),
           degreeController: TextEditingController(),
@@ -41,7 +47,13 @@ class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
           descriptionController: TextEditingController(),
           isEndDatePresent: false,
         ))) {
-     state = AddEducationIdle(AddEducationFormData(
+    state = AddEducationIdle(_createFormData());
+    _descriptionController.addListener(() => _updateFormDataState());
+    _activitiesController.addListener(() => _updateFormDataState());
+  }
+
+   AddEducationFormData _createFormData() {
+     return AddEducationFormData(
         schoolController: _schoolController,
         degreeController: _degreeController,
         fieldOfStudyController: _fieldOfStudyController,
@@ -53,53 +65,55 @@ class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
         selectedStartDate: _selectedStartDate,
         selectedEndDate: _selectedEndDate,
         isEndDatePresent: _isEndDatePresent,
-     ));
-
-     _descriptionController.addListener(() => _updateFormDataState());
-     _activitiesController.addListener(() => _updateFormDataState());
-
-  }
+      );
+   }
 
   void _updateFormDataState() {
-     if (state is AddEducationIdle || state is AddEducationFailure) {
-        final currentFormData = (state is AddEducationIdle)
-            ? (state as AddEducationIdle).formData
-            : (state is AddEducationFailure)
-              ? (state as AddEducationFailure).formData
-              : AddEducationFormData(
-                  schoolController: _schoolController,
-                  degreeController: _degreeController,
-                  fieldOfStudyController: _fieldOfStudyController,
-                  startDateController: _startDateController,
-                  endDateController: _endDateController,
-                  gradeController: _gradeController,
-                  activitiesController: _activitiesController,
-                  descriptionController: _descriptionController,
-                  selectedStartDate: _selectedStartDate,
-                  selectedEndDate: _selectedEndDate,
-                  isEndDatePresent: _isEndDatePresent,
-                );
+    if (!mounted) return;
+    final currentState = state;
+    if (currentState is AddEducationIdle || currentState is AddEducationFailure) {
+      final currentFormData = _createFormData();
+      if (currentState is AddEducationIdle) {
+         state = AddEducationIdle(currentFormData);
+      } else if (currentState is AddEducationFailure) {
+         state = AddEducationFailure(currentFormData, currentState.message);
+      }
+    }
+  }
 
-         state = AddEducationIdle(currentFormData.copyWith(
-            selectedStartDate: _selectedStartDate,
-            selectedEndDate: _selectedEndDate,
-            isEndDatePresent: _isEndDatePresent,
-             schoolController: _schoolController,
-             degreeController: _degreeController,
-             fieldOfStudyController: _fieldOfStudyController,
-             startDateController: _startDateController,
-             endDateController: _endDateController,
-             gradeController: _gradeController,
-             activitiesController: _activitiesController,
-             descriptionController: _descriptionController,
-         ));
-     }
+  void initializeForEdit(EducationModel education) {
+    log("Initializing Education ViewModel for Edit: ${education.id}");
+    _editingEducationId = education.id;
+
+    _schoolController.text = education.institution;
+    _degreeController.text = education.degree;
+    _fieldOfStudyController.text = education.fieldOfStudy;
+    _gradeController.text = education.grade ?? '';
+    _activitiesController.text = education.activitesAndSocials ?? '';
+    _descriptionController.text = education.description ?? '';
+
+    _selectedSchoolData = education.schoolData;
+    _schoolController.text = _selectedSchoolData?['name'] ?? education.institution;
+
+    _selectedStartDate = DateTime.tryParse(education.startDate);
+    _startDateController.text = _selectedStartDate != null ? DateFormat('yyyy-MM-dd').format(_selectedStartDate!) : '';
+
+    _isEndDatePresent = (education.endDate == null || education.endDate!.isEmpty);
+    if (_isEndDatePresent) {
+      _selectedEndDate = null;
+      _endDateController.text = 'Present';
+    } else {
+      _selectedEndDate = DateTime.tryParse(education.endDate!);
+      _endDateController.text = _selectedEndDate != null ? DateFormat('yyyy-MM-dd').format(_selectedEndDate!) : '';
+    }
+
+     _updateFormDataState();
+    log("Education ViewModel Initialized: ID=$_editingEducationId, School=${_schoolController.text}");
   }
 
   void setSelectedSchool(Map<String, dynamic> schoolData) {
     _selectedSchoolData = schoolData.map((key, value) => MapEntry(key, value?.toString() ?? ''));
     _selectedSchoolData?.removeWhere((key, value) => value.isEmpty);
-
     _schoolController.text = _selectedSchoolData?['name'] ?? '';
     log("ViewModel: School selected - Data (String Map): $_selectedSchoolData");
     _updateFormDataState();
@@ -111,52 +125,48 @@ class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
       _selectedStartDate = date;
       _startDateController.text = formattedDate;
     } else {
-       if (!_isEndDatePresent) {
-         _selectedEndDate = date;
-         _endDateController.text = formattedDate;
-       }
+      if (!_isEndDatePresent) {
+        _selectedEndDate = date;
+        _endDateController.text = formattedDate;
+      }
     }
-     _updateFormDataState();
+    _updateFormDataState();
   }
 
- void setIsEndDatePresent(bool value) {
+  void setIsEndDatePresent(bool value) {
     _isEndDatePresent = value;
     if (_isEndDatePresent) {
       _selectedEndDate = null;
       _endDateController.text = "Present";
     } else {
-       if (_selectedEndDate != null) {
-         _endDateController.text = DateFormat('yyyy-MM-dd').format(_selectedEndDate!);
-       } else {
-          _endDateController.clear();
-       }
+      _endDateController.text = _selectedEndDate != null ? DateFormat('yyyy-MM-dd').format(_selectedEndDate!) : '';
     }
-     _updateFormDataState();
+    _updateFormDataState();
   }
 
   String? validateForm() {
     final schoolId = _selectedSchoolData?['_id'];
+    final today = DateUtils.dateOnly(DateTime.now());
     if (_selectedSchoolData == null || schoolId == null || schoolId.trim().isEmpty) {
-       return "School is required.";
+      return "School is required.";
     }
-   
-
+    if (_selectedStartDate!.isAfter(today)) {
+         return "Start date cannot be in the future.";
+    }
     if (_degreeController.text.trim().isEmpty) return "Degree is required.";
     if (_fieldOfStudyController.text.trim().isEmpty) return "Field of Study is required.";
     if (_startDateController.text.isEmpty) return "Start date is required.";
     if (!_isEndDatePresent && _endDateController.text.isEmpty) return "End date is required (or check 'currently studying').";
-
     if (!_isEndDatePresent && _selectedStartDate != null && _selectedEndDate != null) {
       if (_selectedEndDate!.isBefore(_selectedStartDate!)) {
         return "End date cannot be before start date.";
       }
     }
-
     if (_descriptionController.text.length > maxDescriptionChars) {
       return "Description cannot exceed $maxDescriptionChars characters (currently ${_descriptionController.text.length}).";
     }
     if (_activitiesController.text.length > maxActivitiesChars) {
-       return "Activities cannot exceed $maxActivitiesChars characters (currently ${_activitiesController.text.length}).";
+      return "Activities cannot exceed $maxActivitiesChars characters (currently ${_activitiesController.text.length}).";
     }
     if (_gradeController.text.length > maxGradeChars) {
       return "Grade cannot exceed $maxGradeChars characters (currently ${_gradeController.text.length}).";
@@ -171,8 +181,11 @@ class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
   }
 
   Future<void> saveEducation() async {
-     final currentFormData = _getFormDataFromState(state);
-     if (currentFormData == null) return;
+    final currentFormData = _getFormDataFromState(state);
+    if (currentFormData == null) {
+       log("Cannot save, current form data state is null.");
+       return;
+    }
 
     final validationError = validateForm();
     if (validationError != null) {
@@ -183,22 +196,32 @@ class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
     state = AddEducationLoading(currentFormData);
 
     final educationModel = EducationModel(
+      id: _editingEducationId,
       schoolData: _selectedSchoolData,
       institution: _schoolController.text.trim(),
       degree: _degreeController.text.trim(),
       fieldOfStudy: _fieldOfStudyController.text.trim(),
-      startDate: _startDateController.text,
-      endDate: _isEndDatePresent ? null : _endDateController.text,
+      startDate: _selectedStartDate != null ? DateFormat('yyyy-MM-dd').format(_selectedStartDate!) : '',
+      endDate: _isEndDatePresent ? null : (_selectedEndDate != null ? DateFormat('yyyy-MM-dd').format(_selectedEndDate!) : null),
       grade: _gradeController.text.trim().isNotEmpty ? _gradeController.text.trim() : null,
       activitesAndSocials: _activitiesController.text.trim().isNotEmpty ? _activitiesController.text.trim() : null,
       description: _descriptionController.text.trim().isNotEmpty ? _descriptionController.text.trim() : null,
     );
 
     try {
-      final success = await _profileService.addEducation(educationModel);
+      bool success;
+      if (isEditMode) {
+        log("Calling updateEducation for ID: $_editingEducationId");
+        success = await _profileService.updateEducation(_editingEducationId!, educationModel);
+      } else {
+        log("Calling addEducation");
+        success = await _profileService.addEducation(educationModel);
+      }
+
       if (success && mounted) {
+        unawaited(_ref.read(profileViewModelProvider.notifier).fetchUserProfile());
         state = const AddEducationSuccess();
-         resetForm();
+        resetForm();
       } else if (mounted) {
         state = AddEducationFailure(currentFormData, "Failed to save education. Server error.");
       }
@@ -209,14 +232,15 @@ class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
     }
   }
 
-   AddEducationFormData? _getFormDataFromState(AddEducationFormState currentState) {
-     if (currentState is AddEducationIdle) return currentState.formData;
-     if (currentState is AddEducationLoading) return currentState.formData;
-     if (currentState is AddEducationFailure) return currentState.formData;
-     return null;
-   }
+  AddEducationFormData? _getFormDataFromState(AddEducationFormState currentState) {
+    if (currentState is AddEducationIdle) return currentState.formData;
+    if (currentState is AddEducationLoading) return currentState.formData;
+    if (currentState is AddEducationFailure) return currentState.formData;
+    return null;
+  }
 
   void resetForm() {
+    log("Resetting form. Edit mode was: $isEditMode");
     _schoolController.clear();
     _degreeController.clear();
     _fieldOfStudyController.clear();
@@ -225,25 +249,17 @@ class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
     _gradeController.clear();
     _activitiesController.clear();
     _descriptionController.clear();
+
     _selectedStartDate = null;
     _selectedEndDate = null;
     _isEndDatePresent = false;
     _selectedSchoolData = null;
-     state = AddEducationIdle(AddEducationFormData(
-          schoolController: _schoolController,
-          degreeController: _degreeController,
-          fieldOfStudyController: _fieldOfStudyController,
-          startDateController: _startDateController,
-          endDateController: _endDateController,
-          gradeController: _gradeController,
-          activitiesController: _activitiesController,
-          descriptionController: _descriptionController,
-          selectedStartDate: _selectedStartDate,
-          selectedEndDate: _selectedEndDate,
-          isEndDatePresent: _isEndDatePresent,
-     ));
-  }
+    _editingEducationId = null;
 
+     if (mounted) {
+       state = AddEducationIdle(_createFormData());
+     }
+  }
 
   @override
   void dispose() {
@@ -262,5 +278,5 @@ class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
 final addEducationViewModelProvider =
     StateNotifierProvider.autoDispose<AddEducationViewModel, AddEducationFormState>((ref) {
   final profileService = ref.watch(profileServiceProvider);
-  return AddEducationViewModel(profileService);
+  return AddEducationViewModel(profileService, ref);
 });
