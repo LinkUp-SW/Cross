@@ -1,9 +1,7 @@
-//the page ui only and try avoiding any logic here
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/features/admin_panel/widgets/admin_drawer.dart';
 import 'package:link_up/features/admin_panel/widgets/app_statistics_carousle.dart';
-import 'package:link_up/features/admin_panel/widgets/company_statistics_carousle.dart';
 
 class StatisticsView extends ConsumerStatefulWidget {
   const StatisticsView({super.key});
@@ -34,22 +32,21 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
           ),
         ),
       ),
-      //TODO: remove the const ba3deen
-      body: const SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.all(10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Text('Check Statistics',
-                  style: TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                  )),
-              AppStatisticsCarousel(),
-            ],
-          ),
+      body: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('App Statistics',
+                style: TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                )),
+
+            const SizedBox(height: 25),
+            // AppStatisticsCarousel is now an Expanded widget that fills the remaining space
+            const AppStatisticsCarousel(),
+          ],
         ),
       ),
     );
