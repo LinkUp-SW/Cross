@@ -17,6 +17,9 @@ class MessagesViewModel extends StateNotifier<MessagesState> {
   bool _isTyping = false;
   Timer? _typingTimer;
 
+  // Track if user is actively viewing this conversation
+  bool _isActivelyViewing = false;
+
   MessagesViewModel({
     required MessagesService service,
     required SocketService socketService,
@@ -81,8 +84,8 @@ class MessagesViewModel extends StateNotifier<MessagesState> {
 
               log('[VIEWMODEL] New incoming message added to state');
 
-              // Send read receipt if applicable
-              _socketService.markAsRead();
+              // REMOVE THIS AUTO MARKING AS READ - only mark when user is at bottom
+              // _socketService.markAsRead();
             }
           }
         }
@@ -91,25 +94,24 @@ class MessagesViewModel extends StateNotifier<MessagesState> {
       }
     });
 
-    // Add these listeners for typing indicators
+    // Update the typing handlers for immediate updates
+
     _socketService.onTypingStarted((data) {
       log('[VIEWMODEL] Typing started: $data');
 
-      // Handle array format like in your log: [{conversationId: id, userId: id}, socketId]
-      String? typingConversationId;
+      // Extract user ID from typing event
       String? typingUserId;
 
       if (data is List && data.isNotEmpty && data[0] is Map) {
-        typingConversationId = data[0]['conversationId'];
         typingUserId = data[0]['userId'];
       } else if (data is Map) {
-        typingConversationId = data['conversationId'];
         typingUserId = data['userId'];
       }
 
-      if (typingConversationId == conversationId && typingUserId != InternalEndPoints.userId) {
-        log('[VIEWMODEL] Set isOtherUserTyping to true for convo: $conversationId');
+      // Only update typing status if it's from the OTHER user (not current user)
+      if (typingUserId != null && typingUserId != InternalEndPoints.userId) {
         state = state.copyWith(isOtherUserTyping: true);
+        log('[VIEWMODEL] Set isOtherUserTyping to true for convo: $conversationId');
       }
     });
 
@@ -131,6 +133,37 @@ class MessagesViewModel extends StateNotifier<MessagesState> {
       if (typingConversationId == conversationId && typingUserId != InternalEndPoints.userId) {
         log('[VIEWMODEL] Set isOtherUserTyping to false for convo: $conversationId');
         state = state.copyWith(isOtherUserTyping: false);
+      }
+    });
+
+    // Add read status listener
+    _socketService.onMessagesRead((dynamic data) {
+      try {
+        log('[VIEWMODEL] Messages read event received: $data');
+
+        // Check if this read event should be processed
+        // No need to parse isActive since the server only sends these events
+        // when a user is actively viewing messages
+
+        // Update the read status for messages sent by the current user
+        final updatedMessages = state.messages?.map((message) {
+          // If the message was sent by the current user (isOwnMessage is true)
+          if (message.isOwnMessage == true) {
+            return message.copyWith(isSeen: true);
+          }
+          return message;
+        }).toList();
+
+        if (updatedMessages != null) {
+          state = state.copyWith(
+            messages: updatedMessages,
+            isLoading: false,
+            isError: false,
+          );
+          log('[VIEWMODEL] Updated seen status for messages');
+        }
+      } catch (e) {
+        log('[VIEWMODEL] Error processing read status: $e');
       }
     });
   }
@@ -254,16 +287,17 @@ class MessagesViewModel extends StateNotifier<MessagesState> {
   }
 
   void startTyping() {
-    // Send typing indicator when user types
+    // Only send the typing event to the server, don't update local state
     _socketService.sendTypingIndicator();
     _isTyping = true;
-    log('[VIEWMODEL] Started typing, sent indicator');
 
     // Reset the timer each time user types
     _typingTimer?.cancel();
     _typingTimer = Timer(const Duration(seconds: 3), () {
       stopTyping();
     });
+
+    log('[VIEWMODEL] Started typing, sent indicator');
   }
 
   void stopTyping() {
@@ -271,6 +305,50 @@ class MessagesViewModel extends StateNotifier<MessagesState> {
       _isTyping = false;
       _socketService.sendStopTypingIndicator();
       log('[VIEWMODEL] Stopped typing, sent indicator');
+    }
+  }
+
+  // Add method to set active status
+  void setActiveViewStatus(bool isActive) {
+    bool wasActive = _isActivelyViewing;
+    _isActivelyViewing = isActive;
+
+    // If status changed, log it
+    if (wasActive != isActive) {
+      if (isActive) {
+        log('[VIEWMODEL] User ENTERED conversation view: $conversationId');
+      } else {
+        log('[VIEWMODEL] User LEFT conversation view: $conversationId');
+      }
+    }
+  }
+
+  // Update the markConversationAsRead method:
+  void markConversationAsRead() {
+    try {
+      // Only mark as read if the user is actively viewing the conversation
+      if (!_isActivelyViewing) {
+        log('[VIEWMODEL] Not marking as read - user not actively viewing conversation');
+        return;
+      }
+
+      log('[VIEWMODEL] Marking conversation as read - user is actively viewing');
+      _socketService.markConversationAsRead();
+
+      // Also update local state for received messages
+      final updatedMessages = state.messages?.map((message) {
+        // Mark all messages from other users as seen
+        if (message.isOwnMessage != true) {
+          return message.copyWith(isSeen: true);
+        }
+        return message;
+      }).toList();
+
+      if (updatedMessages != null) {
+        state = state.copyWith(messages: updatedMessages);
+      }
+    } catch (e) {
+      log('[VIEWMODEL] Error marking conversation as read: $e');
     }
   }
 
@@ -287,6 +365,19 @@ class MessagesViewModel extends StateNotifier<MessagesState> {
       });
     } catch (e) {
       log('[VIEWMODEL] Error during socket cleanup: $e');
+    }
+  }
+
+  // Add this method for immediate typing indication
+
+  // This method can be called for immediate local typing indication
+  // before socket events are processed
+  void setOtherUserTypingStatus(bool isTyping) {
+    // Only allow this to be set to true if it's confirmed from a socket event
+    // This prevents any other code from accidentally setting it
+    if (state.isOtherUserTyping != isTyping) {
+      state = state.copyWith(isOtherUserTyping: isTyping);
+      log('[VIEWMODEL] Directly set typing status to $isTyping');
     }
   }
 

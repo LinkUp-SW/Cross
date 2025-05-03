@@ -1,11 +1,3 @@
-/* import 'dart:io';
-import 'package:file_picker/file_picker.dart'; 
-import 'package:image_picker/image_picker.dart';
-import 'package:http/http.dart' as http; 
-immport 'package:link_up/features/chat/widgets/typing_indicator.dart';
-import 'package:link_up/features/chat/widgets/video_player_screen.dart';
-import 'package:open_filex/open_filex.dart';
-import 'package:path_provider/path_provider.dart'; */
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -43,18 +35,26 @@ class ChatScreen extends ConsumerStatefulWidget {
   _ChatScreenState createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends ConsumerState<ChatScreen> {
+class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObserver {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController messageController = TextEditingController();
   late final String otheruser;
+
+  bool _isAtBottom = false;
+  bool _hasMarkedAsRead = false;
 
   @override
   void initState() {
     super.initState();
     otheruser = widget.otheruserid;
 
-    // Load messages initially
+    // Add app lifecycle listener
+    WidgetsBinding.instance.addObserver(this);
+
+    // Set this conversation as actively being viewed
     Future.microtask(() {
+      ref.read(messagesViewModelProvider(widget.conversationId).notifier).setActiveViewStatus(true);
+
       log('Initializing chat screen for conversation: ${widget.conversationId}');
       ref.read(messagesViewModelProvider(widget.conversationId).notifier).loadMessages().then((_) {
         // Scroll to bottom after messages are loaded
@@ -67,7 +67,77 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     _scrollController.addListener(_onScroll);
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Mark messages as read when screen gets focus
+    _checkIfAtBottom();
+  }
+
+  @override
+  void dispose() {
+    // Set chat as no longer active when leaving the screen
+    if (mounted) {
+      ref.read(messagesViewModelProvider(widget.conversationId).notifier).setActiveViewStatus(false);
+    }
+
+    WidgetsBinding.instance.removeObserver(this);
+    _scrollController.dispose();
+    messageController.dispose();
+
+    // Properly close the socket connection before invalidating the provider
+    try {
+      log('[CHAT] Disposing chat screen for conversation: ${widget.conversationId}');
+
+      // Get socket service reference before invalidating the provider
+      final socketProvider = ref.read(messagesViewModelProvider(widget.conversationId).notifier);
+
+      // Signal to the socket service that this conversation is ending
+      socketProvider.cleanupSocketConnection();
+
+      // Use a more controlled approach to invalidate the provider after cleanup
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (mounted) {
+          // Only invalidate if still mounted to avoid errors
+          ref.invalidate(messagesViewModelProvider(widget.conversationId));
+          log('[CHAT] Successfully invalidated message provider for: ${widget.conversationId}');
+        }
+      });
+    } catch (e) {
+      log('[CHAT] Error during chat screen disposal: $e');
+    }
+
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    if (!mounted) return;
+
+    switch (state) {
+      case AppLifecycleState.resumed:
+        // App is visible and active - set active status and check if at bottom
+        ref.read(messagesViewModelProvider(widget.conversationId).notifier).setActiveViewStatus(true);
+        // Only check if at bottom after making active
+        _checkIfAtBottom();
+        break;
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.paused:
+      case AppLifecycleState.detached:
+      case AppLifecycleState.hidden:
+        // App is not visible - user cannot see messages
+        ref.read(messagesViewModelProvider(widget.conversationId).notifier).setActiveViewStatus(false);
+        _hasMarkedAsRead = false; // Reset this flag when app goes to background
+        break;
+    }
+  }
+
   void _onScroll() {
+    // Check if we're at bottom to mark messages as read
+    _checkIfAtBottom();
+
     if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
       // Load more messages when reaching the bottom
       // ref.read(messagesViewModelProvider(widget.conversationId).notifier).loadMoreMessages();
@@ -113,15 +183,83 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         children: [
           Expanded(
             child: messagesState.isLoading && (messagesState.messages?.isEmpty ?? true)
-                ? const Center(child: CircularProgressIndicator())
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Chat bubble loading animation
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              for (int i = 0; i < 3; i++)
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                                  child: TweenAnimationBuilder<double>(
+                                    tween: Tween(begin: 0.0, end: 1.0),
+                                    duration: Duration(milliseconds: 600 + (i * 200)),
+                                    builder: (context, value, _) {
+                                      return Transform.scale(
+                                        scale: 0.6 + (0.4 * value),
+                                        child: Container(
+                                          width: 12,
+                                          height: 12,
+                                          decoration: BoxDecoration(
+                                            color: theme.colorScheme.primary.withOpacity(0.4 + (0.6 * value)),
+                                            shape: BoxShape.circle,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    // Repeat the animation continuously
+                                    onEnd: () {
+                                      setState(() {});
+                                    },
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Loading conversation...',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.onSurface.withOpacity(0.7),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
                 : ListView.builder(
                     controller: _scrollController,
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
                     itemCount: messagesState.messages?.length ?? 0,
                     itemBuilder: (context, index) {
                       final message = messagesState.messages![index];
 
-                      // Debug the message at render time
-                      print('Rendering message: ID=${message.messageId}, content="${message.message}"');
+                      // Find the last seen message (newest one)
+                      bool isLastSeenMessage = false;
+                      if (message.isSeen && message.isOwnMessage == true) {
+                        // Check if this is the last seen message by looking ahead
+                        bool isLast = true;
+                        for (int i = index + 1; i < messagesState.messages!.length; i++) {
+                          if (messagesState.messages![i].isSeen && messagesState.messages![i].isOwnMessage == true) {
+                            isLast = false;
+                            break;
+                          }
+                        }
+                        isLastSeenMessage = isLast;
+                      }
+
+                      // If we're at the bottom of the list and haven't marked messages as read yet
+                      if (index == messagesState.messages!.length - 1) {
+                        // Use post frame callback to check if user is at bottom
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          _checkIfAtBottom();
+                        });
+                      }
 
                       return ChatMessageBubble(
                         key: ValueKey(message.messageId),
@@ -129,7 +267,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         currentUserName: "You",
                         currentUserProfilePicUrl: "assets/images/profile.png",
                         chatProfilePicUrl: widget.senderProfilePicUrl,
-                        senderName: widget.senderName, // Pass the sender name from the ChatScreen
+                        senderName: widget.senderName,
+                        isLastSeenMessage: isLastSeenMessage, // Pass the new property
                       );
                     },
                   ),
@@ -138,33 +277,132 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           // Show typing indicator when the other user is typing
           if (messagesState.isOtherUserTyping)
             TypingIndicator(
-              isTyping: true, // Always true here since we're inside the conditional
+              isTyping: messagesState.isOtherUserTyping, // Always true here since we're inside the conditional
               typingUser: widget.senderName,
               currentUser: "You",
               theme: theme,
             ),
 
+          // Show error indicator when there's an error
           if (messagesState.isError)
             Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                messagesState.errorMessage ?? 'Error sending message',
-                style: TextStyle(color: theme.colorScheme.error),
+              padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.errorContainer.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: theme.colorScheme.errorContainer,
+                    width: 1.0,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    // Animated error icon
+                    TweenAnimationBuilder<double>(
+                      tween: Tween(begin: 0.0, end: 1.0),
+                      duration: const Duration(milliseconds: 500),
+                      builder: (context, value, _) {
+                        return Transform.scale(
+                          scale: 0.8 + (0.2 * value),
+                          child: Container(
+                            padding: const EdgeInsets.all(8.0),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.errorContainer.withOpacity(value * 0.3),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.error_outline,
+                              color: theme.colorScheme.error,
+                              size: 24,
+                            ),
+                          ),
+                        );
+                      },
+                      onEnd: () {
+                        // Restart animation for pulsing effect
+                        if (mounted) setState(() {});
+                      },
+                    ),
+                    const SizedBox(width: 12),
+                    // Error message
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Connection Issue',
+                            style: theme.textTheme.titleSmall?.copyWith(
+                              color: theme.colorScheme.error,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            messagesState.errorMessage ?? 'Error loading messages',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurface.withOpacity(0.7),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Retry button
+                    IconButton(
+                      icon: Icon(
+                        Icons.refresh,
+                        color: theme.colorScheme.primary,
+                      ),
+                      onPressed: () {
+                        // Retry loading messages
+                        ref.read(messagesViewModelProvider(widget.conversationId).notifier).loadMessages();
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
           ChatInputField(
             Controller: messageController,
             onSendPressed: _handleSendMessage,
-            onTyping: () {
-              ref.read(messagesViewModelProvider(widget.conversationId).notifier).startTyping();
-            },
+            onTyping: _handleTypingStarted, // Use the new method
             onAttachmentPressed: () {
-              _showAttachmentOptions(context, ref, widget.conversationId.hashCode); // Pass the chat index
+              _showAttachmentOptions(context, ref, widget.conversationId.hashCode);
             },
           )
         ],
       ),
     );
+  }
+
+  void _checkIfAtBottom() {
+    if (!_scrollController.hasClients) return;
+
+    // Make the threshold stricter and add time-based verification
+    final isAtVeryBottom =
+        _scrollController.position.pixels > (_scrollController.position.maxScrollExtent - 5); // Reduced to 5px
+
+    // Add additional check - must be at bottom AND have been there for a bit
+    if (isAtVeryBottom && !_hasMarkedAsRead) {
+      // Use delayed execution to confirm user is intentionally at bottom
+      Future.delayed(Duration(milliseconds: 500), () {
+        // Check again if still at bottom and view is still active
+        if (!mounted) return;
+
+        final stillAtBottom = _scrollController.hasClients &&
+            _scrollController.position.pixels > (_scrollController.position.maxScrollExtent - 5);
+
+        if (stillAtBottom) {
+          ref.read(messagesViewModelProvider(widget.conversationId).notifier).markConversationAsRead();
+          _hasMarkedAsRead = true;
+          log('[CHAT] Marked messages as read - user confirmed at bottom');
+        }
+      });
+    } else if (!isAtVeryBottom && _hasMarkedAsRead) {
+      // Reset flag if user scrolls away from bottom
+      _hasMarkedAsRead = false;
+    }
   }
 
   void _handleSendMessage() {
@@ -247,36 +485,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     } else {
       log('[CHAT] Scroll controller has no clients yet');
     }
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    messageController.dispose();
-
-    // Properly close the socket connection before invalidating the provider
-    try {
-      log('[CHAT] Disposing chat screen for conversation: ${widget.conversationId}');
-
-      // Get socket service reference before invalidating the provider
-      final socketProvider = ref.read(messagesViewModelProvider(widget.conversationId).notifier);
-
-      // Signal to the socket service that this conversation is ending
-      socketProvider.cleanupSocketConnection();
-
-      // Use a more controlled approach to invalidate the provider after cleanup
-      Future.delayed(const Duration(milliseconds: 300), () {
-        if (mounted) {
-          // Only invalidate if still mounted to avoid errors
-          ref.invalidate(messagesViewModelProvider(widget.conversationId));
-          log('[CHAT] Successfully invalidated message provider for: ${widget.conversationId}');
-        }
-      });
-    } catch (e) {
-      log('[CHAT] Error during chat screen disposal: $e');
-    }
-
-    super.dispose();
   }
 
   Future<void> _handleVideoMessage(Message message) async {
@@ -475,5 +683,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         ),
       ),
     );
+  }
+
+  void _handleTypingStarted() {
+    // Only send the typing notification to the other user
+    // Don't trigger any local UI update for our own typing
+    if (mounted) {
+      // Just notify the other user that we're typing
+      ref.read(messagesViewModelProvider(widget.conversationId).notifier).startTyping();
+    }
   }
 }

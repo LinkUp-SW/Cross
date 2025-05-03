@@ -10,7 +10,8 @@ class ChatMessageBubble extends StatelessWidget {
   final String currentUserName;
   final String? currentUserProfilePicUrl;
   final String? chatProfilePicUrl;
-  final String? senderName; // Add this field to store the actual sender name
+  final String? senderName;
+  final bool isLastSeenMessage; // Add this new property
 
   const ChatMessageBubble({
     Key? key,
@@ -18,7 +19,8 @@ class ChatMessageBubble extends StatelessWidget {
     required this.currentUserName,
     this.currentUserProfilePicUrl,
     this.chatProfilePicUrl,
-    this.senderName, // Add this parameter
+    this.senderName,
+    this.isLastSeenMessage = false, // Default to false
   }) : super(key: key);
 
   // Fix the isCurrentUser check to use sender IDs rather than names
@@ -37,28 +39,44 @@ class ChatMessageBubble extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
-      child: Row(
-        // Set all messages to start from the left
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
         children: [
-          _buildProfilePicture(displayName, displayPic),
-          const SizedBox(width: 10),
-          Flexible(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  displayName,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+          // Main bubble content
+          Row(
+            // Set all messages to start from the left
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildProfilePicture(displayName, displayPic),
+              const SizedBox(width: 10),
+              Flexible(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      displayName,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 4),
+                    _buildMessageContent(theme),
+                    const SizedBox(height: 4),
+                    _buildTimestamp()
+                  ],
                 ),
-                const SizedBox(height: 4),
-                _buildMessageContent(theme),
-                const SizedBox(height: 4),
-                _buildTimestamp()
-              ],
-            ),
+              ),
+            ],
           ),
+
+          // Seen indicator avatar - positioned on the far right
+          if (isCurrentUser && message.isSeen && isLastSeenMessage)
+            Positioned(
+              right: 0,
+              bottom: 0,
+              child: CircleAvatar(
+                radius: 8,
+                backgroundImage: _getImageProvider("assets/images/profile.png"),
+              ),
+            ),
         ],
       ),
     );
@@ -122,24 +140,30 @@ class ChatMessageBubble extends StatelessWidget {
                 ),
               ),
             ),
+          // Remove the old seen indicator text here
         ],
       );
     } else {
-      // Text only message
-      return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          // Use the same style for all messages
-          color: theme.colorScheme.surfaceVariant,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Text(
-          message.message,
-          style: TextStyle(
-            color: theme.colorScheme.onSurfaceVariant,
-            fontSize: 16, // Make text more visible
+      // Text only message - remove seen indicator text here too
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surfaceVariant,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              message.message,
+              style: TextStyle(
+                color: theme.colorScheme.onSurfaceVariant,
+                fontSize: 16, // Make text more visible
+              ),
+            ),
           ),
-        ),
+          // Remove the old seen indicator text here
+        ],
       );
     }
   }

@@ -13,6 +13,11 @@ class SocketService {
   Function(dynamic)? _messageCallback;
   Function(dynamic)? _typingCallback;
   Function(dynamic)? _stopTypingCallback;
+  Function(dynamic)? _messagesReadCallback;
+
+  // Add these fields to support debouncing
+  Timer? _markAsReadDebouncer;
+  bool _hasPendingReadStatusUpdate = false;
 
   SocketService({required this.conversationId}) {
     _setupEventHandlers();
@@ -29,6 +34,7 @@ class SocketService {
     _globalSocket.on('message_sent', _handleMessage);
     _globalSocket.on('user_typing', _handleTyping);
     _globalSocket.on('user_stop_typing', _handleStopTyping);
+    _globalSocket.on('messages_read', _handleMessagesRead); // Add this line
 
     _isSetup = true;
     log('[SOCKET] Event handlers set up for conversation: $conversationId');
@@ -44,8 +50,11 @@ class SocketService {
 
   void _handleTyping(dynamic data) {
     final String typingConversationId = _extractConversationId(data);
+
+    // Immediately notify callback without any delay
     if (typingConversationId == conversationId && _typingCallback != null) {
       _typingCallback!(data);
+      log('[SOCKET] Received typing indicator event');
     }
   }
 
@@ -53,6 +62,13 @@ class SocketService {
     final String typingConversationId = _extractConversationId(data);
     if (typingConversationId == conversationId && _stopTypingCallback != null) {
       _stopTypingCallback!(data);
+    }
+  }
+
+  void _handleMessagesRead(dynamic data) {
+    final String readConversationId = _extractConversationId(data);
+    if (readConversationId == conversationId && _messagesReadCallback != null) {
+      _messagesReadCallback!(data);
     }
   }
 
@@ -75,6 +91,10 @@ class SocketService {
 
   void onTypingStopped(Function(dynamic) callback) {
     _stopTypingCallback = callback;
+  }
+
+  void onMessagesRead(Function(dynamic) callback) {
+    _messagesReadCallback = callback;
   }
 
   Future<void> sendMessage(String conversationId, Message message) async {
@@ -103,12 +123,15 @@ class SocketService {
     }
   }
 
-  Future<void> sendTypingIndicator() async {
+  void sendTypingIndicator() {
+    // Remove async/await to eliminate delay
     try {
-      await _globalSocket.emit('typing', {
+      // Emit the event synchronously without awaiting
+      _globalSocket.emit('typing', {
         'conversationId': conversationId,
         'userId': InternalEndPoints.userId,
       });
+      log('[SOCKET] Sent typing indicator for conversation: $conversationId');
     } catch (e) {
       log('[SOCKET] Error sending typing indicator: $e');
     }
@@ -125,18 +148,53 @@ class SocketService {
     }
   }
 
+  Future<void> markConversationAsRead() async {
+    try {
+      // Cancel any pending debounce timer
+      _markAsReadDebouncer?.cancel();
+
+      // Set flag to track pending updates
+      _hasPendingReadStatusUpdate = true;
+
+      // Debounce the mark as read event to prevent rapid consecutive calls
+      _markAsReadDebouncer = Timer(const Duration(milliseconds: 500), () {
+        if (_hasPendingReadStatusUpdate) {
+          _globalSocket.emit('mark_as_read', {
+            'conversationId': conversationId,
+          });
+          log('[SOCKET] Marked conversation as read: $conversationId (debounced)');
+          _hasPendingReadStatusUpdate = false;
+        }
+      });
+    } catch (e) {
+      log('[SOCKET] Error marking conversation as read: $e');
+      _hasPendingReadStatusUpdate = false;
+    }
+  }
+
   void markAsRead() {
-    _globalSocket.emit('mark_as_read', {'conversationId': conversationId});
+    // This empty method prevents automatic marking as read
+    // Do not add implementation here - only mark as read when explicitly called
+  }
+
+  // Add a method to cancel pending read updates when leaving the chat
+  void cancelPendingReadStatus() {
+    _markAsReadDebouncer?.cancel();
+    _hasPendingReadStatusUpdate = false;
   }
 
   void cleanupSocketConnection() {
     try {
+      // Cancel any pending mark as read requests
+      cancelPendingReadStatus();
+
       // Unregister event handlers for this conversation
       _globalSocket.off('private_message', _handleMessage);
       _globalSocket.off('new_message', _handleMessage);
       _globalSocket.off('message_sent', _handleMessage);
       _globalSocket.off('user_typing', _handleTyping);
       _globalSocket.off('user_stop_typing', _handleStopTyping);
+      _globalSocket.off('messages_read', _handleMessagesRead); // Add this line
 
       _isSetup = false;
       log('[SOCKET] Cleaned up handlers for conversation: $conversationId');
@@ -146,6 +204,8 @@ class SocketService {
   }
 
   void disconnectGracefully() {
+    // Cancel any pending read updates before disconnecting
+    cancelPendingReadStatus();
     cleanupSocketConnection();
 
     // We don't disconnect the global socket, just leave the conversation
