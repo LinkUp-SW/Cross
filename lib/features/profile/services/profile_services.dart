@@ -106,7 +106,7 @@ class ProfileService extends BaseService {
     try {
       final response = isCreating
           ? await super.post(endpoint, body: requestBody)
-          : await super.put(endpoint, requestBody);
+          : await super.put(endpoint, body: requestBody);
       log('ProfileService: updateOrAddUserAbout ($httpMethod) API Response Status Code: ${response.statusCode}');
 
       if (response.statusCode == 200 ||
@@ -187,7 +187,7 @@ class ProfileService extends BaseService {
     final String endpoint = endpointTemplate.replaceFirst(':skillId', skillId);
     log('ProfileService: Updating skill ID: $skillId with name: ${skill.name}');
     try {
-      final response = await put(endpoint, skill.toJson());
+      final response = await put(endpoint, body: skill.toJson());
       log('ProfileService: updateSkill API Response Status Code: ${response.statusCode}');
       if (response.statusCode == 200 || response.statusCode == 204) {
         log('ProfileService: Skill updated successfully.');
@@ -309,7 +309,7 @@ class ProfileService extends BaseService {
     log('ProfileService: Position data to send: ${jsonEncode(position.toJson())}');
 
     try {
-      final response = await put(endpoint, position.toJson());
+      final response = await put(endpoint, body: position.toJson());
 
       log('ProfileService: updateExperience API Response Status Code: ${response.statusCode}');
       log('ProfileService: updateExperience API Response Body: ${response.body}');
@@ -424,7 +424,7 @@ class ProfileService extends BaseService {
     log('ProfileService: Education data to send: ${jsonEncode(education.toJson())}');
 
     try {
-      final response = await put(endpoint, education.toJson());
+      final response = await put(endpoint, body: education.toJson());
 
       log('ProfileService: updateEducation API Response Status Code: ${response.statusCode}');
       log('ProfileService: updateEducation API Response Body: ${response.body}');
@@ -537,7 +537,7 @@ class ProfileService extends BaseService {
     try {
       final response = await put(
         endpoint,
-        license.toJson(),
+        body: license.toJson(),
       );
       log('ProfileService: updateLicense API Response Status Code: ${response.statusCode}');
       if (response.statusCode == 200 || response.statusCode == 204) {
@@ -610,7 +610,7 @@ class ProfileService extends BaseService {
     log('ProfileService: Updating contact info for user ID: $userId');
 
     try {
-      final response = await put(endpoint, requestBody);
+      final response = await put(endpoint, body: requestBody);
       log('ProfileService: updateContactInfo API Response Status Code: ${response.statusCode}');
 
       if (response.statusCode == 200 || response.statusCode == 204) {
