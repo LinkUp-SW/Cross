@@ -42,95 +42,123 @@ class _PeopleCardState extends ConsumerState<PeopleCard> {
       child: Column(
         spacing: 15.h,
         children: [
-          Stack(
-            clipBehavior: Clip.none, // Important to allow overflow
-            alignment:
-                Alignment.bottomCenter, // Align profile pic to bottom center
-            children: [
-              // Cover image
-              ClipRRect(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(6.r),
-                  topRight: Radius.circular(6.r),
+          InkWell(
+            onTap: () {
+              context.push('/profile', extra: widget.data.cardId);
+            },
+            child: Stack(
+              clipBehavior: Clip.none, // Important to allow overflow
+              alignment:
+                  Alignment.bottomCenter, // Align profile pic to bottom center
+              children: [
+                // Cover image
+                ClipRRect(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(6.r),
+                    topRight: Radius.circular(6.r),
+                  ),
+                  child: Image(
+                    image: widget.data.coverPicture != null
+                        ? NetworkImage(widget.data.coverPicture!)
+                        : AssetImage('assets/images/default-cover-picture.png')
+                            as ImageProvider,
+                    width: double.infinity,
+                    height: 60.h,
+                    fit: BoxFit.cover,
+                  ),
                 ),
-                child: Image(
-                  image: widget.data.coverPicture != null
-                      ? NetworkImage(widget.data.coverPicture!)
-                      : AssetImage('assets/images/default-cover-picture.png')
-                          as ImageProvider,
-                  width: double.infinity,
-                  height: 60.h,
-                  fit: BoxFit.cover,
-                ),
-              ),
 
-              // Profile image - positioned to overlap
-              Positioned(
-                bottom: -25.h,
-                right: 32.w,
-                child: CircleAvatar(
-                  radius: 45.r,
-                  foregroundImage: widget.data.profilePicture != null
-                      ? NetworkImage(widget.data.profilePicture!)
-                      : AssetImage('assets/images/default-profile-picture.png')
-                          as ImageProvider,
+                // Profile image - positioned to overlap
+                Positioned(
+                  bottom: -25.h,
+                  right: 32.w,
+                  child: CircleAvatar(
+                    radius: 45.r,
+                    foregroundImage: widget.data.profilePicture != null
+                        ? NetworkImage(widget.data.profilePicture!)
+                        : AssetImage(
+                                'assets/images/default-profile-picture.png')
+                            as ImageProvider,
+                  ),
                 ),
-              ),
-              // Cancel Button
-              Positioned(
-                top: 5.h,
-                right: 3.w,
-                child: InkWell(
-                  onTap: () async {
-                    final isEducationCard = widget.isEducationCard ?? false;
-                    final foundReplacement = await ref
-                        .read(growTabViewModelProvider.notifier)
-                        .getReplacementPerson(widget.data.cardId,
-                            isEducationCard ? 'education' : 'work_experience');
+                // Cancel Button
+                Positioned(
+                  top: 5.h,
+                  right: 3.w,
+                  child: InkWell(
+                    onTap: () async {
+                      final isEducationCard = widget.isEducationCard ?? false;
+                      final foundReplacement = await ref
+                          .read(growTabViewModelProvider.notifier)
+                          .getReplacementPerson(
+                              widget.data.cardId,
+                              isEducationCard
+                                  ? 'education'
+                                  : 'work_experience');
 
-                    if (!foundReplacement) {
-                      openSnackbar(
-                          child: SnackbarContent(
-                              message: 'No more people you may know available',
-                              icon: Icons.info));
-                    }
-                  },
-                  child: Container(
-                    padding: EdgeInsets.all(2.r),
-                    decoration: const BoxDecoration(
-                      color: AppColors.fineLinesGrey,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.close,
-                      color: Colors.white,
-                      size: 20.h,
+                      if (!foundReplacement) {
+                        openSnackbar(
+                            child: SnackbarContent(
+                                message:
+                                    'No more people you may know available',
+                                icon: Icons.info));
+                      }
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(2.r),
+                      decoration: const BoxDecoration(
+                        color: AppColors.fineLinesGrey,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.close,
+                        color: Colors.white,
+                        size: 20.h,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           const SizedBox(),
           Column(
             children: [
-              Text(
-                "${widget.data.firstName} ${widget.data.lastName}",
-                style: TextStyles.font15_700Weight,
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 6.0.w,
-                ),
-                child: Text(
-                  widget.data.title ?? '',
-                  style: TextStyles.font15_500Weight.copyWith(
-                    color: isDarkMode
-                        ? AppColors.darkGrey
-                        : AppColors.lightSecondaryText,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 2,
+              InkWell(
+                splashColor:
+                    isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+                highlightColor:
+                    isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+                onTap: () {
+                  context.push('/profile', extra: widget.data.cardId);
+                },
+                child: Column(
+                  children: [
+                    Text(
+                      "${widget.data.firstName} ${widget.data.lastName}",
+                      style: TextStyles.font15_700Weight,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 6.0.w,
+                      ),
+                      child: SizedBox(
+                        height: 50.h,
+                        child: Text(
+                          widget.data.title ?? '',
+                          style: TextStyles.font15_500Weight.copyWith(
+                            color: isDarkMode
+                                ? AppColors.darkGrey
+                                : AppColors.lightSecondaryText,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               Padding(
@@ -255,8 +283,7 @@ class _PeopleCardState extends ConsumerState<PeopleCard> {
                       : isConnecting
                           ? LinkUpButtonStyles()
                               .myNetworkScreenConnectLightPressed()
-                          : LinkUpButtonStyles()
-                              .myNetworkScreenConnectLightPressed(),
+                          : LinkUpButtonStyles().myNetworkScreenConnectLight(),
                   child: Text(isConnecting ? "Pending" : "Connect"),
                 ),
               ),

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/core/services/base_service.dart';
 import 'package:link_up/core/constants/endpoints.dart';
@@ -19,6 +20,7 @@ class ConnectionsScreenServices {
       throw Exception(
           'Failed to get connections count: ${response.statusCode}');
     } catch (e) {
+      log("Error getting connections count $e");
       rethrow;
     }
   }
@@ -36,8 +38,10 @@ class ConnectionsScreenServices {
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       }
-      throw Exception('Failed to get connections list: ${response.statusCode}');
+      throw Exception(
+          'Failed to get connections list, Response Body ${response.body}  Status Code: ${response.statusCode}');
     } catch (e) {
+      log("Error getting connections list $e");
       rethrow;
     }
   }
@@ -51,20 +55,7 @@ class ConnectionsScreenServices {
       }
       throw Exception('Failed to remove connection ${response.statusCode}');
     } catch (e) {
-      rethrow;
-    }
-  }
-
-  Future<String> getUserId() async {
-    try {
-      final response = await _baseService
-          .get(ExternalEndPoints.connectionsAndFollowingsCounts);
-      if (response.statusCode == 200) {
-        final body = jsonDecode(response.body);
-        return body['user_id'];
-      }
-      throw Exception('Failed to get  user id: ${response.statusCode}');
-    } catch (e) {
+      log("Error removing connection of user id: $userId, error: $e");
       rethrow;
     }
   }

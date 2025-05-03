@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/core/services/base_service.dart';
 import 'package:link_up/core/constants/endpoints.dart';
@@ -23,6 +24,7 @@ class SentInvitationsTabServices {
       throw Exception(
           'Failed to get sent connection invitations: ${response.statusCode}');
     } catch (e) {
+      log("Error getting sent connection request: $e");
       rethrow;
     }
   }
@@ -38,6 +40,7 @@ class SentInvitationsTabServices {
       throw Exception(
           'Failed to withdraw sent connection invitation: ${response.statusCode}');
     } catch (e) {
+      log("Error withdrawing sent connection request: $e");
       rethrow;
     }
   }

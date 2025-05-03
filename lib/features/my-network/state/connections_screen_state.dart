@@ -1,7 +1,7 @@
 import 'package:link_up/features/my-network/model/connections_screen_model.dart';
 
 class ConnectionsScreenState {
-  final List<ConnectionsCardModel>? connections;
+  final Set<ConnectionsCardModel>? connections;
   final int? connectionsCount;
   final String? nextCursor;
   final bool isLoading;
@@ -29,7 +29,7 @@ class ConnectionsScreenState {
   }
 
   ConnectionsScreenState copyWith({
-    final List<ConnectionsCardModel>? connections,
+    final Set<ConnectionsCardModel>? connections,
     final int? connectionsCount,
     final String? nextCursor,
     final bool? isLoading,

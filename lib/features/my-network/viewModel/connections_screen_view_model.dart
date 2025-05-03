@@ -42,10 +42,10 @@ class ConnectionsScreenViewModel extends StateNotifier<ConnectionsScreenState> {
       );
 
       // Parse the connections from the response
-      final List<ConnectionsCardModel> connections =
+      final Set<ConnectionsCardModel> connections =
           (response['connections'] as List)
               .map((connection) => ConnectionsCardModel.fromJson(connection))
-              .toList();
+              .toSet();
       final nextCursor = response['nextCursor'];
       sortConnections(0);
       state = state.copyWith(
@@ -111,7 +111,7 @@ class ConnectionsScreenViewModel extends StateNotifier<ConnectionsScreenState> {
       ];
 
       state = currentState.copyWith(
-        connections: allConnections,
+        connections: allConnections.toSet(),
         nextCursor: response['nextCursor'],
         isLoadingMore: false,
       );
@@ -133,7 +133,7 @@ class ConnectionsScreenViewModel extends StateNotifier<ConnectionsScreenState> {
 
         state = state.copyWith(
           isLoading: false,
-          connections: updatedConnections,
+          connections: updatedConnections.toSet(),
           connectionsCount: updatedConnections.length,
         );
       }
@@ -180,7 +180,7 @@ class ConnectionsScreenViewModel extends StateNotifier<ConnectionsScreenState> {
     }
 
     state = state.copyWith(
-      connections: connectionsList,
+      connections: connectionsList.toSet(),
     );
   }
 }

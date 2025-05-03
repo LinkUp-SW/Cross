@@ -1,7 +1,7 @@
 import 'package:link_up/features/my-network/model/people_i_follow_screen_model.dart';
 
 class PeopleIFollowScreenState {
-  final List<FollowingCardModel>? followings;
+  final Set<FollowingCardModel>? followings;
   final int? followingsCount;
   final String? nextCursor;
   final bool isLoading;
@@ -29,7 +29,7 @@ class PeopleIFollowScreenState {
   }
 
   PeopleIFollowScreenState copyWith({
-    final List<FollowingCardModel>? followings,
+    final Set<FollowingCardModel>? followings,
     final int? followingsCount,
     final String? nextCursor,
     final bool? isLoading,

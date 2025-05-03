@@ -100,7 +100,7 @@ class _SentInvitationsTabState extends ConsumerState<SentInvitationsTab> {
                           );
                         }
                         return SentInvitationsCard(
-                          data: state.sent![index],
+                          data: state.sent!.elementAt(index),
                         );
                       },
                     ),
