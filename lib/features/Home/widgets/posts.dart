@@ -77,6 +77,7 @@ class _PostsState extends ConsumerState<Posts> {
               child: FormattedRichText(
                 defaultStyle: TextStyle(
                   fontSize: 14.r,
+                  color: Theme.of(context).textTheme.bodyLarge!.color,
                 ),
                 text: widget.post.text,
                 enableReadMore: true,

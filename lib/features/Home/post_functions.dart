@@ -176,12 +176,14 @@ Future<Set> getUserPosts(int? cursor, String userId) async {
   }
 }
 
-Future<void> reportPost(String postId) async {
+Future<void> reportPost(String id,String type,ReportReasonEnum reason) async {
   final BaseService service = BaseService();
   try {
     final response =
-        await service.post('api/v2/post/report/:postId', routeParameters: {
-      "postId": postId,
+        await service.post('api/v1/admin/report', body: {
+      "contentRef": id,
+      "contentType": type,
+      "reason": ReportReasonEnum.getReasonString(reason),
     });
 
     log('Response: ${response.statusCode} - ${response.body}');
@@ -192,25 +194,6 @@ Future<void> reportPost(String postId) async {
     }
   } catch (e) {
     log('Error reporting post: $e');
-  }
-}
-
-Future<void> reportComment(String commentId) async {
-  final BaseService service = BaseService();
-  try {
-    final response = await service
-        .post('api/v2/post/report-comment/:commentId', routeParameters: {
-      "commentId": commentId,
-    });
-
-    log('Response: ${response.statusCode} - ${response.body}');
-    if (response.statusCode == 200) {
-      log('Comment reported successfully: ${response.body}');
-    } else {
-      log('Failed to report comment');
-    }
-  } catch (e) {
-    log('Error reporting comment: $e');
   }
 }
 

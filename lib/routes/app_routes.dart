@@ -15,6 +15,7 @@ import 'package:link_up/features/profile/view/education_list_page.dart';
 import 'package:link_up/features/profile/view/view.dart';
 import 'package:link_up/features/search/view/search_page.dart';
 import 'package:link_up/features/jobs/view/search_jobs_page.dart';
+import 'package:link_up/features/settings/view/privacy_settings.dart';
 import 'package:link_up/features/settings/view/settings.dart';
 import 'package:link_up/features/signUp/view/userInfo/names_view.dart';
 import 'package:link_up/features/signUp/view/userInfo/past_job_details.dart';
@@ -391,7 +392,14 @@ final goRouterProvider = Provider<GoRouter>(
             searchKeyWord: state.extra as String?,
           ),
         ),
-        GoRoute(path: "/settings", builder: (context, state) => SettingsPage()),
+        GoRoute(
+            path: "/settings",
+            builder: (context, state) => SettingsPage(),
+            routes: [
+              GoRoute(
+                  path: '/privacy',
+                  builder: (context, state) => const PrivacySettings()),
+            ]),
         GoRoute(
           path: "/payment",
           builder: (context, state) => const SubscriptionManagementScreen(),

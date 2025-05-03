@@ -1,8 +1,8 @@
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:link_up/core/constants/endpoints.dart';
 import 'package:link_up/features/Home/home_enums.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
@@ -29,15 +29,12 @@ class PostHeader extends ConsumerStatefulWidget {
 
 class _PostHeaderState extends ConsumerState<PostHeader> {
   bool _following = false;
-  bool _showFollow = true;
-  bool _isConnected = true;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        //TODO: navigate to user profile page
-        log('userprofile: ${widget.post.header.userId}');
+        context.push('/profile', extra: widget.post.header.userId);
       },
       child: Flex(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -45,7 +42,7 @@ class _PostHeaderState extends ConsumerState<PostHeader> {
         direction: Axis.horizontal,
         children: [
           Flexible(
-            flex: 2,
+            flex: 6,
             child: ListTile(
               leading: !widget.post.isCompany
                   ? CircleAvatar(
@@ -90,51 +87,83 @@ class _PostHeaderState extends ConsumerState<PostHeader> {
                 children: [
                   if (widget.post.header.about != '')
                     Text(
-                      widget.post.header.about,
+                      widget.post.isCompany
+                          ? '${widget.post.header.followerCount} followers'
+                          : widget.post.header.about,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(fontSize: 10.r, color: AppColors.grey),
                     ),
-                  if (!widget.post.isCompany)
-                    Text.rich(
-                      TextSpan(
-                        children: [
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: '${widget.post.header.getTime()} • ',
+                          style:
+                              TextStyle(color: AppColors.grey, fontSize: 10.r),
+                        ),
+                        if (widget.post.header.edited)
                           TextSpan(
-                            text: '${widget.post.header.getTime()} • ',
+                            text: 'Edited • ',
                             style: TextStyle(
                                 color: AppColors.grey, fontSize: 10.r),
                           ),
-                          if (widget.post.header.edited)
-                            TextSpan(
-                              text: 'Edited • ',
-                              style: TextStyle(
-                                  color: AppColors.grey, fontSize: 10.r),
-                            ),
-                          WidgetSpan(
-                            child: Icon(
-                              widget.post.header.visibilityPost ==
-                                      Visibilities.anyone
-                                  ? Icons.public
-                                  : Icons.people,
-                              size: 10.r,
-                              color: AppColors.grey,
-                            ),
+                        WidgetSpan(
+                          child: Icon(
+                            widget.post.header.visibilityPost ==
+                                    Visibilities.anyone
+                                ? Icons.public
+                                : Icons.people,
+                            size: 10.r,
+                            color: AppColors.grey,
                           ),
-                        ],
-                      ),
-                    )
+                        ),
+                      ],
+                    ),
+                  )
                 ],
               ),
             ),
           ),
           if (!widget.inMessage)
             Flexible(
-              flex: 0,
+              flex: 3,
               child: Wrap(
+                alignment: WrapAlignment.end,
                 children: [
+                  !widget.showTop
+                      ? Wrap(
+                          alignment: WrapAlignment.end,
+                          runAlignment: WrapAlignment.end,
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                widget.post.header.userId !=
+                                        InternalEndPoints.userId
+                                    ? aboutPostBottomSheet(context,
+                                        post: widget.post)
+                                    : myPostBottomSheet(context, ref,
+                                        post: widget.post);
+                              },
+                              icon: const Icon(Icons.more_horiz),
+                            ),
+                            if (widget.inFeed)
+                              IconButton(
+                                //TODO: Remove post from feed
+                                onPressed: () {
+                                  ref
+                                      .read(postsProvider.notifier)
+                                      .showUndo(widget.post.id);
+                                },
+                                icon: const Icon(Icons.close),
+                              ),
+                          ],
+                        )
+                      : SizedBox(),
                   widget.post.header.userId == InternalEndPoints.userId ||
-                          _isConnected
+                          widget.post.header.isFollowing || widget.post.header.connectionDegree == '1st'
                       ? SizedBox()
-                      : _showFollow
+                      : widget.post.header.followPrimary ||
+                              widget.post.isCompany
                           ? TextButton(
                               onPressed: () {
                                 setState(() {
@@ -190,35 +219,6 @@ class _PostHeaderState extends ConsumerState<PostHeader> {
                                   ),
                                 ],
                               )),
-                  !widget.showTop
-                      ? Wrap(
-                          alignment: WrapAlignment.end,
-                          runAlignment: WrapAlignment.end,
-                          children: [
-                            IconButton(
-                              onPressed: () {
-                                widget.post.header.userId !=
-                                        InternalEndPoints.userId
-                                    ? aboutPostBottomSheet(context,
-                                        post: widget.post)
-                                    : myPostBottomSheet(context, ref,
-                                        post: widget.post);
-                              },
-                              icon: const Icon(Icons.more_horiz),
-                            ),
-                            if (widget.inFeed)
-                              IconButton(
-                                //TODO: Remove post from feed
-                                onPressed: () {
-                                  ref
-                                      .read(postsProvider.notifier)
-                                      .showUndo(widget.post.id);
-                                },
-                                icon: const Icon(Icons.close),
-                              ),
-                          ],
-                        )
-                      : SizedBox(),
                 ],
               ),
             ),

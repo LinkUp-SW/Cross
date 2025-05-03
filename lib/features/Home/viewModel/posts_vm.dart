@@ -5,67 +5,92 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/core/services/base_service.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
 
-class PostsState {
+
+class PostFeedState {
   bool showUndo = false;
   PostModel post;
-  PostsState({this.showUndo = false, required this.post});
-  static var nextCursor = 0;
-  static bool isLoading = false;
+  PostFeedState({this.showUndo = false, required this.post});
+
+
+  
 }
 
-class PostsNotifier extends StateNotifier<List<PostsState>> {
-  PostsNotifier() : super([]);
+
+class PostsState {
+  List<PostFeedState> posts;
+  PostsState({required this.posts});
+  int nextCursor = 0;
+  bool isLoading = false;
+
+  PostsState.initial()
+      : posts = [],
+        nextCursor = 0,
+        isLoading = false;
+
+
+}
+
+class PostsNotifier extends StateNotifier<PostsState> {
+  PostsNotifier() : super(PostsState.initial());
 
   void addPosts(List<PostModel> posts) {
-    state = [...state, ...posts.map((e) => PostsState(post: e))];
+    state.posts.addAll(posts.map((e) => PostFeedState(post: e)).toList());
+  }
+
+  void clearPosts() {
+    state.posts.clear();
   }
 
   void removePost(String id) {
-    state = state.where((element) => element.post.id != id).toList();
+    state.posts =
+    state.posts.where((element) => element.post.id != id).toList();
   }
 
   void showUndo(String id) {
-    state = state
+    state.posts = state.posts
         .map((e) => e.post.id == id
-            ? PostsState(post: e.post, showUndo: !e.showUndo)
+            ? PostFeedState(post: e.post, showUndo: !e.showUndo)
             : e)
         .toList();
   }
 
   void updatePost(PostModel post) {
-    state = state
+    state.posts = state.posts
         .map((e) => e.post.id == post.id
-            ? PostsState(post: post, showUndo: e.showUndo)
+            ? PostFeedState(post: post, showUndo: e.showUndo)
             : e)
         .toList();
   }
 
   void setPosts(List<PostModel> posts) {
-    state = posts.map((e) => PostsState(post: e)).toList();
+    state.posts.clear();
+    state.posts.addAll(posts.map((e) => PostFeedState(post: e)).toList());
   }
 
   Future<void> refreshPosts() {
+    state.nextCursor = 0;
+    state.posts.clear();
     return fetchPosts().then((value) {
-      state = value.map((e) => PostsState(post: e)).toList();
+      addPosts(value);
     });
   }
 
   Future<List<PostModel>> fetchPosts() async {
-    PostsState.isLoading = true;
+    state.isLoading = true;
     final BaseService service = BaseService();
     try {
       final response =
           await service.get('api/v2/post/posts/feed', queryParameters: {
         'limit': '20',
-        'cursor': PostsState.nextCursor.toString(),
+        'cursor': state.nextCursor.toString(),
       });
-      PostsState.isLoading = false;
+      state.isLoading = false;
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         log('Fetched posts: $data');
         final List<PostModel> posts =
             (data['posts'] as List).map((e) => PostModel.fromJson(e)).toList();
-        PostsState.nextCursor = data['next_cursor'] ?? -1;
+        state.nextCursor = data['next_cursor'] ?? -1;
         return posts;
       } else {
         log('Failed to fetch posts: ${response.statusCode}');
@@ -73,13 +98,13 @@ class PostsNotifier extends StateNotifier<List<PostsState>> {
       }
     } catch (error) {
       log('Error fetching posts: $error');
-      PostsState.isLoading = false;
+      state.isLoading = false;
       return [];
     }
   }
 }
 
 final postsProvider =
-    StateNotifierProvider<PostsNotifier, List<PostsState>>((ref) {
+    StateNotifierProvider<PostsNotifier, PostsState>((ref) {
   return PostsNotifier();
 });
