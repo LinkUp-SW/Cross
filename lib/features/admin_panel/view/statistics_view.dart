@@ -42,12 +42,12 @@ class _StatisticsViewState extends ConsumerState<StatisticsView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Text('Check Staistics',
+              Text('Check Statistics',
                   style: TextStyle(
                     fontSize: 25,
                     fontWeight: FontWeight.bold,
                   )),
-              CompanyStatisticsCarousel(),
+              AppStatisticsCarousel(),
             ],
           ),
         ),
