@@ -7,6 +7,7 @@ class InternalEndPoints {
   static String lastName = "";
   static String profileUrl = "";
   static String profileImage = "";
+  static const String socketUrl = 'http://10.0.2.2:3000';
 }
 
 class ExternalEndPoints {
@@ -60,4 +61,20 @@ class ExternalEndPoints {
   static const markread = 'api/v1/conversations/:conversationId/read';
   static const getallcounts = 'api/v1/conversation/unread-conversations';
   static const markunread = 'api/v1/conversations/:conversationId/unread';
+
+  static const topJobs = 'api/v1/jobs/get-top-jobs';
+  static const jobDetails = 'api/v1/jobs/get-job/:jobId';
+  static const getJobs = 'api/v1/jobs/get-jobs';
+  static const saveJob = 'api/v1/jobs/save-jobs/:jobId';
+  static const unsaveJob = 'api/v1/jobs/unsave-jobs/:jobId';
+  static const getSavedJobs = 'api/v1/jobs/get-saved-jobs';
+  static const searchJobs = 'api/v1/jobs/search-jobs';
+  static const applyForJob = 'api/v1/job-application/apply-for-job';
+  static const createJobApplication =
+      'api/v1/job-application/create-job-application/{job_id}';
+  static const getJobApplications =
+      'api/v1/job-application/get-job-applications/{job_id}';
+  static const getAppliedJobs = 'api/v1/job-application/get-applied-jobs';
+  static const updateJobApplicationStatus =
+      'api/v1/job-application/update-job-application-status/{application_id}';
 }

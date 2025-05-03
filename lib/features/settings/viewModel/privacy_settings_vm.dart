@@ -45,7 +45,8 @@ class PrivacySettingsVmNotifier extends StateNotifier<PrivacySettingsVm> {
 
   Future<void> setProfileVisibility(Visibilities visibility) async {
     //Public or Private
-    await state.baseService.put('api/v1/user/privacy-settings/profile-visibility', {
+    await state.baseService
+        .put('api/v1/user/privacy-settings/profile-visibility', body: {
       'profileVisibility':
           visibility == Visibilities.anyone ? 'Public' : 'Connections only',
     }).then((value) {
@@ -60,9 +61,10 @@ class PrivacySettingsVmNotifier extends StateNotifier<PrivacySettingsVm> {
     });
   }
 
-  Future<void> setInvitationRequests(Visibilities visibility) async{
+  Future<void> setInvitationRequests(Visibilities visibility) async {
     //Everyone or email
-    await state.baseService.put('api/v1/user/privacy-settings/invitations-requests', {
+    await state.baseService
+        .put('api/v1/user/privacy-settings/invitations-requests', body: {
       'invitationSetting':
           visibility == Visibilities.anyone ? 'Everyone' : 'email',
     }).then((value) {
@@ -78,7 +80,8 @@ class PrivacySettingsVmNotifier extends StateNotifier<PrivacySettingsVm> {
 
   Future<void> setFollowRequest(Visibilities visibility) async {
     //Everyone or connections only
-    await state.baseService.put('api/v1/user/privacy-settings/follow-requests', {
+    await state.baseService
+        .put('api/v1/user/privacy-settings/follow-requests', body: {
       'followSetting':
           visibility == Visibilities.anyone ? 'Everyone' : 'Connections only',
     }).then((value) {
@@ -92,8 +95,9 @@ class PrivacySettingsVmNotifier extends StateNotifier<PrivacySettingsVm> {
     });
   }
 
-  Future<void> setFollowPrimary(bool setting) async{
-    await state.baseService.put('api/v1/user/privacy-settings/follow-primary', {
+  Future<void> setFollowPrimary(bool setting) async {
+    await state.baseService
+        .put('api/v1/user/privacy-settings/follow-primary', body: {
       'isFollowPrimary': setting,
     }).then((value) {
       if (value.statusCode == 200) {
@@ -106,8 +110,9 @@ class PrivacySettingsVmNotifier extends StateNotifier<PrivacySettingsVm> {
     });
   }
 
-  Future<void> setMessagingRequest(bool setting) async{
-    await state.baseService.put('api/v1/user/privacy-settings/messaging-requests', {
+  Future<void> setMessagingRequest(bool setting) async {
+    await state.baseService
+        .put('api/v1/user/privacy-settings/messaging-requests', body: {
       'messagingRequests': setting,
     }).then((value) {
       if (value.statusCode == 200) {
@@ -120,8 +125,9 @@ class PrivacySettingsVmNotifier extends StateNotifier<PrivacySettingsVm> {
     });
   }
 
-  Future<void> setReadReciepts(bool setting) async{
-    await state.baseService.put('api/v1/user/privacy-settings/read-receipts', {
+  Future<void> setReadReciepts(bool setting) async {
+    await state.baseService
+        .put('api/v1/user/privacy-settings/read-receipts', body: {
       'readReceipts': setting,
     }).then((value) {
       if (value.statusCode == 200) {

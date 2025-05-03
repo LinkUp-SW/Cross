@@ -3,7 +3,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:link_up/features/chat/model/message_model.dart';
-import 'package:link_up/features/chat/utils/media_helper.dart' as media; // Use prefix instead of hide
+import 'package:link_up/features/chat/utils/media_helper.dart'
+    as media; // Use prefix instead of hide
 import 'package:link_up/features/chat/utils/document_handler.dart';
 import 'package:link_up/features/chat/widgets/typing_indicator.dart';
 import 'package:link_up/features/chat/widgets/video_player_screen.dart';
@@ -37,7 +38,8 @@ class ChatScreen extends ConsumerStatefulWidget {
   _ChatScreenState createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObserver {
+class _ChatScreenState extends ConsumerState<ChatScreen>
+    with WidgetsBindingObserver {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController messageController = TextEditingController();
   late final String otheruser;
@@ -55,10 +57,15 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
 
     // Set this conversation as actively being viewed
     Future.microtask(() {
-      ref.read(messagesViewModelProvider(widget.conversationId).notifier).setActiveViewStatus(true);
+      ref
+          .read(messagesViewModelProvider(widget.conversationId).notifier)
+          .setActiveViewStatus(true);
 
       log('Initializing chat screen for conversation: ${widget.conversationId}');
-      ref.read(messagesViewModelProvider(widget.conversationId).notifier).loadMessages().then((_) {
+      ref
+          .read(messagesViewModelProvider(widget.conversationId).notifier)
+          .loadMessages()
+          .then((_) {
         // Scroll to bottom after messages are loaded
         WidgetsBinding.instance.addPostFrameCallback((_) {
           _scrollToBottom();
@@ -80,7 +87,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
   void dispose() {
     // Set chat as no longer active when leaving the screen
     if (mounted) {
-      ref.read(messagesViewModelProvider(widget.conversationId).notifier).setActiveViewStatus(false);
+      ref
+          .read(messagesViewModelProvider(widget.conversationId).notifier)
+          .setActiveViewStatus(false);
     }
 
     WidgetsBinding.instance.removeObserver(this);
@@ -92,7 +101,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
       log('[CHAT] Disposing chat screen for conversation: ${widget.conversationId}');
 
       // Get socket service reference before invalidating the provider
-      final socketProvider = ref.read(messagesViewModelProvider(widget.conversationId).notifier);
+      final socketProvider =
+          ref.read(messagesViewModelProvider(widget.conversationId).notifier);
 
       // Signal to the socket service that this conversation is ending
       socketProvider.cleanupSocketConnection();
@@ -121,7 +131,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
     switch (state) {
       case AppLifecycleState.resumed:
         // App is visible and active - set active status and check if at bottom
-        ref.read(messagesViewModelProvider(widget.conversationId).notifier).setActiveViewStatus(true);
+        ref
+            .read(messagesViewModelProvider(widget.conversationId).notifier)
+            .setActiveViewStatus(true);
         // Only check if at bottom after making active
         _checkIfAtBottom();
         break;
@@ -130,7 +142,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
       case AppLifecycleState.detached:
       case AppLifecycleState.hidden:
         // App is not visible - user cannot see messages
-        ref.read(messagesViewModelProvider(widget.conversationId).notifier).setActiveViewStatus(false);
+        ref
+            .read(messagesViewModelProvider(widget.conversationId).notifier)
+            .setActiveViewStatus(false);
         _hasMarkedAsRead = false; // Reset this flag when app goes to background
         break;
     }
@@ -140,7 +154,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
     // Check if we're at bottom to mark messages as read
     _checkIfAtBottom();
 
-    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
       // Load more messages when reaching the bottom
       // ref.read(messagesViewModelProvider(widget.conversationId).notifier).loadMoreMessages();
     }
@@ -149,13 +164,16 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final messagesState = ref.watch(messagesViewModelProvider(widget.conversationId));
+    final messagesState =
+        ref.watch(messagesViewModelProvider(widget.conversationId));
 
     log('Building chat screen. Messages count: ${messagesState.messages?.length ?? 0}');
     log('Other user typing: ${messagesState.isOtherUserTyping}');
 
     // Scroll to bottom whenever messages update and loading completes
-    if (!messagesState.isLoading && messagesState.messages != null && messagesState.messages!.isNotEmpty) {
+    if (!messagesState.isLoading &&
+        messagesState.messages != null &&
+        messagesState.messages!.isNotEmpty) {
       // Use post frame callback to ensure the list view is built before scrolling
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _scrollToBottom();
@@ -165,12 +183,15 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
     return Scaffold(
       backgroundColor: theme.colorScheme.background,
       appBar: AppBar(
-        backgroundColor: theme.appBarTheme.backgroundColor ?? theme.colorScheme.primary,
+        backgroundColor:
+            theme.appBarTheme.backgroundColor ?? theme.colorScheme.primary,
         iconTheme: IconThemeData(color: theme.iconTheme.color),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () async {
-            await ref.read(chatViewModelProvider.notifier).fetchChats(); // Fetch updated chat list
+            await ref
+                .read(chatViewModelProvider.notifier)
+                .fetchChats(); // Fetch updated chat list
             if (context.mounted) {
               Navigator.of(context).pop(); // Return to chat list screen
             }
@@ -178,13 +199,15 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
         ),
         title: Text(
           widget.senderName,
-          style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          style:
+              theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
       ),
       body: Column(
         children: [
           Expanded(
-            child: messagesState.isLoading && (messagesState.messages?.isEmpty ?? true)
+            child: messagesState.isLoading &&
+                    (messagesState.messages?.isEmpty ?? true)
                 ? Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -198,10 +221,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
                             children: [
                               for (int i = 0; i < 3; i++)
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 2.0),
                                   child: TweenAnimationBuilder<double>(
                                     tween: Tween(begin: 0.0, end: 1.0),
-                                    duration: Duration(milliseconds: 600 + (i * 200)),
+                                    duration:
+                                        Duration(milliseconds: 600 + (i * 200)),
                                     builder: (context, value, _) {
                                       return Transform.scale(
                                         scale: 0.6 + (0.4 * value),
@@ -209,7 +234,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
                                           width: 12,
                                           height: 12,
                                           decoration: BoxDecoration(
-                                            color: theme.colorScheme.primary.withOpacity(0.4 + (0.6 * value)),
+                                            color: theme.colorScheme.primary
+                                                .withOpacity(
+                                                    0.4 + (0.6 * value)),
                                             shape: BoxShape.circle,
                                           ),
                                         ),
@@ -246,8 +273,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
                       if (message.isSeen && message.isOwnMessage == true) {
                         // Check if this is the last seen message by looking ahead
                         bool isLast = true;
-                        for (int i = index + 1; i < messagesState.messages!.length; i++) {
-                          if (messagesState.messages![i].isSeen && messagesState.messages![i].isOwnMessage == true) {
+                        for (int i = index + 1;
+                            i < messagesState.messages!.length;
+                            i++) {
+                          if (messagesState.messages![i].isSeen &&
+                              messagesState.messages![i].isOwnMessage == true) {
                             isLast = false;
                             break;
                           }
@@ -266,7 +296,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
                       return ChatMessageBubble(
                         key: ValueKey(message.messageId),
                         message: message,
-                        currentUserName: "${InternalEndPoints.firstname} ${InternalEndPoints.lastname}",  
+                        currentUserName:
+                            "${InternalEndPoints.firstName} ${InternalEndPoints.lastName}",
                         currentUserProfilePicUrl: InternalEndPoints.profileUrl,
                         chatProfilePicUrl: widget.senderProfilePicUrl,
                         senderName: widget.senderName,
@@ -281,18 +312,22 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
           // Show typing indicator when the other user is typing
           if (messagesState.isOtherUserTyping)
             TypingIndicator(
-              isTyping: messagesState.isOtherUserTyping, // Always true here since we're inside the conditional
+              isTyping: messagesState
+                  .isOtherUserTyping, // Always true here since we're inside the conditional
               typingUser: widget.senderName,
-              currentUser: "${InternalEndPoints.firstname}${InternalEndPoints.lastname}",
+              currentUser:
+                  "${InternalEndPoints.firstName}${InternalEndPoints.lastName}",
               theme: theme,
             ),
 
           // Show error indicator when there's an error
           if (messagesState.isError)
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+              padding:
+                  const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+                padding: const EdgeInsets.symmetric(
+                    vertical: 12.0, horizontal: 16.0),
                 decoration: BoxDecoration(
                   color: theme.colorScheme.errorContainer.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(12),
@@ -313,7 +348,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
                           child: Container(
                             padding: const EdgeInsets.all(8.0),
                             decoration: BoxDecoration(
-                              color: theme.colorScheme.errorContainer.withOpacity(value * 0.3),
+                              color: theme.colorScheme.errorContainer
+                                  .withOpacity(value * 0.3),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
@@ -344,9 +380,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            messagesState.errorMessage ?? 'Error loading messages',
+                            messagesState.errorMessage ??
+                                'Error loading messages',
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurface.withOpacity(0.7),
+                              color:
+                                  theme.colorScheme.onSurface.withOpacity(0.7),
                             ),
                           ),
                         ],
@@ -360,7 +398,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
                       ),
                       onPressed: () {
                         // Retry loading messages
-                        ref.read(messagesViewModelProvider(widget.conversationId).notifier).loadMessages();
+                        ref
+                            .read(
+                                messagesViewModelProvider(widget.conversationId)
+                                    .notifier)
+                            .loadMessages();
                       },
                     ),
                   ],
@@ -372,7 +414,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
             onSendPressed: _handleSendMessage,
             onTyping: _handleTypingStarted, // Use the new method
             onAttachmentPressed: () {
-              _showAttachmentOptions(context, ref, widget.conversationId.hashCode);
+              _showAttachmentOptions(
+                  context, ref, widget.conversationId.hashCode);
             },
           )
         ],
@@ -384,8 +427,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
     if (!_scrollController.hasClients) return;
 
     // Make the threshold stricter and add time-based verification
-    final isAtVeryBottom =
-        _scrollController.position.pixels > (_scrollController.position.maxScrollExtent - 5); // Reduced to 5px
+    final isAtVeryBottom = _scrollController.position.pixels >
+        (_scrollController.position.maxScrollExtent - 5); // Reduced to 5px
 
     // Add additional check - must be at bottom AND have been there for a bit
     if (isAtVeryBottom && !_hasMarkedAsRead) {
@@ -395,10 +438,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
         if (!mounted) return;
 
         final stillAtBottom = _scrollController.hasClients &&
-            _scrollController.position.pixels > (_scrollController.position.maxScrollExtent - 5);
+            _scrollController.position.pixels >
+                (_scrollController.position.maxScrollExtent - 5);
 
         if (stillAtBottom) {
-          ref.read(messagesViewModelProvider(widget.conversationId).notifier).markConversationAsRead();
+          ref
+              .read(messagesViewModelProvider(widget.conversationId).notifier)
+              .markConversationAsRead();
           _hasMarkedAsRead = true;
           log('[CHAT] Marked messages as read - user confirmed at bottom');
         }
@@ -421,7 +467,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
       messageId: 'temp_${DateTime.now().millisecondsSinceEpoch}',
       senderId: InternalEndPoints.userId,
       receiverId: otheruser,
-      senderName: "${InternalEndPoints.firstname}${InternalEndPoints.lastname}", // Simplified display name for current user
+      senderName:
+          "${InternalEndPoints.firstName}${InternalEndPoints.lastName}", // Simplified display name for current user
       message: messageText, // Make sure this is not empty
       media: [],
       timestamp: DateTime.now(),
@@ -435,7 +482,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
     messageController.clear();
 
     // Send message
-    ref.read(messagesViewModelProvider(widget.conversationId).notifier).sendMessage(newMessage);
+    ref
+        .read(messagesViewModelProvider(widget.conversationId).notifier)
+        .sendMessage(newMessage);
 
     // Scroll to bottom immediately
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -449,7 +498,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
     final file = File(filePath);
     if (!await file.exists()) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Selected file doesn't exist or was deleted")),
+        const SnackBar(
+            content: Text("Selected file doesn't exist or was deleted")),
       );
       return;
     }
@@ -486,7 +536,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
         messageId: messageId,
         senderId: InternalEndPoints.userId,
         receiverId: otheruser,
-        senderName: "${InternalEndPoints.firstname}${InternalEndPoints.lastname}",
+        senderName:
+            "${InternalEndPoints.firstName}${InternalEndPoints.lastName}",
         message: mediaType == "document" ? fileName : "",
         media: [filePath], // Local path for preview
         timestamp: DateTime.now(),
@@ -499,7 +550,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
       );
 
       // Add temporary message to UI
-      ref.read(messagesViewModelProvider(widget.conversationId).notifier).addLocalMessage(tempMessage);
+      ref
+          .read(messagesViewModelProvider(widget.conversationId).notifier)
+          .addLocalMessage(tempMessage);
 
       // Mark document messages as sent immediately
       if (mediaType == "document") {
@@ -512,7 +565,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
       _scrollToBottom();
 
       // Process media in background with one unified method
-      final base64Data = await media.MediaHelper.prepareMediaForUpload(filePath);
+      final base64Data =
+          await media.MediaHelper.prepareMediaForUpload(filePath);
 
       // Close loading dialog
       if (context.mounted && Navigator.canPop(context)) {
@@ -629,7 +683,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
 
   Future<void> _openDocument(Message message) async {
     try {
-      final filePath = message.media.isNotEmpty ? message.media[0] : message.message;
+      final filePath =
+          message.media.isNotEmpty ? message.media[0] : message.message;
       final isUrl = filePath.startsWith('http');
       final fileName = path.basename(filePath);
 
@@ -717,7 +772,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
     final fileExt = path.extension(mediaPath).toLowerCase();
 
     // Force document messages to always show as sent
-    if (!media.MediaHelper.isImageFile(fileExt) && !media.MediaHelper.isVideoFile(fileExt)) {
+    if (!media.MediaHelper.isImageFile(fileExt) &&
+        !media.MediaHelper.isVideoFile(fileExt)) {
       // This is a document - force status to sent
       ref
           .read(messagesViewModelProvider(widget.conversationId).notifier)
@@ -798,7 +854,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
                         return Center(
                           child: CircularProgressIndicator(
                             value: loadingProgress.expectedTotalBytes != null
-                                ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                    loadingProgress.expectedTotalBytes!
                                 : null,
                             color: Colors.white,
                           ),
@@ -810,7 +867,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.error_outline, color: Colors.red, size: 48),
+                              const Icon(Icons.error_outline,
+                                  color: Colors.red, size: 48),
                               const SizedBox(height: 16),
                               const Text(
                                 "Failed to load image",
@@ -830,7 +888,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.error_outline, color: Colors.red, size: 48),
+                              const Icon(Icons.error_outline,
+                                  color: Colors.red, size: 48),
                               const SizedBox(height: 16),
                               const Text(
                                 "Failed to load image",
@@ -846,7 +905,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
     );
   }
 
-  void _showAttachmentOptions(BuildContext context, WidgetRef ref, int chatIndex) {
+  void _showAttachmentOptions(
+      BuildContext context, WidgetRef ref, int chatIndex) {
     final theme = Theme.of(context);
 
     showModalBottomSheet(
@@ -861,12 +921,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
           child: Wrap(
             children: [
               ListTile(
-                leading: Icon(Icons.camera_alt, color: theme.colorScheme.primary),
+                leading:
+                    Icon(Icons.camera_alt, color: theme.colorScheme.primary),
                 title: Text("Take Photo", style: theme.textTheme.bodyLarge),
                 onTap: () async {
                   Navigator.pop(context);
                   final picker = ImagePicker();
-                  final pickedFile = await picker.pickImage(source: ImageSource.camera);
+                  final pickedFile =
+                      await picker.pickImage(source: ImageSource.camera);
 
                   if (pickedFile != null && context.mounted) {
                     _sendMediaMessage(pickedFile.path, "image");
@@ -879,7 +941,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
                 onTap: () async {
                   Navigator.pop(context);
                   final picker = ImagePicker();
-                  final pickedFile = await picker.pickVideo(source: ImageSource.camera);
+                  final pickedFile =
+                      await picker.pickVideo(source: ImageSource.camera);
 
                   if (pickedFile != null && context.mounted) {
                     _sendMediaMessage(pickedFile.path, "video");
@@ -887,12 +950,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
                 },
               ),
               ListTile(
-                leading: Icon(Icons.photo_library, color: theme.colorScheme.primary),
+                leading:
+                    Icon(Icons.photo_library, color: theme.colorScheme.primary),
                 title: Text("Photo Library", style: theme.textTheme.bodyLarge),
                 onTap: () async {
                   Navigator.pop(context);
                   final picker = ImagePicker();
-                  final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+                  final pickedFile =
+                      await picker.pickImage(source: ImageSource.gallery);
 
                   if (pickedFile != null && context.mounted) {
                     _sendMediaMessage(pickedFile.path, "image");
@@ -900,12 +965,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
                 },
               ),
               ListTile(
-                leading: Icon(Icons.video_library, color: theme.colorScheme.primary),
+                leading:
+                    Icon(Icons.video_library, color: theme.colorScheme.primary),
                 title: Text("Video Library", style: theme.textTheme.bodyLarge),
                 onTap: () async {
                   Navigator.pop(context);
                   final picker = ImagePicker();
-                  final pickedFile = await picker.pickVideo(source: ImageSource.gallery);
+                  final pickedFile =
+                      await picker.pickVideo(source: ImageSource.gallery);
 
                   if (pickedFile != null && context.mounted) {
                     _sendMediaMessage(pickedFile.path, "video");
@@ -913,7 +980,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
                 },
               ),
               ListTile(
-                leading: Icon(Icons.insert_drive_file, color: theme.colorScheme.primary),
+                leading: Icon(Icons.insert_drive_file,
+                    color: theme.colorScheme.primary),
                 title: Text("Document", style: theme.textTheme.bodyLarge),
                 onTap: () async {
                   Navigator.pop(context);
@@ -943,7 +1011,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
     // Don't trigger any local UI update for our own typing
     if (mounted) {
       // Just notify the other user that we're typing
-      ref.read(messagesViewModelProvider(widget.conversationId).notifier).startTyping();
+      ref
+          .read(messagesViewModelProvider(widget.conversationId).notifier)
+          .startTyping();
     }
   }
 }
