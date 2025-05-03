@@ -214,7 +214,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                       title: "Education",
                       onAddPressed: () => GoRouter.of(context).push('/add_new_education'),
                       onEditPressed: allEducations != null && allEducations.isNotEmpty
-                          ? () => GoRouter.of(context).push('/education_list') 
+                          ? () => GoRouter.of(context).push('/education_list_page') 
                           : null,
                       child: allEducations == null
                           ? const Center(child: CircularProgressIndicator(strokeWidth: 2))

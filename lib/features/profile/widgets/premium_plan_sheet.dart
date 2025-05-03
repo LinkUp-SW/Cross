@@ -101,10 +101,7 @@ class PremiumPlanSheetContent extends StatelessWidget {
                    onPressed: () {
                     GoRouter.of(context).push('/payment');
                      Navigator.pop(context); 
-                     print("Upgrade Now button pressed!");
-                     ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Subscription flow not implemented yet.'))
-                     );
+
                    },
                    style: ElevatedButton.styleFrom(
                      backgroundColor: upgradeButtonColor,
