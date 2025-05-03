@@ -11,7 +11,7 @@ import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/shared/widgets/custom_app_bar.dart';
 import 'package:link_up/features/jobs/view/my_jobs_screen.dart';
-import 'package:link_up/features/search/view/search_jobs_page.dart';
+
 import 'package:link_up/features/jobs/view/job_filter_page.dart';
 
 class JobsScreen extends ConsumerStatefulWidget {
