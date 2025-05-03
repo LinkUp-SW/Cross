@@ -41,7 +41,7 @@ class _ReportsState extends ConsumerState<reportsCard> {
 
   @override
   Widget build(BuildContext context) {
-    final isPending = widget.status == 'Pending';
+    final isPending = widget.status == 'pending';
 
     return Container(
       padding: const EdgeInsets.all(16.0),
