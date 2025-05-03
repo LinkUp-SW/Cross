@@ -29,7 +29,6 @@ aboutPostBottomSheet(BuildContext context,
           children: [
             ListTile(
               onTap: () {
-                //TODO: save post
                 setState(() {
                   post.saved = !post.saved;
                   if (post.saved) {
@@ -59,18 +58,8 @@ aboutPostBottomSheet(BuildContext context,
               leading: const Icon(Icons.visibility_off),
               title: Text(isAd ? "Hide or report this add" : "Not interested"),
             ),
-            isAd
-                ? ListTile(
+            ListTile(
                     onTap: () {
-                      //TODO:
-                    },
-                    leading: const Icon(Icons.info),
-                    title: const Text("Why am I seeing this ad?"),
-                  )
-                : ListTile(
-                    onTap: () {
-                      //TODO: unfollow user
-                      //Needs to be changed to top id and name
                       isAcitvity
                           ? unfollowUser(post.activity.actorUserName)
                           : unfollowUser(post.header.userId);
@@ -84,7 +73,6 @@ aboutPostBottomSheet(BuildContext context,
             if (!isAd)
               ListTile(
                 onTap: () {
-                  //TODO: report post
                   showDialog(
                       context: context,
                       builder: (context) {
@@ -159,16 +147,6 @@ myPostBottomSheet(BuildContext context, WidgetRef ref,
         padding: EdgeInsets.all(10.r),
         child: Column(
           children: [
-            // ListTile(
-            //   onTap: () {
-            //     //TODO: feature on top of profile
-            //     setState(() {
-            //       featured = !featured;
-            //     });
-            //   },
-            //   leading: Icon(featured ? Icons.star : Icons.star_border),
-            //   title: const Text("Feature on top of profile"),
-            // ),
             ListTile(
               onTap: () {
                 setState(() {
@@ -269,7 +247,6 @@ myPostBottomSheet(BuildContext context, WidgetRef ref,
             ),
             ListTile(
               onTap: () {
-                //TODO: who can comment on this post post
                 context.pop();
                 postVisibiltyBottomSheet(
                   context,
@@ -290,7 +267,6 @@ myPostBottomSheet(BuildContext context, WidgetRef ref,
             ),
             ListTile(
               onTap: () {
-                //TODO: who cna see this post
                 context.pop();
                 postVisibiltyBottomSheet(
                   context,

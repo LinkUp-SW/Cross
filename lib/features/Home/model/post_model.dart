@@ -44,7 +44,7 @@ class PostModel {
       : id = json['_id'],
         activity = json['activity_context'] != null ? ActivityModel.fromJson(json['activity_context']): ActivityModel.initial(),
         header = HeaderModel.fromJson(json),
-        text = json['content'] ?? 'Erro',
+        text = json['content'] ?? '',
         media = Media.fromJson(json['media'],
             ogPost: json['original_post']),
         reactions =  json['reactions_count'] ?? 0,
