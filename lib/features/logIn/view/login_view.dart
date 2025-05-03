@@ -40,7 +40,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
     ref.listen<LogInState>(logInProvider, (previous, next) {
       if (next is LogInSuccessState) {
-        if (next.isAdmin) {
+        if (next.isAdmin == true) {
           logInNotifier.getUserData();
           context.pushReplacement('/dashboard');
         } else {
