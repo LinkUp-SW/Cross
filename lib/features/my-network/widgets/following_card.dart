@@ -6,6 +6,7 @@ import 'package:link_up/features/my-network/viewModel/people_i_follow_screen_vie
 import 'package:link_up/features/my-network/widgets/confirmation_pop_up.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
+import 'package:go_router/go_router.dart';
 
 class FollowingCard extends ConsumerWidget {
   final FollowingCardModel data;
@@ -40,31 +41,46 @@ class FollowingCard extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 spacing: 8.w,
                 children: [
-                  CircleAvatar(
-                    radius: 30.r,
-                    foregroundImage: NetworkImage(
-                      data.profilePicture,
+                  InkWell(
+                    onTap: () {
+                      context.push('/profile', extra: data.cardId);
+                    },
+                    child: CircleAvatar(
+                      radius: 30.r,
+                      foregroundImage: data.profilePicture == ""
+                          ? AssetImage(
+                              'assets/images/default-profile-picture.png')
+                          : NetworkImage(
+                              data.profilePicture,
+                            ),
                     ),
                   ),
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "${data.firstName} ${data.lastName}",
-                          style: TextStyles.font14_500Weight,
-                        ),
-                        Text(
-                          data.title,
-                          style: TextStyles.font13_500Weight.copyWith(
-                            color: isDarkMode
-                                ? AppColors.darkSecondaryText
-                                : AppColors.lightTextColor,
+                    child: InkWell(
+                      onTap: () {
+                        context.push('/profile', extra: data.cardId);
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            data.name,
+                            style: TextStyles.font14_500Weight,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 2,
-                        ),
-                      ],
+                          Text(
+                            data.title,
+                            style: TextStyles.font13_500Weight.copyWith(
+                              color: isDarkMode
+                                  ? AppColors.darkSecondaryText
+                                  : AppColors.lightTextColor,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -79,7 +95,7 @@ class FollowingCard extends ConsumerWidget {
                     builder: (context) => ConfirmationPopUp(
                       title: 'Unfollowing',
                       content:
-                          'Are you sure you want to unfollow ${data.firstName} ${data.lastName}?',
+                          'Are you sure you want to unfollow ${data.name} ?',
                       buttonText: 'Unfollow',
                       buttonFunctionality: () {
                         Navigator.of(context).pop();

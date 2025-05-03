@@ -2,12 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/Home/view/saved_posts.dart';
+import 'package:link_up/features/admin_panel/view/dashboard_view.dart';
+import 'package:link_up/features/admin_panel/view/privilages_view.dart';
+import 'package:link_up/features/Home/view/user_posts_page.dart';
 import 'package:link_up/features/admin_panel/view/statistics_view.dart';
+import 'package:link_up/features/admin_panel/view/users_view.dart';
 import 'package:link_up/features/my-network/view/connections_screen.dart';
 import 'package:link_up/core/utils/global_keys.dart';
 import 'package:link_up/features/logIn/view/forgot_pasword_view.dart';
 import 'package:link_up/features/logIn/view/login_view.dart';
+import 'package:link_up/features/profile/view/education_list_page.dart';
 import 'package:link_up/features/profile/view/view.dart';
+import 'package:link_up/features/search/view/search_page.dart';
 import 'package:link_up/features/jobs/view/search_jobs_page.dart';
 import 'package:link_up/features/settings/view/settings.dart';
 import 'package:link_up/features/signUp/view/userInfo/names_view.dart';
@@ -29,6 +35,7 @@ import 'package:link_up/features/my-network/view/manage_my_network_screen.dart';
 import 'package:link_up/features/my-network/view/people_i_follow_screen.dart';
 import 'package:link_up/features/my-network/view/view.dart';
 import 'package:link_up/features/chat/view/chat_list_page.dart';
+import 'package:link_up/features/subscription/view/view.dart';
 import 'package:link_up/shared/dummy_page.dart';
 import 'package:link_up/shared/widgets/bottom_navigation_bar.dart';
 import 'package:link_up/features/profile/view/edit_intro.dart';
@@ -37,17 +44,36 @@ import 'package:link_up/features/profile/view/add_new_position.dart';
 import 'package:link_up/features/profile/view/add_new_education.dart';
 import 'package:link_up/shared/widgets/main_drawer.dart';
 import 'package:link_up/features/jobs/view/view.dart';
+import 'package:link_up/features/profile/view/search_school_page.dart';
+import 'package:link_up/features/profile/view/search_organization.dart';
+import 'package:link_up/features/profile/view/add_section.dart';
+import 'package:link_up/features/profile/view/edit_about.dart';
+import 'package:link_up/features/profile/view/add_resume.dart';
+import 'package:link_up/features/profile/view/resume_viewer.dart';
+import 'package:link_up/features/profile/view/add_new_license.dart';
+import 'package:link_up/features/profile/view/add_new_skill.dart';
+import 'package:link_up/features/profile/view/skills_list_page.dart';
+import 'package:link_up/features/profile/view/experience_list_page.dart';
+import 'package:link_up/features/profile/view/license_list_page.dart';
+import 'package:link_up/features/profile/view/contact_info.dart';
+import 'package:link_up/features/profile/model/profile_model.dart';
+import 'package:link_up/features/profile/view/blocked_users_pages.dart';
 import 'package:link_up/features/jobs/view/job_details.dart';
 import 'package:link_up/features/jobs/view/my_jobs_screen.dart';
-import 'package:link_up/features/jobs/view/search_jobs_page.dart';
-final goRouterProvider = Provider<GoRouter>((ref) {
-  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
-  return GoRouter(
+final goRouterProvider = Provider<GoRouter>(
+  (ref) {
+    final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
+    return GoRouter(
       navigatorKey: navigatorKey,
       initialLocation: '/login',
       routes: <RouteBase>[
-        GoRoute(path: "/profile", builder: (context, state) => ProfilePage()),
+        GoRoute(
+            path: "/profile",
+            builder: (context, state) => ProfilePage(
+                  userId: state.extra as String,
+                )),
         GoRoute(
             path: "/login",
             builder: (context, state) => const LoginPage(),
@@ -60,8 +86,15 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             path: '/statistics',
             builder: (context, state) => const StatisticsView()),
         GoRoute(
-            path: '/priv',
-            builder: (context, state) => const DummyPage(title: 'Users')),
+            path: '/dashboard',
+            builder: (context, state) => const DashboardView()),
+        GoRoute(path: '/users', builder: (context, state) => const UsersPage()),
+        GoRoute(
+            path: '/adminjobs',
+            builder: (context, state) => const DummyPage(title: 'Admin Jobs')),
+        GoRoute(
+            path: '/contentModration',
+            builder: (context, state) => const ReportsPage()),
         GoRoute(
             path: "/signup",
             builder: (context, state) => const EmailPasswordView(),
@@ -94,9 +127,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         ),
         GoRoute(
           path: "/connections",
-          builder: (context, state) => ConnectionsScreen(
-            isDarkMode: Theme.of(context).brightness == Brightness.dark,
-          ),
+          builder: (context, state) => ConnectionsScreen(),
         ),
         GoRoute(
           path: "/following",
@@ -108,10 +139,92 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             title: 'Pages Screen',
           ),
         ),
+        //blocked
+        GoRoute(
+          path: '/blocked_users',
+          builder: (context, state) => const BlockedUsersPage(),
+        ),
+
         //Profile Page Routes
+        GoRoute(
+          path: "/add_profile_section",
+          builder: (context, state) => const AddSectionPage(),
+        ),
+        GoRoute(
+          path: "/skills_list_page",
+          builder: (context, state) => const SkillListPage(),
+        ),
+        GoRoute(
+          path: "/experience_list_page",
+          builder: (context, state) => const ExperienceListPage(),
+        ),
+        GoRoute(
+          path: "/education_list_page",
+          builder: (context, state) => const EducationListPage(),
+        ),
+        GoRoute(
+          path: "/license_list_page",
+          builder: (context, state) => const LicenseListPage(),
+        ),
+
+        GoRoute(
+          path: "/add_resume",
+          builder: (context, state) => const AddResumePage(),
+        ),
+        GoRoute(
+          path: "/add_new_skill",
+          builder: (context, state) => const AddSkillPage(),
+        ),
+        GoRoute(
+          path: "/add_new_license",
+          builder: (context, state) => const AddNewLicensePage(),
+        ),
+        GoRoute(
+          path: '/resume_viewer',
+          builder: (context, state) {
+            final String? resumeUrl = state.extra as String?;
+            return ResumeViewerPage(url: resumeUrl);
+          },
+        ),
+
+        GoRoute(
+          path: "/edit_about",
+          builder: (context, state) => const EditAboutPage(),
+        ),
+        GoRoute(
+            path: "/search_school",
+            pageBuilder: (context, state) {
+              final initialQuery = state.extra as String?;
+              return MaterialPage(
+                fullscreenDialog: true,
+                child: SearchSchoolPage(initialQuery: initialQuery),
+              );
+            }),
+        GoRoute(
+            path: "/search_organization",
+            pageBuilder: (context, state) {
+              final initialQuery = state.extra as String?;
+              return MaterialPage(
+                fullscreenDialog: true,
+                child: SearchOrganizationPage(initialQuery: initialQuery),
+              );
+            }),
+
         GoRoute(
           path: "/edit_intro",
           builder: (context, state) => const EditIntroPage(),
+        ),
+        GoRoute(
+          path: '/contact_info',
+          builder: (context, state) {
+            final userProfile = state.extra as UserProfile?;
+            if (userProfile == null) {
+              return const Scaffold(
+                  body:
+                      Center(child: Text("Error: User profile data missing.")));
+            }
+            return ContactInfoPage(userProfile: userProfile);
+          },
         ),
         GoRoute(
           path: "/edit_contact_info",
@@ -125,11 +238,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           path: "/add_new_education",
           builder: (context, state) => const AddNewEducation(),
         ),
+
         StatefulShellRoute.indexedStack(
           builder: (context, state, navigationShell) => Scaffold(
             key: scaffoldKey,
             drawer: const MainDrawer(),
-            body: navigationShell, // The body displays the current screen
+            body: navigationShell,
             bottomNavigationBar: CustomBottomNavigationBar(
               navigationShell: navigationShell,
             ),
@@ -186,7 +300,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                       builder: (context, state) {
                         final String jobId = state.pathParameters['jobId']!;
                         return JobDetailsPage(jobId: jobId);
-
                       },
                     ),
                     GoRoute(
@@ -268,9 +381,22 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           builder: (context, state) => SavedPostsPage(),
         ),
         GoRoute(
+            path: '/userPosts', builder: (context, state) => UserPostsPage()),
+        GoRoute(
             path: "/messages", builder: (context, state) => ChatListScreen()),
         GoRoute(path: "/chatpage", builder: (context, state) => Container()),
-        GoRoute(path: "/search", builder: (context, state) => SearchJobsPage()),
+        GoRoute(
+          path: '/search',
+          builder: (context, state) => SearchPage(
+            searchKeyWord: state.extra as String?,
+          ),
+        ),
         GoRoute(path: "/settings", builder: (context, state) => SettingsPage()),
-      ]);
-});
+        GoRoute(
+          path: "/payment",
+          builder: (context, state) => const SubscriptionManagementScreen(),
+        ),
+      ],
+    );
+  },
+);

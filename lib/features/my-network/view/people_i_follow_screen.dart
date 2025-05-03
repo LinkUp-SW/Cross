@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
 import 'package:link_up/features/my-network/viewModel/manage_my_network_screen_view_model.dart';
 import 'package:link_up/features/my-network/viewModel/people_i_follow_screen_view_model.dart';
 import 'package:link_up/features/my-network/widgets/following_card.dart';
@@ -71,7 +70,7 @@ class _PeopleIFollowScreenState extends ConsumerState<PeopleIFollowScreen> {
                 : AppColors.lightSecondaryText,
           ),
           onPressed: () {
-            context.pop();
+            Navigator.of(context).pop();
             ref
                 .read(manageMyNetworkScreenViewModelProvider.notifier)
                 .getManageMyNetworkScreenCounts();
@@ -114,26 +113,14 @@ class _PeopleIFollowScreenState extends ConsumerState<PeopleIFollowScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  if (state.isLoading)
-                    SizedBox(
-                      width: 16.w,
-                      height: 16.w,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2.w,
-                        color: isDarkMode
-                            ? AppColors.darkGrey
-                            : AppColors.lightSecondaryText,
-                      ),
-                    )
-                  else if (state.followingsCount != null)
-                    Text(
-                      '${parseIntegerToCommaSeparatedString(state.followingsCount ?? 0)} people',
-                      style: TextStyles.font18_500Weight.copyWith(
-                        color: isDarkMode
-                            ? AppColors.darkGrey
-                            : AppColors.lightSecondaryText,
-                      ),
+                  Text(
+                    '${parseIntegerToCommaSeparatedString(state.followingsCount ?? 0)} people',
+                    style: TextStyles.font18_500Weight.copyWith(
+                      color: isDarkMode
+                          ? AppColors.darkGrey
+                          : AppColors.lightSecondaryText,
                     ),
+                  ),
                 ],
               ),
             ),
@@ -195,7 +182,7 @@ class _PeopleIFollowScreenState extends ConsumerState<PeopleIFollowScreen> {
                                     );
                                   }
                                   return FollowingCard(
-                                    data: state.followings![index],
+                                    data: state.followings!.elementAt(index),
                                   );
                                 },
                               )),

@@ -24,9 +24,14 @@ class Media {
       this.post,
       this.isLocal = false});
 
-  Media.fromJson(Map<String, dynamic> json)
-      : type = MediaType.getMediaType(json['type']),
-        urls = List<String>.from(json['urls']),
+  Media.fromJson(Map<String, dynamic> json,{Map<String, dynamic>? ogPost})
+      : type = MediaType.getMediaType(json['media_type']),
+        urls = json['link'].runtimeType == String
+            ? json['link'] == ''
+                ? []
+                : [json['link']]
+            : List<String>.from(json['link'] ?? []),
+        post = ogPost != null ? PostModel.fromJson(ogPost) : null,
         files = [];
 
   Map<String, dynamic> toJson() => {
@@ -55,11 +60,17 @@ class Media {
   Widget getMedia() {
     switch (type) {
       case MediaType.image:
-        return isLocal ? Image.file(File(files[0].path)) : Image.network(urls[0]);
+        return isLocal
+            ? Image.file(File(files[0].path))
+            : Image.network(urls[0]);
       case MediaType.images:
-        return CarouselImages(images: isLocal ? files: urls, network: !isLocal);
+        return CarouselImages(
+            images: isLocal ? files : urls, network: !isLocal);
       case MediaType.video:
-        return VideoPlayerHome(videoUrl: !isLocal ? urls[0] : null, file: isLocal ? files[0] : null , network: !isLocal);
+        return VideoPlayerHome(
+            videoUrl: !isLocal ? urls[0] : null,
+            file: isLocal ? files[0] : null,
+            network: !isLocal);
       case MediaType.pdf:
         return PDFViewer(url: isLocal ? files[0] : urls[0], network: !isLocal);
       case MediaType.link:
@@ -78,7 +89,6 @@ class Media {
             child: Posts(
               post: post!,
               showBottom: false,
-              showTop: false,
             ));
       default:
         return const SizedBox();

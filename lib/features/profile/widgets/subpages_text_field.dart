@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 
@@ -6,20 +7,22 @@ class SubPagesCustomTextField extends StatelessWidget {
   final TextEditingController? controller;
   final String? hintText;
   final int? maxLines;
+  final int? maxLength;
   final Widget? suffixIcon;
   final VoidCallback? onTap;
-  final FocusNode? focusNode; // Added FocusNode parameter
-  final bool? enabled;       // Added enabled parameter
+  final FocusNode? focusNode;
+  final bool? enabled;
 
   const SubPagesCustomTextField({
     super.key,
     this.controller,
     this.hintText,
-    this.maxLines,
+    this.maxLines = 1,
+    this.maxLength,
     this.suffixIcon,
     this.onTap,
-    this.focusNode, 
-    this.enabled,   
+    this.focusNode,
+    this.enabled,
   });
 
   @override
@@ -29,12 +32,13 @@ class SubPagesCustomTextField extends StatelessWidget {
     return TextField(
       controller: controller,
       focusNode: focusNode,
-      enabled: enabled,    
+      enabled: enabled,
       style: TextStyles.font14_400Weight.copyWith(
         color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
       ),
-      cursorColor: isDarkMode ? AppColors.darkBlue : AppColors.lightBlue, 
+      cursorColor: isDarkMode ? AppColors.darkBlue : AppColors.lightBlue,
       maxLines: maxLines,
+      maxLength: maxLength,
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: TextStyles.font14_400Weight.copyWith(

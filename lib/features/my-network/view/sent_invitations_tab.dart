@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/features/my-network/viewModel/sent_invitations_tab_view_model.dart';
 import 'package:link_up/features/my-network/widgets/retry_error_message.dart';
-import 'package:link_up/features/my-network/widgets/sent_invitation_loading_skeleton.dart';
+import 'package:link_up/features/my-network/widgets/sent_invitation_card_loading_skeleton.dart';
 import 'package:link_up/features/my-network/widgets/sent_invitations_card.dart';
 import 'package:link_up/features/my-network/widgets/standard_empty_list_message.dart';
 import 'package:link_up/shared/themes/colors.dart';
@@ -60,7 +60,8 @@ class _SentInvitationsTabState extends ConsumerState<SentInvitationsTab> {
           ? ListView.builder(
               shrinkWrap: true,
               itemCount: 3,
-              itemBuilder: (context, index) => SentInvitationsLoadingSkeleton(),
+              itemBuilder: (context, index) =>
+                  SentInvitationsCardLoadingSkeleton(),
             )
           : state.error
               ? RetryErrorMessage(
@@ -99,7 +100,7 @@ class _SentInvitationsTabState extends ConsumerState<SentInvitationsTab> {
                           );
                         }
                         return SentInvitationsCard(
-                          data: state.sent![index],
+                          data: state.sent!.elementAt(index),
                         );
                       },
                     ),
