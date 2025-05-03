@@ -136,6 +136,7 @@ class AddLicenseViewModel extends StateNotifier<AddLicenseState> {
 
   String? validateForm() {
      final formData = _createFormData(); 
+     final today = DateUtils.dateOnly(DateTime.now());
      if (formData.nameController.text.trim().isEmpty) return "License name is required.";
      if (formData.organizationController.text.trim().isEmpty) {
        return "Issuing organization name is required.";
@@ -145,7 +146,9 @@ class AddLicenseViewModel extends StateNotifier<AddLicenseState> {
      if (!formData.doesNotExpire && (formData.expirationDateController.text.isEmpty || _selectedExpirationDate == null)) {
        return "Expiration date is required (or check 'This credential does not expire').";
      }
-
+      if (_selectedIssueDate != null && _selectedIssueDate!.isAfter(today)) {
+        return "Issue date cannot be in the future.";
+      } 
      if (!formData.doesNotExpire && _selectedIssueDate != null && _selectedExpirationDate != null) {
        if (_selectedExpirationDate!.isBefore(_selectedIssueDate!)) {
          return "Expiration date cannot be before the issue date.";

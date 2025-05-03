@@ -146,8 +146,12 @@ class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
 
   String? validateForm() {
     final schoolId = _selectedSchoolData?['_id'];
+    final today = DateUtils.dateOnly(DateTime.now());
     if (_selectedSchoolData == null || schoolId == null || schoolId.trim().isEmpty) {
       return "School is required.";
+    }
+    if (_selectedStartDate!.isAfter(today)) {
+         return "Start date cannot be in the future.";
     }
     if (_degreeController.text.trim().isEmpty) return "Degree is required.";
     if (_fieldOfStudyController.text.trim().isEmpty) return "Field of Study is required.";

@@ -156,9 +156,11 @@ class AddPositionViewModel extends StateNotifier<AddPositionState> {
 
   String? validateForm() {
     final formData = _getCurrentFormData();
+    final today = DateUtils.dateOnly(DateTime.now());   
     if (formData.titleController.text.trim().isEmpty) return "Title is required.";
     if (formData.companyNameController.text.trim().isEmpty || _selectedOrganization == null) return "Company/Organization is required.";
     if (formData.startDateController.text.isEmpty) return "Start date is required.";
+    if (_selectedStartDate != null && _selectedStartDate!.isAfter(today)) return "Start date cannot be in the future.";
     if (!formData.isCurrentPosition && formData.endDateController.text.isEmpty) return "End date is required (or check 'I am currently working here').";
 
     if (!formData.isCurrentPosition && _selectedStartDate != null && _selectedEndDate != null) {
