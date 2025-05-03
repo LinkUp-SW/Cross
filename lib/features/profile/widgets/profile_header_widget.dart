@@ -36,11 +36,8 @@ void _showProfileOptionsBottomSheet(BuildContext context, WidgetRef ref, bool is
         icon: Icons.block, 
         title: 'Blocked users',
         onTap: () {
-          print("Blocked users tapped!"); 
-          // TODO: Navigate to the blocked users screen
-           ScaffoldMessenger.of(context).showSnackBar(
-             const SnackBar(content: Text('TODO: Navigate to Blocked Users'))
-           );
+          GoRouter.of(context).push('/blocked_users');
+
         },
       ),
     );

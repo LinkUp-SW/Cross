@@ -4,8 +4,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'dart:developer';
+import 'package:timeago/timeago.dart' as timeago; 
 
+import 'dart:developer';
+String formatTimeAgo(DateTime dateTime) {
+  final now = DateTime.now();
+  final difference = now.difference(dateTime);
+  return timeago.format(now.subtract(difference));
+}
 String formatDate(DateTime? date) {
   if (date == null) return '';
   try {

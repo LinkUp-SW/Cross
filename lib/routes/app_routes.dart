@@ -56,6 +56,7 @@ import 'package:link_up/features/profile/view/experience_list_page.dart';
 import 'package:link_up/features/profile/view/license_list_page.dart';
 import 'package:link_up/features/profile/view/contact_info.dart';
 import 'package:link_up/features/profile/model/profile_model.dart'; 
+import 'package:link_up/features/profile/view/blocked_users_pages.dart';
 
 
 
@@ -70,7 +71,7 @@ final goRouterProvider = Provider<GoRouter>(
         GoRoute(
             path: "/profile",
             builder: (context, state) => ProfilePage(
-                  // userId: state.extra as String,
+                   userId: state.extra as String,
                 )),
         GoRoute(
             path: "/login",
@@ -137,6 +138,12 @@ final goRouterProvider = Provider<GoRouter>(
             title: 'Pages Screen',
           ),
         ),
+        //blocked
+            GoRoute(
+              path: '/blocked_users', 
+              builder: (context, state) => const BlockedUsersPage(), 
+            ),
+
         //Profile Page Routes
         GoRoute(
           path: "/add_profile_section",
