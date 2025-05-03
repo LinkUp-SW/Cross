@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/core/constants/endpoints.dart';
+import 'package:link_up/features/chat/services/global_socket_service.dart';
 import '../model/message_model.dart';
 import '../services/messages_service.dart';
 import '../state/messages_state.dart';
@@ -299,9 +300,18 @@ class MessagesViewModel extends StateNotifier<MessagesState> {
 }
 
 final messagesViewModelProvider = StateNotifierProvider.family<MessagesViewModel, MessagesState, String>(
-  (ref, conversationId) => MessagesViewModel(
-    service: ref.watch(messageServiceProvider),
-    socketService: SocketService(conversationId: conversationId), // Create new instance with conversation ID
-    conversationId: conversationId,
-  ),
+  (ref, conversationId) {
+    // Check if socket is authenticated first
+    final globalSocket = ref.watch(globalSocketServiceProvider);
+    if (!globalSocket.isAuthenticated) {
+      // Make sure socket is initialized
+      globalSocket.initialize();
+    }
+
+    return MessagesViewModel(
+      service: ref.watch(messageServiceProvider),
+      socketService: SocketService(conversationId: conversationId),
+      conversationId: conversationId,
+    );
+  },
 );
