@@ -2,8 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:link_up/features/chat/model/chat_model.dart';
-import 'package:link_up/features/chat/model/connections_chat_model.dart';
+
 import 'package:link_up/features/chat/view/chat_screen.dart';
 import 'package:link_up/features/chat/viewModel/newchat_viewmodel.dart';
 import 'package:link_up/features/chat/widgets/connection_tile.dart';
@@ -17,6 +16,8 @@ class NewChatScreen extends ConsumerStatefulWidget {
 }
 
 class _NewChatScreenState extends ConsumerState<NewChatScreen> {
+  bool isLoading = false;
+
   @override
   void initState() {
     super.initState();
@@ -26,6 +27,68 @@ class _NewChatScreenState extends ConsumerState<NewChatScreen> {
       await notifier.getConnectionsList({'limit': '10'});
       await notifier.fetchChats();
     });
+  }
+
+  Future<void> _handleChatNavigation({
+    required String userId,
+    required String firstName,
+    required String lastName,
+    required String profilePic,
+    required bool hasExistingChat,
+  }) async {
+    try {
+      log("Processing ${hasExistingChat ? 'existing' : 'new'} chat for user: $firstName (ID: $userId)");
+
+      Map<String, dynamic>? response;
+      final viewModel = ref.read(newChatViewModelProvider.notifier);
+
+      if (hasExistingChat) {
+        response = await viewModel.openExistingChat(userId);
+      } else {
+        response = await viewModel.createNewChat(userId);
+      }
+
+      // Get the conversation ID
+      final conversationId = response['conversationId'];
+      log("Got conversation ID: $conversationId");
+
+      // Check if widget is still mounted BEFORE using context
+      if (!mounted) {
+        log("Widget no longer mounted, skipping navigation");
+        return;
+      }
+
+      // Navigate using a new context to avoid the unsafe ancestor lookup
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => ChatScreen(
+            otheruserid: userId,
+            conversationId: conversationId,
+            senderName: "$firstName $lastName",
+            senderProfilePicUrl: profilePic,
+          ),
+        ),
+      );
+    } catch (e) {
+      log("Error handling chat tap: $e");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to open chat: ${e.toString()}")),
+        );
+      }
+    } finally {
+      // Update loading state only if still mounted
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+
+        // Update the provider loading state if needed
+        if (mounted) {
+          ref.read(newChatViewModelProvider.notifier).updateLoading(false);
+        }
+      }
+    }
   }
 
   @override
@@ -41,7 +104,7 @@ class _NewChatScreenState extends ConsumerState<NewChatScreen> {
         title: const Text('New Message'),
         backgroundColor: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
       ),
-      body: state.isLoading
+      body: state.isLoading || isLoading
           ? Center(child: CircularProgressIndicator(color: theme.colorScheme.primary))
           : connections.isEmpty
               ? Center(
@@ -59,29 +122,27 @@ class _NewChatScreenState extends ConsumerState<NewChatScreen> {
                     final connection = connections[index];
                     return ConnectionTile(
                       connection: connection,
-                      onTap: () async {
-                        try {
-                          final chatResult = await viewModel.handleChatTap(connection);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ChatScreen(
-                               
-                                  conversationId: chatResult.conversationId,
-                                  senderName: chatResult.senderName,
-                                  senderProfilePicUrl: chatResult.profilePicUrl,
-                                   otheruserid: chatResult.otherUserId ?? '',
-                                ),
-                            
-                              ),
-                            
-                          );
-                        } catch (e) {
-                          log("Failed to open chat: $e");
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("Failed to open chat")),
-                          );
-                        }
+                      onTap: () {
+                        // Store connection data locally first
+                        final String userId = connection.cardId;
+                        final String firstName = connection.firstName;
+                        final String lastName = connection.lastName;
+                        final String profilePic = connection.profilePicture;
+                        final bool hasExistingChat = connection.isExistingChat;
+
+                        // Show loading indicator
+                        setState(() {
+                          isLoading = true;
+                        });
+
+                        // Use a separate method to handle the async operation
+                        _handleChatNavigation(
+                          userId: userId,
+                          firstName: firstName,
+                          lastName: lastName,
+                          profilePic: profilePic,
+                          hasExistingChat: hasExistingChat,
+                        );
                       },
                     );
                   },

@@ -6,8 +6,16 @@ immport 'package:link_up/features/chat/widgets/typing_indicator.dart';
 import 'package:link_up/features/chat/widgets/video_player_screen.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart'; */
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
+import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:link_up/features/chat/model/message_model.dart';
 import 'package:link_up/features/chat/widgets/typing_indicator.dart';
+import 'package:link_up/features/chat/widgets/video_player_screen.dart';
+import 'package:open_filex/open_filex.dart';
+import 'package:path_provider/path_provider.dart';
 import '../viewModel/chat_viewmodel.dart';
 import '../widgets/chat_message_bubble.dart';
 import '../widgets/chat_input_field.dart';
@@ -150,7 +158,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             onTyping: () {
               ref.read(messagesViewModelProvider(widget.conversationId).notifier).startTyping();
             },
-          ),
+            onAttachmentPressed: () {
+              _showAttachmentOptions(context, ref, widget.conversationId.hashCode); // Pass the chat index
+            },
+          )
         ],
       ),
     );
@@ -190,6 +201,37 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     });
   }
 
+  void _sendMediaMessage(String filePath, String mediaType) {
+    // Generate a unique ID for the message
+    final messageId = 'temp_media_${DateTime.now().millisecondsSinceEpoch}';
+
+    // Create media list to store file path
+    final mediaList = [filePath];
+
+    // Create a new message with the media
+    final newMessage = Message(
+      messageId: messageId,
+      senderId: InternalEndPoints.userId,
+      receiverId: otheruser,
+      senderName: 'You',
+      message: mediaType == "document" ? filePath : "", // For documents, store path in message
+      media: mediaList,
+      timestamp: DateTime.now(),
+      isOwnMessage: true,
+      isSeen: false,
+      reacted: '',
+      isEdited: false,
+    );
+
+    // Send the message through MessagesViewModel
+    ref.read(messagesViewModelProvider(widget.conversationId).notifier).sendMessage(newMessage);
+
+    // Scroll to bottom immediately
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToBottom();
+    });
+  }
+
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
       try {
@@ -211,6 +253,227 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   void dispose() {
     _scrollController.dispose();
     messageController.dispose();
+
+    // Properly close the socket connection before invalidating the provider
+    try {
+      log('[CHAT] Disposing chat screen for conversation: ${widget.conversationId}');
+
+      // Get socket service reference before invalidating the provider
+      final socketProvider = ref.read(messagesViewModelProvider(widget.conversationId).notifier);
+
+      // Signal to the socket service that this conversation is ending
+      socketProvider.cleanupSocketConnection();
+
+      // Use a more controlled approach to invalidate the provider after cleanup
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (mounted) {
+          // Only invalidate if still mounted to avoid errors
+          ref.invalidate(messagesViewModelProvider(widget.conversationId));
+          log('[CHAT] Successfully invalidated message provider for: ${widget.conversationId}');
+        }
+      });
+    } catch (e) {
+      log('[CHAT] Error during chat screen disposal: $e');
+    }
+
     super.dispose();
+  }
+
+  Future<void> _handleVideoMessage(Message message) async {
+    final theme = Theme.of(context);
+    if (message.senderName != "You") {
+      // Navigate to VideoPlayerScreen for videos sent by other users
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => VideoPlayerScreen(
+            videoPath: message.message, // Pass the video file path or URL
+          ),
+        ),
+      );
+    } else {
+      // Open video directly using OpenFilex for videos sent by the current user
+      try {
+        await OpenFilex.open(message.message); // mediaPath
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: theme.colorScheme.error,
+            content: Text(
+              "Failed to open video: $e",
+              style: TextStyle(color: theme.colorScheme.onError),
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _openDocument(Message message) async {
+    final filePath = message.message;
+    final isUrl = filePath.startsWith('http');
+    final fileName = filePath.split('/').last;
+
+    if (isUrl) {
+      final uri = Uri.parse(filePath);
+      final directory = await getApplicationDocumentsDirectory();
+      final localPath = '${directory.path}/$fileName';
+      final localFile = File(localPath);
+
+      if (await localFile.exists()) {
+        OpenFilex.open(localPath);
+      } else {
+        try {
+          final response = await http.get(uri);
+          await localFile.writeAsBytes(response.bodyBytes);
+          OpenFilex.open(localPath);
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Download error: $e")),
+          );
+        }
+      }
+    } else {
+      final file = File(filePath);
+      if (await file.exists()) {
+        OpenFilex.open(file.path);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("File not found")),
+        );
+      }
+    }
+  }
+
+  Future<void> _openImage(Message message) async {
+    final imagePath = message.message;
+    final isUrl = imagePath.startsWith('http');
+
+    if (isUrl) {
+      _showImageInFullScreen(imagePath: imagePath);
+    } else {
+      final file = File(imagePath);
+      if (await file.exists()) {
+        _showImageInFullScreen(imagePath: file.path);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Image not found")),
+        );
+      }
+    }
+  }
+
+  void _showImageInFullScreen({required String imagePath}) {
+    final theme = Theme.of(context);
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => Scaffold(
+        backgroundColor: theme.colorScheme.background,
+        appBar: AppBar(
+          backgroundColor: theme.appBarTheme.backgroundColor ?? theme.colorScheme.surface,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: theme.iconTheme.color),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ),
+        body: Center(
+          child: imagePath.isEmpty
+              ? Text(
+                  "No image available",
+                  style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onBackground),
+                )
+              : imagePath.startsWith('http')
+                  ? Image.network(imagePath, fit: BoxFit.contain)
+                  : Image.file(File(imagePath), fit: BoxFit.contain),
+        ),
+      ),
+    );
+  }
+
+  void _showAttachmentOptions(BuildContext context, WidgetRef ref, int chatIndex) {
+    final theme = Theme.of(context);
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: theme.colorScheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (_) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: Icon(Icons.camera_alt, color: theme.colorScheme.primary),
+                title: Text("Take Photo", style: theme.textTheme.bodyLarge),
+                onTap: () async {
+                  Navigator.pop(context);
+                  final picker = ImagePicker();
+                  final pickedFile = await picker.pickImage(source: ImageSource.camera);
+
+                  if (pickedFile != null && context.mounted) {
+                    _sendMediaMessage(pickedFile.path, "image");
+                  }
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.videocam, color: theme.colorScheme.primary),
+                title: Text("Record Video", style: theme.textTheme.bodyLarge),
+                onTap: () async {
+                  Navigator.pop(context);
+                  final picker = ImagePicker();
+                  final pickedFile = await picker.pickVideo(source: ImageSource.camera);
+
+                  if (pickedFile != null && context.mounted) {
+                    _sendMediaMessage(pickedFile.path, "video");
+                  }
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.photo_library, color: theme.colorScheme.primary),
+                title: Text("Photo Library", style: theme.textTheme.bodyLarge),
+                onTap: () async {
+                  Navigator.pop(context);
+                  final picker = ImagePicker();
+                  final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+                  if (pickedFile != null && context.mounted) {
+                    _sendMediaMessage(pickedFile.path, "image");
+                  }
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.video_library, color: theme.colorScheme.primary),
+                title: Text("Video Library", style: theme.textTheme.bodyLarge),
+                onTap: () async {
+                  Navigator.pop(context);
+                  final picker = ImagePicker();
+                  final pickedFile = await picker.pickVideo(source: ImageSource.gallery);
+
+                  if (pickedFile != null && context.mounted) {
+                    _sendMediaMessage(pickedFile.path, "video");
+                  }
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.insert_drive_file, color: theme.colorScheme.primary),
+                title: Text("Document", style: theme.textTheme.bodyLarge),
+                onTap: () async {
+                  Navigator.pop(context);
+                  final result = await FilePicker.platform.pickFiles();
+
+                  if (result != null && result.files.single.path != null && context.mounted) {
+                    _sendMediaMessage(result.files.single.path!, "document");
+                  }
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

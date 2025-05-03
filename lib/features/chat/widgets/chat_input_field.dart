@@ -4,11 +4,13 @@ class ChatInputField extends StatelessWidget {
   final TextEditingController Controller;
   final VoidCallback onSendPressed;
   final VoidCallback? onTyping;
+  final VoidCallback onAttachmentPressed;
 
   const ChatInputField({
     Key? key,
     required this.Controller,
     required this.onSendPressed,
+    required this.onAttachmentPressed,
     this.onTyping,
   });
 
@@ -20,7 +22,7 @@ class ChatInputField extends StatelessWidget {
         children: [
           IconButton(
             icon: const Icon(Icons.attachment_rounded),
-            onPressed: () {}, // Placeholder callback function
+            onPressed: onAttachmentPressed, // Placeholder callback function
           ),
           Expanded(
             child: TextField(

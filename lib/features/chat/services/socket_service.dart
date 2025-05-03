@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:async';
 import 'package:link_up/features/chat/model/message_model.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:link_up/core/constants/endpoints.dart';
@@ -8,18 +9,27 @@ class SocketService {
   late IO.Socket _socket;
   final String conversationId;
   bool _isAuthenticated = false;
+  bool _isConnecting = false;
+
+  // Add a completer to track when socket is ready
+  final Completer<void> _readyCompleter = Completer<void>();
+  Future<void> get ready => _readyCompleter.future;
 
   SocketService({required this.conversationId}) {
     initSocket();
   }
 
   Future<void> initSocket() async {
+    if (_isConnecting) return;
+    _isConnecting = true;
+
     try {
-      log('[SOCKET] Initializing socket connection...');
+      log('[SOCKET] Initializing socket connection for conversation: $conversationId');
       final token = await getToken();
 
       if (token == null || token.isEmpty) {
         log('[SOCKET] No token available for authentication');
+        _isConnecting = false;
         return;
       }
 
@@ -27,8 +37,8 @@ class SocketService {
         InternalEndPoints.socketUrl,
         IO.OptionBuilder()
             .setTransports(['websocket'])
-            .setExtraHeaders({'Authorization': 'Bearer $token'}) // Add token in headers
-            .setQuery({'token': token}) // Also add token in query
+            .setExtraHeaders({'Authorization': 'Bearer $token'})
+            .setQuery({'token': token})
             .enableReconnection()
             .enableAutoConnect()
             .setReconnectionAttempts(5)
@@ -40,23 +50,31 @@ class SocketService {
       _socket.connect();
     } catch (e, stack) {
       log('[SOCKET] Error initializing socket: $e\n$stack');
+      _isConnecting = false;
+
+      // If initialization fails, retry after a delay
+      Future.delayed(const Duration(seconds: 3), () {
+        initSocket();
+      });
     }
   }
 
   void _setupConnectionHandlers() {
     _socket.onConnect((_) {
-      log('[SOCKET] Connected successfully');
+      log('[SOCKET] Connected successfully for conversation: $conversationId');
       _authenticate();
     });
 
     _socket.onConnectError((error) {
       log('[SOCKET] Connection error: $error');
       _isAuthenticated = false;
+      _isConnecting = false;
     });
 
     _socket.onDisconnect((_) {
       log('[SOCKET] Disconnected from server');
       _isAuthenticated = false;
+      _isConnecting = false;
     });
   }
 
@@ -64,6 +82,7 @@ class SocketService {
     final token = await getToken();
     if (token == null || token.isEmpty) {
       log('[SOCKET] Authentication failed: No token available');
+      _isConnecting = false;
       return;
     }
 
@@ -71,14 +90,26 @@ class SocketService {
     _socket.emit('authenticate', {'token': token});
 
     _socket.once('authenticated', (data) {
-      log('[SOCKET] Authentication successful: $data');
+      log('[SOCKET] Authentication successful for conversation: $conversationId');
       _isAuthenticated = true;
+      _isConnecting = false;
       _setupListeners();
+
+      // Complete the ready completer to indicate socket is ready for use
+      if (!_readyCompleter.isCompleted) {
+        _readyCompleter.complete();
+      }
     });
 
     _socket.once('authentication_error', (error) {
       log('[SOCKET] Authentication failed: $error');
       _isAuthenticated = false;
+      _isConnecting = false;
+
+      // Retry authentication after a delay
+      Future.delayed(const Duration(seconds: 3), () {
+        _authenticate();
+      });
     });
   }
 
@@ -148,14 +179,20 @@ class SocketService {
     _stopTypingCallback = callback;
   }
 
-  void sendMessage(String conversationId, Message message) {
-    if (!_isAuthenticated) {
-      log('[SOCKET] Cannot send message: Not authenticated');
-      _authenticate();
-      return;
-    }
-
+  Future<void> sendMessage(String conversationId, Message message) async {
     try {
+      // Wait for ready before proceeding
+      if (!_isAuthenticated) {
+        log('[SOCKET] Socket not authenticated, waiting for authentication before sending message...');
+        await ready.timeout(const Duration(seconds: 5),
+            onTimeout: () => log('[SOCKET] Authentication timeout, attempting to send message anyway'));
+      }
+
+      // Try to authenticate if not authenticated
+      if (!_isAuthenticated) {
+        _authenticate();
+      }
+
       final messageData = {
         'conversationId': conversationId,
         'message': message.message,
@@ -180,13 +217,20 @@ class SocketService {
     }
   }
 
-  void sendTypingIndicator() {
-    if (!_isAuthenticated) {
-      log('[SOCKET] Not authenticated, cannot send typing indicator');
-      return;
-    }
-
+  Future<void> sendTypingIndicator() async {
     try {
+      // Wait for ready before proceeding
+      if (!_isAuthenticated) {
+        log('[SOCKET] Socket not authenticated, waiting for authentication...');
+        await ready.timeout(const Duration(seconds: 5),
+            onTimeout: () => log('[SOCKET] Authentication timeout, continuing without sending typing indicator'));
+      }
+
+      if (!_isAuthenticated) {
+        log('[SOCKET] Still not authenticated after waiting, cannot send typing indicator');
+        return;
+      }
+
       log('[SOCKET] Sending typing indicator for conversation: $conversationId');
       _socket.emit('typing', {
         'conversationId': conversationId,
@@ -197,13 +241,20 @@ class SocketService {
     }
   }
 
-  void sendStopTypingIndicator() {
-    if (!_isAuthenticated) {
-      log('[SOCKET] Not authenticated, cannot send stop typing indicator');
-      return;
-    }
-
+  Future<void> sendStopTypingIndicator() async {
     try {
+      // Wait for ready before proceeding
+      if (!_isAuthenticated) {
+        log('[SOCKET] Socket not authenticated, waiting for authentication...');
+        await ready.timeout(const Duration(seconds: 2),
+            onTimeout: () => log('[SOCKET] Authentication timeout, continuing without sending stop typing'));
+      }
+
+      if (!_isAuthenticated) {
+        log('[SOCKET] Still not authenticated, cannot send stop typing indicator');
+        return;
+      }
+
       log('[SOCKET] Sending stop typing indicator for conversation: $conversationId');
       _socket.emit('stop_typing', {
         'conversationId': conversationId,
@@ -232,6 +283,39 @@ class SocketService {
       log('[SOCKET] Socket disposed for conversation: $conversationId');
     } catch (e) {
       log('[SOCKET] Error disposing socket: $e');
+    }
+  }
+
+  void disconnectGracefully() {
+    try {
+      // Only attempt disconnect if we have a socket
+      if (_socket != null) {
+        log('[SOCKET] Gracefully disconnecting socket for conversation: $conversationId');
+
+        // Remove all listeners first to prevent callbacks during shutdown
+        _socket.off('message_received');
+        _socket.off('typing');
+        _socket.off('stop_typing');
+        _socket.off('authenticated');
+        _socket.off('authentication_error');
+
+        // Emit a clean disconnect event if authenticated
+        if (_isAuthenticated) {
+          _socket.emit('leaving_conversation', {
+            'conversationId': conversationId,
+            'userId': InternalEndPoints.userId,
+          });
+        }
+
+        // Disconnect the socket
+        _socket.disconnect();
+        _isAuthenticated = false;
+        _isConnecting = false;
+
+        log('[SOCKET] Socket disconnected gracefully for conversation: $conversationId');
+      }
+    } catch (e) {
+      log('[SOCKET] Error during socket disconnection: $e');
     }
   }
 }

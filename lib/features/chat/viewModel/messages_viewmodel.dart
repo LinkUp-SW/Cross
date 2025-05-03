@@ -253,7 +253,7 @@ class MessagesViewModel extends StateNotifier<MessagesState> {
   }
 
   void startTyping() {
-    // Always send typing indicator when user types, regardless of previous state
+    // Send typing indicator when user types
     _socketService.sendTypingIndicator();
     _isTyping = true;
     log('[VIEWMODEL] Started typing, sent indicator');
@@ -273,9 +273,27 @@ class MessagesViewModel extends StateNotifier<MessagesState> {
     }
   }
 
+  void cleanupSocketConnection() {
+    try {
+      // Stop any typing indicators
+      stopTyping();
+
+      // Wait briefly to ensure stop typing message is sent
+      Future.delayed(const Duration(milliseconds: 100), () {
+        // Signal socket service to disconnect gracefully
+        _socketService.disconnectGracefully();
+        log('[VIEWMODEL] Socket connection cleanup requested for conversation: $conversationId');
+      });
+    } catch (e) {
+      log('[VIEWMODEL] Error during socket cleanup: $e');
+    }
+  }
+
   @override
   void dispose() {
-    _socketService.disposeSocket(conversationId);
+    _typingTimer?.cancel();
+    cleanupSocketConnection();
+    log('[VIEWMODEL] Disposed messages view model for conversation: $conversationId');
     super.dispose();
   }
 }

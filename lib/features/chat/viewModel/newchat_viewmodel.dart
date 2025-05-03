@@ -13,33 +13,6 @@ class NewChatViewModel extends StateNotifier<NewChatState> {
 
   NewChatViewModel(this.service) : super(NewChatState.initial());
 
-  /* Future<Chat> startNewOrOpenExistingChat(ConnectionsCardModel connection) async {
-    try {
-      state = state.copyWith(isLoading: true, isError: false);
-
-      // Check if chat already exists with this connection
-      final existingChat = state.connections?.firstWhere(
-        (conn) => conn.cardId == connection.cardId,
-         orElse: () = 
-      );
-
-      if (existingChat != null) {
-        // Open existing chat
-        final chat = await service.openExistingChat(existingChat.conversationId);
-        state = state.copyWith(isLoading: false);
-        return chat;
-      } else {
-        // Start new chat
-        final chat = await service.startnewchat(connection.cardId);
-        state = state.copyWith(isLoading: false);
-        return chat;
-      }
-    } catch (e) {
-      state = state.copyWith(isLoading: false, isError: true);
-      throw Exception('Failed to start or open chat: $e');
-    }
-  }  */
-
   Future<void> fetchChats() async {
     state = state.copyWith(isLoading: true, isError: false);
     try {
@@ -117,81 +90,47 @@ class NewChatViewModel extends StateNotifier<NewChatState> {
     }
   }
 
-  Future<ChatResult> handleChatTap(ConnectionsChatModel connection) async {
+  Future<Map<String, dynamic>> openExistingChat(String userId) async {
     try {
-      state = state.copyWith(isLoading: true, isError: false);
-      log('Handling chat tap for user: ${connection.firstName} ${connection.lastName}');
-
-      if (connection.isExistingChat == true) {
-        log('Opening existing chat');
-        Chat? existingChat;
-        try {
-          existingChat = state.chats?.firstWhere(
-            (chat) => chat.senderId == connection.cardId,
-          );
-        } catch (e) {
-          log('No existing chat found in state');
-          existingChat = null;
+      log("Opening existing chat with user ID: $userId");
+      final response = await service.openExistingChat(userId);
+      
+      // Ensure we have a conversationId in the response
+      if (!response.containsKey('conversationId')) {
+        log("Warning: Missing conversationId in response, attempting to extract from data");
+        // Try to extract from various possible locations
+        final conversationId = response['conversation']?['conversationId'] ?? 
+                               response['_id'] ??
+                               '';
+                               
+        if (conversationId.isEmpty) {
+          throw Exception("Could not find conversationId in response");
         }
-
-        if (existingChat != null) {
-          try {
-            final messages = await service.openExistingChat(existingChat.conversationId);
-            state = state.copyWith(isLoading: false);
-            return ChatResult(
-              conversationId: existingChat.conversationId,
-              messages: messages,
-              senderName: '${connection.firstName} ${connection.lastName}',
-              profilePicUrl: connection.profilePicture,
-              otherUserId: connection.cardId,
-            );
-          } catch (e) {
-            log('Error opening existing chat: $e');
-            // Fall through to create new chat
-          }
-        }
+        
+        response['conversationId'] = conversationId;
       }
-
-      // Create new chat if no existing chat found or if opening existing chat failed
-      log('Creating new chat');
-      final newChat = await service.startnewchat(connection.cardId);
-
-      // Update chats list with new chat
-      final updatedChats = [...?state.chats, newChat];
-      state = state.copyWith(
-        chats: updatedChats,
-        isLoading: false,
-      );
-
-      return ChatResult(
-        conversationId: newChat.conversationId,
-        messages: [],
-        senderName: '${connection.firstName} ${connection.lastName}',
-        profilePicUrl: connection.profilePicture,
-      );
-    } catch (e, stackTrace) {
-      log("Error handling chat tap: $e");
-      log("Stack trace: $stackTrace");
-      state = state.copyWith(isLoading: false, isError: true);
+      
+      log("Got chat result: ${response['conversationId']}");
+      return response;
+    } catch (e) {
+      log("Error opening existing chat: $e");
       rethrow;
     }
   }
+
+  Future<Map<String, dynamic>> createNewChat(String userId) async {
+    try {
+      final response = await service.createNewChat(userId);
+      log("Successfully created new chat with user: $userId");
+      return response;
+    } catch (e) {
+      log("Error creating new chat: $e");
+      rethrow;
+    }
+  }
+  void updateLoading(bool value) {
+  state = state.copyWith(isLoading: value);
 }
-
-class ChatResult {
-  final String conversationId;
-  final List<Message> messages;
-  final String senderName;
-  final String profilePicUrl;
-  final String? otherUserId; // Added for clarity 
-
-  ChatResult({
-    required this.conversationId,
-    required this.messages,
-    required this.senderName,
-    required this.profilePicUrl,
-    this.otherUserId, 
-  });
 }
 
 final newChatViewModelProvider = StateNotifierProvider<NewChatViewModel, NewChatState>((ref) {

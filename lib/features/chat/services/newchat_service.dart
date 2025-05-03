@@ -7,72 +7,80 @@ import 'dart:developer';
 import 'package:link_up/features/chat/model/message_model.dart';
 
 class NewChatService {
-  BaseService _baseService = BaseService();
+  final BaseService _baseService = BaseService();
 
-  Future<Chat> startnewchat(String userId) async {
+  // Create a new chat conversation
+  Future<Map<String, dynamic>> createNewChat(String userId) async {
     try {
-      log('Starting new chat with user: $userId');
+      log('Creating new chat with user: $userId');
 
+      // Use the route parameter correctly for this endpoint
       final response = await _baseService.post(
         ExternalEndPoints.startnewchat,
-        body: {
-          // Changed from routeParameters to body
+        routeParameters: {
           'user2ID': userId,
         },
+        // Empty body or any additional payload if needed
+        body: {},
       );
 
       log('New chat response: ${response.body}');
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200||response.statusCode == 201) {
         final data = jsonDecode(response.body);
 
         if (data == null) {
           throw Exception('Empty response received');
         }
 
-        if (!data.containsKey('conversation')) {
-          throw Exception('No conversation data in response');
-        }
-
-        return Chat.fromJson(data['conversation']);
+        return data; // Return the full data including conversationId
       } else {
         throw Exception('Failed to start chat: ${response.statusCode}');
       }
     } catch (e) {
-      log('Error in startnewchat: $e');
+      log('Error in createNewChat: $e');
       rethrow;
     }
   }
 
-  Future<List<Message>> openExistingChat(String conversationId) async {
+  // Open an existing chat with a user
+  Future<Map<String, dynamic>> openExistingChat(String userId) async {
     try {
-      log('Opening existing chat: $conversationId');
-      final endpoint = ExternalEndPoints.gotospecificchat.replaceAll(':conversationId', conversationId);
+      log('Opening existing chat with user: $userId');
 
-      final response = await _baseService.post(endpoint);
-      log('Open chat response: ${response.body}');
+      // First, find the conversation ID for this user from the chats list
+      final chatsResponse = await fetchChats();
+      final List<dynamic> conversations = chatsResponse['conversations'];
+
+      // Find the conversation with this user
+      final conversation = conversations.firstWhere(
+        (chat) => chat['otherUser']['userId'] == userId,
+        orElse: () => null,
+      );
+
+      if (conversation == null) {
+        throw Exception('No existing conversation found with this user');
+      }
+
+      final String conversationId = conversation['conversationId'];
+
+      // Now get the specific conversation with its conversationId
+      final response = await _baseService.get(
+        ExternalEndPoints.gotospecificchat,
+        routeParameters: {
+          'conversationId': conversationId,
+        },
+      );
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-
-        if (data == null || !data.containsKey('messages')) {
-          throw Exception('Invalid response format');
-        }
-
-        final messagesList = data['messages'] as List;
-        final messages = messagesList.map((messageJson) {
-          messageJson['isOwnMessage'] = messageJson['senderId'] == InternalEndPoints.userId;
-          return Message.fromJson(messageJson);
-        }).toList();
-
-        log('Successfully loaded ${messages.length} messages');
-        return messages;
-      } else {
-        throw Exception('Failed to open chat: ${response.statusCode}');
+        log('Retrieved conversation data: ${response.body}');
+        return data;
       }
-    } catch (e, stackTrace) {
-      log('Error opening chat: $e');
-      log('Stack trace: $stackTrace');
+
+      throw Exception('Failed to get conversation: ${response.statusCode}');
+    } catch (e) {
+      log('Error in openExistingChat: $e');
       rethrow;
     }
   }
