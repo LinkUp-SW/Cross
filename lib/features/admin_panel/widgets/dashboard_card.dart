@@ -4,17 +4,15 @@ import 'package:flutter/material.dart';
 class StatCard extends StatefulWidget {
   final String title;
   final String value;
-  final List<String> changeTexts; // Animated list of changes
+  final int changeValue; // Change value (positive or negative)
   final Duration interval;
-  final Color changeColor;
 
   const StatCard({
     Key? key,
     required this.title,
     required this.value,
-    required this.changeTexts,
+    required this.changeValue,
     this.interval = const Duration(seconds: 2),
-    this.changeColor = Colors.green,
   }) : super(key: key);
 
   @override
@@ -22,30 +20,14 @@ class StatCard extends StatefulWidget {
 }
 
 class _StatCardState extends State<StatCard> {
-  int _currentIndex = 0;
-  late Timer _timer;
-
-  @override
-  void initState() {
-    super.initState();
-    _timer = Timer.periodic(widget.interval, (timer) {
-      setState(() {
-        _currentIndex = (_currentIndex + 1) % widget.changeTexts.length;
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    _timer.cancel();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
+    final String changeText = '${widget.changeValue > 0 ? '+' : ''}${widget.changeValue} from yesterday';
+    final Color changeColor = widget.changeValue >= 0 ? Colors.green : Colors.red;
+
     return Container(
       width: double.infinity, // Ensures card expands horizontally
-      constraints: BoxConstraints(minHeight: 120),
+      constraints: const BoxConstraints(minHeight: 120),
       margin: const EdgeInsets.symmetric(vertical: 8),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -78,25 +60,11 @@ class _StatCardState extends State<StatCard> {
                     fontSize: 50,
                   )),
           const SizedBox(height: 4),
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 500),
-            transitionBuilder: (child, animation) => FadeTransition(
-              opacity: animation,
-              child: SlideTransition(
-                position: Tween<Offset>(
-                  begin: const Offset(0.0, 1.0),
-                  end: Offset.zero,
-                ).animate(animation),
-                child: child,
-              ),
-            ),
-            child: Text(
-              widget.changeTexts[_currentIndex],
-              key: ValueKey<String>(widget.changeTexts[_currentIndex]),
-              style: TextStyle(
-                color: widget.changeColor,
-                fontSize: 30,
-              ),
+          Text(
+            changeText,
+            style: TextStyle(
+              color: changeColor,
+              fontSize: 16,
             ),
           ),
         ],
@@ -105,11 +73,7 @@ class _StatCardState extends State<StatCard> {
   }
 }
 
-
-
-
-
-class JobPostingWidget extends StatelessWidget {
+class JobPostingWidget extends StatefulWidget {
   final int pendingCount;
   final int approvedTodayCount;
   final int rejectedTodayCount;
@@ -122,11 +86,16 @@ class JobPostingWidget extends StatelessWidget {
   });
 
   @override
+  State<JobPostingWidget> createState() => _JobPostingWidgetState();
+}
+
+class _JobPostingWidgetState extends State<JobPostingWidget> {
+  @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF111827),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -135,23 +104,23 @@ class JobPostingWidget extends StatelessWidget {
           const Text(
             'Job Posting Management',
             style: TextStyle(
-              color: Colors.white,
+              color: Colors.black,
               fontWeight: FontWeight.bold,
-              fontSize: 18,
+              fontSize: 20,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             'Review and manage job listings',
             style: TextStyle(
-              color: Colors.white60,
-              fontSize: 14,
+              color: Colors.black54,
+              fontSize: 16,
             ),
           ),
           const SizedBox(height: 16),
-          _buildStatusRow('Pending approval', pendingCount),
-          _buildStatusRow('Approved today', approvedTodayCount),
-          _buildStatusRow('Rejected today', rejectedTodayCount),
+          _buildStatusRow('Pending approval', widget.pendingCount),
+          _buildStatusRow('Approved today', widget.approvedTodayCount),
+          _buildStatusRow('Rejected today', widget.rejectedTodayCount),
         ],
       ),
     );
@@ -163,13 +132,14 @@ class JobPostingWidget extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(color: Colors.white, fontSize: 14)),
+          Text(label,
+              style: const TextStyle(color: Colors.black, fontSize: 14)),
           Text(
             count.toString(),
             style: const TextStyle(
-              color: Colors.white,
+              color: Colors.black,
               fontWeight: FontWeight.bold,
-              fontSize: 14,
+              fontSize: 16,
             ),
           ),
         ],

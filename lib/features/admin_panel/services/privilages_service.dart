@@ -7,13 +7,13 @@ class ReportService {
       ReportModel(
         id: 'REP-001',
         type: 'Comment',
-        description: 'User used offensive language.',
+        descriptions: ['User used offensive language.'],
         status: 'Pending',
       ),
       ReportModel(
         id: 'REP-002',
         type: 'Post',
-        description: 'Inappropriate image posted.',
+        descriptions: ['Inappropriate image posted.'],
         status: 'Resolved',
       ),
       // Add more dummy data here

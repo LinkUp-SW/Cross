@@ -1,13 +1,13 @@
 class ReportModel {
   final String id;
   final String type; // "Post", "Comment", "Job Listing"
-  final String description;
+  final List<String> descriptions;
   final String status; // "Pending", "Resolved"
 
   ReportModel({
     required this.id,
     required this.type,
-    required this.description,
+    required this.descriptions,
     required this.status,
   });
 
@@ -15,11 +15,21 @@ class ReportModel {
     return ReportModel(
       id: id,
       type: type,
-      description: description,
+      descriptions: descriptions,
       status: status ?? this.status,
     );
   }
+
+  factory ReportModel.fromJson(Map<String, dynamic> json) {
+    return ReportModel(
+      id: json['id'],
+      type: json['type'],
+      descriptions: List<String>.from(json['descriptions']),
+      status: json['status'],
+    );
+  }
 }
+
 
 class NewAdminData {
   String? id;
