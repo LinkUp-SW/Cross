@@ -26,7 +26,87 @@ class ProfileHeaderWidget extends ConsumerWidget {
     super.key,
     required this.userProfile,
   });
+void _showProfileOptionsBottomSheet(BuildContext context, WidgetRef ref, bool isMyProfile) {
+  final List<ReusableBottomSheetOption> options = [];
 
+
+  if (isMyProfile) {
+    options.add(
+      ReusableBottomSheetOption(
+        icon: Icons.block, 
+        title: 'Blocked users',
+        onTap: () {
+          print("Blocked users tapped!"); 
+          // TODO: Navigate to the blocked users screen
+           ScaffoldMessenger.of(context).showSnackBar(
+             const SnackBar(content: Text('TODO: Navigate to Blocked Users'))
+           );
+        },
+      ),
+    );
+  }
+
+
+  options.add(
+    ReusableBottomSheetOption(
+      icon: Icons.note, 
+      title: 'Contact Info',
+      onTap: () {
+          GoRouter.of(context).push('/contact_info', extra: userProfile);
+      },
+    ),
+  );
+
+
+   if (!isMyProfile) {
+     options.addAll([
+       ReusableBottomSheetOption(
+           icon: Icons.flag_outlined,
+           title: 'Report Profile',
+           onTap: () {
+             /* TODO: Implement Report */
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('TODO: Implement Report'))
+              );
+           }),
+       ReusableBottomSheetOption(
+           icon: Icons.block,
+           title: 'Block User',
+           onTap: () {
+             /* TODO: Implement Block */
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('TODO: Implement Block'))
+              );
+           }),
+       ReusableBottomSheetOption(
+           icon: Icons.add_outlined,
+           title: 'Follow',
+           onTap: () {
+             /* TODO: Implement Share */
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('TODO: Implement Share'))
+              );
+            ReusableBottomSheetOption(
+              icon: Icons.note, 
+              title: 'Contact Info',
+              onTap: () {
+                GoRouter.of(context).push('/contact_info', extra: userProfile);
+
+
+              },
+            );              
+           }),
+           
+           
+     ]);
+   }
+
+
+  showReusableBottomSheet(
+    context: context,
+    options: options,
+  );
+}
   void _handleProfilePicTap(BuildContext context, WidgetRef ref) {
     final ProfileState currentMainState = ref.read(profileViewModelProvider);
     String currentPhotoUrl = "";
@@ -493,7 +573,8 @@ class ProfileHeaderWidget extends ConsumerWidget {
                 width: 30.r,
                 height: 35.r,
                 child: OutlinedButton(
-                  onPressed: () { /* TODO: Own Profile More Options */ },
+                  onPressed: () {     _showProfileOptionsBottomSheet(context, ref, userProfile.isMe);
+ },
                   style: isDarkMode
                       ? buttonStyles.circularButtonDark()
                       : buttonStyles.circularButton(),
@@ -509,7 +590,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
           SizedBox(
             width: double.infinity,
             child: OutlinedButton(
-              onPressed: () => showPremiumPlanSheet(context), // Call the function here
+              onPressed: () => showPremiumPlanSheet(context), 
               style: isDarkMode
                   ? buttonStyles.blueOutlinedButtonDark()
                   : buttonStyles.blueOutlinedButton(),

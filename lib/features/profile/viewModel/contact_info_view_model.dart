@@ -19,12 +19,14 @@ class ContactInfoViewModel extends StateNotifier<EditContactInfoState> {
   String? selectedPhoneType;
   String? _selectedCountryCode;
   DateTime? _selectedBirthday;
+  String? _loadedUserId;
+
 
   Map<String, dynamic> _originalBioData = {};
 
   ContactInfoViewModel(this._profileService)
       : super(const EditContactInfoInitial()) {
-    _fetchInitialData();
+    fetchInitialData();
   }
    String? _validateWebsite(String? value) {
      if (value == null || value.trim().isEmpty) {
@@ -41,28 +43,26 @@ class ContactInfoViewModel extends StateNotifier<EditContactInfoState> {
      return null;
    }
 
-  Future<void> _fetchInitialData() async {
-    if (_userId.isEmpty) {
-      state = const EditContactInfoError("User not logged in.");
+ Future<void> fetchInitialData([String? targetUserId]) async { 
+    final String userIdToFetch = targetUserId ?? InternalEndPoints.userId; 
+
+    if (userIdToFetch.isEmpty) {
+      state = const EditContactInfoError("User ID not available.");
       return;
     }
-    log("ViewModel: Fetching initial data for user ID: $_userId");
+
+    if ((state is EditContactInfoLoaded || state is EditContactInfoLoading) && _loadedUserId == userIdToFetch) {
+       log("ViewModel: Data for user $userIdToFetch already loaded or loading.");
+       return;
+    }
+
+    log("ViewModel: Fetching initial contact data for user ID: $userIdToFetch");
     state = const EditContactInfoLoading();
+    _loadedUserId = userIdToFetch; 
+
     try {
-      final fullProfileJson = await _profileService.fetchFullUserProfileJson(_userId);
-      _originalBioData = fullProfileJson['bio'] ?? {};
-
-      final firstName = _originalBioData['first_name'] as String?;
-      final lastName = _originalBioData['last_name'] as String?;
-      if (firstName != null && lastName != null && firstName.isNotEmpty && lastName.isNotEmpty && _userId.isNotEmpty) {
-         final formattedFirstName = firstName.toLowerCase().replaceAll(' ', '-');
-         final formattedLastName = lastName.toLowerCase().replaceAll(' ', '-');
-         InternalEndPoints.profileUrl = "https://www.linkedin.com/in/$formattedFirstName-$formattedLastName-$_userId/";
-         log("ViewModel: Constructed and updated InternalEndPoints.profileUrl: ${InternalEndPoints.profileUrl}");
-      } else {
-         log("ViewModel: Could not construct profile URL. Missing data: F:$firstName, L:$lastName, ID:$_userId");
-      }
-
+      final fullProfileJson = await _profileService.fetchFullUserProfileJson(userIdToFetch);
+      _originalBioData = fullProfileJson['bio'] ?? {}; 
 
       final contactInfoJson = _originalBioData['contact_info'] as Map<String, dynamic>?;
       final contactInfo = contactInfoJson != null
@@ -71,29 +71,35 @@ class ContactInfoViewModel extends StateNotifier<EditContactInfoState> {
 
       log("ViewModel: Initial data fetched. ContactInfo: ${contactInfo.toString()}");
 
-      phoneNumberController.text = contactInfo.phoneNumber ?? '';
-      _selectedCountryCode = contactInfo.countryCode;  
-      addressController.text = contactInfo.address ?? '';
-      websiteController.text = contactInfo.website ?? '';
-      selectedPhoneType = contactInfo.phoneType;
-      _selectedBirthday = contactInfo.birthday;
-      birthdayController.text = contactInfo.birthday != null
-          ? DateFormat('yyyy-MM-dd').format(contactInfo.birthday!)
-          : '';
+
+       if (targetUserId == null || targetUserId == InternalEndPoints.userId) {
+          phoneNumberController.text = contactInfo.phoneNumber ?? '';
+          _selectedCountryCode = contactInfo.countryCode;
+          addressController.text = contactInfo.address ?? '';
+          websiteController.text = contactInfo.website ?? '';
+          selectedPhoneType = contactInfo.phoneType;
+          _selectedBirthday = contactInfo.birthday;
+          birthdayController.text = contactInfo.birthday != null
+              ? DateFormat('yyyy-MM-dd').format(contactInfo.birthday!)
+              : '';
+       }
+
 
       if (mounted) {
-         state = EditContactInfoLoaded(
-            contactInfo: contactInfo,
-            originalBioData: _originalBioData,
-         );
+        state = EditContactInfoLoaded(
+          contactInfo: contactInfo, 
+          originalBioData: _originalBioData,
+        );
       }
     } catch (e) {
-      log("ViewModel: Error fetching initial data: $e");
+      log("ViewModel: Error fetching initial data for $userIdToFetch: $e");
       if (mounted) {
-         state = EditContactInfoError("Failed to load contact info: ${e.toString()}");
+        state = EditContactInfoError("Failed to load contact info: ${e.toString()}");
+        _loadedUserId = null; 
       }
     }
   }
+
 
   void setPhoneType(String? type) {
     if (state is EditContactInfoLoaded || state is EditContactInfoSaving || state is EditContactInfoError) {
@@ -156,13 +162,13 @@ class ContactInfoViewModel extends StateNotifier<EditContactInfoState> {
       if (websiteError != null) {
         state = EditContactInfoError(
           websiteError,
-          previousContactInfo: currentContactInfo.copyWith( // Keep other fields
+          previousContactInfo: currentContactInfo.copyWith( 
              phoneNumber: phoneNumberController.text,
              countryCode: _selectedCountryCode,
              phoneType: selectedPhoneType,
              address: addressController.text,
              birthday: _selectedBirthday,
-             website: websiteController.text // Keep invalid value for user to see
+             website: websiteController.text 
           ),
           originalBioData: currentOriginalBioData
        );

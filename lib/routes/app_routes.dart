@@ -54,6 +54,9 @@ import 'package:link_up/features/profile/view/add_new_skill.dart';
 import 'package:link_up/features/profile/view/skills_list_page.dart';
 import 'package:link_up/features/profile/view/experience_list_page.dart';
 import 'package:link_up/features/profile/view/license_list_page.dart';
+import 'package:link_up/features/profile/view/contact_info.dart';
+import 'package:link_up/features/profile/model/profile_model.dart'; 
+
 
 
 final goRouterProvider = Provider<GoRouter>(
@@ -202,6 +205,16 @@ final goRouterProvider = Provider<GoRouter>(
         GoRoute(
           path: "/edit_intro",
           builder: (context, state) => const EditIntroPage(),
+        ),
+        GoRoute(
+          path: '/contact_info',
+          builder: (context, state) {
+            final userProfile = state.extra as UserProfile?;
+            if (userProfile == null) {
+              return const Scaffold(body: Center(child: Text("Error: User profile data missing.")));
+            }
+            return ContactInfoPage(userProfile: userProfile);
+          },
         ),
         GoRoute(
           path: "/edit_contact_info",
