@@ -160,8 +160,8 @@ class _EmailConfirmationPopUpState
                         if (!finalState.isError &&
                             widget.onConnectionRequestSent != null) {
                           widget.onConnectionRequestSent!();
+                          context.pop();
                         }
-                        context.pop();
                       }
                     },
                     child: state.isLoading
