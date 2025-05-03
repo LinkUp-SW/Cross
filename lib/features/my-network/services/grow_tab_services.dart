@@ -88,10 +88,13 @@ class GrowTabServices {
     }
   }
 
-  Future<Map<String, dynamic>> sendConnectionRequest(String userId) async {
+  Future<Map<String, dynamic>> sendConnectionRequest(
+    String userId, {
+    Map<String, dynamic>? body,
+  }) async {
     try {
       final response = await _baseService.post(ExternalEndPoints.connect,
-          routeParameters: {'user_id': userId});
+          body: body, routeParameters: {'user_id': userId});
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       }

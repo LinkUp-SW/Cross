@@ -27,7 +27,6 @@ class ExternalEndPoints {
       'api/v1/user/my-network/invite-connect/connections/:user_id';
   static const removeConnection =
       'api/v1/user/my-network/connections/remove/:user_id';
-  static const userId = 'api/v1/user/my-network/connections/count';
   static const followingsList =
       'api/v1/user/my-network/network-manager/following';
   static const unfollow = 'api/v1/user/unfollow/:user_id';
@@ -48,4 +47,20 @@ class ExternalEndPoints {
   static const subscriptionPaymentSession = 'api/v1/user/subscription/checkout';
   static const cancelPremiumSubscription = 'api/v1/user/subscription/cancel';
   static const resumePremiumSubscription = 'api/v1/user/subscription/resume';
+
+  static const topJobs = 'api/v1/jobs/get-top-jobs';
+  static const jobDetails = 'api/v1/jobs/get-job/:jobId';
+  static const getJobs = 'api/v1/jobs/get-jobs';
+  static const saveJob = 'api/v1/jobs/save-jobs/:jobId';
+  static const unsaveJob = 'api/v1/jobs/unsave-jobs/:jobId';
+  static const getSavedJobs = 'api/v1/jobs/get-saved-jobs';
+  static const searchJobs = 'api/v1/jobs/search-jobs';
+  static const applyForJob = 'api/v1/job-application/apply-for-job';
+  static const createJobApplication =
+      'api/v1/job-application/create-job-application/{job_id}';
+  static const getJobApplications =
+      'api/v1/job-application/get-job-applications/{job_id}';
+  static const getAppliedJobs = 'api/v1/job-application/get-applied-jobs';
+  static const updateJobApplicationStatus =
+      'api/v1/job-application/update-job-application-status/{application_id}';
 }

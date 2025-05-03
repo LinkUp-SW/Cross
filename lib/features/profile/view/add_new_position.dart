@@ -16,10 +16,13 @@ import 'package:link_up/shared/themes/button_styles.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'dart:developer';
-
+import 'package:link_up/features/profile/model/position_model.dart';
 
 class AddNewPosition extends ConsumerStatefulWidget {
-  const AddNewPosition({super.key});
+final PositionModel? positionToEdit;
+
+
+const AddNewPosition({super.key, this.positionToEdit});
 
   @override
   ConsumerState<AddNewPosition> createState() => _AddNewPositionState();
@@ -30,6 +33,30 @@ class _AddNewPositionState extends ConsumerState<AddNewPosition> {
   final FocusNode _endDateFocusNode = FocusNode();
   final FocusNode _companyFocusNode = FocusNode();
 
+  PositionModel? _initialPositionData; 
+  bool _isEditMode = false;
+
+@override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final extraData = GoRouterState.of(context).extra;
+      if (extraData is PositionModel) {
+        _initialPositionData = extraData;
+      } else {
+        _initialPositionData = widget.positionToEdit;
+      }
+
+      if (_initialPositionData != null) {
+        setState(() {
+           _isEditMode = true; 
+        });
+        ref.read(addPositionViewModelProvider.notifier).initializeForEdit(_initialPositionData!);
+      } else {
+         ref.read(addPositionViewModelProvider.notifier).resetForm();
+      }
+    });
+  }
   @override
   void dispose() {
     _startDateFocusNode.dispose();
@@ -39,10 +66,12 @@ class _AddNewPositionState extends ConsumerState<AddNewPosition> {
   }
 
   AddPositionFormData? _getFormDataFromState(AddPositionState state) {
-    if (state is AddPositionInitial) return state.formData;
-    if (state is AddPositionLoading) return state.formData;
-    if (state is AddPositionFailure) return state.formData;
-    return null;
+     if (state is AddPositionInitial) return state.formData;
+     if (state is AddPositionLoading) return state.formData;
+     if (state is AddPositionFailure) return state.formData;
+
+     return null; 
+
   }
 
     Future<void> _selectDate(BuildContext context, bool isStartDate) async {
@@ -99,15 +128,18 @@ class _AddNewPositionState extends ConsumerState<AddNewPosition> {
     final buttonStyles = LinkUpButtonStyles();
     final state = ref.watch(addPositionViewModelProvider);
     final viewModel = ref.read(addPositionViewModelProvider.notifier);
+    final String appBarTitle = _isEditMode ? "Edit position" : "Add position";
     final formData = _getFormDataFromState(state);
 
     ref.listen<AddPositionState>(addPositionViewModelProvider, (previous, next) {
       if (next is AddPositionSuccess) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Position saved successfully!'), backgroundColor: Colors.green),
+          SnackBar(content: Text('Position ${_isEditMode ? 'updated' : 'saved'} successfully!'), backgroundColor: Colors.green),
         );
-        GoRouter.of(context).pop();
-      } else if (next is AddPositionFailure) {
+         if (GoRouter.of(context).canPop()) {
+             GoRouter.of(context).pop();
+         }} 
+         else if (next is AddPositionFailure) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: ${next.message}'), backgroundColor: Colors.red),
         );
@@ -126,7 +158,7 @@ class _AddNewPositionState extends ConsumerState<AddNewPosition> {
         child: Column(
           children: [
             SubPagesAppBar(
-              title: "Add position",
+              title: appBarTitle, 
               onClosePressed: () => GoRouter.of(context).pop(),
             ),
             Expanded(
@@ -146,6 +178,7 @@ class _AddNewPositionState extends ConsumerState<AddNewPosition> {
                             SubPagesCustomTextField(
                               controller: formData.titleController,
                               hintText: "Ex: Retail Sales Manager",
+
                             ),
                             SizedBox(height: 20.h),
                             SubPagesFormLabel(label: "Employment type"),

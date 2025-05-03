@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:link_up/features/search/viewModel/email_confirmation_pop_up_view_model.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
+import 'package:go_router/go_router.dart';
 
 class EmailConfirmationPopUp extends ConsumerStatefulWidget {
-  final VoidCallback buttonFunctionality;
-
+  final String userId;
+  final VoidCallback? onConnectionRequestSent;
   const EmailConfirmationPopUp({
     super.key,
-    required this.buttonFunctionality,
+    required this.userId,
+    this.onConnectionRequestSent,
   });
 
   @override
@@ -20,7 +23,17 @@ class EmailConfirmationPopUp extends ConsumerStatefulWidget {
 class _EmailConfirmationPopUpState
     extends ConsumerState<EmailConfirmationPopUp> {
   final TextEditingController _emailController = TextEditingController();
-  String? _emailError;
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref
+          .read(emailConfirmationPopUpViewModelProvider.notifier)
+          .clearErrorMessage();
+    });
+  }
 
   @override
   void dispose() {
@@ -31,6 +44,7 @@ class _EmailConfirmationPopUpState
   @override
   Widget build(BuildContext context) {
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final state = ref.watch(emailConfirmationPopUpViewModelProvider);
     return Dialog(
       backgroundColor: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
       shape: RoundedRectangleBorder(
@@ -51,7 +65,42 @@ class _EmailConfirmationPopUpState
                     : AppColors.lightTextColor,
               ),
             ),
-            TextField(),
+            TextField(
+              controller: _emailController,
+              keyboardType: TextInputType.emailAddress,
+              style: TextStyles.font14_600Weight.copyWith(
+                color: isDarkMode
+                    ? AppColors.darkSecondaryText
+                    : AppColors.lightTextColor,
+              ),
+              decoration: InputDecoration(
+                hintText: 'example@email.com',
+                hintStyle: TextStyles.font14_500Weight.copyWith(
+                  color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
+                ),
+                errorText: state.errorMessage,
+                errorStyle: TextStyles.font12_500Weight,
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 12.w,
+                  vertical: 16.h,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16.r),
+                  borderSide: BorderSide(
+                    color:
+                        isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16.r),
+                  borderSide: BorderSide(
+                    color:
+                        isDarkMode ? AppColors.darkBlue : AppColors.lightBlue,
+                    width: 2.w,
+                  ),
+                ),
+              ),
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               spacing: 15.w,
@@ -59,7 +108,19 @@ class _EmailConfirmationPopUpState
                 Material(
                   color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
                   child: InkWell(
-                    onTap: () => Navigator.of(context).pop(),
+                    onTap: () {
+                      // Clear error state
+                      ref
+                          .read(
+                              emailConfirmationPopUpViewModelProvider.notifier)
+                          .clearErrorMessage();
+
+                      // Ensure we're using the updated state before closing
+                      ref.invalidate(emailConfirmationPopUpViewModelProvider);
+
+                      if (!context.mounted) return;
+                      context.pop();
+                    },
                     child: Text(
                       "Cancel",
                       style: TextStyles.font16_500Weight.copyWith(
@@ -73,15 +134,53 @@ class _EmailConfirmationPopUpState
                 Material(
                   color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
                   child: InkWell(
-                    onTap: widget.buttonFunctionality,
-                    child: Text(
-                      "Send",
-                      style: TextStyles.font16_500Weight.copyWith(
-                        color: isDarkMode
-                            ? AppColors.darkGrey
-                            : AppColors.lightSecondaryText,
-                      ),
-                    ),
+                    onTap: () async {
+                      ref
+                          .read(
+                              emailConfirmationPopUpViewModelProvider.notifier)
+                          .validateEmail(_emailController.text.trim());
+                      final updatedState =
+                          ref.read(emailConfirmationPopUpViewModelProvider);
+                      if (!updatedState.isError) {
+                        await ref
+                            .read(emailConfirmationPopUpViewModelProvider
+                                .notifier)
+                            .sendConnectionRequest(
+                          widget.userId,
+                          body: {
+                            "email": _emailController.text.trim(),
+                          },
+                        );
+
+                        if (!context.mounted) return;
+
+                        final finalState =
+                            ref.read(emailConfirmationPopUpViewModelProvider);
+
+                        if (!finalState.isError &&
+                            widget.onConnectionRequestSent != null) {
+                          widget.onConnectionRequestSent!();
+                          context.pop();
+                        }
+                      }
+                    },
+                    child: state.isLoading
+                        ? CircularProgressIndicator(
+                            strokeWidth: 3.w,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              isDarkMode
+                                  ? AppColors.darkBlue
+                                  : AppColors.lightBlue,
+                            ),
+                          )
+                        : Text(
+                            "Send",
+                            style: TextStyles.font16_500Weight.copyWith(
+                              color: isDarkMode
+                                  ? AppColors.darkBlue
+                                  : AppColors.lightBlue,
+                            ),
+                          ),
                   ),
                 ),
               ],

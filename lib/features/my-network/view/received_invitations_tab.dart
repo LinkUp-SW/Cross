@@ -102,7 +102,7 @@ class _ReceivedInvitationsTabState
                           );
                         }
                         return ReceivedInvitationsCard(
-                          data: state.received![index],
+                          data: state.received!.elementAt(index),
                           onAccept: (userId) {
                             ref
                                 .read(receivedInvitationsTabViewModelProvider

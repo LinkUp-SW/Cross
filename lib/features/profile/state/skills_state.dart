@@ -89,6 +89,7 @@ class AddSkillSuccess extends AddSkillState {
   const AddSkillSuccess();
 }
 
+
 class AddSkillError extends AddSkillState {
   final String message;
   final AddSkillDataLoaded? previousData; 

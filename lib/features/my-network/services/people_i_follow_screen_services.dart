@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/core/services/base_service.dart';
 import 'package:link_up/core/constants/endpoints.dart';
@@ -18,6 +19,7 @@ class PeopleIFollowScreenServices {
       }
       throw Exception('Failed to get followings count: ${response.statusCode}');
     } catch (e) {
+      log("Error getting followings list count $e");
       rethrow;
     }
   }
@@ -35,6 +37,7 @@ class PeopleIFollowScreenServices {
       }
       throw Exception('Failed to get followings list: ${response.statusCode}');
     } catch (e) {
+      log("Error getting followings list $e");
       rethrow;
     }
   }
@@ -48,6 +51,7 @@ class PeopleIFollowScreenServices {
       }
       throw Exception('Failed to unfollow ${response.statusCode}');
     } catch (e) {
+      log("Error unfollowing user with user id: $userId, error: $e");
       rethrow;
     }
   }

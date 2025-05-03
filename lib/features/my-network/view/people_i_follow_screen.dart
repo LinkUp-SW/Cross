@@ -182,7 +182,7 @@ class _PeopleIFollowScreenState extends ConsumerState<PeopleIFollowScreen> {
                                     );
                                   }
                                   return FollowingCard(
-                                    data: state.followings![index],
+                                    data: state.followings!.elementAt(index),
                                   );
                                 },
                               )),

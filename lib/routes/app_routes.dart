@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/Home/view/saved_posts.dart';
-import 'package:link_up/features/admin_panel/state/dashboard_states.dart';
 import 'package:link_up/features/admin_panel/view/dashboard_view.dart';
 import 'package:link_up/features/admin_panel/view/privilages_view.dart';
 import 'package:link_up/features/Home/view/user_posts_page.dart';
@@ -12,8 +11,10 @@ import 'package:link_up/features/my-network/view/connections_screen.dart';
 import 'package:link_up/core/utils/global_keys.dart';
 import 'package:link_up/features/logIn/view/forgot_pasword_view.dart';
 import 'package:link_up/features/logIn/view/login_view.dart';
+import 'package:link_up/features/profile/view/education_list_page.dart';
 import 'package:link_up/features/profile/view/view.dart';
 import 'package:link_up/features/search/view/search_page.dart';
+import 'package:link_up/features/jobs/view/search_jobs_page.dart';
 import 'package:link_up/features/settings/view/settings.dart';
 import 'package:link_up/features/signUp/view/userInfo/names_view.dart';
 import 'package:link_up/features/signUp/view/userInfo/past_job_details.dart';
@@ -51,6 +52,14 @@ import 'package:link_up/features/profile/view/add_resume.dart';
 import 'package:link_up/features/profile/view/resume_viewer.dart';
 import 'package:link_up/features/profile/view/add_new_license.dart';
 import 'package:link_up/features/profile/view/add_new_skill.dart';
+import 'package:link_up/features/profile/view/skills_list_page.dart';
+import 'package:link_up/features/profile/view/experience_list_page.dart';
+import 'package:link_up/features/profile/view/license_list_page.dart';
+import 'package:link_up/features/profile/view/contact_info.dart';
+import 'package:link_up/features/profile/model/profile_model.dart';
+import 'package:link_up/features/profile/view/blocked_users_pages.dart';
+import 'package:link_up/features/jobs/view/job_details.dart';
+import 'package:link_up/features/jobs/view/my_jobs_screen.dart';
 
 final goRouterProvider = Provider<GoRouter>(
   (ref) {
@@ -130,18 +139,41 @@ final goRouterProvider = Provider<GoRouter>(
             title: 'Pages Screen',
           ),
         ),
+        //blocked
+        GoRoute(
+          path: '/blocked_users',
+          builder: (context, state) => const BlockedUsersPage(),
+        ),
+
         //Profile Page Routes
         GoRoute(
           path: "/add_profile_section",
           builder: (context, state) => const AddSectionPage(),
         ),
         GoRoute(
-          path: "/add_new_skill",
-          builder: (context, state) => const AddSkillPage(),
+          path: "/skills_list_page",
+          builder: (context, state) => const SkillListPage(),
         ),
+        GoRoute(
+          path: "/experience_list_page",
+          builder: (context, state) => const ExperienceListPage(),
+        ),
+        GoRoute(
+          path: "/education_list_page",
+          builder: (context, state) => const EducationListPage(),
+        ),
+        GoRoute(
+          path: "/license_list_page",
+          builder: (context, state) => const LicenseListPage(),
+        ),
+
         GoRoute(
           path: "/add_resume",
           builder: (context, state) => const AddResumePage(),
+        ),
+        GoRoute(
+          path: "/add_new_skill",
+          builder: (context, state) => const AddSkillPage(),
         ),
         GoRoute(
           path: "/add_new_license",
@@ -183,6 +215,18 @@ final goRouterProvider = Provider<GoRouter>(
           builder: (context, state) => const EditIntroPage(),
         ),
         GoRoute(
+          path: '/contact_info',
+          builder: (context, state) {
+            final userProfile = state.extra as UserProfile?;
+            if (userProfile == null) {
+              return const Scaffold(
+                  body:
+                      Center(child: Text("Error: User profile data missing.")));
+            }
+            return ContactInfoPage(userProfile: userProfile);
+          },
+        ),
+        GoRoute(
           path: "/edit_contact_info",
           builder: (context, state) => const EditContactInfo(),
         ),
@@ -194,6 +238,7 @@ final goRouterProvider = Provider<GoRouter>(
           path: "/add_new_education",
           builder: (context, state) => const AddNewEducation(),
         ),
+
         StatefulShellRoute.indexedStack(
           builder: (context, state, navigationShell) => Scaffold(
             key: scaffoldKey,
@@ -249,6 +294,23 @@ final goRouterProvider = Provider<GoRouter>(
                   builder: (context, state) => JobsScreen(
                     scaffoldKey: scaffoldKey,
                   ),
+                  routes: [
+                    GoRoute(
+                      path: "details/:jobId",
+                      builder: (context, state) {
+                        final String jobId = state.pathParameters['jobId']!;
+                        return JobDetailsPage(jobId: jobId);
+                      },
+                    ),
+                    GoRoute(
+                      path: "/myjobs",
+                      builder: (context, state) => const MyJobsScreen(),
+                    ),
+                    GoRoute(
+                      path: "/searchjobs",
+                      builder: (context, state) => const SearchJobsPage(),
+                    ),
+                  ],
                 ),
               ],
             ),

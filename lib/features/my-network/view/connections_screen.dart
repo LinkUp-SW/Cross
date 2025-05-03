@@ -428,7 +428,7 @@ class _ConnectionsScreenState extends ConsumerState<ConnectionsScreen> {
                                   );
                                 }
                                 return ConnectionsCard(
-                                  data: state.connections![index],
+                                  data: state.connections!.elementAt(index),
                                 );
                               },
                             ),

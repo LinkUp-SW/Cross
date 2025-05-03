@@ -19,10 +19,10 @@ class SentInvitationsTabViewModel
       );
 
       // Parse the sent invitations from the response
-      final List<InvitationsCardModel> sentInvitations =
+      final Set<InvitationsCardModel> sentInvitations =
           (response['sentConnections'] as List)
               .map((invitation) => InvitationsCardModel.fromJson(invitation))
-              .toList();
+              .toSet();
       state = state.copyWith(isLoading: false, sent: sentInvitations);
     } catch (e) {
       state = state.copyWith(isLoading: false, error: true);
@@ -79,7 +79,7 @@ class SentInvitationsTabViewModel
       ];
 
       state = currentState.copyWith(
-        sent: allSentInvitations,
+        sent: allSentInvitations.toSet(),
         nextCursor: response['nextCursor'],
         isLoadingMore: false,
       );
@@ -99,7 +99,8 @@ class SentInvitationsTabViewModel
             .where((invitation) => invitation.cardId != userId)
             .toList();
 
-        state = state.copyWith(isLoading: false, sent: updatedInvitations);
+        state =
+            state.copyWith(isLoading: false, sent: updatedInvitations.toSet());
       }
     } catch (e) {
       state = state.copyWith(isLoading: false, error: true);
