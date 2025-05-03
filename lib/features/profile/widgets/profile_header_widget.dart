@@ -18,6 +18,8 @@ import 'package:link_up/features/profile/widgets/premium_plan_sheet.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:developer';
+import 'package:link_up/features/profile/widgets/premium_plan_sheet.dart';
+
 
 class ProfileHeaderWidget extends ConsumerWidget {
   final UserProfile userProfile;
@@ -604,89 +606,225 @@ void _showProfileOptionsBottomSheet(BuildContext context, WidgetRef ref, bool is
     }
 
 
+Widget buildProfileActionButton({
+  required BuildContext context,
+  required bool isDarkMode,
+  required IconData icon,
+  required String label,
+  required VoidCallback onPressed,
+  required LinkUpButtonStyles buttonStyles, 
+
+}) {
+  return Expanded(
+    flex: 4,
+    child: ElevatedButton.icon(
+      icon: Icon(icon, size: 18.sp),
+      label: Text(label),
+      onPressed: onPressed,
+      style: (isDarkMode ? buttonStyles.wideBlueElevatedButtonDark() : buttonStyles.wideBlueElevatedButton())
+
+      ),
+    );
+  
+}
   Widget _buildOtherProfileActions(BuildContext context, WidgetRef ref, UserProfile otherUserProfile, LinkUpButtonStyles buttonStyles, bool isDarkMode) {
 
-      bool canConnect = !(otherUserProfile.isInConnections ?? false) &&
-                          !(otherUserProfile.isInSentConnections ?? false) &&
-                          !(otherUserProfile.isInReceivedConnections ?? false);
+      log('--- _buildOtherProfileActions for ${otherUserProfile.firstName} ---');
+      log('Input Flags: isInConnections=${otherUserProfile.isInConnections}, isInSentConnections=${otherUserProfile.isInSentConnections}, isInReceivedConnections=${otherUserProfile.isInReceivedConnections}, allowMessaging=${otherUserProfile.allowMessaging}');
 
-      bool isPending = otherUserProfile.isInSentConnections ?? false;
+      bool isConnected = otherUserProfile.isInConnections ?? false;
+      bool isRequestSentByMe = otherUserProfile.isInSentConnections ?? false;
+      bool isRequestReceivedByMe = otherUserProfile.isInReceivedConnections ?? false;
+      bool isAlreadyFollowing = otherUserProfile.isAlreadyFollowing ?? false;
+      bool allowMessaging = otherUserProfile.allowMessaging ?? false;
+      bool isConnectByEmail = otherUserProfile.isConnectByEmail ?? false;
+      bool isSubscribed = otherUserProfile.isSubscribed ?? false;
+      bool viewUserSubscribed = otherUserProfile.viewUserSubscribed ?? false;
+      bool followPrimary = otherUserProfile.followPrimary ?? false;
 
-      bool canMessage = otherUserProfile.isInConnections ?? false;
+      String nameOfOneMutualConnection = otherUserProfile.nameOfOneMutualConnection ?? '';
+      bool showConnectButton = !isConnected && !isRequestSentByMe && !isRequestReceivedByMe && !followPrimary;
+      bool showUnfollowButton = isAlreadyFollowing && followPrimary;
+      bool showFollowButton = followPrimary && !isAlreadyFollowing;
+      bool showPendingButton = isRequestSentByMe;
+      bool showAcceptButton = isRequestReceivedByMe && !isConnected && !followPrimary;
+      log('Calculated Conditions: isConnected=$isConnected, isRequestSentByMe=$isRequestSentByMe, isRequestReceivedByMe=$isRequestReceivedByMe');
+      log('==> showConnectButton=$showConnectButton, showPendingButton=$showPendingButton');
 
-      // TODO: Add logic for Follow/Unfollow button if needed, using `isAlreadyFollowing` flag
 
       return Row(
         children: [
-          if (canConnect)
-            Expanded(
-              flex: 5,
-              child: ElevatedButton.icon(
-                icon: Icon(Icons.person_add_alt_1_rounded, size: 18.sp),
-                label: Text("Connect"),
-                onPressed: () {
-                  // TODO: Implement connect functionality
-                  log('Connect button pressed for ${otherUserProfile.firstName}');
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('TODO: Send connection request to ${otherUserProfile.firstName}')));
-                },
-                style: isDarkMode ? buttonStyles.wideBlueElevatedButtonDark() : buttonStyles.wideBlueElevatedButton(),
-              ),
-            ),
-          if (isPending)
-            Expanded(
-              flex: 5,
-              child: OutlinedButton.icon(
-                icon: Icon(Icons.hourglass_top_rounded, size: 18.sp),
-                label: Text("Pending"),
-                onPressed: () {
-                  // TODO: Implement Withdraw Connection Request
-                  log('Pending button pressed for ${otherUserProfile.firstName}');
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('TODO: Withdraw connection request to ${otherUserProfile.firstName}')));
-                },
-                style: (isDarkMode ? buttonStyles.blueOutlinedButtonDark() : buttonStyles.blueOutlinedButton()).copyWith(
-                  foregroundColor: MaterialStateProperty.all(AppColors.lightGrey),
-                  side: MaterialStateProperty.all(BorderSide(color: AppColors.lightGrey)),
-                ),
-              ),
-            ),
+          // --- Connect Button ---
+          if (showConnectButton)
+          buildProfileActionButton(
+            context: context,
+            isDarkMode: isDarkMode,
+            icon: Icons.add_circle_outline_rounded,
+            label: "Connect",
+            onPressed: () {
+              log('Connect button clicked for ${otherUserProfile.firstName}');
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('TODO: Connect to ${otherUserProfile.firstName}')));
+            },
+            buttonStyles: buttonStyles,
+          ),
+          // --- Accept Button ---
+          if (showAcceptButton)
+          buildProfileActionButton(
+            context: context,
+            isDarkMode: isDarkMode,
+            icon: Icons.check_circle_outline_rounded,
+            label: "Accept",
+            onPressed: () {
+              log('Accept button clicked for ${otherUserProfile.firstName}');
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('TODO:  connection accepted  ${otherUserProfile.firstName}')));
+            },
+            buttonStyles: buttonStyles,
+          ),
+          // --- Pending Button ---
+          if (showPendingButton)
+          buildProfileActionButton(
+            context: context,
+            isDarkMode: isDarkMode,
+            icon: Icons.hourglass_top_rounded,
+            label: "Withdraw Connection",
+            onPressed: () {
+              log('Withdraw button clicked for ${otherUserProfile.firstName}');
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('TODO: Withdraw connection request to ${otherUserProfile.firstName}')));
+            },
+            buttonStyles: buttonStyles,
+          ),
+          // --- UnFollow Button ---
+          if (showUnfollowButton)
+          buildProfileActionButton(
+            context: context,
+            isDarkMode: isDarkMode,
+            icon: Icons.cancel_outlined,
+            label: "Unfollow",
+            onPressed: () {
+              log('Connect button clicked for ${otherUserProfile.firstName}');
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('TODO: unfollow  to ${otherUserProfile.firstName}')));
+            },
+            buttonStyles: buttonStyles,
+          ),
+          // --- Follow Button ---
+          if (showFollowButton)
+          buildProfileActionButton(
+            context: context,
+            isDarkMode: isDarkMode,
+            icon: Icons.add_circle_outline_rounded,
+            label: "Follow",
+            onPressed: () {
+              log('Connect button clicked for ${otherUserProfile.firstName}');
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('TODO: Follow  to ${otherUserProfile.firstName}')));
+            },
+            buttonStyles: buttonStyles,
+          ),
 
-          if (canMessage)
-            SizedBox(width: 8.w),
-            Expanded(
-              flex: 5,
-              child: OutlinedButton.icon(
-                icon: Icon(Icons.send_rounded, size: 18.sp),
-                label: Text("Message"),
-                onPressed: () {
-                  // TODO: Implement message functionality
-                  log('Message button pressed for ${otherUserProfile.firstName}');
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('TODO: Open chat with ${otherUserProfile.firstName}')));
-                },
-                style: isDarkMode ? buttonStyles.blueOutlinedButtonDark() : buttonStyles.blueOutlinedButton(),
+          // --- Spacer between Connect/Pending and Message ---
+          if (showConnectButton || showPendingButton || showFollowButton || showAcceptButton || showUnfollowButton)  
+          SizedBox(width: 6.w),
+          Expanded(
+            flex: 4,
+            child: OutlinedButton.icon(
+              icon: Icon(Icons.message, size: 18.sp,color: AppColors.lightBlue,),
+              label: const Text(
+                "Message",
+                style: TextStyle(color: AppColors.lightBlue),
               ),
-            ),
+              onPressed: () {
+                final bool canActuallyMessage = otherUserProfile.allowMessaging ?? false;
+                log('Message button clicked for ${otherUserProfile.firstName} - allowMessaging: $canActuallyMessage');
+
+                if (canActuallyMessage || isConnected || viewUserSubscribed) {
+                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('TODO: Open chat with ${otherUserProfile.firstName}')));
+                } else {
+                   showPremiumPlanSheet(context); 
+                }
+              },
+              style: (isDarkMode ? buttonStyles.blueOutlinedButtonDark() : buttonStyles.blueOutlinedButton()).copyWith(
+                  foregroundColor: MaterialStateProperty.all(AppColors.lightTextColor),
+                  side: MaterialStateProperty.all(BorderSide(color: AppColors.darkBlue)),       
+            )),
+          ),
 
           SizedBox(width: 8.w),
+
           SizedBox(
-            width: 40.r,
-            height: 40.r,
+            width: 30.r,
+            height: 35.r,
             child: OutlinedButton(
               onPressed: () {
-                // TODO: Implement 'More' options for other users
-                log('More button pressed for ${otherUserProfile.firstName}');
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('TODO: Show more options for ${otherUserProfile.firstName}')));
+                log('More button clicked for ${otherUserProfile.firstName}');
 
-                final options = [
-                    if(otherUserProfile.isInConnections ?? false)
-                        ReusableBottomSheetOption(icon: Icons.person_remove_alt_1_outlined, title: 'Remove Connection', onTap: (){ /* TODO */ }),
-                    ReusableBottomSheetOption(icon: Icons.flag_outlined, title: 'Report Profile', onTap: (){ /* TODO */ }),
-                    ReusableBottomSheetOption(icon: Icons.block, title: 'Block User', onTap: (){ /* TODO */ }),
-                    ReusableBottomSheetOption(icon: Icons.share_outlined, title: 'Share Profile via...', onTap: (){ /* TODO */ }),
-                    // TODO: Add more...
+                final List<ReusableBottomSheetOption> options = [
+                  if (followPrimary && !isConnected && !isRequestSentByMe)
+                    ReusableBottomSheetOption(
+                      icon: Icons.person_add_outlined,
+                      title: 'Connect',
+                      onTap: () {
+                        // TODO: Implement connect functionality
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('TODO: Connect to ${otherUserProfile.firstName}'))
+                        );
+                      },
+                    ),
+                  if (followPrimary && !isConnected && isRequestSentByMe)
+                    ReusableBottomSheetOption(
+                      icon: Icons.person_remove_outlined,
+                      title: 'Withdraw Request',
+                      onTap: () {
+                        // TODO: Implement withdraw request functionality
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('TODO: Withdraw request to ${otherUserProfile.firstName}'))
+                        );
+                      },
+                    ),
+                  if (!followPrimary && !isConnected && !isAlreadyFollowing)
+                    ReusableBottomSheetOption(
+                      icon: Icons.person_add_alt_1_outlined,
+                      title: 'Follow',
+                      onTap: () {
+                        // TODO: Implement follow functionality
+                        Navigator.pop(context);
+                      },
+                    ),
+                  if (isConnected && followPrimary)
+                    ReusableBottomSheetOption(
+                      icon: Icons.person_remove_alt_1_outlined,
+                      title: 'Remove Connection',
+                      onTap: () {
+                        // TODO: Implement remove connection functionality
+                        Navigator.pop(context);
+                      },
+                    ),
+                  if (isAlreadyFollowing && !followPrimary)
+                    ReusableBottomSheetOption(
+                      icon: Icons.person_remove_outlined,
+                      title: 'Unfollow',
+                      onTap: () {
+                        // TODO: Implement unfollow functionality
+                        Navigator.pop(context);
+                      },
+                    ),
+                  if (followPrimary && isRequestReceivedByMe)
+                    ReusableBottomSheetOption(
+                      icon: Icons.check_circle_outline_rounded,
+                      title: 'Accept Connection Request',
+                      onTap: () {
+                        // TODO: Implement accept connection request functionality
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('TODO: Accept request from ${otherUserProfile.firstName}'))
+                        );
+                      },
+                    ),
+                  ReusableBottomSheetOption(icon: Icons.block, title: 'Block User', onTap: (){ log('Block User option tapped'); /* TODO */ }),
+                  ReusableBottomSheetOption(icon: Icons.note_outlined, title: 'Contact Info', onTap: () { log('Contact Info option tapped'); GoRouter.of(context).push('/contact_info', extra: otherUserProfile); }),
                 ];
+
                 showReusableBottomSheet(context: context, options: options);
-
-
               },
               style: (isDarkMode ? buttonStyles.circularButtonDark() : buttonStyles.circularButton()).copyWith(
                 padding: MaterialStateProperty.all(EdgeInsets.zero),
@@ -695,10 +833,9 @@ void _showProfileOptionsBottomSheet(BuildContext context, WidgetRef ref, bool is
                 Icons.more_horiz,
                 color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
               ),
-            ),
+            
           ),
-        ],
+      )],
       );
     }
-
-}
+    }
