@@ -1,11 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:link_up/core/constants/endpoints.dart';
-import 'package:http/http.dart' as http;
-import 'package:open_filex/open_filex.dart';
-import 'package:path_provider/path_provider.dart';
+
+
 import '../model/message_model.dart';
-import '../widgets/video_player_screen.dart';
+
 import 'package:intl/intl.dart';
 
 class ChatMessageBubble extends StatelessWidget {
@@ -106,7 +105,7 @@ class ChatMessageBubble extends StatelessWidget {
               bottom: 0,
               child: CircleAvatar(
                 radius: 8,
-                backgroundImage: _getImageProvider("assets/images/profile.png"),
+                backgroundImage: _getImageProvider(InternalEndPoints.profileUrl),
               ),
             ),
         ],
@@ -134,7 +133,7 @@ class ChatMessageBubble extends StatelessWidget {
 
   ImageProvider _getImageProvider(String? url) {
     if (url == null || url.isEmpty) {
-      return const AssetImage("assets/images/profile.png");
+      return  AssetImage(InternalEndPoints.profileUrl);
     } else if (url.startsWith('http')) {
       return NetworkImage(url);
     } else {

@@ -266,8 +266,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
                       return ChatMessageBubble(
                         key: ValueKey(message.messageId),
                         message: message,
-                        currentUserName: "You",
-                        currentUserProfilePicUrl: "assets/images/profile.png",
+                        currentUserName: "${InternalEndPoints.firstname} ${InternalEndPoints.lastname}",  
+                        currentUserProfilePicUrl: InternalEndPoints.profileUrl,
                         chatProfilePicUrl: widget.senderProfilePicUrl,
                         senderName: widget.senderName,
                         isLastSeenMessage: isLastSeenMessage,
@@ -283,7 +283,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
             TypingIndicator(
               isTyping: messagesState.isOtherUserTyping, // Always true here since we're inside the conditional
               typingUser: widget.senderName,
-              currentUser: "You",
+              currentUser: "${InternalEndPoints.firstname}${InternalEndPoints.lastname}",
               theme: theme,
             ),
 
@@ -421,7 +421,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
       messageId: 'temp_${DateTime.now().millisecondsSinceEpoch}',
       senderId: InternalEndPoints.userId,
       receiverId: otheruser,
-      senderName: 'You', // Simplified display name for current user
+      senderName: "${InternalEndPoints.firstname}${InternalEndPoints.lastname}", // Simplified display name for current user
       message: messageText, // Make sure this is not empty
       media: [],
       timestamp: DateTime.now(),
@@ -486,7 +486,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
         messageId: messageId,
         senderId: InternalEndPoints.userId,
         receiverId: otheruser,
-        senderName: 'You',
+        senderName: "${InternalEndPoints.firstname}${InternalEndPoints.lastname}",
         message: mediaType == "document" ? fileName : "",
         media: [filePath], // Local path for preview
         timestamp: DateTime.now(),

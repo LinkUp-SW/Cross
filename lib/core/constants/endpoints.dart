@@ -3,7 +3,9 @@
 class InternalEndPoints {
   static String userId = "";
   static String email = "";
-  static String profileUrl = "";
+  static String profileUrl = "assets/images/profile.png";
+  static String firstname= "You";
+  static String lastname= "J";
   static const String socketUrl = 'http://10.0.2.2:3000';
 }
 
