@@ -1,3 +1,4 @@
+// lib/features/admin_panel/widgets/user_card.dart
 import 'package:flutter/material.dart';
 import 'package:link_up/features/admin_panel/model/users_model.dart';
 
@@ -24,7 +25,7 @@ class UserCard extends StatelessWidget {
           radius: 24,
         ),
         title: Text('${user.firstName} ${user.lastName}',
-            style: TextStyle(fontWeight: FontWeight.bold)),
+            style: const TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -34,7 +35,7 @@ class UserCard extends StatelessWidget {
           ],
         ),
         trailing: IconButton(
-          icon: Icon(Icons.delete, color: Colors.red),
+          icon: const Icon(Icons.delete, color: Colors.red),
           onPressed: onDelete,
         ),
       ),

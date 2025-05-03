@@ -21,6 +21,7 @@ class OtpService extends BaseService {
         body: {
           "otp": otp,
           "email": email,
+          "update": false,
         },
       );
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:link_up/features/admin_panel/model/users_model.dart';
+
 class AdminNameDialog extends StatelessWidget {
   const AdminNameDialog({super.key});
 
@@ -22,29 +23,58 @@ class AdminNameDialog extends StatelessWidget {
               TextFormField(
                 controller: firstNameController,
                 decoration: InputDecoration(labelText: 'First Name'),
-                validator: (value) => value == null || value.isEmpty ? 'Please enter first name' : null,
+                validator: (value) => value == null || value.isEmpty
+                    ? 'Please enter first name'
+                    : null,
               ),
               TextFormField(
                 controller: lastNameController,
                 decoration: InputDecoration(labelText: 'Last Name'),
-                validator: (value) => value == null || value.isEmpty ? 'Please enter last name' : null,
+                validator: (value) => value == null || value.isEmpty
+                    ? 'Please enter last name'
+                    : null,
               ),
               TextFormField(
                 controller: emailController,
                 decoration: InputDecoration(labelText: 'Email'),
                 validator: (value) {
-                  if (value == null || value.isEmpty) return 'Please enter email';
-                  if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) return 'Enter valid email';
+                  if (value == null || value.isEmpty)
+                    return 'Please enter email';
+                  if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value))
+                    return 'Enter valid email';
                   return null;
                 },
               ),
-              TextFormField(
-                controller: passwordController,
-                decoration: InputDecoration(labelText: 'Password'),
-                obscureText: true,
-                validator: (value) => value == null || value.length < 6
-                    ? 'Password must be 6+ chars'
-                    : null,
+              StatefulBuilder(
+                builder: (context, setState) {
+                  bool obscurePassword = true;
+                  return StatefulBuilder(
+                    builder: (context, innerSetState) {
+                      return TextFormField(
+                        controller: passwordController,
+                        decoration: InputDecoration(
+                          labelText: 'Password',
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              obscurePassword
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                            ),
+                            onPressed: () {
+                              innerSetState(() {
+                                obscurePassword = !obscurePassword;
+                              });
+                            },
+                          ),
+                        ),
+                        obscureText: obscurePassword,
+                        validator: (value) => value == null || value.length < 6
+                            ? 'Password must be 6+ chars'
+                            : null,
+                      );
+                    },
+                  );
+                },
               ),
             ],
           ),
@@ -59,12 +89,13 @@ class AdminNameDialog extends StatelessWidget {
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               final newUser = UserModel(
-                profileImageUrl: 'https://i.pravatar.cc/150?u=${emailController.text}', // Random avatar
+                profileImageUrl:
+                    'https://i.pravatar.cc/150?u=${emailController.text}', // Random avatar
                 firstName: firstNameController.text,
                 lastName: lastNameController.text,
                 email: emailController.text,
                 password: passwordController.text, // Optional: store or ignore
-                id: DateTime.now().millisecondsSinceEpoch, // unique ID
+                id: '', // unique ID
                 type: 'Admin',
               );
               Navigator.of(context).pop(newUser);

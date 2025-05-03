@@ -28,10 +28,14 @@ class EditIntroViewModel extends StateNotifier<EditIntroState> {
       : super(const EditIntroInitial()) {
     _fetchInitialData();
 
-    firstNameController.addListener(() => _updateFormData((current) => current.copyWith(firstName: firstNameController.text)));
-    lastNameController.addListener(() => _updateFormData((current) => current.copyWith(lastName: lastNameController.text)));
-    headlineController.addListener(() => _updateFormData((current) => current.copyWith(headline: headlineController.text)));
-    websiteController.addListener(() => _updateFormData((current) => current.copyWith(website: websiteController.text)));
+    firstNameController.addListener(() => _updateFormData(
+        (current) => current.copyWith(firstName: firstNameController.text)));
+    lastNameController.addListener(() => _updateFormData(
+        (current) => current.copyWith(lastName: lastNameController.text)));
+    headlineController.addListener(() => _updateFormData(
+        (current) => current.copyWith(headline: headlineController.text)));
+    websiteController.addListener(() => _updateFormData(
+        (current) => current.copyWith(website: websiteController.text)));
   }
 
   String? _validateName(String? value, String fieldName) {
@@ -52,32 +56,33 @@ class EditIntroViewModel extends StateNotifier<EditIntroState> {
     if (value == null || value.trim().isEmpty) {
       return "Headline is required.";
     }
-     if (value.length > 220) {
-       return "Headline cannot exceed 220 characters."; 
-     }
+    if (value.length > 220) {
+      return "Headline cannot exceed 220 characters.";
+    }
     final headlineRegExp = RegExp(r"""^[a-zA-Z0-9\s.,!?'\"()\-]+$""");
 
     if (!headlineRegExp.hasMatch(value)) {
       return "Headline contains invalid characters.";
     }
     return null;
-      }
+  }
 
   String? _validateWebsite(String? value) {
-      if (value == null || value.trim().isEmpty) {
-        return null; 
-      }
-      
-      final urlRegExp = RegExp(
-        r"^(https?:\/\/)?(www\.)?([\w-]+\.)+[\w-]+(\/[\w-.\/?%&=]*)?$",
-        caseSensitive: false, 
-      );
-
-      if (!urlRegExp.hasMatch(value.trim())) {
-        return "Please enter a valid URL (e.g., www.example.com or https://example.com).";
-      }
+    if (value == null || value.trim().isEmpty) {
       return null;
     }
+
+    final urlRegExp = RegExp(
+      r"^(https?:\/\/)?(www\.)?([\w-]+\.)+[\w-]+(\/[\w-.\/?%&=]*)?$",
+      caseSensitive: false,
+    );
+
+    if (!urlRegExp.hasMatch(value.trim())) {
+      return "Please enter a valid URL (e.g., www.example.com or https://example.com).";
+    }
+    return null;
+  }
+
   Future<void> _fetchInitialData() async {
     if (_userId.isEmpty) {
       state = const EditIntroError("User not logged in.");
@@ -86,11 +91,14 @@ class EditIntroViewModel extends StateNotifier<EditIntroState> {
     log("EditIntroViewModel: Fetching initial data for user ID: $_userId");
     state = const EditIntroLoading();
     try {
-      final fullProfileJson = await _profileService.fetchFullUserProfileJson(_userId);
-      _originalBioData = Map<String, dynamic>.from(fullProfileJson['bio'] ?? {});
-      final bio = _originalBioData; 
+      final fullProfileJson =
+          await _profileService.fetchFullUserProfileJson(_userId);
+      _originalBioData =
+          Map<String, dynamic>.from(fullProfileJson['bio'] ?? {});
+      final bio = _originalBioData;
 
-      final List<EducationModel> educations = await _profileService.getUserEducation(_userId);
+      final List<EducationModel> educations =
+          await _profileService.getUserEducation(_userId);
 
       final location = bio['location'] as Map<String, dynamic>? ?? {};
 
@@ -107,79 +115,84 @@ class EditIntroViewModel extends StateNotifier<EditIntroState> {
         headline: headlineController.text,
         countryRegion: countryController.text,
         city: cityController.text,
-        availableEducations: educations, 
-        selectedEducationId: null, 
+        availableEducations: educations,
+        selectedEducationId: null,
         showEducationInIntro: false,
         website: websiteController.text,
       );
 
       log("EditIntroViewModel: Initial data loaded. FormData: ${initialFormData.toString()}");
       if (mounted) {
-         state = EditIntroDataState(formData: initialFormData, originalBioData: _originalBioData);
+        state = EditIntroDataState(
+            formData: initialFormData, originalBioData: _originalBioData);
       }
     } catch (e) {
-       log("EditIntroViewModel: Error fetching initial data: $e");
-       if (mounted) {
-         state = EditIntroError("Failed to load intro data: ${e.toString()}", originalBioData: _originalBioData);
-       }
+      log("EditIntroViewModel: Error fetching initial data: $e");
+      if (mounted) {
+        state = EditIntroError("Failed to load intro data: ${e.toString()}",
+            originalBioData: _originalBioData);
+      }
     }
   }
 
-  void _updateFormData(EditIntroModel Function(EditIntroModel current) updater) {
+  void _updateFormData(
+      EditIntroModel Function(EditIntroModel current) updater) {
     final currentState = state;
 
     if (currentState is EditIntroDataState) {
-       final updatedFormData = updater(currentState.formData);
-       state = EditIntroDataState(
-           formData: updatedFormData,
-           originalBioData: currentState.originalBioData,
-       );
-    } else if (currentState is EditIntroError && currentState.previousFormData != null) {
-        final updatedFormData = updater(currentState.previousFormData!);
-        state = EditIntroError(
-           currentState.message,
-           previousFormData: updatedFormData,
-           originalBioData: currentState.originalBioData,
-        );
+      final updatedFormData = updater(currentState.formData);
+      state = EditIntroDataState(
+        formData: updatedFormData,
+        originalBioData: currentState.originalBioData,
+      );
+    } else if (currentState is EditIntroError &&
+        currentState.previousFormData != null) {
+      final updatedFormData = updater(currentState.previousFormData!);
+      state = EditIntroError(
+        currentState.message,
+        previousFormData: updatedFormData,
+        originalBioData: currentState.originalBioData,
+      );
     } else if (currentState is EditIntroSaving) {
-       final updatedFormData = updater(currentState.formData);
-       state = EditIntroSaving(
-           formData: updatedFormData,
-           originalBioData: currentState.originalBioData,
-       );
+      final updatedFormData = updater(currentState.formData);
+      state = EditIntroSaving(
+        formData: updatedFormData,
+        originalBioData: currentState.originalBioData,
+      );
     }
   }
 
   void setCountry(String value) {
-     if (countryController.text != value) {
-        countryController.text = value;
-     }
-     _updateFormData((current) => current.copyWith(countryRegion: value));
-     log("ViewModel: Country set to $value");
+    if (countryController.text != value) {
+      countryController.text = value;
+    }
+    _updateFormData((current) => current.copyWith(countryRegion: value));
+    log("ViewModel: Country set to $value");
   }
 
   void setCity(String value) {
-      if (cityController.text != value) {
-         cityController.text = value;
-      }
+    if (cityController.text != value) {
+      cityController.text = value;
+    }
     _updateFormData((current) => current.copyWith(city: value));
     log("ViewModel: City set to $value");
   }
 
   void setSelectedEducation(String? educationId) {
-      _updateFormData((current) => current.copyWith(selectedEducationId: educationId));
+    _updateFormData(
+        (current) => current.copyWith(selectedEducationId: educationId));
   }
 
   void toggleShowEducation(bool value) {
-      _updateFormData((current) => current.copyWith(showEducationInIntro: value));
+    _updateFormData((current) => current.copyWith(showEducationInIntro: value));
   }
 
   Future<void> refetchForRetry() async {
-     await _fetchInitialData();
+    await _fetchInitialData();
   }
 
   void setWebsite(String value) {
-     _updateFormData((current) => current.copyWith(website: value));
+    _updateFormData((current) => current.copyWith(website: value));
   }
 
   Future<void> saveIntro() async {
@@ -191,86 +204,109 @@ class EditIntroViewModel extends StateNotifier<EditIntroState> {
     EditIntroModel currentFormData;
     Map<String, dynamic> originalDataForSave;
 
-     final currentState = state;
-     if (currentState is EditIntroDataState) {
-       currentFormData = currentState.formData;
-       originalDataForSave = currentState.originalBioData;
-     } else if (currentState is EditIntroError && currentState.previousFormData != null) {
-        currentFormData = currentState.previousFormData!;
-        originalDataForSave = currentState.originalBioData ?? _originalBioData;
-     }
-     else {
-       return;
-     }
+    final currentState = state;
+    if (currentState is EditIntroDataState) {
+      currentFormData = currentState.formData;
+      originalDataForSave = currentState.originalBioData;
+    } else if (currentState is EditIntroError &&
+        currentState.previousFormData != null) {
+      currentFormData = currentState.previousFormData!;
+      originalDataForSave = currentState.originalBioData ?? _originalBioData;
+    } else {
+      return;
+    }
 
-    final firstNameError = _validateName(currentFormData.firstName, "First Name");
+    final firstNameError =
+        _validateName(currentFormData.firstName, "First Name");
     if (firstNameError != null) {
-      state = EditIntroError(firstNameError, previousFormData: currentFormData, originalBioData: originalDataForSave);
+      state = EditIntroError(firstNameError,
+          previousFormData: currentFormData,
+          originalBioData: originalDataForSave);
       return;
     }
 
     final lastNameError = _validateName(currentFormData.lastName, "Last Name");
     if (lastNameError != null) {
-      state = EditIntroError(lastNameError, previousFormData: currentFormData, originalBioData: originalDataForSave);
+      state = EditIntroError(lastNameError,
+          previousFormData: currentFormData,
+          originalBioData: originalDataForSave);
       return;
     }
 
-     final headlineError = _validateHeadline(currentFormData.headline);
-     if (headlineError != null) {
-       state = EditIntroError(headlineError, previousFormData: currentFormData, originalBioData: originalDataForSave);
-       return;
-     }
+    final headlineError = _validateHeadline(currentFormData.headline);
+    if (headlineError != null) {
+      state = EditIntroError(headlineError,
+          previousFormData: currentFormData,
+          originalBioData: originalDataForSave);
+      return;
+    }
 
-    if (currentFormData.countryRegion == null || currentFormData.countryRegion!.trim().isEmpty) {
-      state = EditIntroError("Country/Region is required.", previousFormData: currentFormData, originalBioData: originalDataForSave);
+    if (currentFormData.countryRegion == null ||
+        currentFormData.countryRegion!.trim().isEmpty) {
+      state = EditIntroError("Country/Region is required.",
+          previousFormData: currentFormData,
+          originalBioData: originalDataForSave);
       return;
     }
 
     final websiteError = _validateWebsite(currentFormData.website);
-     if (websiteError != null) {
-       state = EditIntroError(websiteError, previousFormData: currentFormData, originalBioData: originalDataForSave);
-       return;
-     }
+    if (websiteError != null) {
+      state = EditIntroError(websiteError,
+          previousFormData: currentFormData,
+          originalBioData: originalDataForSave);
+      return;
+    }
 
+    state = EditIntroSaving(
+        formData: currentFormData, originalBioData: originalDataForSave);
 
-    state = EditIntroSaving(formData: currentFormData, originalBioData: originalDataForSave);
-
-    Map<String, dynamic> updatedBio = Map<String, dynamic>.from(originalDataForSave);
+    Map<String, dynamic> updatedBio =
+        Map<String, dynamic>.from(originalDataForSave);
     updatedBio['first_name'] = currentFormData.firstName.trim();
     updatedBio['last_name'] = currentFormData.lastName.trim();
     updatedBio['headline'] = currentFormData.headline.trim();
-    Map<String, dynamic> location = Map<String, dynamic>.from(updatedBio['location'] ?? {});
+    Map<String, dynamic> location =
+        Map<String, dynamic>.from(updatedBio['location'] ?? {});
     location['country_region'] = currentFormData.countryRegion!.trim();
-    location['city'] = currentFormData.city?.trim().isNotEmpty ?? false ? currentFormData.city!.trim() : null;
+    location['city'] = currentFormData.city?.trim().isNotEmpty ?? false
+        ? currentFormData.city!.trim()
+        : null;
     updatedBio['location'] = location;
     updatedBio['website'] = currentFormData.website?.trim().isNotEmpty ?? false
-                           ? currentFormData.website!.trim()
-                           : null;
+        ? currentFormData.website!.trim()
+        : null;
 
     final Map<String, dynamic> requestBody = {'bio': updatedBio};
     log("EditIntroViewModel: Saving intro data: ${jsonEncode(requestBody)}");
 
     try {
       const String endpoint = 'api/v1/user/update-user-profile';
-      final response = await _profileService.put(endpoint, requestBody);
+      final response = await _profileService.put(endpoint, body: requestBody);
 
-      if ((response.statusCode == 200 || response.statusCode == 204) && mounted) {
+      if ((response.statusCode == 200 || response.statusCode == 204) &&
+          mounted) {
         log("EditIntroViewModel: Save successful.");
         state = const EditIntroSuccess();
-        await _ref.read(profileViewModelProvider.notifier).fetchUserProfile(_userId);
+        await _ref
+            .read(profileViewModelProvider.notifier)
+            .fetchUserProfile(_userId);
       } else if (mounted) {
         log("EditIntroViewModel: Save failed. Status: ${response.statusCode}, Body: ${response.body}");
         String errorMessage = 'Failed to save intro';
-         try {
-            final errorJson = jsonDecode(response.body);
-            errorMessage = errorJson['message'] ?? errorMessage;
-         } catch (_) {}
-        state = EditIntroError(errorMessage, previousFormData: currentFormData, originalBioData: originalDataForSave);
+        try {
+          final errorJson = jsonDecode(response.body);
+          errorMessage = errorJson['message'] ?? errorMessage;
+        } catch (_) {}
+        state = EditIntroError(errorMessage,
+            previousFormData: currentFormData,
+            originalBioData: originalDataForSave);
       }
     } catch (e) {
       log("EditIntroViewModel: Error saving intro: $e");
       if (mounted) {
-        state = EditIntroError("An error occurred: ${e.toString()}", previousFormData: currentFormData, originalBioData: originalDataForSave);
+        state = EditIntroError("An error occurred: ${e.toString()}",
+            previousFormData: currentFormData,
+            originalBioData: originalDataForSave);
       }
     }
   }
@@ -288,7 +324,8 @@ class EditIntroViewModel extends StateNotifier<EditIntroState> {
 }
 
 final editIntroViewModelProvider =
-    StateNotifierProvider.autoDispose<EditIntroViewModel, EditIntroState>((ref) {
+    StateNotifierProvider.autoDispose<EditIntroViewModel, EditIntroState>(
+        (ref) {
   final profileService = ref.watch(profileServiceProvider);
   return EditIntroViewModel(profileService, ref);
 });
