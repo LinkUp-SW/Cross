@@ -7,6 +7,7 @@ import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/shared/utils/my_network_utils.dart';
 import 'package:link_up/shared/widgets/custom_snackbar.dart';
+import 'package:go_router/go_router.dart';
 
 class ReceivedInvitationsCard extends ConsumerWidget {
   final InvitationsCardModel data;
@@ -39,53 +40,63 @@ class ReceivedInvitationsCard extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Expanded(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-                spacing: 12.w,
-                children: [
-                  CircleAvatar(
-                    radius: 30.r,
-                    foregroundImage: NetworkImage(
-                      data.profilePicture,
+              child: InkWell(
+                onTap: () {
+                  context.push('/profile', extra: data.cardId);
+                },
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  spacing: 12.w,
+                  children: [
+                    CircleAvatar(
+                      radius: 30.r,
+                      foregroundImage: data.profilePicture == ""
+                          ? AssetImage(
+                              'assets/images/default-profile-picture.png')
+                          : NetworkImage(
+                              data.profilePicture,
+                            ),
                     ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "${data.firstName} ${data.lastName}",
-                          style: TextStyles.font14_500Weight,
-                        ),
-                        Text(
-                          data.title,
-                          style: TextStyles.font13_500Weight.copyWith(
-                            color: isDarkMode
-                                ? AppColors.darkGrey
-                                : AppColors.lightSecondaryText,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "${data.firstName} ${data.lastName}",
+                            style: TextStyles.font14_500Weight,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 2,
-                        ),
-                        Text(
-                          "${data.mutualsCount} mutual connections",
-                          style: TextStyles.font12_500Weight.copyWith(
-                            color: isDarkMode
-                                ? AppColors.darkGrey
-                                : AppColors.lightSecondaryText,
+                          Text(
+                            data.title,
+                            style: TextStyles.font13_500Weight.copyWith(
+                              color: isDarkMode
+                                  ? AppColors.darkGrey
+                                  : AppColors.lightSecondaryText,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
                           ),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 2,
-                        ),
-                        Text(
-                          getDaysDifference(data.daysCount),
-                          style: TextStyles.font12_500Weight,
-                        ),
-                      ],
+                          Text(
+                            "${data.mutualsCount} mutual connections",
+                            style: TextStyles.font12_500Weight.copyWith(
+                              color: isDarkMode
+                                  ? AppColors.darkGrey
+                                  : AppColors.lightSecondaryText,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
+                          ),
+                          Text(
+                            getDaysDifference(data.daysCount),
+                            style: TextStyles.font12_500Weight,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             Row(

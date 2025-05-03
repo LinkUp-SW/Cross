@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/Home/view/saved_posts.dart';
-import 'package:link_up/features/admin_panel/state/dashboard_states.dart';
 import 'package:link_up/features/admin_panel/view/dashboard_view.dart';
 import 'package:link_up/features/admin_panel/view/privilages_view.dart';
 import 'package:link_up/features/Home/view/user_posts_page.dart';
@@ -58,7 +57,7 @@ final goRouterProvider = Provider<GoRouter>(
 
     return GoRouter(
       navigatorKey: navigatorKey,
-      initialLocation: '/dashboard',
+      initialLocation: '/login',
       routes: <RouteBase>[
         GoRoute(
             path: "/profile",

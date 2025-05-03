@@ -8,6 +8,7 @@ import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/shared/utils/my_network_utils.dart';
 import 'dart:math' show pi;
+import 'package:go_router/go_router.dart';
 
 class ConnectionsCard extends ConsumerWidget {
   final ConnectionsCardModel data;
@@ -41,38 +42,53 @@ class ConnectionsCard extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 spacing: 12.w,
                 children: [
-                  CircleAvatar(
-                    radius: 30.r,
-                    foregroundImage: NetworkImage(
-                      data.profilePicture,
+                  InkWell(
+                    onTap: () {
+                      context.push('/profile', extra: data.cardId);
+                    },
+                    child: CircleAvatar(
+                      radius: 30.r,
+                      foregroundImage: data.profilePicture == ""
+                          ? AssetImage(
+                              'assets/images/default-profile-picture.png')
+                          : NetworkImage(
+                              data.profilePicture,
+                            ),
                     ),
                   ),
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Name
-                        Text(
-                          "${data.firstName} ${data.lastName}",
-                          style: TextStyles.font15_700Weight,
-                        ),
-                        // Title
-                        Text(
-                          data.title,
-                          style: TextStyles.font13_500Weight.copyWith(),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 2,
-                        ),
-                        // Connection date
-                        Text(
-                          'Connected ${getDaysDifference(data.connectionDate)}',
-                          style: TextStyles.font12_500Weight.copyWith(
-                            color: isDarkMode
-                                ? AppColors.darkTextColor
-                                : AppColors.lightGrey,
+                    child: InkWell(
+                      onTap: () {
+                        context.push('/profile', extra: data.cardId);
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Name
+                          Text(
+                            "${data.firstName} ${data.lastName}",
+                            style: TextStyles.font15_700Weight,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                        ),
-                      ],
+                          // Title
+                          Text(
+                            data.title,
+                            style: TextStyles.font13_500Weight.copyWith(),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
+                          ),
+                          // Connection date
+                          Text(
+                            'Connected ${getDaysDifference(data.connectionDate)}',
+                            style: TextStyles.font12_500Weight.copyWith(
+                              color: isDarkMode
+                                  ? AppColors.darkTextColor
+                                  : AppColors.lightGrey,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
