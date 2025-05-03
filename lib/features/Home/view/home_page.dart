@@ -37,13 +37,14 @@ class _HomePageState extends ConsumerState<HomePage> {
     ref.read(postsProvider.notifier).fetchPosts().then((value) {
       ref.read(postsProvider.notifier).addPosts(value);
       checkInternetConnection();
+      setState(() {});
     });
   }
 
   void _scrollListener() {
     if (scrollController.position.pixels ==
             scrollController.position.maxScrollExtent &&
-        PostsState.nextCursor != -1) {
+        ref.watch(postsProvider).nextCursor != -1) {
       ref.read(postsProvider.notifier).fetchPosts().then((value) {
         ref.read(postsProvider.notifier).addPosts(value);
       });
@@ -104,7 +105,9 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final List<PostsState> posts = ref.watch(postsProvider);
+    final List<PostFeedState> posts = ref.watch(postsProvider).posts;
+    final bool isLoading = ref.watch(postsProvider).isLoading;
+    final int nextCursor = ref.watch(postsProvider).nextCursor;
     ref.listen(currentTabProvider, (previous, current) {
       if (current) {
         scrollTop();
@@ -132,11 +135,14 @@ class _HomePageState extends ConsumerState<HomePage> {
           child: RefreshIndicator(
             color: AppColors.darkBlue,
             onRefresh: () async {
-              PostsState.nextCursor = 0;
+              setState(() {
+                
+              });
               await ref.read(postsProvider.notifier).refreshPosts();
+              setState(() {});
             },
             child: Builder(builder: (context) {
-              if (PostsState.isLoading) {
+              if (isLoading) {
                 return Skeletonizer(
                   child: SingleChildScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
@@ -183,17 +189,19 @@ class _HomePageState extends ConsumerState<HomePage> {
               return ListView.separated(
                   controller: scrollController,
                   shrinkWrap: true,
-                  itemCount: posts.length,
+                  itemCount: posts.length + 1,
                   separatorBuilder: (context, index) =>
                       const SizedBox(height: 10),
                   itemBuilder: (context, index) {
-                    if (index == posts.length - 1 &&
-                        PostsState.nextCursor != -1) {
+                    if (index == posts.length && nextCursor != -1) {
                       return const Center(
                         child: CircularProgressIndicator(
                           color: AppColors.darkBlue,
                         ),
                       );
+                    }
+                    if (index == posts.length) {
+                      return const SizedBox();
                     }
                     return Card(
                         child: !posts[index].showUndo
