@@ -23,15 +23,17 @@ class LogInNotifier extends StateNotifier<LogInState> {
   Future<void> logIn(String email, String password, WidgetRef ref) async {
     state = const LogInLoadingState(); // Show loading indicator
     try {
-      final success =
-          await _logInService.logIn(LogInModel(email: email, password: password)).catchError((error, stackTrace) {
+      final success = await _logInService
+          .logIn(LogInModel(email: email, password: password))
+          .catchError((error, stackTrace) {
         state = const LogInErrorState("Invalid credentials");
         throw error;
       });
       if (success.isNotEmpty) {
         InternalEndPoints.email = email;
         InternalEndPoints.userId = success['user']['id'];
-        InternalEndPoints.profileUrl = await getProfileUrl(InternalEndPoints.userId);
+        InternalEndPoints.profileUrl =
+            await getProfileUrl(InternalEndPoints.userId);
 
         // After successful login and token storage
         await getToken();
@@ -43,13 +45,16 @@ class LogInNotifier extends StateNotifier<LogInState> {
         state = const LogInSuccessState();
       }
     } catch (e) {
-      state = const LogInErrorState('There was an error logging in. Please try again.');
+      state = const LogInErrorState(
+          'There was an error logging in. Please try again.');
     }
   }
 
   Future<String> getProfileUrl(String userId) async {
     final BaseService baseService = BaseService();
-    final response = await baseService.get('/profile/profile-picture/:user_id', routeParameters: {'user_id': userId});
+    final response = await baseService.get(
+        'api/v1/user/profile/profile-picture/:user_id',
+        routeParameters: {'user_id': userId});
     if (response.statusCode == 200) {
       return jsonDecode(response.body)['profilePicture'];
     } else {

@@ -7,6 +7,7 @@ import 'package:link_up/features/my-network/widgets/confirmation_pop_up.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/shared/utils/my_network_utils.dart';
+import 'package:go_router/go_router.dart';
 
 class SentInvitationsCard extends ConsumerWidget {
   final InvitationsCardModel data;
@@ -36,43 +37,53 @@ class SentInvitationsCard extends ConsumerWidget {
           spacing: 10.w,
           children: [
             Expanded(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-                spacing: 8.w,
-                children: [
-                  CircleAvatar(
-                    radius: 30.r,
-                    foregroundImage: NetworkImage(
-                      data.profilePicture,
+              child: InkWell(
+                onTap: () {
+                  context.push('/profile', extra: data.cardId);
+                },
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  spacing: 8.w,
+                  children: [
+                    CircleAvatar(
+                      radius: 30.r,
+                      foregroundImage: data.profilePicture == ""
+                          ? AssetImage(
+                              'assets/images/default-profile-picture.png')
+                          : NetworkImage(
+                              data.profilePicture,
+                            ),
                     ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "${data.firstName} ${data.lastName}",
-                          style: TextStyles.font14_500Weight,
-                        ),
-                        Text(
-                          data.title,
-                          style: TextStyles.font13_500Weight.copyWith(
-                            color: isDarkMode
-                                ? AppColors.darkGrey
-                                : AppColors.lightSecondaryText,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            data.name,
+                            style: TextStyles.font14_500Weight,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 2,
-                        ),
-                        Text(
-                          "Sent ${getDaysDifference(data.daysCount)}",
-                          style: TextStyles.font12_500Weight,
-                        ),
-                      ],
+                          Text(
+                            data.title,
+                            style: TextStyles.font13_500Weight.copyWith(
+                              color: isDarkMode
+                                  ? AppColors.darkGrey
+                                  : AppColors.lightSecondaryText,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
+                          ),
+                          Text(
+                            "Sent ${getDaysDifference(data.daysCount)}",
+                            style: TextStyles.font12_500Weight,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             Material(
@@ -84,7 +95,7 @@ class SentInvitationsCard extends ConsumerWidget {
                     builder: (context) => ConfirmationPopUp(
                       title: 'Withdraw invitation',
                       content:
-                          'Are you sure you want to withdraw your connection invitation to ${data.firstName} ${data.lastName}?',
+                          'Are you sure you want to withdraw your connection invitation to ${data.name} ?',
                       buttonText: 'Withdraw',
                       buttonFunctionality: () {
                         Navigator.of(context).pop();

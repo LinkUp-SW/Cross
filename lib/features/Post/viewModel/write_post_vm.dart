@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -19,7 +20,7 @@ class WritePostVm {
   //bool brandPartnerships = false;
   TextEditingController controller;
   Media media;
-  List<dynamic> taggedUsers = [];
+  List<String> taggedUsers = [];
   String postId = 'noId';
 
   WritePostVm({
@@ -52,10 +53,7 @@ class WritePostVm {
                 final String username = regMatch.group(1) ?? '';
                 final String userId = regMatch.group(2) ?? '';
                 log('User detected: $username with ID: $userId');
-                taggedUsers.add({
-                  'username': username,
-                  'userId': userId,
-                });
+                taggedUsers.add(userId);
                 log(taggedUsers.toString());
               }
             },
@@ -66,8 +64,7 @@ class WritePostVm {
                 final String username = regMatch.group(1) ?? '';
                 final String userId = regMatch.group(2) ?? '';
                 log('User deleted: $username with ID: $userId');
-                taggedUsers
-                    .removeWhere((element) => element['userId'] == userId);
+                taggedUsers.removeWhere((element) => element == userId);
                 log(taggedUsers.toString());
               }
             },
@@ -101,18 +98,37 @@ class WritePostVm {
             },
           ),
           TextPartStyleDefinition(
-            pattern: r'@[\w ]*',
+            pattern: r'@[\w ^:]*$',
             style: TextStyle(),
-            onDetected: (p0) {
-              log('Mention detected: $p0');
+            onDetected: (p0) async {
               if (p0.length > 1) {
-                updateTags(true);
+                final query = p0.substring(1);
+                final BaseService baseService = BaseService();
+                await baseService
+                    .get('api/v1/search/users?query=$query&limit=25&page=1')
+                    .then((value) {
+                  if (value.statusCode == 200) {
+                    final body = jsonDecode(value.body);
+                    updateTags(false, []);
+                    final List<dynamic> users = body['people'];
+                    users.removeWhere((user) {
+                      return taggedUsers
+                          .any((taggedUser) => taggedUser == user['user_id']);
+                    });
+                    log('Fetched users: $users');
+                    updateTags(true, users);
+                  } else {
+                    log('Failed to fetch users');
+                  }
+                }).catchError((error) {
+                  log('Error fetching users: $error');
+                });
               }
             },
             preventPartialDeletion: true,
             onDelete: (p0) {
               log('Mention deleted: $p0');
-              updateTags(false);
+              updateTags(false, []);
             },
           ),
           FormattingTextStyles.boldStyle,
@@ -143,7 +159,7 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
     state.initController(context, () {}, () {});
   }
 
-  void setController(Function updateTags, Function setMedia,{String? text}) {
+  void setController(Function updateTags, Function setMedia, {String? text}) {
     state.initController(context, updateTags, setMedia);
     state.controller.text = text ?? '';
   }
@@ -157,25 +173,27 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
   }
 
   void setMedia(Media media) {
-    state = state.copyWith(media: media);
+    state.media = media;
   }
 
   void clearWritePost() {
-    state = WritePostVm.initial();
-    state.initController(context, () {}, () {});
+    state.postId = 'noId';
+    state.visbilityPost = Visibilities.anyone;
+    state.visibilityComment = Visibilities.anyone;
+    state.controller.clear();
+    state.media = Media.initial();
+    state.taggedUsers = [];
   }
 
   void setPost(PostModel post, bool isEdited) {
     state.controller.text = post.text;
-    state = WritePostVm(
-      taggedUsers: post.taggedUsers,
-      postId: post.id,
-      visbilityPost: post.header.visibilityPost,
-      visibilityComment: post.header.visibilityComments,
-      media: post.media,
-      controller: state.controller,
-    );
-    
+    state.postId = post.id;
+    state.visbilityPost = post.header.visibilityPost;
+    state.visibilityComment = post.header.visibilityComments;
+    state.media = post.media;
+    state.taggedUsers = post.taggedUsers;
+    state.controller.text = post.text;
+    log('Post ID: ${state.postId}');
   }
 
   Future<String> post() async {
@@ -188,26 +206,35 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
 
   Future<String> editPost() async {
     final BaseService service = BaseService();
+    log('Editing post with ID: ${state.postId}');
 
     final mediaContent = await state.media.setToUpload();
+    try {
+      final response =
+          await service.patch('api/v2/post/posts/:postId', routeParameters: {
+        "postId": state.postId
+      }, body: {
+        "content": state.controller.text,
+        "mediaType": state.media.type.name,
+        "media": mediaContent,
+        "commentsDisabled":
+            Visibilities.getVisibilityString(state.visibilityComment),
+        "publicPost": state.visbilityPost == Visibilities.anyone ? true : false,
+        "taggedUsers": state.taggedUsers,
+        "postType":
+            state.media.type == MediaType.post ? "Repost thought" : "Standard",
+      });
 
-    final response = await service.put('api/v1/post/edit-post',body: {
-      "postId": state.postId,
-      "content": state.controller.text,
-      "mediaType": state.media.type.name,
-      "media": mediaContent,
-      "commentsDisabled":
-          Visibilities.getVisibilityString(state.visibilityComment),
-      "publicPost": state.visbilityPost == Visibilities.anyone ? true : false,
-      "taggedUsers": state.taggedUsers,
-    });
-
-    log('Response: ${response.statusCode} - ${response.body}');
-    if (response.statusCode == 200) {
-      log('Post edited successfully: ${response.body}');
-      return 'edited';
-    } else {
-      log('Failed to edit post');
+      log('Response: ${response.statusCode} - ${response.body}');
+      if (response.statusCode == 200) {
+        log('Post edited successfully: ${response.body}');
+        return state.postId;
+      } else {
+        log('Failed to edit post');
+        return 'error';
+      }
+    } catch (error) {
+      log('Error editing post: $error');
       return 'error';
     }
   }
@@ -217,24 +244,31 @@ class WritePostProvider extends StateNotifier<WritePostVm> {
 
     final mediaContent = await state.media.setToUpload();
 
-    final response = await service.post('api/v1/post/create-post', body: {
-      "content": state.controller.text,
-      "mediaType": state.media.type.name,
-      "media": mediaContent,
-      "commentsDisabled":
-          Visibilities.getVisibilityString(state.visibilityComment),
-      "publicPost": state.visbilityPost == Visibilities.anyone ? true : false,
-      "taggedUsers": state.taggedUsers,
-    });
+    try {
+      final response = await service.post('api/v2/post/posts', body: {
+        "content": state.controller.text,
+        "mediaType": state.media.type.name,
+        "media": mediaContent,
+        "commentsDisabled":
+            Visibilities.getVisibilityString(state.visibilityComment),
+        "publicPost": state.visbilityPost == Visibilities.anyone ? true : false,
+        "taggedUsers": state.taggedUsers,
+        "postType":
+            state.media.type == MediaType.post ? "Repost thought" : "Standard",
+      });
 
-    // Rest of the function remains the same
-    log('Response: ${response.statusCode} - ${response.body}');
-    if (response.statusCode == 200) {
-      log('Post created successfully: ${response.body}');
-      return 'created';
-      //return jsonDecode(response.body)['postId'];
-    } else {
-      log('Failed to create post');
+      // Rest of the function remains the same
+      log('Response: ${response.statusCode} - ${response.body}');
+      if (response.statusCode == 200) {
+        log('Post created successfully: ${response.body}');
+        final body = jsonDecode(response.body);
+        return body['postId'];
+      } else {
+        log('Failed to create post');
+        return 'error';
+      }
+    } catch (error) {
+      log('Error creating post: $error');
       return 'error';
     }
   }

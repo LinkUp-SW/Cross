@@ -1,7 +1,7 @@
 import 'package:link_up/features/my-network/model/invitations_screen_model.dart';
 
 class SentInvitationsTabState {
-  final List<InvitationsCardModel>? sent;
+  final Set<InvitationsCardModel>? sent;
   final String? nextCursor;
   final bool isLoading;
   final bool isLoadingMore;
@@ -26,7 +26,7 @@ class SentInvitationsTabState {
   }
 
   SentInvitationsTabState copyWith({
-    final List<InvitationsCardModel>? sent,
+    final Set<InvitationsCardModel>? sent,
     final String? nextCursor,
     final bool? isLoading,
     final bool? isLoadingMore,
