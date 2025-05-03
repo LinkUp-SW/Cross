@@ -96,7 +96,6 @@ class _NewChatScreenState extends ConsumerState<NewChatScreen> {
     final theme = Theme.of(context);
     final bool isDarkMode = theme.brightness == Brightness.dark;
     final state = ref.watch(newChatViewModelProvider);
-    final viewModel = ref.read(newChatViewModelProvider.notifier);
     final connections = state.connections ?? [];
 
     return Scaffold(

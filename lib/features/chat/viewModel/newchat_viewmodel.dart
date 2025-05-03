@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/core/constants/endpoints.dart';
 import 'package:link_up/features/chat/model/chat_model.dart';
 import 'package:link_up/features/chat/model/connections_chat_model.dart';
-import 'package:link_up/features/chat/model/message_model.dart';
 import '../state/newchat_state.dart';
 import '../services/newchat_service.dart'; // service for fetching connections
 

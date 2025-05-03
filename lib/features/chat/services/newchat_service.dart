@@ -1,10 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/core/constants/endpoints.dart';
 import 'package:link_up/core/services/base_service.dart';
-import 'package:link_up/features/chat/model/chat_model.dart';
 import 'dart:convert';
 import 'dart:developer';
-import 'package:link_up/features/chat/model/message_model.dart';
 
 class NewChatService {
   final BaseService _baseService = BaseService();
