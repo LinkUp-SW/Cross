@@ -14,6 +14,7 @@ import 'package:link_up/features/logIn/view/login_view.dart';
 import 'package:link_up/features/profile/view/education_list_page.dart';
 import 'package:link_up/features/profile/view/view.dart';
 import 'package:link_up/features/search/view/search_page.dart';
+import 'package:link_up/features/jobs/view/search_jobs_page.dart';
 import 'package:link_up/features/settings/view/settings.dart';
 import 'package:link_up/features/signUp/view/userInfo/names_view.dart';
 import 'package:link_up/features/signUp/view/userInfo/past_job_details.dart';
@@ -55,10 +56,10 @@ import 'package:link_up/features/profile/view/skills_list_page.dart';
 import 'package:link_up/features/profile/view/experience_list_page.dart';
 import 'package:link_up/features/profile/view/license_list_page.dart';
 import 'package:link_up/features/profile/view/contact_info.dart';
-import 'package:link_up/features/profile/model/profile_model.dart'; 
+import 'package:link_up/features/profile/model/profile_model.dart';
 import 'package:link_up/features/profile/view/blocked_users_pages.dart';
-
-
+import 'package:link_up/features/jobs/view/job_details.dart';
+import 'package:link_up/features/jobs/view/my_jobs_screen.dart';
 
 final goRouterProvider = Provider<GoRouter>(
   (ref) {
@@ -71,7 +72,7 @@ final goRouterProvider = Provider<GoRouter>(
         GoRoute(
             path: "/profile",
             builder: (context, state) => ProfilePage(
-                   userId: state.extra as String,
+                  userId: state.extra as String,
                 )),
         GoRoute(
             path: "/login",
@@ -139,33 +140,33 @@ final goRouterProvider = Provider<GoRouter>(
           ),
         ),
         //blocked
-            GoRoute(
-              path: '/blocked_users', 
-              builder: (context, state) => const BlockedUsersPage(), 
-            ),
+        GoRoute(
+          path: '/blocked_users',
+          builder: (context, state) => const BlockedUsersPage(),
+        ),
 
         //Profile Page Routes
         GoRoute(
           path: "/add_profile_section",
           builder: (context, state) => const AddSectionPage(),
-         ),
-          GoRoute(
+        ),
+        GoRoute(
           path: "/skills_list_page",
           builder: (context, state) => const SkillListPage(),
-         ),
-          GoRoute(
+        ),
+        GoRoute(
           path: "/experience_list_page",
           builder: (context, state) => const ExperienceListPage(),
-         ),
-          GoRoute(
+        ),
+        GoRoute(
           path: "/education_list_page",
           builder: (context, state) => const EducationListPage(),
-         ),
-          GoRoute(
+        ),
+        GoRoute(
           path: "/license_list_page",
           builder: (context, state) => const LicenseListPage(),
-         ),
-                  
+        ),
+
         GoRoute(
           path: "/add_resume",
           builder: (context, state) => const AddResumePage(),
@@ -218,7 +219,9 @@ final goRouterProvider = Provider<GoRouter>(
           builder: (context, state) {
             final userProfile = state.extra as UserProfile?;
             if (userProfile == null) {
-              return const Scaffold(body: Center(child: Text("Error: User profile data missing.")));
+              return const Scaffold(
+                  body:
+                      Center(child: Text("Error: User profile data missing.")));
             }
             return ContactInfoPage(userProfile: userProfile);
           },
@@ -291,6 +294,23 @@ final goRouterProvider = Provider<GoRouter>(
                   builder: (context, state) => JobsScreen(
                     scaffoldKey: scaffoldKey,
                   ),
+                  routes: [
+                    GoRoute(
+                      path: "details/:jobId",
+                      builder: (context, state) {
+                        final String jobId = state.pathParameters['jobId']!;
+                        return JobDetailsPage(jobId: jobId);
+                      },
+                    ),
+                    GoRoute(
+                      path: "/myjobs",
+                      builder: (context, state) => const MyJobsScreen(),
+                    ),
+                    GoRoute(
+                      path: "/searchjobs",
+                      builder: (context, state) => const SearchJobsPage(),
+                    ),
+                  ],
                 ),
               ],
             ),

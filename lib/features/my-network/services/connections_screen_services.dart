@@ -12,7 +12,8 @@ class ConnectionsScreenServices {
   Future<int> getConnectionsCount() async {
     try {
       final response = await _baseService
-          .get(ExternalEndPoints.connectionsAndFollowingsCounts);
+          .get(ExternalEndPoints.connectionsAndFollowingsCounts
+          );
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
         return body['number_of_connections'];
