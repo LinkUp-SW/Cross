@@ -40,10 +40,9 @@ class PeopleIFollowScreenViewModel
       );
 
       // Parse the connections from the response
-      final List<FollowingCardModel> followings =
-          (response['following'] as List)
-              .map((following) => FollowingCardModel.fromJson(following))
-              .toList();
+      final Set<FollowingCardModel> followings = (response['following'] as List)
+          .map((following) => FollowingCardModel.fromJson(following))
+          .toSet();
       final nextCursor = response['nextCursor'];
       state = state.copyWith(
           isLoading: false, followings: followings, nextCursor: nextCursor);
@@ -105,7 +104,7 @@ class PeopleIFollowScreenViewModel
       ];
 
       state = currentState.copyWith(
-        followings: allFollowings,
+        followings: allFollowings.toSet(),
         nextCursor: response['nextCursor'],
         isLoadingMore: false,
       );
@@ -127,7 +126,7 @@ class PeopleIFollowScreenViewModel
 
         state = state.copyWith(
           isLoading: false,
-          followings: updatedFollowings,
+          followings: updatedFollowings.toSet(),
           followingsCount: updatedFollowings.length,
         );
       }

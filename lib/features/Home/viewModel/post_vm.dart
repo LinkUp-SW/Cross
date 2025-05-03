@@ -12,7 +12,7 @@ class PostState {
   PostState.initial()
       : post = PostModel.initial(),
         isLoading = false;
-} 
+}
 
 class PostNotifier extends StateNotifier<PostState> {
   PostNotifier() : super(PostState.initial());
@@ -29,17 +29,17 @@ class PostNotifier extends StateNotifier<PostState> {
     return state.post.id;
   }
 
-  Future<Map<String,dynamic>> getPost(String id) async {
+  Future<Map<String, dynamic>> getPost(String id) async {
     log('getPost called with id: $id');
     state.isLoading = true;
     final BaseService service = BaseService();
-    return await service.get('api/v2/post/posts/:postId',
-        queryParameters: {
-          'limit': '10',
-          'cursor': '0',
-          'replyLimit': '1',
-        },
-        routeParameters: {"postId": id}).then((value) {
+    return await service.get('api/v2/post/posts/:postId', queryParameters: {
+      'limit': '10',
+      'cursor': '0',
+      'replyLimit': '1',
+    }, routeParameters: {
+      "postId": id
+    }).then((value) {
       log(value.body);
       final data = jsonDecode(value.body);
       state.post = PostModel.fromJson(data['post']);
@@ -47,7 +47,8 @@ class PostNotifier extends StateNotifier<PostState> {
       return data['comments'];
     }).catchError((error) {
       log('$error');
-      throw Exception(error);
+      state.isLoading = false;
+      return <String, dynamic>{};
     });
   }
 }

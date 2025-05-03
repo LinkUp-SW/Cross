@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/Home/view/saved_posts.dart';
+import 'package:link_up/features/admin_panel/view/dashboard_view.dart';
+import 'package:link_up/features/admin_panel/view/privilages_view.dart';
 import 'package:link_up/features/Home/view/user_posts_page.dart';
 import 'package:link_up/features/admin_panel/view/statistics_view.dart';
+import 'package:link_up/features/admin_panel/view/users_view.dart';
 import 'package:link_up/features/my-network/view/connections_screen.dart';
 import 'package:link_up/core/utils/global_keys.dart';
 import 'package:link_up/features/logIn/view/forgot_pasword_view.dart';
@@ -53,8 +56,6 @@ import 'package:link_up/features/profile/view/experience_list_page.dart';
 import 'package:link_up/features/profile/view/license_list_page.dart';
 
 
-
-
 final goRouterProvider = Provider<GoRouter>(
   (ref) {
     final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
@@ -63,7 +64,11 @@ final goRouterProvider = Provider<GoRouter>(
       navigatorKey: navigatorKey,
       initialLocation: '/login',
       routes: <RouteBase>[
-        GoRoute(path: "/profile", builder: (context, state) => ProfilePage()),
+        GoRoute(
+            path: "/profile",
+            builder: (context, state) => ProfilePage(
+                  userId: state.extra as String,
+                )),
         GoRoute(
             path: "/login",
             builder: (context, state) => const LoginPage(),
@@ -76,8 +81,15 @@ final goRouterProvider = Provider<GoRouter>(
             path: '/statistics',
             builder: (context, state) => const StatisticsView()),
         GoRoute(
-            path: '/priv',
-            builder: (context, state) => const DummyPage(title: 'Users')),
+            path: '/dashboard',
+            builder: (context, state) => const DashboardView()),
+        GoRoute(path: '/users', builder: (context, state) => const UsersPage()),
+        GoRoute(
+            path: '/adminjobs',
+            builder: (context, state) => const DummyPage(title: 'Admin Jobs')),
+        GoRoute(
+            path: '/contentModration',
+            builder: (context, state) => const ReportsPage()),
         GoRoute(
             path: "/signup",
             builder: (context, state) => const EmailPasswordView(),
@@ -135,38 +147,39 @@ final goRouterProvider = Provider<GoRouter>(
           path: "/experience_list_page",
           builder: (context, state) => const ExperienceListPage(),
          ),
-                   GoRoute(
+          GoRoute(
           path: "/education_list_page",
           builder: (context, state) => const EducationListPage(),
          ),
-                   GoRoute(
+          GoRoute(
           path: "/license_list_page",
           builder: (context, state) => const LicenseListPage(),
          ),
-          GoRoute(
+        GoRoute(
+           develop
           path: "/add_new_skill",
           builder: (context, state) => const AddSkillPage(),
-         ),
-         GoRoute( 
-           path: "/add_resume",
-           builder: (context, state) => const AddResumePage(),
-         ),
-         GoRoute( 
-           path: "/add_new_license",
-           builder: (context, state) => const AddNewLicensePage(),
-         ),         
-          GoRoute(
-            path: '/resume_viewer', 
-            builder: (context, state) {
+        ),
+        GoRoute(
+          path: "/add_resume",
+          builder: (context, state) => const AddResumePage(),
+        ),
+        GoRoute(
+          path: "/add_new_license",
+          builder: (context, state) => const AddNewLicensePage(),
+        ),
+        GoRoute(
+          path: '/resume_viewer',
+          builder: (context, state) {
             final String? resumeUrl = state.extra as String?;
-            return ResumeViewerPage(url: resumeUrl); 
-      },
-    ),
+            return ResumeViewerPage(url: resumeUrl);
+          },
+        ),
 
-          GoRoute( 
-           path: "/edit_about",
-           builder: (context, state) => const EditAboutPage(),
-         ),
+        GoRoute(
+          path: "/edit_about",
+          builder: (context, state) => const EditAboutPage(),
+        ),
         GoRoute(
             path: "/search_school",
             pageBuilder: (context, state) {
@@ -326,7 +339,8 @@ final goRouterProvider = Provider<GoRouter>(
           path: '/savedPosts',
           builder: (context, state) => SavedPostsPage(),
         ),
-        GoRoute(path: '/userPosts', builder: (context, state) => UserPostsPage()),
+        GoRoute(
+            path: '/userPosts', builder: (context, state) => UserPostsPage()),
         GoRoute(
             path: "/messages", builder: (context, state) => ChatListScreen()),
         GoRoute(path: "/chatpage", builder: (context, state) => Container()),

@@ -25,10 +25,12 @@ class CommentBubble extends ConsumerStatefulWidget {
     this.allRelies = false,
     required this.refresh,
     this.focusNode,
+    required this.inComments,
+
   });
 
   final CommentModel comment;
-
+  final bool inComments;
   final bool isReply;
   final bool allRelies;
   final Function refresh;
@@ -70,6 +72,7 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
             children: [
               GestureDetector(
                 onTap: () {
+                  if(widget.inComments) return;
                   if (widget.isReply) return;
                   ref.read(commentProvider.notifier).setComment(widget.comment);
                   context.push("/commentReplies/unfocused");
@@ -233,7 +236,7 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                         ),
                         FormattedRichText(
                           text: widget.comment.text,
-                          defaultStyle: TextStyle(fontSize: 12.r),
+                          defaultStyle: TextStyle(fontSize: 12.r,color: Theme.of(context).textTheme.bodyLarge!.color),
                         ),
                         if (widget.comment.media.type != MediaType.none) ...[
                           SizedBox(
@@ -330,6 +333,7 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                         style: TextStyle(color: AppColors.grey)),
                     GestureDetector(
                       onTap: () {
+                        if(widget.inComments) return;
                         ref
                             .read(commentProvider.notifier)
                             .setComment(widget.comment);
@@ -344,6 +348,7 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                   if (widget.comment.replies > 0)
                     GestureDetector(
                         onTap: () {
+                          if(widget.inComments) return;
                           ref
                               .read(commentProvider.notifier)
                               .setComment(widget.comment);
@@ -363,6 +368,7 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                   if (widget.comment.replies > 1)
                     TextButton(
                         onPressed: () {
+                          if(widget.inComments) return;
                           ref
                               .read(commentProvider.notifier)
                               .setComment(widget.comment);
@@ -377,6 +383,7 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                       isReply: true,
                       comment: widget.comment.repliesList[0],
                       focusNode: widget.focusNode,
+                      inComments: widget.inComments,
                     ),
                 ],
                 if (widget.allRelies)
@@ -390,6 +397,7 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                             isReply: true,
                             comment: widget.comment.repliesList[index],
                             focusNode: widget.focusNode,
+                            inComments: widget.inComments,
                           ),
                           SizedBox(
                             height: 10.h,

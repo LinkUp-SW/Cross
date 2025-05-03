@@ -385,7 +385,7 @@ class _SubscriptionManagementScreenScreenState
                     ),
                     trailing: state.isLoading
                         ? CircularProgressIndicator(
-                            strokeWidth: 2,
+                            strokeWidth: 3.w,
                             valueColor: AlwaysStoppedAnimation<Color>(
                               isDarkMode
                                   ? AppColors.darkBlue
@@ -437,7 +437,12 @@ class _SubscriptionManagementScreenScreenState
                         isDarkMode ? AppColors.darkBlue : AppColors.lightBlue,
                   ),
                 ),
-                onTap: () {},
+                onTap: () async {
+                  await ref
+                      .read(subscriptionManagementScreenViewModelProvider
+                          .notifier)
+                      .startSubscriptionPaymentSession();
+                },
               ),
             ),
         ],

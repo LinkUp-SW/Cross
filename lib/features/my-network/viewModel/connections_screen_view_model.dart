@@ -42,10 +42,10 @@ class ConnectionsScreenViewModel extends StateNotifier<ConnectionsScreenState> {
       );
 
       // Parse the connections from the response
-      final List<ConnectionsCardModel> connections =
+      final Set<ConnectionsCardModel> connections =
           (response['connections'] as List)
               .map((connection) => ConnectionsCardModel.fromJson(connection))
-              .toList();
+              .toSet();
       final nextCursor = response['nextCursor'];
       sortConnections(0);
       state = state.copyWith(
@@ -111,7 +111,7 @@ class ConnectionsScreenViewModel extends StateNotifier<ConnectionsScreenState> {
       ];
 
       state = currentState.copyWith(
-        connections: allConnections,
+        connections: allConnections.toSet(),
         nextCursor: response['nextCursor'],
         isLoadingMore: false,
       );
@@ -133,7 +133,7 @@ class ConnectionsScreenViewModel extends StateNotifier<ConnectionsScreenState> {
 
         state = state.copyWith(
           isLoading: false,
-          connections: updatedConnections,
+          connections: updatedConnections.toSet(),
           connectionsCount: updatedConnections.length,
         );
       }
@@ -159,14 +159,14 @@ class ConnectionsScreenViewModel extends StateNotifier<ConnectionsScreenState> {
     // Ascending order by first name
     else if (sortingType == 2) {
       connectionsList.sort((a, b) {
-        return a.firstName.compareTo(b.firstName);
+        return a.name.compareTo(b.name);
       });
     }
 
     // Descending order by first name
     else if (sortingType == 3) {
       connectionsList.sort((a, b) {
-        return b.firstName.compareTo(a.firstName);
+        return b.name.compareTo(a.name);
       });
     }
 
@@ -180,7 +180,7 @@ class ConnectionsScreenViewModel extends StateNotifier<ConnectionsScreenState> {
     }
 
     state = state.copyWith(
-      connections: connectionsList,
+      connections: connectionsList.toSet(),
     );
   }
 }

@@ -21,10 +21,10 @@ class ReceivedInvitationsTabViewModel
       );
 
       // Parse the received invitations from the response
-      final List<InvitationsCardModel> receivedInvitations =
+      final Set<InvitationsCardModel> receivedInvitations =
           (response['receivedConnections'] as List)
               .map((invitation) => InvitationsCardModel.fromJson(invitation))
-              .toList();
+              .toSet();
       state = state.copyWith(isLoading: false, received: receivedInvitations);
     } catch (e) {
       state = state.copyWith(isLoading: false, error: true);
@@ -85,7 +85,7 @@ class ReceivedInvitationsTabViewModel
       ];
 
       state = currentState.copyWith(
-        received: allReceivedInvitations,
+        received: allReceivedInvitations.toSet(),
         nextCursor: response['nextCursor'],
         isLoadingMore: false,
       );
@@ -106,7 +106,8 @@ class ReceivedInvitationsTabViewModel
             .where((invitation) => invitation.cardId != userId)
             .toList();
 
-        state = state.copyWith(isLoading: false, received: updatedInvitations);
+        state = state.copyWith(
+            isLoading: false, received: updatedInvitations.toSet());
       }
     } catch (e) {
       state = state.copyWith(isLoading: false, error: true);
@@ -125,7 +126,8 @@ class ReceivedInvitationsTabViewModel
             .where((invitation) => invitation.cardId != userId)
             .toList();
 
-        state = state.copyWith(isLoading: false, received: updatedInvitations);
+        state = state.copyWith(
+            isLoading: false, received: updatedInvitations.toSet());
       }
     } catch (e) {
       state = state.copyWith(isLoading: false, error: true);

@@ -62,14 +62,6 @@ class _ReactionsPageState extends ConsumerState<ReactionsPage> {
     final reactionsCount = ref.watch(reactionsProvider).reactionsCount;
     final cursors = ref.watch(reactionsProvider).cursor;
 
-    if (isLoading) {
-      return Center(
-        child: CircularProgressIndicator(
-          color: Theme.of(context).colorScheme.secondary,
-        ),
-      );
-    }
-
     return DefaultTabController(
       length: reactionsCount.length,
       child: Scaffold(
@@ -132,30 +124,36 @@ class _ReactionsPageState extends ConsumerState<ReactionsPage> {
                     ),
               ]),
         ),
-        body: TabBarView(
-          children: [
-            for (var reaction in reactionsCount.keys)
-              Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary,
+        body: isLoading
+            ? Center(
+                child: CircularProgressIndicator(
+                  color: Theme.of(context).colorScheme.secondary,
                 ),
-                child: ListView.separated(
-                  separatorBuilder: (context, index) => const Divider(
-                    color: AppColors.grey,
-                    thickness: 0,
-                  ),
-                  controller: scrollController,
-                  itemCount: reactions[reaction]!.length,
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    return ReactionTile(
-                      reactionTile: reactions[reaction]!.elementAt(index),
-                    );
-                  },
-                ),
+              )
+            : TabBarView(
+                children: [
+                  for (var reaction in reactionsCount.keys)
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      child: ListView.separated(
+                        separatorBuilder: (context, index) => const Divider(
+                          color: AppColors.grey,
+                          thickness: 0,
+                        ),
+                        controller: scrollController,
+                        itemCount: reactions[reaction]!.length,
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          return ReactionTile(
+                            reactionTile: reactions[reaction]!.elementAt(index),
+                          );
+                        },
+                      ),
+                    ),
+                ],
               ),
-          ],
-        ),
       ),
     );
   }
@@ -198,9 +196,9 @@ class ReactionTile extends StatelessWidget {
         ),
       ),
       subtitle: reactionTile.header.about == ''
-          ? const SizedBox():
-      Text(reactionTile.header.about,
-          style: const TextStyle(color: AppColors.grey)),
+          ? const SizedBox()
+          : Text(reactionTile.header.about,
+              style: const TextStyle(color: AppColors.grey)),
     );
   }
 }
