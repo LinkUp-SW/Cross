@@ -74,20 +74,35 @@ class ReportPopup extends StatelessWidget {
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
-                    shape: const CircleBorder(),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
                     padding: const EdgeInsets.all(15),
                   ),
                   onPressed: onAccept,
-                  child: const Icon(Icons.check, color: Colors.white),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.check, color: Colors.white),
+                      SizedBox(width: 5),
+                      const Text('Dissmiss')
+                    ],
+                  ),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
+                    textStyle: const TextStyle(color: Colors.white),
                     backgroundColor: Colors.red,
-                    shape: const CircleBorder(),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
                     padding: const EdgeInsets.all(15),
                   ),
                   onPressed: onReject,
-                  child: const Icon(Icons.close, color: Colors.white),
+                  child: Row(children: [
+                    const Icon(Icons.close, color: Colors.white),
+                    SizedBox(width: 5),
+                    const Text('Delete')
+                  ]),
                 ),
               ],
             ),

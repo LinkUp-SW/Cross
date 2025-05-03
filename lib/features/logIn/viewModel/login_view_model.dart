@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/core/constants/endpoints.dart';
@@ -42,11 +43,25 @@ class LogInNotifier extends StateNotifier<LogInState> {
         final socketService = ref.read(globalSocketServiceProvider);
         socketService.initialize();
 
-        state = const LogInSuccessState();
+        state = LogInSuccessState(isAdmin: success['user']['isAdmin'] ?? true);
       }
     } catch (e) {
       state = const LogInErrorState(
           'There was an error logging in. Please try again.');
+    }
+  }
+
+  Future<void> getUserData() async {
+    final response = await _logInService.getUserData();
+    if (response.isNotEmpty) {
+      InternalEndPoints.firstName = response['bio']['first_name'];
+      InternalEndPoints.lastName = response['bio']['last_name'];
+      InternalEndPoints.profileImage = response['bio']['profile_photo'];
+      log(InternalEndPoints.firstName);
+      log(InternalEndPoints.lastName);
+      log(InternalEndPoints.profileImage);
+    } else {
+      throw Exception('Failed to load user data');
     }
   }
 

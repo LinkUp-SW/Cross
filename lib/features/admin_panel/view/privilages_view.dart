@@ -100,7 +100,7 @@ class _ReportsPageState extends ConsumerState<ReportsPage>
                 final report = reports[i];
                 final reportCard = reportsCard(
                   textId: report.id,
-                  description: report.description,
+                  descriptions: report.descriptions,
                   status: report.status,
                   type: report.type,
                 );

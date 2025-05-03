@@ -3,14 +3,14 @@
 class InternalEndPoints {
   static String userId = "";
   static String email = "";
-  static String profileUrl = "assets/images/profile.png";
-  static String firstname = "You";
-  static String lastname = "J";
-  static const String socketUrl = 'http://10.0.2.2:3000';
+  static String firstName = "";
+  static String lastName = "";
+  static String profileUrl = "";
+  static String profileImage = "";
 }
 
 class ExternalEndPoints {
-  // static const baseUrl = 'https://api.linkup-egypt.tech/';
+  //static const baseUrl = 'https://api.linkup-egypt.tech/';
   static const baseUrl = 'http://10.0.2.2:3000/'; // for localhosting
   static const receivedConnectionInvitations =
       'api/v1/user/my-network/invitation-manager/received';
