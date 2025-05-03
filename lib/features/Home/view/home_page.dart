@@ -37,14 +37,13 @@ class _HomePageState extends ConsumerState<HomePage> {
     ref.read(postsProvider.notifier).fetchPosts().then((value) {
       ref.read(postsProvider.notifier).addPosts(value);
       checkInternetConnection();
-      setState(() {});
     });
   }
 
   void _scrollListener() {
     if (scrollController.position.pixels ==
             scrollController.position.maxScrollExtent &&
-        ref.watch(postsProvider).nextCursor != -1) {
+        PostsState.nextCursor != -1) {
       ref.read(postsProvider.notifier).fetchPosts().then((value) {
         ref.read(postsProvider.notifier).addPosts(value);
       });
@@ -105,9 +104,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final List<PostFeedState> posts = ref.watch(postsProvider).posts;
-    final bool isLoading = ref.watch(postsProvider).isLoading;
-    final int nextCursor = ref.watch(postsProvider).nextCursor;
+    final List<PostsState> posts = ref.watch(postsProvider);
     ref.listen(currentTabProvider, (previous, current) {
       if (current) {
         scrollTop();
@@ -116,6 +113,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         ref.read(currentTabProvider.notifier).state = false;
       });
     });
+    setState(() {});
     return Scaffold(
       body: NestedScrollView(
         controller: scrollController2,
@@ -135,14 +133,12 @@ class _HomePageState extends ConsumerState<HomePage> {
           child: RefreshIndicator(
             color: AppColors.darkBlue,
             onRefresh: () async {
-              setState(() {
-                
-              });
+              PostsState.nextCursor = 0;
               await ref.read(postsProvider.notifier).refreshPosts();
               setState(() {});
             },
             child: Builder(builder: (context) {
-              if (isLoading) {
+              if (PostsState.isLoading) {
                 return Skeletonizer(
                   child: SingleChildScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
@@ -189,19 +185,17 @@ class _HomePageState extends ConsumerState<HomePage> {
               return ListView.separated(
                   controller: scrollController,
                   shrinkWrap: true,
-                  itemCount: posts.length + 1,
+                  itemCount: posts.length,
                   separatorBuilder: (context, index) =>
                       const SizedBox(height: 10),
                   itemBuilder: (context, index) {
-                    if (index == posts.length && nextCursor != -1) {
+                    if (index == posts.length - 1 &&
+                        PostsState.nextCursor != -1) {
                       return const Center(
                         child: CircularProgressIndicator(
                           color: AppColors.darkBlue,
                         ),
                       );
-                    }
-                    if (index == posts.length) {
-                      return const SizedBox();
                     }
                     return Card(
                         child: !posts[index].showUndo
