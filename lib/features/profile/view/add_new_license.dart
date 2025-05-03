@@ -13,14 +13,17 @@ import 'package:link_up/features/profile/widgets/subpages_text_field.dart';
 import 'package:link_up/shared/themes/button_styles.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
-import 'dart:developer';
+import 'package:link_up/features/profile/model/license_model.dart';
 
 class AddNewLicensePage extends ConsumerStatefulWidget {
-  const AddNewLicensePage({super.key});
+final LicenseModel? licenseToEdit;
+const AddNewLicensePage({super.key, this.licenseToEdit});
 
   @override
   ConsumerState<AddNewLicensePage> createState() => _AddNewLicensePageState();
 }
+
+
 
 class _AddNewLicensePageState extends ConsumerState<AddNewLicensePage> {
   final FocusNode _issueDateFocusNode = FocusNode();
@@ -28,7 +31,29 @@ class _AddNewLicensePageState extends ConsumerState<AddNewLicensePage> {
   final FocusNode _organizationFocusNode = FocusNode();
   final FocusNode _credentialIdFocusNode = FocusNode();
   final FocusNode _credentialUrlFocusNode = FocusNode();
+  LicenseModel? _initialLicenseData;
+  bool _isEditMode = false;
+@override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final extraData = GoRouterState.of(context).extra;
+      if (extraData is LicenseModel) {
+        _initialLicenseData = extraData;
+      } else {
+        _initialLicenseData = widget.licenseToEdit;
+      }
 
+      if (_initialLicenseData != null) {
+        setState(() {
+           _isEditMode = true; 
+        });
+        ref.read(addLicenseViewModelProvider.notifier).initializeForEdit(_initialLicenseData!);
+      } else {
+         ref.read(addLicenseViewModelProvider.notifier).resetForm();
+      }
+    });
+  }
   @override
   void dispose() {
     _issueDateFocusNode.dispose();
@@ -101,17 +126,19 @@ class _AddNewLicensePageState extends ConsumerState<AddNewLicensePage> {
     final buttonStyles = LinkUpButtonStyles();
     final state = ref.watch(addLicenseViewModelProvider);
     final viewModel = ref.read(addLicenseViewModelProvider.notifier);
+    final String appBarTitle = _isEditMode ? "Edit License or Certificate" : "Add License or Certificate";
     final formData = _getFormDataFromState(state);
-
     final bool isSaving = state is AddLicenseLoading;
 
     ref.listen<AddLicenseState>(addLicenseViewModelProvider, (previous, next) {
       if (next is AddLicenseSuccess) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('License saved successfully!'), backgroundColor: Colors.green),
+          SnackBar(content: Text('License ${_isEditMode ? 'updated' : 'saved'} successfully!'), backgroundColor: Colors.green),
         );
-        GoRouter.of(context).pop();
-      } else if (next is AddLicenseFailure) {
+         if (GoRouter.of(context).canPop()) {
+             GoRouter.of(context).pop();
+         }
+          } else if (next is AddLicenseFailure) {
         if (previous is! AddLicenseFailure || previous.message != next.message) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Error: ${next.message}'), backgroundColor: Colors.red),
@@ -126,7 +153,7 @@ class _AddNewLicensePageState extends ConsumerState<AddNewLicensePage> {
         child: Column(
           children: [
             SubPagesAppBar(
-              title: "Add license or certification",
+              title: appBarTitle,
               onClosePressed: () => GoRouter.of(context).pop(),
             ),
             Expanded(
@@ -307,33 +334,30 @@ class _AddNewLicensePageState extends ConsumerState<AddNewLicensePage> {
               ),
             ),
             if (formData != null)
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: isSaving ? null : () => viewModel.saveLicense(),
-                    style: (isDarkMode
-                            ? buttonStyles.wideBlueElevatedButtonDark()
-                            : buttonStyles.wideBlueElevatedButton())
-                        .copyWith(minimumSize: MaterialStateProperty.all(Size.fromHeight(50.h))),
-                    child: isSaving
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(color: AppColors.lightMain, strokeWidth: 2.0))
-                        : Text(
-                            "Save",
-                            style: TextStyles.font15_500Weight.copyWith(
-                              color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+                      Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                            child: SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: state is AddLicenseLoading ? null : () => viewModel.saveLicense(),
+                                style: (isDarkMode
+                                    ? buttonStyles.wideBlueElevatedButtonDark()
+                                    : buttonStyles.wideBlueElevatedButton())
+                                    .copyWith(minimumSize: MaterialStateProperty.all(Size.fromHeight(50.h))),
+                                child: state is AddLicenseLoading
+                                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: AppColors.lightMain, strokeWidth: 2.0))
+                                    : Text(
+                                        "Save",
+                                        style: TextStyles.font15_500Weight.copyWith(
+                                          color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+                                        ),
+                                      ),
+                              ),
                             ),
                           ),
+                      ],
+                    ),
                   ),
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+                );
+              }
+            }

@@ -135,8 +135,13 @@ Future<bool?> _showDeleteConfirmationDialog(BuildContext context) {
                   padding: EdgeInsets.zero,
                   tooltip: "Edit license",
                   onPressed: () {
-//todo
-                  },
+                    if (license.id != null) {
+                      GoRouter.of(context).push('/add_new_license', extra: license);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Cannot edit: Item ID is missing.'), backgroundColor: Colors.orange)
+                      );
+                    }                  },
                 ),
                 SizedBox(width: 4.w), 
                 IconButton(

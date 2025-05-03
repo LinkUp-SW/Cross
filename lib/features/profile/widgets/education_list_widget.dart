@@ -135,7 +135,13 @@ Future<bool?> _showDeleteConfirmationDialog(BuildContext context) {
                   padding: EdgeInsets.zero,
                   tooltip: "Edit Education",
                   onPressed: () {
-//todo
+                  if (education.id != null) {
+                      GoRouter.of(context).push('/add_new_education', extra: education);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Cannot edit: Item ID is missing.'), backgroundColor: Colors.orange)
+                      );
+                    }
                   },
                 ),
                 SizedBox(width: 4.w), 

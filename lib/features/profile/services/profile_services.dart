@@ -282,6 +282,32 @@ class ProfileService extends BaseService {
        rethrow;
      }
    }
+  Future<bool> updateExperience(String experienceId, PositionModel position) async {
+    final String endpointTemplate = 'api/v1/user/update-work-experience/:experienceId';
+    final String endpoint = endpointTemplate.replaceFirst(':experienceId', experienceId);
+
+    log('ProfileService: Updating experience ID: $experienceId');
+    log('ProfileService: Position data to send: ${jsonEncode(position.toJson())}'); 
+
+    try {
+      final response = await put(endpoint, position.toJson());
+
+      log('ProfileService: updateExperience API Response Status Code: ${response.statusCode}');
+      log('ProfileService: updateExperience API Response Body: ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 204) { 
+        log('ProfileService: Experience updated successfully.');
+        return true;
+      } else {
+        log('ProfileService: Update Experience Error: Status Code ${response.statusCode}, Body: ${response.body}');
+
+        return false; 
+      }
+    } catch (e) {
+      log('ProfileService: Error updating experience: $e');
+      rethrow; 
+    }
+  }
   Future<bool> deleteExperience(String expID) async {
     final String endpointTemplate = 'api/v1/user/delete-work-experience/:experienceId';
     final String endpoint = endpointTemplate.replaceFirst(':experienceId', expID);
@@ -359,6 +385,32 @@ class ProfileService extends BaseService {
       rethrow;
     }
   }
+   Future<bool> updateEducation(String educationID, EducationModel education) async {
+    final String endpointTemplate = 'api/v1/user/update-education/:educationId';
+    final String endpoint = endpointTemplate.replaceFirst(':educationId', educationID);
+
+    log('ProfileService: Updating Education ID: $educationID');
+    log('ProfileService: Education data to send: ${jsonEncode(education.toJson())}'); 
+
+    try {
+      final response = await put(endpoint, education.toJson());
+
+      log('ProfileService: updateEducation API Response Status Code: ${response.statusCode}');
+      log('ProfileService: updateEducation API Response Body: ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 204) { 
+        log('ProfileService: Education updated successfully.');
+        return true;
+      } else {
+        log('ProfileService: Update Education Error: Status Code ${response.statusCode}, Body: ${response.body}');
+
+        return false; 
+      }
+    } catch (e) {
+      log('ProfileService: Error updating Education: $e');
+      rethrow; 
+    }
+  } 
  Future<bool> deleteEducation(String eduID) async {
     final String endpointTemplate = 'api/v1/user/delete-education/:educationId';
     final String endpoint = endpointTemplate.replaceFirst(':educationId', eduID);

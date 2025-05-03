@@ -105,8 +105,15 @@ Future<bool?> _showDeleteConfirmationDialog(BuildContext context) {
                   constraints: const BoxConstraints(),
                   padding: EdgeInsets.zero,
                   tooltip: "Edit Experience",
+                  
                   onPressed: () {
-//todo
+                    if (exp.id != null) {
+                      GoRouter.of(context).push('/add_new_position', extra: exp);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Cannot edit: Item ID is missing.'), backgroundColor: Colors.orange)
+                      );
+                    }
                   },
                 ),
                 SizedBox(width: 4.w), 

@@ -9,6 +9,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'dart:async';
 import 'dart:developer';
+import 'package:go_router/go_router.dart';
 
 
 class SkillListItem extends ConsumerWidget { 
@@ -181,13 +182,16 @@ Future<bool?> _showDeleteConfirmationDialog(BuildContext context) {
               constraints: const BoxConstraints(),
               padding: EdgeInsets.zero,
               tooltip: "Edit Skill",
-              onPressed: () {
-                // TODO: Navigate to edit specific experience page
-                ScaffoldMessenger.of(context).showSnackBar(
-                   const SnackBar(content: Text('Edit specific item not implemented yet.'))
-                );
-              },
-            ),
+                  onPressed: () {
+                    if (skill.id != null) {
+                      GoRouter.of(context).push('/add_new_skill', extra: skill);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Cannot edit: Item ID is missing.'), backgroundColor: Colors.orange)
+                      );
+                    }
+                  },
+                ),
             SizedBox(width: 4.w), 
             IconButton(
               icon: Icon(Icons.delete_outline, color: Colors.red.shade700, size: 20.sp),
