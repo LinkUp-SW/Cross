@@ -60,7 +60,7 @@ class PostTop extends ConsumerWidget {
               icon: const Icon(Icons.more_horiz),
             ),
             IconButton(
-              //TODO: delete post action
+              //TODO: remove from feed post action
               onPressed: () {
                 ref.read(postsProvider.notifier).showUndo(post.id);
               },

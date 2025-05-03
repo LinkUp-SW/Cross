@@ -40,7 +40,8 @@ class BaseService {
 
   Future<Response> post(String endpoint,
       {Map<String, dynamic>? body,
-      Map<String, dynamic>? routeParameters}) async {
+      Map<String, dynamic>? routeParameters,
+      Map<String, dynamic>? queryParameters}) async {
     try {
       final token = await getToken();
       String finalEndpoint = endpoint;
@@ -73,10 +74,25 @@ class BaseService {
     }
   }
 
-  Future<Response> put(String endpoint, Map<String, dynamic> body) async {
+  Future<Response> put(String endpoint,
+      {Map<String, dynamic>? body,
+      Map<String, dynamic>? routeParameters}) async {
     try {
       final token = await getToken();
-      final uri = Uri.parse('${ExternalEndPoints.baseUrl}$endpoint');
+      String finalEndpoint = endpoint;
+
+      if (routeParameters != null) {
+        routeParameters.forEach(
+          (key, value) {
+            finalEndpoint = finalEndpoint.replaceAll(
+              ':$key',
+              value.toString(),
+            );
+          },
+        );
+      }
+      Uri uri = Uri.parse('${ExternalEndPoints.baseUrl}$finalEndpoint');
+
       headers['Content-Type'] = 'application/json';
       headers['Authorization'] = 'Bearer $token';
       final response = await http

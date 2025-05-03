@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -38,7 +40,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
     ref.listen<LogInState>(logInProvider, (previous, next) {
       if (next is LogInSuccessState) {
-        context.pushReplacement('/');
+        if (next.isAdmin == true) {
+          context.pushReplacement('/dashboard');
+        } else {
+          logInNotifier.getUserData();
+          context.pushReplacement('/');
+        }
       } else if (next is LogInErrorState) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(next.message)),
@@ -122,32 +129,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           ],
                         )),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
-                    child: ElevatedButton(
-                        key: const Key('facebookSignInButton'),
-                        onPressed: () {},
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              'assets/images/facebook.png',
-                              height: 25,
-                              width: 25,
-                            ),
-                            SizedBox(
-                              width: 5.w,
-                            ),
-                            const Text(
-                              'Sign in with Facebook',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
-                              ),
-                            )
-                          ],
-                        )),
-                  )
                 ],
               ),
               const DividerWithText(

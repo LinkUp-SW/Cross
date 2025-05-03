@@ -20,6 +20,10 @@ class PostsNotifier extends StateNotifier<List<PostsState>> {
     state = [...state, ...posts.map((e) => PostsState(post: e))];
   }
 
+  void clearPosts() {
+    state.clear();
+  }
+
   void removePost(String id) {
     state = state.where((element) => element.post.id != id).toList();
   }

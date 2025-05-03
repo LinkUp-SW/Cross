@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/core/services/base_service.dart';
 import 'package:link_up/core/utils/global_keys.dart';
+import 'package:link_up/features/Home/home_enums.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
 import 'package:link_up/features/Home/post_functions.dart';
 import 'package:link_up/features/Post/viewModel/write_post_vm.dart';
@@ -28,7 +29,6 @@ aboutPostBottomSheet(BuildContext context,
           children: [
             ListTile(
               onTap: () {
-                //TODO: save post
                 setState(() {
                   post.saved = !post.saved;
                   if (post.saved) {
@@ -58,18 +58,8 @@ aboutPostBottomSheet(BuildContext context,
               leading: const Icon(Icons.visibility_off),
               title: Text(isAd ? "Hide or report this add" : "Not interested"),
             ),
-            isAd
-                ? ListTile(
+            ListTile(
                     onTap: () {
-                      //TODO:
-                    },
-                    leading: const Icon(Icons.info),
-                    title: const Text("Why am I seeing this ad?"),
-                  )
-                : ListTile(
-                    onTap: () {
-                      //TODO: unfollow user
-                      //Needs to be changed to top id and name
                       isAcitvity
                           ? unfollowUser(post.activity.actorUserName)
                           : unfollowUser(post.header.userId);
@@ -83,7 +73,58 @@ aboutPostBottomSheet(BuildContext context,
             if (!isAd)
               ListTile(
                 onTap: () {
-                  //TODO: report post
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return Dialog(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.primary,
+                          child: Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: ListView(
+                              shrinkWrap: true,
+                              children: [
+                                const Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    "Report post",
+                                    style: TextStyle(fontSize: 20,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                SizedBox(
+                                  child: ListView.separated(
+                                    shrinkWrap: true,
+                                    itemCount: ReportReasonEnum.values.length,
+                                    itemBuilder: (context, index) {
+                                      return ListTile(
+                                          leading: ReportReasonEnum.getIcon(
+                                              ReportReasonEnum.values[index]),
+                                          title: Text(
+                                            ReportReasonEnum.reportReasonFullString(
+                                                ReportReasonEnum.values[index]),
+                                          ),
+                                          onTap: () async {
+                                            await reportPost(post.id, "Post",
+                                                ReportReasonEnum.values[index]);
+                                            if (context.mounted) {
+                                              context.pop();
+                                              context.pop();
+                                            }
+                                          });
+                                    },
+                                    separatorBuilder: (context, index) {
+                                      return const Divider(
+                                        color: AppColors.grey,
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      });
                 },
                 leading: const Icon(Icons.report),
                 title: const Text("Report post"),
@@ -97,7 +138,7 @@ aboutPostBottomSheet(BuildContext context,
 
 myPostBottomSheet(BuildContext context, WidgetRef ref,
     {required PostModel post}) {
-  bool featured = false;
+  //bool featured = false;
   showModalBottomSheet(
     context: context,
     useRootNavigator: true,
@@ -108,17 +149,6 @@ myPostBottomSheet(BuildContext context, WidgetRef ref,
           children: [
             ListTile(
               onTap: () {
-                //TODO: feature on top of profile
-                setState(() {
-                  featured = !featured;
-                });
-              },
-              leading: Icon(featured ? Icons.star : Icons.star_border),
-              title: const Text("Feature on top of profile"),
-            ),
-            ListTile(
-              onTap: () {
-                //TODO: save post
                 setState(() {
                   post.saved = !post.saved;
                   if (post.saved) {
@@ -143,7 +173,6 @@ myPostBottomSheet(BuildContext context, WidgetRef ref,
             ),
             ListTile(
               onTap: () {
-                //TODO: edit post
                 ref.read(writePostProvider.notifier).setPost(post, true);
                 context.pop();
                 context.push('/writePost', extra: post.text);
@@ -218,7 +247,6 @@ myPostBottomSheet(BuildContext context, WidgetRef ref,
             ),
             ListTile(
               onTap: () {
-                //TODO: who can comment on this post post
                 context.pop();
                 postVisibiltyBottomSheet(
                   context,
@@ -239,7 +267,6 @@ myPostBottomSheet(BuildContext context, WidgetRef ref,
             ),
             ListTile(
               onTap: () {
-                //TODO: who cna see this post
                 context.pop();
                 postVisibiltyBottomSheet(
                   context,

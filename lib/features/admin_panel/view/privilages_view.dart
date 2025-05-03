@@ -1,3 +1,4 @@
+// privilages_view.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,6 +8,7 @@ import 'package:link_up/features/admin_panel/viewModel/privilages_provider.dart'
 import 'package:link_up/features/admin_panel/widgets/admin_drawer.dart';
 import 'package:link_up/features/admin_panel/widgets/report_popup.dart';
 import 'package:link_up/features/admin_panel/widgets/reports.dart';
+import 'package:link_up/features/Home/model/post_model.dart';
 
 class ReportsPage extends ConsumerStatefulWidget {
   const ReportsPage({super.key});
@@ -21,14 +23,41 @@ class _ReportsPageState extends ConsumerState<ReportsPage>
 
   @override
   void initState() {
-    _tabController = TabController(length: 3, vsync: this);
     super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+    _tabController.addListener(_onTabChanged);
+  }
+
+  @override
+  void dispose() {
+    _tabController.removeListener(_onTabChanged);
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  void _onTabChanged() {
+    if (_tabController.indexIsChanging) return;
+    final tabName = _getTabName(_tabController.index);
+    final status = tabName == "All" ? "" : tabName;
+    ref.read(reportProvider.notifier).fetchReports(status);
+  }
+
+  String _getTabName(int index) {
+    switch (index) {
+      case 0:
+        return "Pending";
+      case 1:
+        return "Resolved";
+      case 2:
+        return "All";
+      default:
+        return "All";
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final reportState = ref.watch(reportProvider);
-    final reportNotifier = ref.read(reportProvider.notifier);
 
     return Scaffold(
       drawer: const AdminDrawer(),
@@ -45,7 +74,10 @@ class _ReportsPageState extends ConsumerState<ReportsPage>
         title: const Text(
           "Reports",
           style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 25),
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            fontSize: 25,
+          ),
         ),
         iconTheme: const IconThemeData(color: Colors.black),
         bottom: TabBar(
@@ -70,9 +102,9 @@ class _ReportsPageState extends ConsumerState<ReportsPage>
           ReportLoaded(:final reports) => TabBarView(
               controller: _tabController,
               children: [
-                _buildTab(reports, "Pending", reportNotifier),
-                _buildTab(reports, "Resolved", reportNotifier),
-                _buildTab(reports, "All", reportNotifier),
+                _buildTab(reports, "Pending"),
+                _buildTab(reports, "Resolved"),
+                _buildTab(reports, "All"),
               ],
             ),
         },
@@ -80,17 +112,19 @@ class _ReportsPageState extends ConsumerState<ReportsPage>
     );
   }
 
-  Widget _buildTab(
-    List<ReportModel> allReports,
-    String tab,
-    ReportNotifier notifier,
-  ) {
+  Widget _buildTab(List<ReportModel> allReports, String tab) {
     final reports = tab == "All"
         ? allReports
-        : allReports.where((r) => r.status == tab).toList();
+        : allReports
+            .where((r) => r.status.toLowerCase() == tab.toLowerCase())
+            .toList();
 
     return RefreshIndicator(
-      onRefresh: () async => await notifier.fetchReports(),
+      onRefresh: () {
+        final tabName = _getTabName(_tabController.index);
+        final status = tabName == "All" ? "" : tabName;
+        return ref.read(reportProvider.notifier).fetchReports(status);
+      },
       child: reports.isEmpty
           ? const Center(child: Text("No reports."))
           : ListView.separated(
@@ -98,32 +132,86 @@ class _ReportsPageState extends ConsumerState<ReportsPage>
               separatorBuilder: (_, __) => SizedBox(height: 12.h),
               itemBuilder: (_, i) {
                 final report = reports[i];
-                final reportCard = reportsCard(
+                final card = reportsCard(
                   textId: report.id,
-                  description: report.description,
+                  descriptions: report.descriptions,
                   status: report.status,
                   type: report.type,
                 );
 
-                return report.status == "Pending"
-                    ? GestureDetector(
-                        onTap: () {
-                          showReportPopup(
-                            context: context,
-                            type: report.type,
-                            onAccept: () {
-                              Navigator.pop(context);
-                              notifier.resolveReport(report.id);
-                            },
-                            onReject: () {
-                              Navigator.pop(context);
-                              notifier.resolveReport(report.id);
-                            },
-                          );
+                // Only Pending reports get the popup
+                if (report.status.toLowerCase() != "pending") {
+                  return card;
+                }
+
+                return GestureDetector(
+                  onTap: () async {
+                    final notifier = ref.read(reportProvider.notifier);
+
+                    // If it's a post/comment, fetch content first
+                    if (report.contentRef != null &&
+                        (report.type.toLowerCase() == 'post' ||
+                            report.type.toLowerCase() == 'comment')) {
+                      // show loading
+                      showReportPopup(
+                        context: context,
+                        type: report.type,
+                        isLoading: true,
+                        onAccept: () {},
+                        onReject: () {},
+                      );
+
+                      try {
+                        final post = await ref
+                            .read(reportServiceProvider)
+                            .fetchPost(report.type, report.contentRef!);
+                        if (!context.mounted) return;
+                        Navigator.pop(context); // close loader
+
+                        showReportPopup(
+                          context: context,
+                          type: report.type,
+                          post: post,
+                          onAccept: () {
+                            Navigator.pop(context);
+                            notifier.dismissReport(
+                                report.type, report.contentRef!);
+                          },
+                          onReject: () {
+                            Navigator.pop(context);
+                            notifier.removeReport(
+                                report.type, report.contentRef!);
+                          },
+                        );
+                      } catch (_) {
+                        if (!context.mounted) return;
+                        Navigator.pop(context); // close loader
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content:
+                                  Text("Failed to fetch reported content")),
+                        );
+                      }
+                    } else {
+                      // generic types (e.g. Job Listing)
+                      showReportPopup(
+                        context: context,
+                        type: report.type,
+                        onAccept: () {
+                          Navigator.pop(context);
+                          notifier.dismissReport(
+                              report.type, report.contentRef ?? report.id);
                         },
-                        child: reportCard,
-                      )
-                    : reportCard;
+                        onReject: () {
+                          Navigator.pop(context);
+                          notifier.removeReport(
+                              report.type, report.contentRef ?? report.id);
+                        },
+                      );
+                    }
+                  },
+                  child: card,
+                );
               },
             ),
     );

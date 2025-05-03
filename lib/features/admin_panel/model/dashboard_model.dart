@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 class StatCardsModel {
   String? title;
   String? value;
-  String? changeText;
+  int? changeText;
   Color? changeColor;
   StatCardsModel({
     this.title,
@@ -26,3 +26,5 @@ class StatCardsModel {
     return data;
   }
 }
+
+class DashboardCardModel {}

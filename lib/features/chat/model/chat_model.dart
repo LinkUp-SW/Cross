@@ -1,80 +1,90 @@
-enum MessageType { text, image, video, document, sticker }
+// fetch all chats
+import 'dart:developer';
 
 class Chat {
-  final String name;
-  final String profilePictureUrl;
-  final String lastMessage;
-  final bool isUnread;
-  final int unreadMessageCount;
-  final List<Message> messages;
-  final DateTime lastMessageTimestamp;
-  final bool isBlocked;
+  final String conversationId;
+  final String senderId;
+  final String sendername;
+  final String senderprofilePictureUrl;
+  final String? lastMessage;
+  final DateTime? lastMessageTimestamp;
+  final int unreadCount;
+  final bool isOnline;
+  final List<dynamic> conversationtype;
 
   Chat({
-    required this.name,
-    required this.profilePictureUrl,
-    required this.lastMessage,
-    required this.isUnread,
-    required this.unreadMessageCount,
-    required this.messages,
-    required this.lastMessageTimestamp,
-    this.isBlocked = false,  // Default value is false (not blocked)
+    required this.conversationId,
+    required this.senderId,
+    required this.sendername,
+    required this.senderprofilePictureUrl,
+    this.lastMessage, // Made optional
+    this.lastMessageTimestamp, // Made optional
+    required this.unreadCount,
+    required this.isOnline,
+    required this.conversationtype,
   });
+
+  factory Chat.fromJson(Map<String, dynamic> json) {
+    try {
+      final otherUser = json['otherUser'] as Map<String, dynamic>;
+      // Handle lastMessage that could be empty string, null, or Map
+      final dynamic lastMessageData = json['lastMessage'];
+
+      String? lastMessageText;
+      DateTime? messageTimestamp;
+
+      if (lastMessageData != null && lastMessageData is Map<String, dynamic>) {
+        lastMessageText = lastMessageData['message'] as String?;
+        messageTimestamp =
+            lastMessageData.containsKey('timestamp') ? DateTime.parse(lastMessageData['timestamp'] as String) : null;
+      }
+
+      return Chat(
+        conversationId: json['conversationId'] as String,
+        senderId: otherUser['userId'] as String,
+        sendername: '${otherUser['firstName']} ${otherUser['lastName']}',
+        senderprofilePictureUrl: otherUser['profilePhoto'] as String? ?? '',
+        lastMessage: lastMessageText,
+        lastMessageTimestamp: messageTimestamp,
+        unreadCount: json['unreadCount'] as int? ?? 0,
+        conversationtype: json['conversationType'] as List<dynamic>? ?? [],
+        isOnline: otherUser['onlineStatus'] as bool? ?? false,
+      );
+    } catch (e, stackTrace) {
+      log('Error parsing chat JSON: $json');
+      log('Error details: $e');
+      log('Stack trace: $stackTrace');
+      rethrow;
+    }
+  }
+
+  // Add toString for debugging
+  @override
+  String toString() {
+    return 'Chat{conversationId: $conversationId, sendername: $sendername, lastMessage: $lastMessage}';
+  }
 
   Chat copyWith({
-    String? name,
-    String? profilePictureUrl,
+    String? conversationId,
+    String? senderId,
+    String? sendername,
+    String? senderprofilePictureUrl,
     String? lastMessage,
-    bool? isUnread,
-    int? unreadMessageCount,
-    List<Message>? messages,
     DateTime? lastMessageTimestamp,
-     bool? isBlocked, 
+    int? unreadCount,
+    bool? isOnline,
+    List<dynamic>? conversationtype,
   }) {
     return Chat(
-      name: name ?? this.name,
-      profilePictureUrl: profilePictureUrl ?? this.profilePictureUrl,
+      conversationId: conversationId ?? this.conversationId,
+      senderId: senderId ?? this.senderId,
+      sendername: sendername ?? this.sendername,
+      senderprofilePictureUrl: senderprofilePictureUrl ?? this.senderprofilePictureUrl,
       lastMessage: lastMessage ?? this.lastMessage,
-      isUnread: isUnread ?? this.isUnread,
-      unreadMessageCount: unreadMessageCount ?? this.unreadMessageCount,
-      messages: messages ?? this.messages,
       lastMessageTimestamp: lastMessageTimestamp ?? this.lastMessageTimestamp,
-      isBlocked: isBlocked ?? this.isBlocked,  
+      unreadCount: unreadCount ?? this.unreadCount,
+      isOnline: isOnline ?? this.isOnline,
+      conversationtype: conversationtype ?? this.conversationtype,
     );
-  }
-}
-
-class Message {
-  final String sender;
-  final String content;
-  final DateTime timestamp;
-  final MessageType type;
-
-  Message({
-    required this.sender,
-    required this.content,
-    required this.timestamp,
-    required this.type,
-  });
-
-  factory Message.fromJson(Map<String, dynamic> json) {
-    return Message(
-      sender: json['sender'],
-      content: json['content'],
-      timestamp: DateTime.parse(json['timestamp']),
-      type: MessageType.values.firstWhere(
-        (e) => e.toString() == 'MessageType.${json['type']}',
-        orElse: () => MessageType.text,
-      ),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'sender': sender,
-      'content': content,
-      'timestamp': timestamp.toIso8601String(),
-      'type': type.toString().split('.').last,
-    };
   }
 }

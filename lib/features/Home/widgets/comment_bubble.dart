@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -26,7 +24,6 @@ class CommentBubble extends ConsumerStatefulWidget {
     required this.refresh,
     this.focusNode,
     required this.inComments,
-
   });
 
   final CommentModel comment;
@@ -51,8 +48,7 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
           flex: 1,
           child: GestureDetector(
             onTap: () {
-              //TODO: navigate to user profile page
-              log('userprofile: ${widget.comment.header.userId}');
+              context.push('/profile', extra: widget.comment.header.userId);
             },
             child: CircleAvatar(
               radius: 15.r,
@@ -72,7 +68,7 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
             children: [
               GestureDetector(
                 onTap: () {
-                  if(widget.inComments) return;
+                  if (widget.inComments) return;
                   if (widget.isReply) return;
                   ref.read(commentProvider.notifier).setComment(widget.comment);
                   context.push("/commentReplies/unfocused");
@@ -150,8 +146,7 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                                                                       widget
                                                                           .comment,
                                                                       true);
-                                                              widget
-                                                                  .focusNode
+                                                              widget.focusNode
                                                                   ?.requestFocus();
                                                               context.pop();
                                                             }),
@@ -217,7 +212,65 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                                                       ),
                                                       ListTile(
                                                         onTap: () {
-                                                          //TODO: report comment
+                                                          showDialog(
+                                                              context: context,
+                                                              builder:
+                                                                  (context) {
+                                                                return Dialog(
+                                                                  backgroundColor: Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .primary,
+                                                                  child:
+                                                                      Padding(
+                                                                    padding:
+                                                                        const EdgeInsets
+                                                                            .all(
+                                                                            20.0),
+                                                                    child:
+                                                                        ListView(
+                                                                      shrinkWrap:
+                                                                          true,
+                                                                      children: [
+                                                                        const Text(
+                                                                            "Report Comment",
+                                                                            style:
+                                                                                TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                                                                        SizedBox(
+                                                                          child:
+                                                                              ListView.separated(
+                                                                            shrinkWrap:
+                                                                                true,
+                                                                            itemCount:
+                                                                                ReportReasonEnum.values.length,
+                                                                            itemBuilder:
+                                                                                (context, index) {
+                                                                              return ListTile(
+                                                                                  leading: ReportReasonEnum.getIcon(ReportReasonEnum.values[index]),
+                                                                                  title: Text(
+                                                                                    ReportReasonEnum.reportReasonFullString(ReportReasonEnum.values[index]),
+                                                                                  ),
+                                                                                  onTap: () async {
+                                                                                    await reportPost(widget.comment.id, "Comment", ReportReasonEnum.values[index]);
+                                                                                    if (context.mounted) {
+                                                                                      context.pop();
+                                                                                      context.pop();
+                                                                                    }
+                                                                                  });
+                                                                            },
+                                                                            separatorBuilder:
+                                                                                (context, index) {
+                                                                              return const Divider(
+                                                                                color: AppColors.grey,
+                                                                              );
+                                                                            },
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                );
+                                                              });
                                                         },
                                                         leading: const Icon(
                                                             Icons.report),
@@ -236,7 +289,10 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                         ),
                         FormattedRichText(
                           text: widget.comment.text,
-                          defaultStyle: TextStyle(fontSize: 12.r,color: Theme.of(context).textTheme.bodyLarge!.color),
+                          defaultStyle: TextStyle(
+                              fontSize: 12.r,
+                              color:
+                                  Theme.of(context).textTheme.bodyLarge!.color),
                         ),
                         if (widget.comment.media.type != MediaType.none) ...[
                           SizedBox(
@@ -333,7 +389,7 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                         style: TextStyle(color: AppColors.grey)),
                     GestureDetector(
                       onTap: () {
-                        if(widget.inComments) return;
+                        if (widget.inComments) return;
                         ref
                             .read(commentProvider.notifier)
                             .setComment(widget.comment);
@@ -348,7 +404,7 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                   if (widget.comment.replies > 0)
                     GestureDetector(
                         onTap: () {
-                          if(widget.inComments) return;
+                          if (widget.inComments) return;
                           ref
                               .read(commentProvider.notifier)
                               .setComment(widget.comment);
@@ -368,7 +424,7 @@ class _CommentBubbleState extends ConsumerState<CommentBubble> {
                   if (widget.comment.replies > 1)
                     TextButton(
                         onPressed: () {
-                          if(widget.inComments) return;
+                          if (widget.inComments) return;
                           ref
                               .read(commentProvider.notifier)
                               .setComment(widget.comment);

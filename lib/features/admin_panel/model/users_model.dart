@@ -4,7 +4,7 @@ class UserModel {
   final String lastName;
   final String email;
   final String? password; // Optional: store or ignore
-  final int id;
+  final String id;
   final String type;
 
   UserModel({
@@ -19,13 +19,13 @@ class UserModel {
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      profileImageUrl: json['profile_image_url'] ?? '',
+      profileImageUrl: json['profile_picture'] ?? '',
       firstName: json['first_name'] ?? '',
       lastName: json['last_name'] ?? '',
       email: json['email'] ?? '',
       password: json['password'], // Optional: store or ignore
-      id: json['id'] ?? 0,
-      type: json['type'] ?? 'user',
+      id: json['user_id'] ?? 0,
+      type: json['is_admin'] == true ? 'admin' : 'user',
     );
   }
 
@@ -40,6 +40,4 @@ class UserModel {
       'type': type,
     };
   }
-  
 }
-

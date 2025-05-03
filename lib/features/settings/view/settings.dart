@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:link_up/core/constants/endpoints.dart';
 import 'package:link_up/core/services/base_service.dart';
 import 'package:link_up/core/services/storage.dart';
+import 'package:link_up/features/Home/viewModel/posts_vm.dart';
 import 'package:link_up/features/settings/viewModel/privacy_settings_vm.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/theme_provider.dart';
@@ -188,6 +189,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                             ),
                             TextButton(
                                 onPressed: () {
+                                  ref.read(postsProvider.notifier).clearPosts();
                                   logout(context);
                                 },
                                 child: const Text(
