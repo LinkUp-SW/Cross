@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/core/constants/endpoints.dart';
 import 'package:link_up/core/services/base_service.dart';
@@ -34,6 +35,27 @@ class MessagesService {
       log('[SERVICE] Error loading messages: $e');
       rethrow;
     }
+  }
+
+  Future<String> convertFileToBase64(String filePath) async {
+    final bytes = await File(filePath).readAsBytes();
+    final base64String = base64Encode(bytes);
+
+    // Determine mime type
+    String mimeType;
+    if (filePath.toLowerCase().endsWith('.jpg') || filePath.toLowerCase().endsWith('.jpeg')) {
+      mimeType = 'image/jpeg';
+    } else if (filePath.toLowerCase().endsWith('.png')) {
+      mimeType = 'image/png';
+    } else if (filePath.toLowerCase().endsWith('.mp4')) {
+      mimeType = 'video/mp4';
+    } else if (filePath.toLowerCase().endsWith('.pdf')) {
+      mimeType = 'application/pdf';
+    } else {
+      mimeType = 'application/octet-stream';
+    }
+
+    return 'data:$mimeType;base64,$base64String';
   }
 }
 

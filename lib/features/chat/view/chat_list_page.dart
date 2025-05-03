@@ -15,15 +15,29 @@ class ChatListScreen extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => _ChatListScreenState();
 }
 
-class _ChatListScreenState extends ConsumerState<ChatListScreen> {
+class _ChatListScreenState extends ConsumerState<ChatListScreen> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
 
     Future.microtask(() {
       ref.read(chatViewModelProvider.notifier).fetchChats();
-     
     });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Refresh chat list when app becomes active again
+    if (state == AppLifecycleState.resumed) {
+      ref.read(chatViewModelProvider.notifier).fetchChats();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override

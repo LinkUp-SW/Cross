@@ -3,7 +3,10 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/core/constants/endpoints.dart';
+import 'package:link_up/features/chat/model/chat_model.dart';
+import 'package:link_up/features/chat/services/chat_service.dart';
 import 'package:link_up/features/chat/services/global_socket_service.dart';
+import 'package:link_up/features/chat/services/newchat_service.dart';
 import '../model/message_model.dart';
 import '../services/messages_service.dart';
 import '../state/messages_state.dart';
@@ -13,6 +16,7 @@ class MessagesViewModel extends StateNotifier<MessagesState> {
   final MessagesService _service;
   final String conversationId;
   final SocketService _socketService;
+  final ApiChatService _chatService;
 
   bool _isTyping = false;
   Timer? _typingTimer;
@@ -21,10 +25,12 @@ class MessagesViewModel extends StateNotifier<MessagesState> {
   bool _isActivelyViewing = false;
 
   MessagesViewModel({
+    ApiChatService ?chatService,
     required MessagesService service,
     required SocketService socketService,
     required this.conversationId,
   })  : _service = service,
+        _chatService = chatService ?? ApiChatService(),
         _socketService = socketService,
         super(MessagesState.initial()) {
     _listenToSocket();
@@ -229,6 +235,12 @@ class MessagesViewModel extends StateNotifier<MessagesState> {
     try {
       state = state.copyWith(isLoading: true, isError: false);
       final messages = await _service.openExistingChat(conversationId);
+      final readSuccess = await _chatService.markRead(conversationId);
+      if (readSuccess) {
+        log('[VIEWMODEL] Successfully marked conversation as read: $conversationId');
+      } else {
+        log('[VIEWMODEL] Failed to mark conversation as read: $conversationId');
+      }
 
       if (!mounted) return;
 
@@ -378,6 +390,92 @@ class MessagesViewModel extends StateNotifier<MessagesState> {
     if (state.isOtherUserTyping != isTyping) {
       state = state.copyWith(isOtherUserTyping: isTyping);
       log('[VIEWMODEL] Directly set typing status to $isTyping');
+    }
+  }
+
+  // Add these methods
+
+  // Add a temporary local message (for immediate UI feedback)
+  void addLocalMessage(Message message) {
+    if (state.messages != null) {
+      final updatedMessages = [...state.messages!, message];
+      state = state.copyWith(messages: updatedMessages);
+    } else {
+      state = state.copyWith(messages: [message]);
+    }
+  }
+
+  // Update message progress status (pending, uploading, sent, failed)
+  void updateMessageProgress(String messageId, MessageProgress progress) {
+    if (!mounted) return;
+
+    final currentMessages = [...?state.messages];
+    final messageIndex = currentMessages.indexWhere((m) => m.messageId == messageId);
+
+    if (messageIndex != -1) {
+      final updatedMessage = currentMessages[messageIndex].copyWith(
+        sendProgress: progress,
+      );
+
+      currentMessages[messageIndex] = updatedMessage;
+      state = state.copyWith(messages: currentMessages);
+      log('[VIEWMODEL] Updated message progress: $messageId -> $progress');
+    }
+  }
+
+  // Updated sendMediaMessage to use compression
+  Future<void> sendMediaMessage(String tempMessageId, List<String> base64MediaList) async {
+    try {
+      // Find the temp message in the state
+      final currentMessages = [...?state.messages];
+      final tempMessageIndex = currentMessages.indexWhere((m) => m.messageId == tempMessageId);
+
+      if (tempMessageIndex == -1) {
+        log('[VIEWMODEL] Temp message not found: $tempMessageId');
+        return;
+      }
+
+      // Get the temp message
+      final tempMessage = currentMessages[tempMessageIndex];
+
+      log('[VIEWMODEL] Sending media message to socket...');
+      log('[VIEWMODEL] Media count: ${base64MediaList.length}');
+
+      // For document messages, ensure they're marked as sent immediately
+      if (base64MediaList.any((media) =>
+          media.contains('application/pdf') ||
+          media.contains('application/msword') ||
+          media.contains('text/plain') ||
+          media.contains('application/vnd.ms-excel') ||
+          media.contains('application/octet-stream') ||
+          media.contains('document'))) {
+        updateMessageProgress(tempMessageId, MessageProgress.sent);
+      }
+
+      // Send through socket with base64 data
+      await _socketService.sendMessage(
+        conversationId,
+        Message(
+          messageId: tempMessageId,
+          senderId: tempMessage.senderId,
+          receiverId: tempMessage.receiverId,
+          senderName: tempMessage.senderName,
+          message: tempMessage.message,
+          media: base64MediaList, // Send the base64 data
+          timestamp: tempMessage.timestamp,
+          isOwnMessage: tempMessage.isOwnMessage,
+          isSeen: tempMessage.isSeen,
+          reacted: tempMessage.reacted,
+          isEdited: tempMessage.isEdited,
+          sendProgress: MessageProgress.sent,
+        ),
+      );
+
+      log('[VIEWMODEL] Media message sent successfully');
+    } catch (e) {
+      log('[VIEWMODEL] Error sending media message: $e');
+      // Let the error propagate so it can be handled by the caller
+      rethrow;
     }
   }
 

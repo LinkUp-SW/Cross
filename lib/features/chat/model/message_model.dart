@@ -1,5 +1,7 @@
 import 'dart:developer';
 
+enum MessageProgress { pending, uploading, sent, failed }
+
 class Message {
   final String messageId;
   final String senderId;
@@ -14,6 +16,9 @@ class Message {
   final bool? isOwnMessage;
   final bool? isEdited;
 
+  final MessageProgress? sendProgress;
+  final String? localMediaPath;
+
   Message({
     required this.messageId,
     required this.senderId,
@@ -26,6 +31,8 @@ class Message {
     this.isOwnMessage = false,
     this.isEdited = false,
     this.receiverId,
+    this.sendProgress,
+    this.localMediaPath,
   });
 
   factory Message.fromJson(Map<String, dynamic> json) {
@@ -44,12 +51,32 @@ class Message {
         receiverId: json['receiverId'] ?? null,
         isOwnMessage: json['isOwnMessage'] ?? false,
         isEdited: json['isEdited'] ?? false,
+        sendProgress: _parseMessageProgress(json['sendProgress']),
+        localMediaPath: json['localMediaPath'],
       );
     } catch (e, stackTrace) {
       log('Error parsing message: $json');
       log('Parse error: $e');
       log('Stack trace: $stackTrace');
       rethrow;
+    }
+  }
+
+  static MessageProgress? _parseMessageProgress(dynamic value) {
+    if (value == null) return null;
+    if (value is MessageProgress) return value;
+
+    switch (value.toString().toLowerCase()) {
+      case 'pending':
+        return MessageProgress.pending;
+      case 'uploading':
+        return MessageProgress.uploading;
+      case 'sent':
+        return MessageProgress.sent;
+      case 'failed':
+        return MessageProgress.failed;
+      default:
+        return null;
     }
   }
 
@@ -83,6 +110,8 @@ class Message {
     bool? isSeen,
     bool? isOwnMessage,
     bool? isEdited,
+    MessageProgress? sendProgress,
+    String? localMediaPath,
   }) {
     return Message(
       messageId: messageId ?? this.messageId,
@@ -96,6 +125,8 @@ class Message {
       isSeen: isSeen ?? this.isSeen,
       isOwnMessage: isOwnMessage ?? this.isOwnMessage,
       isEdited: isEdited ?? this.isEdited,
+      sendProgress: sendProgress ?? this.sendProgress,
+      localMediaPath: localMediaPath ?? this.localMediaPath,
     );
   }
 }

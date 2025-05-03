@@ -63,4 +63,28 @@ class Chat {
   String toString() {
     return 'Chat{conversationId: $conversationId, sendername: $sendername, lastMessage: $lastMessage}';
   }
+
+  Chat copyWith({
+    String? conversationId,
+    String? senderId,
+    String? sendername,
+    String? senderprofilePictureUrl,
+    String? lastMessage,
+    DateTime? lastMessageTimestamp,
+    int? unreadCount,
+    bool? isOnline,
+    List<dynamic>? conversationtype,
+  }) {
+    return Chat(
+      conversationId: conversationId ?? this.conversationId,
+      senderId: senderId ?? this.senderId,
+      sendername: sendername ?? this.sendername,
+      senderprofilePictureUrl: senderprofilePictureUrl ?? this.senderprofilePictureUrl,
+      lastMessage: lastMessage ?? this.lastMessage,
+      lastMessageTimestamp: lastMessageTimestamp ?? this.lastMessageTimestamp,
+      unreadCount: unreadCount ?? this.unreadCount,
+      isOnline: isOnline ?? this.isOnline,
+      conversationtype: conversationtype ?? this.conversationtype,
+    );
+  }
 }

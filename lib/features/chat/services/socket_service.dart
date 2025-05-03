@@ -99,27 +99,37 @@ class SocketService {
 
   Future<void> sendMessage(String conversationId, Message message) async {
     try {
-      final messageData = {
-        'conversationId': conversationId,
+      // Create a map that can hold both String and List<String> values
+      final Map<String, dynamic> messageData = {
+        'to': message.receiverId,
         'message': message.message,
-        'messageData': {
-          'messageId': message.messageId,
-          'senderId': message.senderId,
-          'senderName': message.senderName,
-          'message': message.message,
-          'media': message.media,
-          'timestamp': message.timestamp.toIso8601String(),
-          'isSeen': message.isSeen,
-          'isOwnMessage': message.isOwnMessage,
-          'isEdited': message.isEdited,
-        },
-        'to': message.receiverId ?? "User-38", // Use the actual receiver ID
+        'conversationId': conversationId,
+        'increaseUnreadCount': true, // Add this flag to increment unread count
       };
 
-      log('[SOCKET] Sending message: $messageData');
+      // Only include media if it exists and is in base64 format
+      if (message.media.isNotEmpty && message.media[0].startsWith('data:')) {
+        messageData['media'] = message.media;
+        log('[SOCKET] Sending message with media: ${message.media.length} items');
+      } else {
+        log('[SOCKET] Sending message without media');
+      }
+
+      // Emit the message event to socket server
       await _globalSocket.emit('private_message', messageData);
+      log('[SOCKET] Message sent to conversation: $conversationId');
+
+      // Now emit a local event to update the chat list immediately
+      await _globalSocket.emit('local_message_sent', {
+        'conversationId': conversationId,
+        'message': message.message,
+        'timestamp': DateTime.now().toIso8601String(),
+        'senderId': message.senderId,
+        'receiverId': message.receiverId,
+      });
     } catch (e, stack) {
-      log('[SOCKET] Error sending message: $e\n$stack');
+      log('[SOCKET] Error sending message: $e');
+      log('[SOCKET] Stack trace: $stack');
     }
   }
 
