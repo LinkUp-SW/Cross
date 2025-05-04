@@ -5,9 +5,12 @@ import 'package:flutter/services.dart';
 import 'package:link_up/routes/app_routes.dart';
 import 'package:link_up/shared/themes/app_themes.dart';
 import 'shared/themes/theme_provider.dart';
+// import 'package:firebase_core/firebase_core.dart';
+// import 'package:link_up/features/notifications/services/push_notification_service.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]).then((_) {

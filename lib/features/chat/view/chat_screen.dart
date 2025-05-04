@@ -935,20 +935,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
                   }
                 },
               ),
-              ListTile(
-                leading: Icon(Icons.videocam, color: theme.colorScheme.primary),
-                title: Text("Record Video", style: theme.textTheme.bodyLarge),
-                onTap: () async {
-                  Navigator.pop(context);
-                  final picker = ImagePicker();
-                  final pickedFile =
-                      await picker.pickVideo(source: ImageSource.camera);
-
-                  if (pickedFile != null && context.mounted) {
-                    _sendMediaMessage(pickedFile.path, "video");
-                  }
-                },
-              ),
+            
               ListTile(
                 leading:
                     Icon(Icons.photo_library, color: theme.colorScheme.primary),
