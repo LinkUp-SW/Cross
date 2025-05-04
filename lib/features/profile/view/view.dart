@@ -1,4 +1,4 @@
-// profile/view/view.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -27,7 +27,9 @@ import 'package:link_up/features/profile/widgets/license_list_widget.dart';
 import 'package:link_up/features/profile/widgets/skills_list_widget.dart';
 import 'package:link_up/features/profile/widgets/empty_section_placeholder.dart';
 import 'package:link_up/features/profile/utils/profile_view_helpers.dart';
-import 'package:link_up/features/profile/widgets/profile_activity_preview.dart'; 
+import 'package:link_up/features/profile/widgets/profile_activity_preview.dart';
+import 'package:link_up/features/profile/model/profile_model.dart'; 
+
 class ProfilePage extends ConsumerStatefulWidget {
   const ProfilePage({super.key, required this.userId});
   final String userId;
@@ -45,8 +47,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     });
   }
 
-
-
   @override
   Widget build(BuildContext context) {
      final profileState = ref.watch(profileViewModelProvider);
@@ -60,6 +60,13 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
      final isDarkMode = Theme.of(context).brightness == Brightness.dark;
      final sectionTextColor = isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor;
 
+     bool isMyProfile = false;
+     UserProfile? currentUserProfile; 
+
+     if (profileState is ProfileLoaded) {
+       currentUserProfile = profileState.userProfile;
+       isMyProfile = currentUserProfile.isMe;
+     }
 
      final displayedExperiences = allExperiences?.take(2).toList() ?? [];
      final totalExperienceCount = allExperiences?.length ?? 0;
@@ -85,7 +92,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
     return Scaffold(
       backgroundColor: isDarkMode ? AppColors.darkBackground : AppColors.lightBackground,
-      appBar: const ProfileAppBar(),
+      appBar: ProfileAppBar(isMyProfile: isMyProfile),
       body: RefreshIndicator(
         onRefresh: () async => ref.read(profileViewModelProvider.notifier).fetchUserProfile(widget.userId),
         child: switch (profileState) {
@@ -110,12 +117,19 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               child: Column(
                 children: [
                   ProfileHeaderWidget(userProfile: userProfile, userId: widget.userId),
-                  
+                  ProfileActivityPreview(
+                    userId: widget.userId,
+                    userName: '${userProfile.firstName} ${userProfile.lastName}',
+                    numberOfConnections: userProfile.numberOfConnections,
+                    isMyProfile:  isMyProfile,
+                  ),
+
                   if (hasResume)
                    SectionWidget(
                      title: "Resume",
-                     onEditPressed: () => GoRouter.of(context).push('/add_resume'), 
-                     child: resumeUrl == null
+                     onEditPressed: isMyProfile ? () => GoRouter.of(context).push('/add_resume') : null,
+                     isMyProfile: isMyProfile, 
+                     child: resumeUrl == null 
                          ? const Center(child: CircularProgressIndicator(strokeWidth: 2))
                          : Column(
                              crossAxisAlignment: CrossAxisAlignment.start,
@@ -147,15 +161,13 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                              ],
                            ),
                    ),
-                  ProfileActivityPreview(
-                    userId: widget.userId,
-                    userName: '${userProfile.firstName} ${userProfile.lastName}', 
-                    numberOfConnections: userProfile.numberOfConnections,
-                  ),
+
+                    // --- About Section ---
                     if (showAboutSection)
                       SectionWidget(
                         title: "About",
-                        onEditPressed: () => GoRouter.of(context).push('/edit_about'),
+                        onEditPressed: isMyProfile ? () => GoRouter.of(context).push('/edit_about') : null,
+                        isMyProfile: isMyProfile,
                         child: aboutData == null
                           ? const Center(child: CircularProgressIndicator(strokeWidth: 2))
                           : Column(
@@ -167,19 +179,21 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                    child: Text(aboutData.about, style: TextStyles.font14_400Weight.copyWith(color: sectionTextColor)),
                                  ),
                                if (hasAboutSkills)
-                                buildSkillsRowWidget(aboutData.skills, isDarkMode), 
+                                buildSkillsRowWidget(aboutData.skills, isDarkMode),
                 ],)
                       ),
 
+                   // --- Experience Section ---
                    SectionWidget(
                      title: "Experience",
-                     onAddPressed: () => GoRouter.of(context).push('/add_new_position'),
-                     onEditPressed: allExperiences != null && allExperiences.isNotEmpty
-                         ? () => GoRouter.of(context).push('/experience_list') 
+                     onAddPressed: isMyProfile ? () => GoRouter.of(context).push('/add_new_position') : null,
+                     onEditPressed: isMyProfile && allExperiences != null && allExperiences.isNotEmpty
+                         ? () => GoRouter.of(context).push('/experience_list_page')
                          : null,
+                     isMyProfile: isMyProfile,
                      child: allExperiences == null
                          ? const Center(child: CircularProgressIndicator(strokeWidth: 2))
-                         : (allExperiences.isEmpty)
+                         : (allExperiences.isEmpty && isMyProfile) 
                            ? EmptySectionPlaceholder(
                                icon: Icons.business_center_outlined,
                                titlePlaceholder: "Job Title",
@@ -189,9 +203,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                callToActionText: "Add Experience",
                                onAddPressed: () => GoRouter.of(context).push('/add_new_position'),
                              )
-                           : Column(
+                           : (allExperiences.isEmpty && !isMyProfile) 
+                             ? Padding(padding: EdgeInsets.symmetric(vertical: 10.h), child: Text("No experience listed.", style: TextStyles.font14_400Weight.copyWith(color: AppColors.lightGrey)))
+                             : Column(
                                children: [
                                  Column(
+                                  
                                    children: displayedExperiences.map((exp) => ExperienceListItem(
                                        exp: exp,
                                        isDarkMode: isDarkMode,
@@ -203,7 +220,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                    SizedBox(
                                      width: double.infinity,
                                      child: TextButton(
-                                       onPressed: () => GoRouter.of(context).push('/experience_list'),
+                                       // Anyone can view the full list
+                                       onPressed: () => GoRouter.of(context).push('/experience_list_page', extra: {'userId': widget.userId, 'isMyProfile': isMyProfile}), 
                                        style: TextButton.styleFrom(padding: EdgeInsets.symmetric(vertical: 8.h), tapTargetSize: MaterialTapTargetSize.shrinkWrap, alignment: Alignment.center),
                                        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Text('Show all $totalExperienceCount experiences', style: TextStyles.font14_600Weight.copyWith(color: sectionTextColor)), SizedBox(width: 4.w), Icon(Icons.arrow_forward, size: 16.sp, color: sectionTextColor)])
                                      ),
@@ -213,15 +231,17 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                              ),
                    ),
 
+                    // --- Education Section ---
                     SectionWidget(
                       title: "Education",
-                      onAddPressed: () => GoRouter.of(context).push('/add_new_education'),
-                      onEditPressed: allEducations != null && allEducations.isNotEmpty
-                          ? () => GoRouter.of(context).push('/education_list_page') 
+                      onAddPressed: isMyProfile ? () => GoRouter.of(context).push('/add_new_education') : null,
+                      onEditPressed: isMyProfile && allEducations != null && allEducations.isNotEmpty
+                          ? () => GoRouter.of(context).push('/education_list_page')
                           : null,
+                      isMyProfile: isMyProfile,
                       child: allEducations == null
                           ? const Center(child: CircularProgressIndicator(strokeWidth: 2))
-                           : (allEducations.isEmpty)
+                           : (allEducations.isEmpty && isMyProfile)
                            ? EmptySectionPlaceholder(
                                icon: Icons.school_outlined,
                                titlePlaceholder: "School Name",
@@ -230,20 +250,22 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                callToActionText: "Add Education",
                                onAddPressed: () => GoRouter.of(context).push('/add_new_education'),
                              )
-                          : Column(
+                           : (allEducations.isEmpty && !isMyProfile) 
+                             ? Padding(padding: EdgeInsets.symmetric(vertical: 10.h), child: Text("No education listed.", style: TextStyles.font14_400Weight.copyWith(color: AppColors.lightGrey)))
+                             : Column(
                              children: [
                                 Column(
                                   children: displayedEducations.map((edu) => EducationListItem(
                                     education: edu,
                                     isDarkMode: isDarkMode,
-                                    showActions: false, 
+                                    showActions: false,
                                   )).toList()),
                                 if (showShowAllEducationButton) ...[
                                   Padding(padding: EdgeInsets.only(top: 8.h), child: Divider(height: 1.h, thickness: 0.5, color: isDarkMode ? AppColors.darkGrey.withOpacity(0.5) : AppColors.lightGrey.withOpacity(0.3))),
                                   SizedBox(
                                     width: double.infinity,
                                     child: TextButton(
-                                      onPressed: () => GoRouter.of(context).push('/education_list'), 
+                                      onPressed: () => GoRouter.of(context).push('/education_list_page', extra: {'userId': widget.userId, 'isMyProfile': isMyProfile}), 
                                       style: TextButton.styleFrom(padding: EdgeInsets.symmetric(vertical: 8.h), tapTargetSize: MaterialTapTargetSize.shrinkWrap, alignment: Alignment.center),
                                       child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Text('Show all $totalEducationCount educations', style: TextStyles.font14_600Weight.copyWith(color: sectionTextColor)), SizedBox(width: 4.w), Icon(Icons.arrow_forward, size: 16.sp, color: sectionTextColor)])
                                     ),
@@ -253,15 +275,17 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                            ),
                     ),
 
+                   // --- Licenses & Certifications Section ---
                    SectionWidget(
                      title: "Licenses & Certifications",
-                     onAddPressed: () => GoRouter.of(context).push('/add_new_license'),
-                     onEditPressed: allLicenses != null && allLicenses.isNotEmpty
-                         ? () => GoRouter.of(context).push('/license_list') 
+                     onAddPressed: isMyProfile ? () => GoRouter.of(context).push('/add_new_license') : null,
+                     onEditPressed: isMyProfile && allLicenses != null && allLicenses.isNotEmpty
+                         ? () => GoRouter.of(context).push('/license_list_page')
                          : null,
+                     isMyProfile: isMyProfile,
                      child: allLicenses == null
                          ? const Center(child: CircularProgressIndicator(strokeWidth: 2))
-                         : allLicenses.isEmpty
+                         : (allLicenses.isEmpty && isMyProfile)
                            ? EmptySectionPlaceholder(
                                icon: Icons.card_membership_outlined,
                                titlePlaceholder: "License/Certification Name",
@@ -270,7 +294,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                callToActionText: "Add License",
                                onAddPressed: () => GoRouter.of(context).push('/add_new_license'),
                              )
-                           : Column(
+                           : (allLicenses.isEmpty && !isMyProfile) 
+                             ? Padding(padding: EdgeInsets.symmetric(vertical: 10.h), child: Text("No licenses or certifications listed.", style: TextStyles.font14_400Weight.copyWith(color: AppColors.lightGrey)))
+                             : Column(
                                children: [
                                  Column(
                                    children: displayedLicenses.map((lic) => LicenseListItem(
@@ -284,7 +310,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                    SizedBox(
                                      width: double.infinity,
                                      child: TextButton(
-                                       onPressed: () => GoRouter.of(context).push('/license_list'), 
+                                       onPressed: () => GoRouter.of(context).push('/license_list_page', extra: {'userId': widget.userId, 'isMyProfile': isMyProfile}),
                                        style: TextButton.styleFrom(padding: EdgeInsets.symmetric(vertical: 8.h), tapTargetSize: MaterialTapTargetSize.shrinkWrap, alignment: Alignment.center),
                                        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Text('Show all $totalLicenseCount licenses', style: TextStyles.font14_600Weight.copyWith(color: sectionTextColor)), SizedBox(width: 4.w), Icon(Icons.arrow_forward, size: 16.sp, color: sectionTextColor)])
                                      ),
@@ -294,24 +320,28 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                              ),
                    ),
 
+                   // --- Skills Section ---
                    SectionWidget(
                      title: "Skills",
-                     onAddPressed: () => GoRouter.of(context).push('/add_new_skill'),
-                     onEditPressed: allSkills != null && allSkills.isNotEmpty
-                         ? () => GoRouter.of(context).push('/skill_list') 
+                     onAddPressed: isMyProfile ? () => GoRouter.of(context).push('/add_new_skill') : null,
+                     onEditPressed: isMyProfile && allSkills != null && allSkills.isNotEmpty
+                         ? () => GoRouter.of(context).push('/skills_list_page')
                          : null,
+                     isMyProfile: isMyProfile,
                      child: allSkills == null
                          ? const Center(child: CircularProgressIndicator(strokeWidth: 2))
-                         : allSkills.isEmpty
+                         : (allSkills.isEmpty && isMyProfile) 
                            ? EmptySectionPlaceholder(
                                icon: Icons.star_outline,
                                titlePlaceholder: "Skill Name",
                                subtitlePlaceholder: "e.g., Project Management",
-                               datePlaceholder: "",
+                               datePlaceholder: "", 
                                callToActionText: "Add Skill",
                                onAddPressed: () => GoRouter.of(context).push('/add_new_skill'),
                              )
-                           : Column(
+                           : (allSkills.isEmpty && !isMyProfile) 
+                             ? Padding(padding: EdgeInsets.symmetric(vertical: 10.h), child: Text("No skills listed.", style: TextStyles.font14_400Weight.copyWith(color: AppColors.lightGrey)))
+                             : Column(
                                crossAxisAlignment: CrossAxisAlignment.start,
                                children: [
                                  Column(
@@ -346,7 +376,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                    SizedBox(
                                      width: double.infinity,
                                      child: TextButton(
-                                       onPressed: () => GoRouter.of(context).push('/skill_list'), 
+                                       onPressed: () => GoRouter.of(context).push('/skills_list_page', extra: {'userId': widget.userId, 'isMyProfile': isMyProfile}),
                                        style: TextButton.styleFrom(padding: EdgeInsets.symmetric(vertical: 8.h), tapTargetSize: MaterialTapTargetSize.shrinkWrap, alignment: Alignment.center),
                                        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Text('Show all $totalSkillCount skills', style: TextStyles.font14_600Weight.copyWith(color: sectionTextColor)), SizedBox(width: 4.w), Icon(Icons.arrow_forward, size: 16.sp, color: sectionTextColor)])
                                      ),
@@ -360,8 +390,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 ],
               ),
             ),
-          ProfileInitial() => const Center(child: CircularProgressIndicator()),
+          ProfileInitial() => const Center(child: CircularProgressIndicator()), 
         },
       ),
     );
-  }}
+  }
+}

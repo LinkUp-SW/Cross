@@ -13,11 +13,12 @@ class SkillListPage extends ConsumerWidget {
     return FullListPage<SkillModel>( 
       pageTitle: "Skills",
       dataProvider: skillsDataProvider, 
-      itemBuilder: (item, isDarkMode, context) => SkillListItem( 
+      itemBuilder: (item, isDarkMode, context, isMyProfile) => SkillListItem( 
         skill: item,
         isDarkMode: isDarkMode,
-        showActions: true,
+        showActions: isMyProfile,
       ),
+      
       addRoute: '/add_new_skill',
       editRoute: '/edit_skills_list', 
       emptyListMessage: "No skills added yet.\nTap '+' to add your first skill.", 

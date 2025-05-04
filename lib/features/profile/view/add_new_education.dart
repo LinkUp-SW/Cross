@@ -222,16 +222,7 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                              padding: EdgeInsets.only(top: 4.h, right: 8.w),
                              child: Row(
                                mainAxisAlignment: MainAxisAlignment.end,
-                               children: [
-                                 Text(
-                                   "$degreeCharCount / $maxDegreeChars characters",
-                                   style: TextStyles.font12_400Weight.copyWith(
-                                     color: degreeCharCount > maxDegreeChars
-                                         ? Colors.red
-                                         : AppColors.lightGrey,
-                                   ),
-                                 ),
-                               ],
+                               
                              ),
                            ),
                            SizedBox(height: 20.h),
@@ -248,16 +239,7 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                              padding: EdgeInsets.only(top: 4.h, right: 8.w),
                              child: Row(
                                mainAxisAlignment: MainAxisAlignment.end,
-                               children: [
-                                 Text(
-                                   "$fieldOfStudyCharCount / $maxFieldOfStudyChars characters",
-                                   style: TextStyles.font12_400Weight.copyWith(
-                                     color: fieldOfStudyCharCount > maxFieldOfStudyChars
-                                         ? Colors.red
-                                         : AppColors.lightGrey,
-                                   ),
-                                 ),
-                               ],
+                               
                              ),
                            ),
                            SizedBox(height: 20.h),
@@ -343,16 +325,7 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                              padding: EdgeInsets.only(top: 4.h, right: 8.w),
                              child: Row(
                                mainAxisAlignment: MainAxisAlignment.end,
-                               children: [
-                                 Text(
-                                   "$gradeCharCount / $maxGradeChars characters",
-                                   style: TextStyles.font12_400Weight.copyWith(
-                                     color: gradeCharCount > maxGradeChars
-                                         ? Colors.red
-                                         : AppColors.lightGrey,
-                                   ),
-                                 ),
-                               ],
+                              
                              ),
                            ),
                            SizedBox(height: 20.h),
@@ -370,16 +343,7 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                              padding: EdgeInsets.only(top: 4.h, right: 8.w),
                              child: Row(
                                mainAxisAlignment: MainAxisAlignment.end,
-                               children: [
-                                 Text(
-                                   "$activitiesCharCount / $maxActivitiesChars characters",
-                                   style: TextStyles.font12_400Weight.copyWith(
-                                     color: activitiesCharCount > maxActivitiesChars
-                                         ? Colors.red
-                                         : AppColors.lightGrey,
-                                   ),
-                                 ),
-                               ],
+                               
                              ),
                            ),
                            SizedBox(height: 20.h),
@@ -396,16 +360,7 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                              padding: EdgeInsets.only(top: 4.h, right: 8.w),
                              child: Row(
                                mainAxisAlignment: MainAxisAlignment.end,
-                               children: [
-                                 Text(
-                                   "$descriptionCharCount / $maxDescriptionChars characters",
-                                   style: TextStyles.font12_400Weight.copyWith(
-                                     color: descriptionCharCount > maxDescriptionChars
-                                         ? Colors.red
-                                         : AppColors.lightGrey,
-                                   ),
-                                 ),
-                               ],
+                              
                              ),
                            ),
                            SizedBox(height: 20.h),

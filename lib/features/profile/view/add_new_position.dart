@@ -305,16 +305,7 @@ class _AddNewPositionState extends ConsumerState<AddNewPosition> {
                               padding: EdgeInsets.only(top: 4.h, right: 8.w),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Text(
-                                    "$descriptionCharCount / $maxDescriptionChars characters",
-                                    style: TextStyles.font12_400Weight.copyWith(
-                                      color: descriptionCharCount > maxDescriptionChars
-                                          ? Colors.red
-                                          : AppColors.lightGrey,
-                                    ),
-                                  ),
-                                ],
+                                
                               ),
                             ),
                             SizedBox(height: 20.h),

@@ -14,10 +14,10 @@ class LicenseListPage extends ConsumerWidget {
       pageTitle: "Licenses & Certifications",
       dataProvider: licenseDataProvider, 
 
-      itemBuilder: (item, isDarkMode, context) => LicenseListItem(
+      itemBuilder: (item, isDarkMode, context, isMyProfile) => LicenseListItem(
         license: item,
         isDarkMode: isDarkMode,
-        showActions: true,
+        showActions: isMyProfile,
       ),
       addRoute: '/add_new_license', 
       editRoute: '/edit_licenses_list', 
