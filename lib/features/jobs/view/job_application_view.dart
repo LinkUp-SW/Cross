@@ -378,7 +378,8 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
         Text(
           'Your Information',
           style: TextStyles.font18_700Weight.copyWith(
-            color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+            color:
+                isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
           ),
         ),
         SizedBox(height: 16.h),
@@ -420,7 +421,7 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
                   ],
                 ),
                 SizedBox(height: 16.h),
-                
+
                 // Email
                 _buildTextField(
                   controller: _emailController,
@@ -430,7 +431,7 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
                   keyboardType: TextInputType.emailAddress,
                 ),
                 SizedBox(height: 16.h),
-                
+
                 // Phone Number
                 Row(
                   children: [

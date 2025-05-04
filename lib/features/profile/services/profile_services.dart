@@ -1349,6 +1349,20 @@ class ProfileService extends BaseService {
       rethrow;
     }
   }
+
+  Future<Map<String, dynamic>> getProfileVisibility() async {
+    try {
+      final response = await super.get(ExternalEndPoints.profileVisibility);
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+      throw Exception(
+          'Failed to get profile visibility ${response.statusCode}');
+    } catch (e) {
+      log("Error getting profile visibility $e");
+      rethrow;
+    }
+  }
 }
 
 final profileServiceProvider = Provider<ProfileService>((ref) {

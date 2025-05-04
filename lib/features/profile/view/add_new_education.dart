@@ -15,462 +15,533 @@ import 'package:link_up/shared/themes/button_styles.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/features/profile/model/education_model.dart';
+import 'package:link_up/features/profile/widgets/bottom_sheet.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AddNewEducation extends ConsumerStatefulWidget {
-final EducationModel? educationToEdit;
- const AddNewEducation({super.key, this.educationToEdit});
+  final EducationModel? educationToEdit;
+  const AddNewEducation({super.key, this.educationToEdit});
 
- @override
- ConsumerState<AddNewEducation> createState() => _AddNewEducationState();
+  @override
+  ConsumerState<AddNewEducation> createState() => _AddNewEducationState();
 }
 
 class _AddNewEducationState extends ConsumerState<AddNewEducation> {
- final FocusNode _startDateFocusNode = FocusNode();
- final FocusNode _endDateFocusNode = FocusNode();
- final FocusNode _schoolFocusNode = FocusNode();
- EducationModel? _initialEducationData;
- bool _isEditMode = false;
+  final FocusNode _startDateFocusNode = FocusNode();
+  final FocusNode _endDateFocusNode = FocusNode();
+  final FocusNode _schoolFocusNode = FocusNode();
+  EducationModel? _initialEducationData;
+  bool _isEditMode = false;
+  List<String> _currentSkills = [];  
 
- @override
- void initState() {
-   super.initState();
-       WidgetsBinding.instance.addPostFrameCallback((_) {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       final extraData = GoRouterState.of(context).extra;
+      EducationModel? initialData;
       if (extraData is EducationModel) {
         _initialEducationData = extraData;
       } else {
         _initialEducationData = widget.educationToEdit;
       }
 
-
-      if (_initialEducationData != null) {
+      if (initialData != null) {
         setState(() {
-           _isEditMode = true; 
+          _isEditMode = true;
+          _currentSkills = List<String>.from(initialData!.skills ?? []);
+          log("InitState - Editing Education: Skills loaded: $_currentSkills");
         });
         ref.read(addEducationViewModelProvider.notifier).initializeForEdit(_initialEducationData!);
       } else {
-         ref.read(addEducationViewModelProvider.notifier).resetForm();
+        ref.read(addEducationViewModelProvider.notifier).resetForm();
+        setState(() {
+          _currentSkills = []; 
+          log("InitState - Adding New Education: Skills reset.");
+        });
       }
     });
   }
 
- AddEducationFormData? _getFormDataFromState(AddEducationFormState state) {
-   if (state is AddEducationIdle) return state.formData;
-   if (state is AddEducationLoading) return state.formData;
-   if (state is AddEducationFailure) return state.formData;
-   return null;
- }
+  Future<void> _handleAddSkill() async {
+    final TextEditingController _controller = TextEditingController();
 
+    final newSkill = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Add Skill"),
+        backgroundColor: Theme.of(context).brightness == Brightness.dark ? AppColors.darkMain : AppColors.lightMain, 
+        content: TextField(
+          controller: _controller,
+          autofocus: true,
+          decoration: InputDecoration(hintText: "Enter skill name"),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context), 
+            child: Text("Cancel")
+          ),
+          TextButton(
+            onPressed: () {
+              final value = _controller.text.trim();
+              Navigator.pop(context, value);
+            },
+            child: Text("Add")
+          ),
+        ],
+      ),
+    );
 
- @override
- void dispose() {
-   _startDateFocusNode.dispose();
-   _endDateFocusNode.dispose();
-   _schoolFocusNode.dispose();
-   super.dispose();
- }
+    if (newSkill != null && newSkill.isNotEmpty && !_currentSkills.contains(newSkill)) {
+      setState(() {
+        _currentSkills.add(newSkill);
+        log("Skill added locally: $newSkill. Current skills: $_currentSkills");
+      });
+    }
+  }
 
- Future<void> _selectDate(BuildContext context, bool isStartDate) async {
-   final viewModel = ref.read(addEducationViewModelProvider.notifier);
-   final currentState = viewModel.state;
-   final currentFormData = _getFormDataFromState(currentState);
+  void _removeSkill(String skillToRemove) {
+    setState(() {
+      _currentSkills.remove(skillToRemove);
+      log("Skill removed locally: $skillToRemove. Current skills: $_currentSkills");
+    });
+  }  
 
-   if (currentFormData == null) return;
-   if (!isStartDate && currentFormData.isEndDatePresent) return;
+  AddEducationFormData? _getFormDataFromState(AddEducationFormState state) {
+    if (state is AddEducationIdle) return state.formData;
+    if (state is AddEducationLoading) return state.formData;
+    if (state is AddEducationFailure) return state.formData;
+    return null;
+  }
 
-   final initialDate = isStartDate
-       ? currentFormData.selectedStartDate ?? DateTime.now()
-       : currentFormData.selectedEndDate ??
-           currentFormData.selectedStartDate ??
-           DateTime.now();
-   final firstDate = DateTime(1900);
-   final lastDate = DateTime.now().add(const Duration(days: 365 * 10));
+  @override
+  void dispose() {
+    _startDateFocusNode.dispose();
+    _endDateFocusNode.dispose();
+    _schoolFocusNode.dispose();
+    super.dispose();
+  }
 
-   final DateTime? picked = await showDatePicker(
-     context: context,
-     initialDate: initialDate,
-     firstDate: firstDate,
-     lastDate: lastDate,
-     builder: (context, child) {
-       final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-       return Theme(
-         data: ThemeData(
-           colorScheme: isDarkMode ? const ColorScheme.dark(
-             primary: AppColors.darkBlue,
-             onPrimary: AppColors.darkMain,
-             surface: AppColors.darkMain,
-             onSurface: AppColors.darkTextColor,
-           ) : const ColorScheme.light(
-             primary: AppColors.lightBlue,
-             onPrimary: AppColors.lightMain,
-             surface: AppColors.lightMain,
-             onSurface: AppColors.lightTextColor,
-           ),
+  Future<void> _selectDate(BuildContext context, bool isStartDate) async {
+    final viewModel = ref.read(addEducationViewModelProvider.notifier);
+    final currentState = viewModel.state;
+    final currentFormData = _getFormDataFromState(currentState);
+
+    if (currentFormData == null) return;
+    if (!isStartDate && currentFormData.isEndDatePresent) return;
+
+    final initialDate = isStartDate
+        ? currentFormData.selectedStartDate ?? DateTime.now()
+        : currentFormData.selectedEndDate ??
+            currentFormData.selectedStartDate ??
+            DateTime.now();
+    final firstDate = DateTime(1900);
+    final lastDate = DateTime.now().add(const Duration(days: 365 * 10));
+
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: firstDate,
+      lastDate: lastDate,
+      builder: (context, child) {
+        final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+        return Theme(
+          data: ThemeData(
+            colorScheme: isDarkMode ? const ColorScheme.dark(
+              primary: AppColors.darkBlue,
+              onPrimary: AppColors.darkMain,
+              surface: AppColors.darkMain,
+              onSurface: AppColors.darkTextColor,
+            ) : const ColorScheme.light(
+              primary: AppColors.lightBlue,
+              onPrimary: AppColors.lightMain,
+              surface: AppColors.lightMain,
+              onSurface: AppColors.lightTextColor,
+            ),
             dialogBackgroundColor: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
-         ),
-         child: child!,
-       );
-     },
-   );
+          ),
+          child: child!,
+        );
+      },
+    );
 
-   if (picked != null) viewModel.setDate(picked, isStartDate);
- }
+    if (picked != null) viewModel.setDate(picked, isStartDate);
+  }
 
+  void _handleMediaButtonPress(BuildContext context, bool isSaving) {
+    final options = [
+      ReusableBottomSheetOption(
+        icon: Icons.camera_alt_outlined,
+        title: 'Take a photo',
+        onTap: () {
+          Navigator.pop(context);
+          _pickMedia(ImageSource.camera);
+        },
+      ),
+      ReusableBottomSheetOption(
+        icon: Icons.photo_library_outlined,
+        title: 'Upload from gallery',
+        onTap: () {
+          Navigator.pop(context);
+          _pickMedia(ImageSource.gallery);
+        },
+      ),
+      ReusableBottomSheetOption(
+        icon: Icons.link_outlined,
+        title: 'Add link',
+        onTap: () {
+          Navigator.pop(context);
+          _addMediaLink();
+        },
+      ),
+    ];
 
- @override
- Widget build(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Wrap(
+            children: options
+                .map((option) => ListTile(
+                      enabled: !isSaving,
+                      leading: Icon(option.icon),
+                      title: Text(option.title),
+                      onTap: option.onTap,
+                    ))
+                .toList(),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _pickMedia(ImageSource source) async {
+    try {
+      final ImagePicker picker = ImagePicker();
+      final XFile? mediaFile = await picker.pickImage(source: source);
+      
+      if (mediaFile != null) {
+        // TODO: Handle the selected media file
+      }
+    } catch (e) {
+      log('Error picking media: $e');
+    }
+  }
+
+  Future<void> _addMediaLink() async {
+    // TODO: Show dialog to input media link
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final buttonStyles = LinkUpButtonStyles();
     final state = ref.watch(addEducationViewModelProvider);
     final viewModel = ref.read(addEducationViewModelProvider.notifier);
     final String appBarTitle = _isEditMode ? "Edit Education" : "Add Education";
     final formData = _getFormDataFromState(state);
+    final isSaving = state is AddEducationLoading;
 
-   ref.listen<AddEducationFormState>(addEducationViewModelProvider,
-       (previous, next) {
+    ref.listen<AddEducationFormState>(addEducationViewModelProvider,
+        (previous, next) {
       if (next is AddEducationSuccess) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Education ${_isEditMode ? 'updated' : 'saved'} successfully!'), backgroundColor: Colors.green),
         );
 
-         if (GoRouter.of(context).canPop()) {
-             GoRouter.of(context).pop();
-         }
+        if (GoRouter.of(context).canPop()) {
+          GoRouter.of(context).pop();
+        }
       } else if (next is AddEducationFailure) {
-         ScaffoldMessenger.of(context).showSnackBar(
-           SnackBar(content: Text('Error: ${next.message}'), backgroundColor: Colors.red),
-         );
-     }
-   });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${next.message}'), backgroundColor: Colors.red),
+        );
+      }
+    });
 
-   final maxDescriptionChars = viewModel.maxDescriptionChars;
-   final maxActivitiesChars = viewModel.maxActivitiesChars;
-   final maxGradeChars = viewModel.maxGradeChars; 
-   final maxFieldOfStudyChars = viewModel.maxFieldOfStudyChars; 
-   final maxDegreeChars= viewModel.maxDegreeChars;
-   final descriptionCharCount = formData?.descriptionController.text.length ?? 0;
-   final activitiesCharCount = formData?.activitiesController.text.length ?? 0;
-   final gradeCharCount = formData?.gradeController.text.length ?? 0; 
-   final fieldOfStudyCharCount = formData?.fieldOfStudyController.text.length ?? 0;
-   final degreeCharCount = formData?.degreeController.text.length ?? 0;
-   final bool isSaving = state is AddEducationLoading;
+    final maxDescriptionChars = viewModel.maxDescriptionChars;
+    final maxActivitiesChars = viewModel.maxActivitiesChars;
+    final maxGradeChars = viewModel.maxGradeChars; 
+    final maxFieldOfStudyChars = viewModel.maxFieldOfStudyChars; 
+    final maxDegreeChars= viewModel.maxDegreeChars;
 
-   return Scaffold(
-     backgroundColor: isDarkMode ? AppColors.darkBackground : AppColors.lightBackground,
-     body: SafeArea(
-       child: Column(
-         children: [
-           SubPagesAppBar(
-             title: appBarTitle,
-             onClosePressed: () => GoRouter.of(context).pop(),
-           ),
-           Expanded(
-             child: Container(
-               color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
-               child: SingleChildScrollView(
-                 padding:
-                     EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-                 child: formData == null
-                     ? const Center(child: CircularProgressIndicator())
-                     : Column(
-                         crossAxisAlignment: CrossAxisAlignment.start,
-                         children: [
-                           const SubPagesIndicatesRequiredLabel(),
-                           SizedBox(height: 10.h),
-                           SubPagesFormLabel(
-                               label: "School", isRequired: true),
-                           SizedBox(height: 2.h),
-                           GestureDetector(
-                             onTap: isSaving ? null : () async {
-                               final selectedSchool = await GoRouter.of(context)
-                                   .push<Map<String, dynamic>>(
-                                 '/search_school',
-                                 extra: formData.schoolController.text,
-                               );
+    return Scaffold(
+      backgroundColor: isDarkMode ? AppColors.darkBackground : AppColors.lightBackground,
+      body: SafeArea(
+        child: Column(
+          children: [
+            SubPagesAppBar(
+              title: appBarTitle,
+              onClosePressed: () => GoRouter.of(context).pop(),
+            ),
+            Expanded(
+              child: Container(
+                color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+                child: SingleChildScrollView(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                  child: formData == null
+                      ? const Center(child: CircularProgressIndicator())
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SubPagesIndicatesRequiredLabel(),
+                            SizedBox(height: 10.h),
+                            SubPagesFormLabel(
+                                label: "School", isRequired: true),
+                            SizedBox(height: 2.h),
+                            GestureDetector(
+                              onTap: isSaving ? null : () async {
+                                final selectedSchool = await GoRouter.of(context)
+                                    .push<Map<String, dynamic>>(
+                                  '/search_school',
+                                  extra: formData.schoolController.text,
+                                );
 
-                               if (selectedSchool != null &&
-                                   selectedSchool.containsKey('_id') &&
-                                   selectedSchool.containsKey('name')) {
-                                 viewModel.setSelectedSchool(selectedSchool);
-                               }
-                             },
-                             child: AbsorbPointer(
-                               child: SubPagesCustomTextField(
-                                 controller: formData.schoolController,
-                                 hintText: "Ex: Cairo University",
-                                 focusNode: _schoolFocusNode,
-                                 enabled: !isSaving,
-                                 suffixIcon: Icon(
-                                   Icons.search,
-                                   color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
-                                   size: 20.sp,
-                                 ),
-                               ),
-                             ),
-                           ),
-                           SizedBox(height: 20.h),
-                           SubPagesFormLabel(
-                               label: "Degree", isRequired: true),
-                           SizedBox(height: 2.h),
-                           SubPagesCustomTextField(
-                             controller: formData.degreeController,
-                             enabled: !isSaving,
-                             hintText: "Ex: Bachelor's",
+                                if (selectedSchool != null &&
+                                    selectedSchool.containsKey('_id') &&
+                                    selectedSchool.containsKey('name')) {
+                                  viewModel.setSelectedSchool(selectedSchool);
+                                }
+                              },
+                              child: AbsorbPointer(
+                                child: SubPagesCustomTextField(
+                                  controller: formData.schoolController,
+                                  hintText: "Ex: Cairo University",
+                                  focusNode: _schoolFocusNode,
+                                  enabled: !isSaving,
+                                  suffixIcon: Icon(
+                                    Icons.search,
+                                    color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
+                                    size: 20.sp,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 20.h),
+                            SubPagesFormLabel(
+                                label: "Degree", isRequired: true),
+                            SizedBox(height: 2.h),
+                            SubPagesCustomTextField(
+                              controller: formData.degreeController,
+                              enabled: !isSaving,
+                              hintText: "Ex: Bachelor's",
                               maxLength: maxDegreeChars, 
-                           ),
+                            ),
                             Padding(
-                             padding: EdgeInsets.only(top: 4.h, right: 8.w),
-                             child: Row(
-                               mainAxisAlignment: MainAxisAlignment.end,
-                               children: [
-                                 Text(
-                                   "$degreeCharCount / $maxDegreeChars characters",
-                                   style: TextStyles.font12_400Weight.copyWith(
-                                     color: degreeCharCount > maxDegreeChars
-                                         ? Colors.red
-                                         : AppColors.lightGrey,
-                                   ),
-                                 ),
-                               ],
-                             ),
-                           ),
-                           SizedBox(height: 20.h),
-                           SubPagesFormLabel(
-                               label: "Field of Study", isRequired: true),
-                           SizedBox(height: 2.h),
-                           SubPagesCustomTextField(
-                             controller: formData.fieldOfStudyController,
-                             enabled: !isSaving,
-                             hintText: "Ex: Engineering",
-                             maxLength: maxFieldOfStudyChars,
-                           ),
-                           Padding(
-                             padding: EdgeInsets.only(top: 4.h, right: 8.w),
-                             child: Row(
-                               mainAxisAlignment: MainAxisAlignment.end,
-                               children: [
-                                 Text(
-                                   "$fieldOfStudyCharCount / $maxFieldOfStudyChars characters",
-                                   style: TextStyles.font12_400Weight.copyWith(
-                                     color: fieldOfStudyCharCount > maxFieldOfStudyChars
-                                         ? Colors.red
-                                         : AppColors.lightGrey,
-                                   ),
-                                 ),
-                               ],
-                             ),
-                           ),
-                           SizedBox(height: 20.h),
-                           SubPagesFormLabel(
-                               label: "Start date", isRequired: true),
-                           InkWell(
-                             onTap: isSaving ? null : () => _selectDate(context, true),
-                             child: AbsorbPointer(
-                               child: SubPagesCustomTextField(
-                                 controller: formData.startDateController,
-                                 hintText: "Select start date",
-                                 focusNode: _startDateFocusNode,
-                                 enabled: !isSaving,
-                                 suffixIcon: Icon(
-                                   Icons.calendar_today,
-                                   color: isDarkMode
-                                       ? AppColors.darkTextColor
-                                       : AppColors.lightTextColor,
-                                   size: 15.sp,
-                                 ),
-                               ),
-                             ),
-                           ),
-                           SizedBox(height: 20.h),
-                           SubPagesFormLabel(
-                               label: "End date or expected",
-                               isRequired: true),
-                           InkWell(
-                             onTap: isSaving ? null : (formData.isEndDatePresent
-                                 ? null
-                                 : () => _selectDate(context, false)),
-                             child: AbsorbPointer(
-                               child: SubPagesCustomTextField(
-                                 controller: formData.endDateController,
-                                 hintText: formData.isEndDatePresent
-                                     ? "Present"
-                                     : "Select end date",
-                                 focusNode: _endDateFocusNode,
-                                 enabled: !isSaving && !formData.isEndDatePresent,
-                                 suffixIcon: Icon(
-                                   Icons.calendar_today,
-                                   color: formData.isEndDatePresent
-                                       ? AppColors.lightGrey
-                                       : (isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor),
-                                   size: 15.sp,
-                                 ),
-                               ),
-                             ),
-                           ),
-                           Row(
-                             children: [
-                               Checkbox(
-                                 value: formData.isEndDatePresent,
-                                 onChanged: isSaving ? null : (value) {
-                                   if (value != null) {
-                                     viewModel.setIsEndDatePresent(value);
-                                   }
-                                 },
-                                 activeColor: AppColors.lightGreen,
-                                 checkColor: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
-                               ),
-                               Text(
-                                 "I am currently studying here",
-                                 style: TextStyles.font14_400Weight.copyWith(
-                                   color: isDarkMode
-                                       ? AppColors.darkTextColor
-                                       : AppColors.lightTextColor,
-                                 ),
-                               ),
-                             ],
-                           ),
-                           SizedBox(height: 20.h),
-                           SubPagesFormLabel(label: "Grade"),
-                           SizedBox(height: 2.h),
-                           SubPagesCustomTextField(
-                             controller: formData.gradeController,
-                             enabled: !isSaving,
-                             hintText: "Ex: 3.8/4.0 or 85%",
-                             maxLength: maxGradeChars, 
-                           ),
-                        
-                           Padding(
-                             padding: EdgeInsets.only(top: 4.h, right: 8.w),
-                             child: Row(
-                               mainAxisAlignment: MainAxisAlignment.end,
-                               children: [
-                                 Text(
-                                   "$gradeCharCount / $maxGradeChars characters",
-                                   style: TextStyles.font12_400Weight.copyWith(
-                                     color: gradeCharCount > maxGradeChars
-                                         ? Colors.red
-                                         : AppColors.lightGrey,
-                                   ),
-                                 ),
-                               ],
-                             ),
-                           ),
-                           SizedBox(height: 20.h),
-                           SubPagesFormLabel(
-                               label: "Activities and Societies"),
-                           SizedBox(height: 2.h),
-                           SubPagesCustomTextField(
-                             controller: formData.activitiesController,
-                             enabled: !isSaving,
-                             hintText: "Ex: IEEE, Debate Club",
-                             maxLines: null,
-                             maxLength: maxActivitiesChars,
-                           ),
-                           Padding(
-                             padding: EdgeInsets.only(top: 4.h, right: 8.w),
-                             child: Row(
-                               mainAxisAlignment: MainAxisAlignment.end,
-                               children: [
-                                 Text(
-                                   "$activitiesCharCount / $maxActivitiesChars characters",
-                                   style: TextStyles.font12_400Weight.copyWith(
-                                     color: activitiesCharCount > maxActivitiesChars
-                                         ? Colors.red
-                                         : AppColors.lightGrey,
-                                   ),
-                                 ),
-                               ],
-                             ),
-                           ),
-                           SizedBox(height: 20.h),
-                           SubPagesFormLabel(label: "Description"),
-                           SizedBox(height: 2.h),
-                           SubPagesCustomTextField(
-                             controller: formData.descriptionController,
-                             enabled: !isSaving,
-                             hintText: "Add details about your education...",
-                             maxLines: null,
-                             maxLength: maxDescriptionChars,
-                           ),
-                           Padding(
-                             padding: EdgeInsets.only(top: 4.h, right: 8.w),
-                             child: Row(
-                               mainAxisAlignment: MainAxisAlignment.end,
-                               children: [
-                                 Text(
-                                   "$descriptionCharCount / $maxDescriptionChars characters",
-                                   style: TextStyles.font12_400Weight.copyWith(
-                                     color: descriptionCharCount > maxDescriptionChars
-                                         ? Colors.red
-                                         : AppColors.lightGrey,
-                                   ),
-                                 ),
-                               ],
-                             ),
-                           ),
-                           SizedBox(height: 20.h),
-                           SubPagesSectionHeader(title: "Skills"),
-                           SizedBox(height: 10.h),
-                           Text(
-                             "We recommend adding your top 5 used in this role. They'll also appear in your Skills section.",
-                             style: TextStyles.font14_400Weight.copyWith(
-                               color: isDarkMode
-                                   ? AppColors.darkTextColor
-                                   : AppColors.lightTextColor,
-                             ),
-                           ),
-                           SizedBox(height: 10.h),
-                           ElevatedButton(
-                             onPressed: isSaving ? null : () {
-                               // TODO: Implement Add Skill functionality
-                             },
-                             style: isDarkMode
-                                 ? buttonStyles.blueOutlinedButtonDark()
-                                 : buttonStyles.blueOutlinedButton(),
-                             child: Text("+ Add skill",
-                                 style: TextStyles.font14_600Weight.copyWith(
-                                     color: isDarkMode
-                                         ? AppColors.darkBlue
-                                         : AppColors.lightBlue)),
-                           ),
-                           SizedBox(height: 20.h),
-                           SubPagesSectionHeader(title: "Media"),
-                           SizedBox(height: 10.h),
-                           Text(
-                             "Add media like images or sites. Learn more about media file types supported",
-                             style: TextStyles.font14_400Weight.copyWith(
-                               color: isDarkMode
-                                   ? AppColors.darkTextColor
-                                   : AppColors.lightTextColor,
-                             ),
-                           ),
-                           SizedBox(height: 10.h),
-                           ElevatedButton(
-                             onPressed: isSaving ? null : () {
-                               // TODO: Implement Add Media functionality
-                             },
-                             style: isDarkMode
-                                 ? buttonStyles.blueOutlinedButtonDark()
-                                 : buttonStyles.blueOutlinedButton(),
-                             child: Text("+ Add media",
-                                 style: TextStyles.font14_600Weight.copyWith(
-                                     color: isDarkMode
-                                         ? AppColors.darkBlue
-                                         : AppColors.lightBlue)),
-                           ),
-                           SizedBox(height: 20.h),
-                         ],
-                       ),
-               ),
-             ),
-           ),
-          if (formData != null)
-           Padding(
+                              padding: EdgeInsets.only(top: 4.h, right: 8.w),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                              ),
+                            ),
+                            SizedBox(height: 20.h),
+                            SubPagesFormLabel(
+                                label: "Field of Study", isRequired: true),
+                            SizedBox(height: 2.h),
+                            SubPagesCustomTextField(
+                              controller: formData.fieldOfStudyController,
+                              enabled: !isSaving,
+                              hintText: "Ex: Engineering",
+                              maxLength: maxFieldOfStudyChars,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(top: 4.h, right: 8.w),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                              ),
+                            ),
+                            SizedBox(height: 20.h),
+                            SubPagesFormLabel(
+                                label: "Start date", isRequired: true),
+                            InkWell(
+                              onTap: isSaving ? null : () => _selectDate(context, true),
+                              child: AbsorbPointer(
+                                child: SubPagesCustomTextField(
+                                  controller: formData.startDateController,
+                                  hintText: "Select start date",
+                                  focusNode: _startDateFocusNode,
+                                  enabled: !isSaving,
+                                  suffixIcon: Icon(
+                                    Icons.calendar_today,
+                                    color: isDarkMode
+                                        ? AppColors.darkTextColor
+                                        : AppColors.lightTextColor,
+                                    size: 15.sp,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 20.h),
+                            SubPagesFormLabel(
+                                label: "End date or expected",
+                                isRequired: true),
+                            InkWell(
+                              onTap: isSaving ? null : (formData.isEndDatePresent
+                                  ? null
+                                  : () => _selectDate(context, false)),
+                              child: AbsorbPointer(
+                                child: SubPagesCustomTextField(
+                                  controller: formData.endDateController,
+                                  hintText: formData.isEndDatePresent
+                                      ? "Present"
+                                      : "Select end date",
+                                  focusNode: _endDateFocusNode,
+                                  enabled: !isSaving && !formData.isEndDatePresent,
+                                  suffixIcon: Icon(
+                                    Icons.calendar_today,
+                                    color: formData.isEndDatePresent
+                                        ? AppColors.lightGrey
+                                        : (isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor),
+                                    size: 15.sp,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Row(
+                              children: [
+                                Checkbox(
+                                  value: formData.isEndDatePresent,
+                                  onChanged: isSaving ? null : (value) {
+                                    if (value != null) {
+                                      viewModel.setIsEndDatePresent(value);
+                                    }
+                                  },
+                                  activeColor: AppColors.lightGreen,
+                                  checkColor: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+                                ),
+                                Text(
+                                  "I am currently studying here",
+                                  style: TextStyles.font14_400Weight.copyWith(
+                                    color: isDarkMode
+                                        ? AppColors.darkTextColor
+                                        : AppColors.lightTextColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 20.h),
+                            SubPagesFormLabel(label: "Grade"),
+                            SizedBox(height: 2.h),
+                            SubPagesCustomTextField(
+                              controller: formData.gradeController,
+                              enabled: !isSaving,
+                              hintText: "Ex: 3.8/4.0 or 85%",
+                              maxLength: maxGradeChars, 
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(top: 4.h, right: 8.w),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                              ),
+                            ),
+                            SizedBox(height: 20.h),
+                            SubPagesFormLabel(
+                                label: "Activities and Societies"),
+                            SizedBox(height: 2.h),
+                            SubPagesCustomTextField(
+                              controller: formData.activitiesController,
+                              enabled: !isSaving,
+                              hintText: "Ex: IEEE, Debate Club",
+                              maxLines: null,
+                              maxLength: maxActivitiesChars,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(top: 4.h, right: 8.w),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                              ),
+                            ),
+                            SizedBox(height: 20.h),
+                            SubPagesFormLabel(label: "Description"),
+                            SizedBox(height: 2.h),
+                            SubPagesCustomTextField(
+                              controller: formData.descriptionController,
+                              enabled: !isSaving,
+                              hintText: "Add details about your education...",
+                              maxLines: null,
+                              maxLength: maxDescriptionChars,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(top: 4.h, right: 8.w),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                              ),
+                            ),
+                            SizedBox(height: 20.h),
+                            SubPagesSectionHeader(title: "Skills"),
+                            SizedBox(height: 10.h),
+                            Text(
+                              "Add skills related to this position.", 
+                              style: TextStyles.font14_400Weight.copyWith(
+                                color: isDarkMode
+                                    ? AppColors.darkTextColor
+                                    : AppColors.lightTextColor,
+                              ),
+                            ),
+                            SizedBox(height: 10.h),
+                            Wrap(
+                              spacing: 8.w,
+                              runSpacing: 4.h,
+                              children: _currentSkills.map((skill) => Chip(
+                                label: Text(skill, style: TextStyles.font12_500Weight.copyWith(color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor)),
+                                onDeleted: isSaving ? null : () => _removeSkill(skill),
+                                deleteIcon: Icon(Icons.close, size: 14.sp),
+                                backgroundColor: isDarkMode ? AppColors.darkGrey.withOpacity(0.5) : AppColors.lightGrey.withOpacity(0.2),
+                                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16.r),
+                                  side: BorderSide(color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey.withOpacity(0.5))
+                                ),
+                              )).toList(),
+                            ),
+                            SizedBox(height: 10.h),
+                            ElevatedButton(
+                              onPressed: isSaving ? null : _handleAddSkill,
+                              style: isDarkMode
+                                  ? buttonStyles.blueOutlinedButtonDark()
+                                  : buttonStyles.blueOutlinedButton(),
+                              child: Text("+ Add Skill",
+                                  style: TextStyles.font14_600Weight.copyWith(
+                                      color: isDarkMode
+                                          ? AppColors.darkBlue
+                                          : AppColors.lightBlue)),
+                            ),
+                            SizedBox(height: 20.h),
+                            SubPagesSectionHeader(title: "Media"),
+                            SizedBox(height: 10.h),
+                            Text(
+                              "Add media like images or sites. Learn more about media file types supported",
+                              style: TextStyles.font14_400Weight.copyWith(
+                                color: isDarkMode
+                                    ? AppColors.darkTextColor
+                                    : AppColors.lightTextColor,
+                              ),
+                            ),
+                            SizedBox(height: 10.h),
+                            ElevatedButton(
+                              onPressed: isSaving ? null : () => _handleMediaButtonPress(context, isSaving),
+                              style: isDarkMode
+                                  ? buttonStyles.blueOutlinedButtonDark()
+                                  : buttonStyles.blueOutlinedButton(),
+                              child: Text("+ Add media",
+                                  style: TextStyles.font14_600Weight.copyWith(
+                                      color: isDarkMode
+                                          ? AppColors.darkBlue
+                                          : AppColors.lightBlue)),
+                            ),
+                            SizedBox(height: 20.h),
+                          ],
+                        ),
+                ),
+              ),
+            ),
+            if (formData != null)
+              Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
                 child: SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: state is AddEducationLoading ? null : () => viewModel.saveEducation(),
+                    onPressed: isSaving ? null : () => viewModel.saveEducation(_currentSkills),
                     style: (isDarkMode
                         ? buttonStyles.wideBlueElevatedButtonDark()
                         : buttonStyles.wideBlueElevatedButton())
@@ -491,6 +562,4 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
       ),
     );
   }
-
-
 }

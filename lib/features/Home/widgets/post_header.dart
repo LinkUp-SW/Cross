@@ -29,6 +29,7 @@ class PostHeader extends ConsumerStatefulWidget {
 
 class _PostHeaderState extends ConsumerState<PostHeader> {
   bool _following = false;
+  bool _isLoadingFollowing = false;
 
   @override
   Widget build(BuildContext context) {
@@ -167,15 +168,35 @@ class _PostHeaderState extends ConsumerState<PostHeader> {
                           ? TextButton(
                               onPressed: () {
                                 setState(() {
-                                  _following = !_following;
+                                  _isLoadingFollowing = true; 
                                   if (_following) {
-                                    followUser(widget.post.header.userId);
+                                    followUser(widget.post.header.userId).then(
+                                      (_){
+                                        _following = true;
+                                        _isLoadingFollowing = false;
+                                      }
+                                    );
                                   } else {
-                                    unfollowUser(widget.post.header.userId);
+                                    unfollowUser(widget.post.header.userId).then(
+                                      (_){
+                                        _following = false;
+                                        _isLoadingFollowing = false;
+                                      }
+                                    );
                                   }
                                 });
                               },
-                              child: Wrap(
+                              child: _isLoadingFollowing ? 
+                                  SizedBox(
+                                    height: 15.h,
+                                    width: 15.h,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2.5.w,
+                                      color: Theme.of(context).colorScheme.primary,
+                                    ),
+                                  )
+                                  :
+                              Wrap(
                                 crossAxisAlignment: WrapCrossAlignment.center,
                                 children: [
                                   Icon(
@@ -192,15 +213,11 @@ class _PostHeaderState extends ConsumerState<PostHeader> {
                                 ],
                               ))
                           : TextButton(
-                              onPressed: !_following
-                                  ? () {
+                              onPressed: () {
                                       setState(() {
-                                        _following = !_following;
-                                        connectToUser(
-                                            widget.post.header.userId);
+                                        context.push('/profile', extra: widget.post.header.userId);
                                       });
-                                    }
-                                  : null,
+                                    },
                               child: Wrap(
                                 crossAxisAlignment: WrapCrossAlignment.center,
                                 children: [
@@ -211,8 +228,7 @@ class _PostHeaderState extends ConsumerState<PostHeader> {
                                     color: _following ? AppColors.grey : null,
                                   ),
                                   SizedBox(width: 5.w),
-                                  Text(
-                                    _following ? 'Pending' : 'Connect',
+                                  Text('Connect',
                                     style: TextStyle(
                                       color: _following ? AppColors.grey : null,
                                     ),

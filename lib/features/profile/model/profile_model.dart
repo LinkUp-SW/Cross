@@ -23,6 +23,7 @@ class UserProfile {
   final bool? isInSentConnections;
   final bool? isAlreadyFollowing; 
   final bool? allowMessaging;
+  final bool? isPublicProfile;
   
 
 
@@ -48,6 +49,7 @@ class UserProfile {
     this.isSubscribed,
     this.viewUserSubscribed,
     this.isConnectByEmail,
+    this.isPublicProfile = false,
 
 
 
@@ -154,6 +156,7 @@ class UserProfile {
       bool? isSubscribed,
       bool? viewUserSubscribed,
       bool? isConnectByEmail,
+      bool? isPublicProfile,
 
    }) {
       return UserProfile(
@@ -178,7 +181,7 @@ class UserProfile {
         isSubscribed: isSubscribed ?? this.isSubscribed,
         viewUserSubscribed: viewUserSubscribed ?? this.viewUserSubscribed,
         isConnectByEmail: isConnectByEmail ?? this.isConnectByEmail,
-
+        isPublicProfile: isPublicProfile ?? this.isPublicProfile, 
 
       );
    }
@@ -206,7 +209,8 @@ class UserProfile {
           followPrimary == other.followPrimary &&
           isSubscribed == other.isSubscribed &&
           viewUserSubscribed == other.viewUserSubscribed &&
-          isConnectByEmail == other.isConnectByEmail;
+          isConnectByEmail == other.isConnectByEmail &&
+          isPublicProfile == other.isPublicProfile;
           
 
    @override
@@ -230,7 +234,8 @@ class UserProfile {
         followPrimary.hashCode ^
         isSubscribed.hashCode ^
         viewUserSubscribed.hashCode ^
-        isConnectByEmail.hashCode;
+        isConnectByEmail.hashCode ^
+        isPublicProfile.hashCode;
         
 
         

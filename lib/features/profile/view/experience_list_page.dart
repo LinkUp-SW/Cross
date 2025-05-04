@@ -13,10 +13,10 @@ class ExperienceListPage extends ConsumerWidget {
     return FullListPage<PositionModel>( 
       pageTitle: "Experience",
       dataProvider: experienceDataProvider, 
-      itemBuilder: (item, isDarkMode, context) => ExperienceListItem(
+      itemBuilder: (item, isDarkMode, context, isMyProfile) => ExperienceListItem(
         exp: item,
         isDarkMode: isDarkMode,
-        showActions: true,
+        showActions: isMyProfile,
       ),
       addRoute: '/add_new_position', 
       editRoute: '/edit_experience_list', 
