@@ -16,6 +16,8 @@ class AddEducationFormData extends AddEducationFormState {
   final DateTime? selectedStartDate;
   final DateTime? selectedEndDate;
   final bool isEndDatePresent; 
+    final List<String>? skills; 
+
 
   const AddEducationFormData({
     required this.schoolController,
@@ -29,6 +31,7 @@ class AddEducationFormData extends AddEducationFormState {
     this.selectedStartDate,
     this.selectedEndDate,
     this.isEndDatePresent = false,
+    this.skills,
   });
 
   AddEducationFormData copyWith({
@@ -43,6 +46,7 @@ class AddEducationFormData extends AddEducationFormState {
     Object? selectedStartDate = const Object(),
     Object? selectedEndDate = const Object(),
     bool? isEndDatePresent,
+    List<String>? skills,
   }) {
     return AddEducationFormData(
       schoolController: schoolController ?? this.schoolController,
@@ -56,6 +60,8 @@ class AddEducationFormData extends AddEducationFormState {
       selectedStartDate: selectedStartDate == const Object() ? this.selectedStartDate : selectedStartDate as DateTime?,
       selectedEndDate: selectedEndDate == const Object() ? this.selectedEndDate : selectedEndDate as DateTime?,
       isEndDatePresent: isEndDatePresent ?? this.isEndDatePresent,
+      skills: skills ?? this.skills,
+
     );
   }
 }

@@ -123,7 +123,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                     numberOfConnections: userProfile.numberOfConnections,
                     isMyProfile:  isMyProfile,
                   ),
-
+              
                   if (hasResume)
                    SectionWidget(
                      title: "Resume",

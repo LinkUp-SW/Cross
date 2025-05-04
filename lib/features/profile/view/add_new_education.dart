@@ -30,12 +30,15 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
  final FocusNode _schoolFocusNode = FocusNode();
  EducationModel? _initialEducationData;
  bool _isEditMode = false;
+ List<String> _currentSkills = [];  
+
 
  @override
  void initState() {
    super.initState();
        WidgetsBinding.instance.addPostFrameCallback((_) {
       final extraData = GoRouterState.of(context).extra;
+       EducationModel? initialData;
       if (extraData is EducationModel) {
         _initialEducationData = extraData;
       } else {
@@ -43,16 +46,66 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
       }
 
 
-      if (_initialEducationData != null) {
+    if (initialData != null) {
         setState(() {
-           _isEditMode = true; 
+           _isEditMode = true;
+           _currentSkills = List<String>.from(initialData!.skills ?? []);
+           log("InitState - Editing Education: Skills loaded: $_currentSkills");
         });
         ref.read(addEducationViewModelProvider.notifier).initializeForEdit(_initialEducationData!);
       } else {
          ref.read(addEducationViewModelProvider.notifier).resetForm();
+         setState(() {
+           _currentSkills = []; 
+           log("InitState - Adding New Education: Skills reset.");
+         });
       }
     });
   }
+Future<void> _handleAddSkill() async {
+  final TextEditingController _controller = TextEditingController();
+
+  final newSkill = await showDialog<String>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text("Add Skill"),
+      backgroundColor: Theme.of(context).brightness == Brightness.dark ? AppColors.darkMain : AppColors.lightMain, 
+      content: TextField(
+        controller: _controller,
+        autofocus: true,
+        decoration: InputDecoration(hintText: "Enter skill name"),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context), 
+          child: Text("Cancel")
+        ),
+        TextButton(
+          onPressed: () {
+            final value = _controller.text.trim();
+            Navigator.pop(context, value);
+          },
+          child: Text("Add")
+        ),
+      ],
+    ),
+  );
+
+  if (newSkill != null && newSkill.isNotEmpty && !_currentSkills.contains(newSkill)) {
+    setState(() {
+      _currentSkills.add(newSkill);
+      log("Skill added locally: $newSkill. Current skills: $_currentSkills");
+    });
+  }
+}
+
+
+   void _removeSkill(String skillToRemove) {
+      setState(() {
+         _currentSkills.remove(skillToRemove);
+         log("Skill removed locally: $skillToRemove. Current skills: $_currentSkills");
+      });
+   }  
 
  AddEducationFormData? _getFormDataFromState(AddEducationFormState state) {
    if (state is AddEducationIdle) return state.formData;
@@ -125,6 +178,7 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
     final viewModel = ref.read(addEducationViewModelProvider.notifier);
     final String appBarTitle = _isEditMode ? "Edit Education" : "Add Education";
     final formData = _getFormDataFromState(state);
+    final isSaving = state is AddEducationLoading;
 
    ref.listen<AddEducationFormState>(addEducationViewModelProvider,
        (previous, next) {
@@ -148,12 +202,7 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
    final maxGradeChars = viewModel.maxGradeChars; 
    final maxFieldOfStudyChars = viewModel.maxFieldOfStudyChars; 
    final maxDegreeChars= viewModel.maxDegreeChars;
-   final descriptionCharCount = formData?.descriptionController.text.length ?? 0;
-   final activitiesCharCount = formData?.activitiesController.text.length ?? 0;
-   final gradeCharCount = formData?.gradeController.text.length ?? 0; 
-   final fieldOfStudyCharCount = formData?.fieldOfStudyController.text.length ?? 0;
-   final degreeCharCount = formData?.degreeController.text.length ?? 0;
-   final bool isSaving = state is AddEducationLoading;
+
 
    return Scaffold(
      backgroundColor: isDarkMode ? AppColors.darkBackground : AppColors.lightBackground,
@@ -364,30 +413,47 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                              ),
                            ),
                            SizedBox(height: 20.h),
-                           SubPagesSectionHeader(title: "Skills"),
-                           SizedBox(height: 10.h),
-                           Text(
-                             "We recommend adding your top 5 used in this role. They'll also appear in your Skills section.",
-                             style: TextStyles.font14_400Weight.copyWith(
-                               color: isDarkMode
-                                   ? AppColors.darkTextColor
-                                   : AppColors.lightTextColor,
-                             ),
+// --- Skills Section ---
+                         SubPagesSectionHeader(title: "Skills"),
+                         SizedBox(height: 10.h),
+                         Text(
+                           "Add skills related to this position.", 
+                           style: TextStyles.font14_400Weight.copyWith(
+                             color: isDarkMode
+                                 ? AppColors.darkTextColor
+                                 : AppColors.lightTextColor,
                            ),
-                           SizedBox(height: 10.h),
-                           ElevatedButton(
-                             onPressed: isSaving ? null : () {
-                               // TODO: Implement Add Skill functionality
-                             },
-                             style: isDarkMode
-                                 ? buttonStyles.blueOutlinedButtonDark()
-                                 : buttonStyles.blueOutlinedButton(),
-                             child: Text("+ Add skill",
-                                 style: TextStyles.font14_600Weight.copyWith(
-                                     color: isDarkMode
-                                         ? AppColors.darkBlue
-                                         : AppColors.lightBlue)),
-                           ),
+                         ),
+                         SizedBox(height: 10.h),
+
+                         Wrap(
+                            spacing: 8.w,
+                            runSpacing: 4.h,
+                            children: _currentSkills.map((skill) => Chip(
+                               label: Text(skill, style: TextStyles.font12_500Weight.copyWith(color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor)),
+                               onDeleted: isSaving ? null : () => _removeSkill(skill),
+                               deleteIcon: Icon(Icons.close, size: 14.sp),
+                               backgroundColor: isDarkMode ? AppColors.darkGrey.withOpacity(0.5) : AppColors.lightGrey.withOpacity(0.2),
+                               padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                               shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16.r),
+                                  side: BorderSide(color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey.withOpacity(0.5))
+                               ),
+                            )).toList(),
+                         ),
+                         SizedBox(height: 10.h),
+
+                        ElevatedButton(
+                           onPressed: isSaving ? null : _handleAddSkill,
+                                style: isDarkMode
+                                    ? buttonStyles.blueOutlinedButtonDark()
+                                    : buttonStyles.blueOutlinedButton(),
+                                child: Text("+ Add Skill",
+                                    style: TextStyles.font14_600Weight.copyWith(
+                                        color: isDarkMode
+                                            ? AppColors.darkBlue
+                                            : AppColors.lightBlue)),
+                              ),
                            SizedBox(height: 20.h),
                            SubPagesSectionHeader(title: "Media"),
                            SizedBox(height: 10.h),
@@ -425,7 +491,7 @@ class _AddNewEducationState extends ConsumerState<AddNewEducation> {
                 child: SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: state is AddEducationLoading ? null : () => viewModel.saveEducation(),
+                   onPressed: isSaving ? null : () => viewModel.saveEducation(_currentSkills),
                     style: (isDarkMode
                         ? buttonStyles.wideBlueElevatedButtonDark()
                         : buttonStyles.wideBlueElevatedButton())
