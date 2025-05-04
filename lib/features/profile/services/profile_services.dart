@@ -1177,7 +1177,8 @@ class ProfileService extends BaseService {
         'api/v1/user/manage-by-blocked-list/unblock/:user_id';
     final String endpointPath =
         endpointTemplate.replaceFirst(':user_id', userIdToUnblock);
-    final Uri uri = Uri.parse('${ExternalEndPoints.baseUrl}$endpointPath');
+    final Uri uri = Uri.parse(
+        '${ExternalEndPoints.baseUrl}$endpointPath'); // Construct full URL
 
     log('ProfileService: Attempting to unblock user ID: $userIdToUnblock via DELETE $uri');
 

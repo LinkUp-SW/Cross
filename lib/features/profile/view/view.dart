@@ -27,8 +27,7 @@ import 'package:link_up/features/profile/widgets/license_list_widget.dart';
 import 'package:link_up/features/profile/widgets/skills_list_widget.dart';
 import 'package:link_up/features/profile/widgets/empty_section_placeholder.dart';
 import 'package:link_up/features/profile/utils/profile_view_helpers.dart';
-
-
+import 'package:link_up/features/profile/widgets/profile_activity_preview.dart'; 
 class ProfilePage extends ConsumerStatefulWidget {
   const ProfilePage({super.key, required this.userId});
   final String userId;
@@ -111,7 +110,11 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               child: Column(
                 children: [
                   ProfileHeaderWidget(userProfile: userProfile, userId: widget.userId),
-
+                  ProfileActivityPreview(
+                    userId: widget.userId,
+                    userName: '${userProfile.firstName} ${userProfile.lastName}', 
+                    numberOfConnections: userProfile.numberOfConnections,
+                  ),
                   if (hasResume)
                    SectionWidget(
                      title: "Resume",
