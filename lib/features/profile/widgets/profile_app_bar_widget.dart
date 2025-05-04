@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:link_up/shared/themes/colors.dart'; 
 import 'package:link_up/shared/themes/text_styles.dart';
-
+import 'package:go_router/go_router.dart';
 final searchQueryProvider = StateProvider<String>((ref) => '');
 
 class ProfileAppBar extends ConsumerWidget implements PreferredSizeWidget {
@@ -10,42 +11,53 @@ class ProfileAppBar extends ConsumerWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    final appBarColor = isDarkMode ? AppColors.darkMain : AppColors.lightMain; 
+    final iconColor = isDarkMode ? AppColors.darkSecondaryText : AppColors.lightTextColor;
+    final searchBarBackgroundColor = isDarkMode ? AppColors.darkGrey :  AppColors.lightMain;
+    final searchBarTextColor = isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor; 
+    final searchBarHintColor = isDarkMode ? AppColors.darkSecondaryText : AppColors.lightTextColor; 
+
 
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: appBarColor,
       elevation: 0,
       automaticallyImplyLeading: false,
       title: Padding(
-        padding: EdgeInsets.only(top: 13.h), 
+        padding: EdgeInsets.only(top: 13.h),
         child: Row(
           children: [
-     
+
+
             IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.black54, size: 28.sp),
+              icon: Icon(Icons.arrow_back, color: iconColor, size: 28.sp),
+            
               onPressed: () => Navigator.pop(context),
             ),
 
-     
+
             Expanded(
               child: Container(
-                height: 36.h, 
+                height: 36.h,
                 padding: EdgeInsets.symmetric(horizontal: 10.w),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFEAF3FC), 
-                  borderRadius: BorderRadius.circular(6.r), 
+                  color: searchBarBackgroundColor, 
+                  borderRadius: BorderRadius.circular(6.r),
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.search, color: Colors.black54, size: 22.sp),
+                    Icon(Icons.search, color: iconColor, size: 22.sp), 
                     SizedBox(width: 8.w),
                     Expanded(
                       child: TextField(
+                        style: TextStyles.font15_400Weight.copyWith(color: searchBarTextColor), 
                         onChanged: (value) =>
                             ref.read(searchQueryProvider.notifier).state = value,
                         decoration: InputDecoration(
                           hintText: 'Search...',
                           hintStyle: TextStyles.font15_400Weight
-                              .copyWith(color: Colors.black54),
+                              .copyWith(color: searchBarHintColor), 
                           border: InputBorder.none,
                         ),
                       ),
@@ -55,11 +67,13 @@ class ProfileAppBar extends ConsumerWidget implements PreferredSizeWidget {
               ),
             ),
 
-            IconButton(
-              icon: Icon(Icons.settings, color: Colors.black54, size: 28.sp),
-              onPressed: () {
-              },
-            ),
+          IconButton(
+            icon: Icon(Icons.settings, color: iconColor, size: 28.sp),
+            onPressed: () {
+              context.pop();
+              context.push('/settings');
+            },
+          ),
           ],
         ),
       ),

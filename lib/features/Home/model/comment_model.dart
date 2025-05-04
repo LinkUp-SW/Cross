@@ -1,33 +1,46 @@
-
+import 'package:link_up/features/Home/home_enums.dart';
 import 'package:link_up/features/Home/model/header_model.dart';
 import 'package:link_up/features/Home/model/media_model.dart';
 
 class CommentModel {
   String id;
+  String postId;
   HeaderModel header;
   String text;
   int likes;
+  Reaction reaction = Reaction.none;
   int replies;
   Media media;
+  bool isReply = false;
+  List<dynamic> taggedUsers;
+  List<CommentModel> repliesList = [];
+  List<Reaction> topReactions = [];
 
   CommentModel({
+    required this.postId,
     required this.id,
     required this.header,
     required this.text,
     required this.likes,
+    required this.reaction,
     required this.replies,
     required this.media,
+    this.isReply = false,
+    this.taggedUsers = const [],
   });
 
-
   CommentModel.fromJson(Map<String, dynamic> json)
-      : header = HeaderModel.fromJson(json['header']),
-        id = json['id'],
-        text = json['text'],
-        likes = json['likes'],
-        replies = json['replies'],
-        media = Media.fromJson(json['media']);
-
+      : header = HeaderModel.fromJson(json),
+        id = json['_id'],
+        postId = json['post_id'],
+        text = json['content'],
+        likes = json['reactions_count'] ?? 0,
+        replies = json['children_count'] ?? 0,
+        taggedUsers = List<String>.from(json['tagged_users'] ?? []),
+        reaction = Reaction.getReaction(json['user_reaction'] ?? 'none'),
+        repliesList =json['children'] != null  ? (json['children'] as List).map((e) => CommentModel.fromJson(e)).toList(): [],
+        topReactions = json['top_reactions'] != null ? (json['top_reactions'] as List).map((e) => Reaction.getReaction(e)).toList() : [],
+        media = json['media'] != null ?  Media.fromJson(json['media']): Media.initial();
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -36,6 +49,7 @@ class CommentModel {
         'likes': likes,
         'replies': replies,
         'media': media.toJson(),
+        'tagged_users': taggedUsers,
       };
 
   CommentModel copyWith({
@@ -45,24 +59,33 @@ class CommentModel {
     int? likes,
     int? replies,
     Media? media,
+    Reaction? reaction,
+    List<dynamic>? taggedUsers,
+    bool? isReply,
+    String ? postId,
   }) {
     return CommentModel(
+      postId: postId ?? this.postId,
       id: id ?? this.id,
       header: header ?? this.header,
       text: text ?? this.text,
       likes: likes ?? this.likes,
+      reaction: reaction ?? this.reaction,
       replies: replies ?? this.replies,
       media: media ?? this.media,
+      taggedUsers: taggedUsers ?? this.taggedUsers,
+      isReply: isReply ?? this.isReply,
     );
   }
-
 
   CommentModel.initial()
       : header = HeaderModel.initial(),
         id = '1',
+        postId = '1',
         text = 'This is a test comment',
         likes = 0,
         replies = 0,
+        taggedUsers = [],
+        isReply = false,
         media = Media.initial();
-
 }

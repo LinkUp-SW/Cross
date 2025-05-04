@@ -2,16 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:link_up/features/my-network/model/grow_tab_model.dart';
 import 'package:link_up/features/my-network/viewModel/grow_tab_view_model.dart';
 import 'package:link_up/features/my-network/widgets/grow_tab_navigation_row.dart';
-import 'package:link_up/features/my-network/widgets/newsletter_card.dart';
 import 'package:link_up/features/my-network/widgets/people_card.dart';
 import 'package:link_up/features/my-network/widgets/received_invitations_card.dart';
-import 'package:link_up/features/my-network/widgets/received_invitations_loading_skeleton.dart';
+import 'package:link_up/features/my-network/widgets/received_invitations_card_loading_skeleton.dart';
 import 'package:link_up/features/my-network/widgets/section.dart';
-import 'package:link_up/features/my-network/widgets/wide_people_card.dart';
-import 'package:link_up/features/my-network/widgets/wide_section.dart';
+import 'package:link_up/features/my-network/widgets/section_loading_skeleton.dart';
 import 'package:link_up/shared/themes/colors.dart';
 
 class GrowTab extends ConsumerStatefulWidget {
@@ -24,9 +21,29 @@ class GrowTab extends ConsumerStatefulWidget {
 }
 
 class _GrowTabState extends ConsumerState<GrowTab> {
+  final int paginationLimit = 4;
   @override
   void initState() {
     super.initState();
+
+    Future.microtask(() {
+      ref.read(growTabViewModelProvider.notifier).getPeopleYouMayKnow(
+          queryParameters: {
+            "cursor": null,
+            "limit": '$paginationLimit',
+            "context": "work_experience"
+          });
+    });
+
+    Future.microtask(() {
+      ref.read(growTabViewModelProvider.notifier).getPeopleYouMayKnow(
+          queryParameters: {
+            "cursor": null,
+            "limit": '$paginationLimit',
+            "context": "education"
+          });
+    });
+
     Future.microtask(() {
       ref.read(growTabViewModelProvider.notifier).getReceivedInvitations();
     });
@@ -34,9 +51,8 @@ class _GrowTabState extends ConsumerState<GrowTab> {
 
   @override
   Widget build(BuildContext context) {
-    bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final state = ref.watch(growTabViewModelProvider);
-
     return RefreshIndicator(
       color: isDarkMode ? AppColors.darkBlue : AppColors.lightBlue,
       backgroundColor: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
@@ -44,8 +60,21 @@ class _GrowTabState extends ConsumerState<GrowTab> {
         await ref
             .read(growTabViewModelProvider.notifier)
             .getReceivedInvitations();
+        await ref.read(growTabViewModelProvider.notifier).getPeopleYouMayKnow(
+            queryParameters: {
+              "cursor": null,
+              "limit": '$paginationLimit',
+              "context": "work_experience"
+            });
+        await ref.read(growTabViewModelProvider.notifier).getPeopleYouMayKnow(
+            queryParameters: {
+              "cursor": null,
+              "limit": '$paginationLimit',
+              "context": "education"
+            });
       },
       child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
         child: Column(
           spacing: 10.h,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -57,17 +86,20 @@ class _GrowTabState extends ConsumerState<GrowTab> {
             if (state.isLoading && state.receivedInvitations == null)
               ListView.builder(
                 shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: 3,
                 itemBuilder: (context, index) =>
-                    ReceivedInvitationsLoadingSkeleton(),
+                    ReceivedInvitationsCardLoadingSkeleton(),
               )
-            else if (state.receivedInvitations!.isNotEmpty)
+            else if (state.receivedInvitations != null &&
+                state.receivedInvitations!.isNotEmpty)
               ListView.builder(
                 shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: state.receivedInvitations!.length,
                 itemBuilder: (context, index) {
                   return ReceivedInvitationsCard(
-                    data: state.receivedInvitations![index],
+                    data: state.receivedInvitations!.elementAt(index),
                     onAccept: (userId) {
                       ref
                           .read(growTabViewModelProvider.notifier)
@@ -85,87 +117,37 @@ class _GrowTabState extends ConsumerState<GrowTab> {
               title: 'Manage my network',
               onTap: () => context.push('/manage-network'),
             ),
-            Section(
-              title: "People you may know based on your recent activity",
-              cards: [
-                PeopleCard(
-                  data: GrowTabPeopleCardsModel.initial(),
-                ),
-                PeopleCard(
-                  data: GrowTabPeopleCardsModel.initial(),
-                ),
-                PeopleCard(
-                  data: GrowTabPeopleCardsModel.initial(),
-                ),
-                PeopleCard(
-                  data: GrowTabPeopleCardsModel.initial(),
-                ),
-              ],
-            ),
-            Section(
-              title: "People you may know from Cairo University",
-              cards: [
-                PeopleCard(
-                  data: GrowTabPeopleCardsModel.initial(),
-                ),
-                PeopleCard(
-                  data: GrowTabPeopleCardsModel.initial(),
-                ),
-                PeopleCard(
-                  data: GrowTabPeopleCardsModel.initial(),
-                ),
-                PeopleCard(
-                  data: GrowTabPeopleCardsModel.initial(),
-                ),
-              ],
-            ),
-            WideSection(
-              title:
-                  "People who are in the Software Development industry also follow these people",
-              cards: [
-                WidePeopleCard(
-                  data: GrowTabPeopleCardsModel.initial(),
-                ),
-                WidePeopleCard(
-                  data: GrowTabPeopleCardsModel.initial(),
-                ),
-              ],
-            ),
-            WideSection(
-              title:
-                  "People who are in the Software Development industry also subscribe to these newsletters",
-              cards: [
-                NewsletterCard(
-                  data: GrowTabNewsletterCardsModel.initial(),
-                ),
-                NewsletterCard(
-                  data: GrowTabNewsletterCardsModel.initial(),
-                ),
-              ],
-            ),
-            Section(
-              title: "More suggestions for you",
-              cards: [
-                PeopleCard(
-                  data: GrowTabPeopleCardsModel.initial(),
-                ),
-                PeopleCard(
-                  data: GrowTabPeopleCardsModel.initial(),
-                ),
-                PeopleCard(
-                  data: GrowTabPeopleCardsModel.initial(),
-                ),
-                PeopleCard(
-                  data: GrowTabPeopleCardsModel.initial(),
-                ),
-                PeopleCard(
-                  data: GrowTabPeopleCardsModel.initial(),
-                ),
-                PeopleCard(
-                  data: GrowTabPeopleCardsModel.initial(),
-                ),
-              ],
-            ),
+            state.isLoading && state.workTitle == null
+                ? SectionLoadingSkeleton(
+                    title: 'People you may know from Global Solutions Ltd')
+                : (state.workTitle != null &&
+                        state.peopleYouMayKnowFromWork != null &&
+                        state.peopleYouMayKnowFromWork!.isNotEmpty)
+                    ? Section(
+                        title: "People you may know from ${state.workTitle}",
+                        cards: state.peopleYouMayKnowFromWork!
+                            .map((person) => PeopleCard(
+                                  data: person,
+                                  isEducationCard: false,
+                                ))
+                            .toSet())
+                    : SizedBox(),
+            state.isLoading && state.educationTitle == null
+                ? SectionLoadingSkeleton(
+                    title: 'People you may know from Global Solutions Ltd')
+                : (state.educationTitle != null &&
+                        state.peopleYouMayKnowFromEducation != null &&
+                        state.peopleYouMayKnowFromEducation!.isNotEmpty)
+                    ? Section(
+                        title:
+                            "People you may know from ${state.educationTitle}",
+                        cards: state.peopleYouMayKnowFromEducation!
+                            .map((person) => PeopleCard(
+                                  data: person,
+                                  isEducationCard: true,
+                                ))
+                            .toSet())
+                    : SizedBox()
           ],
         ),
       ),

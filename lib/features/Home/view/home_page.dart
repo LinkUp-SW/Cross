@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
 import 'package:link_up/features/Home/viewModel/posts_vm.dart';
 import 'package:link_up/features/Home/widgets/deleted_post.dart';
@@ -41,7 +42,8 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   void _scrollListener() {
     if (scrollController.position.pixels ==
-        scrollController.position.maxScrollExtent) {
+            scrollController.position.maxScrollExtent &&
+        PostsState.nextCursor != -1) {
       ref.read(postsProvider.notifier).fetchPosts().then((value) {
         ref.read(postsProvider.notifier).addPosts(value);
       });
@@ -102,7 +104,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final List<PostState> posts = ref.watch(postsProvider);
+    final List<PostsState> posts = ref.watch(postsProvider);
     ref.listen(currentTabProvider, (previous, current) {
       if (current) {
         scrollTop();
@@ -111,6 +113,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         ref.read(currentTabProvider.notifier).state = false;
       });
     });
+    setState(() {});
     return Scaffold(
       body: NestedScrollView(
         controller: scrollController2,
@@ -130,21 +133,50 @@ class _HomePageState extends ConsumerState<HomePage> {
           child: RefreshIndicator(
             color: AppColors.darkBlue,
             onRefresh: () async {
+              PostsState.nextCursor = 0;
               await ref.read(postsProvider.notifier).refreshPosts();
+              setState(() {});
             },
             child: Builder(builder: (context) {
-              if (posts.isEmpty) {
+              if (PostsState.isLoading) {
                 return Skeletonizer(
                   child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
                     child: Column(
                       children: [
                         for (int i = 0; i < 5; i++)
                           Card(
                             child: Posts(
                               post: PostModel.initial(),
-                              showTop: false,
                             ),
                           ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+              if (posts.isEmpty) {
+                return Center(
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SvgPicture.asset(
+                          'assets/images/man_on_chair.svg',
+                          height: 200,
+                          width: 200,
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          'No Posts Yet',
+                          style: TextStyle(
+                            fontSize: 20.sp,
+                            color: Theme.of(context).textTheme.bodyLarge!.color,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -157,7 +189,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                   separatorBuilder: (context, index) =>
                       const SizedBox(height: 10),
                   itemBuilder: (context, index) {
-                    if (index == posts.length - 1) {
+                    if (index == posts.length - 1 &&
+                        PostsState.nextCursor != -1) {
                       return const Center(
                         child: CircularProgressIndicator(
                           color: AppColors.darkBlue,
@@ -168,6 +201,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                         child: !posts[index].showUndo
                             ? Posts(
                                 post: posts[index].post,
+                                inFeed: true,
                               )
                             : DeletedPost(
                                 userName: posts[index].post.header.name,
