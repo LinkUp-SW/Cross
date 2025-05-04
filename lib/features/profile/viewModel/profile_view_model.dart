@@ -149,18 +149,16 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
   }
 
   Future<void> sendConnectionRequest(String targetUserId) async {
-    // TODO: Implement connection request logic
-    // 1. Set state to indicate loading (e.g., ProfileUpdatingConnection)
-    // 2. Call a service method (e.g., _connectionService.sendRequest(targetUserId))
-    // 3. On success: Update the UserProfile in the state (e.g., set is_in_sent_connections = true)
-    // 4. On failure: Revert state and show error
-    log("[ProfileVM] TODO: Implement sendConnectionRequest for $targetUserId");
-    final currentState = state;
-    if (currentState is ProfileLoaded) {
-      // Example optimistic update (update UI immediately)
-      state = ProfileLoaded(
-          currentState.userProfile.copyWith(isInSentConnections: true));
-      // Then call service, revert on failure
+    state = ProfileLoading();
+    try {
+      await _profileService.sendConnectionRequest(targetUserId);
+      final otherUserProfile =
+          await _profileService.getUserProfile(targetUserId);
+      state = ProfileLoaded(otherUserProfile);
+    } catch (error) {
+      log("Error sending connection request to user with id: $targetUserId");
+      state =
+          ProfileError("Could not send connection request to this person :(");
     }
   }
 
@@ -177,12 +175,15 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
 
   // Method to handle following a user
   Future<void> followUser(String targetUserId) async {
-    // TODO: Implement follow logic
-    log("[ProfileVM] TODO: Implement followUser for $targetUserId");
-    final currentState = state;
-    if (currentState is ProfileLoaded) {
-      state = ProfileLoaded(
-          currentState.userProfile.copyWith(isAlreadyFollowing: true));
+    state = ProfileLoading();
+    try {
+      await _profileService.follow(targetUserId);
+      final otherUserProfile =
+          await _profileService.getUserProfile(targetUserId);
+      state = ProfileLoaded(otherUserProfile);
+    } catch (error) {
+      log("Error following user with id: $targetUserId");
+      state = ProfileError("Could not unfollow this person :(");
     }
   }
 
@@ -196,12 +197,7 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
       state = ProfileLoaded(otherUserProfile);
     } catch (error) {
       log("Error unfollowing user with id: $targetUserId");
-      state = ProfileError("Error unfollowing user with id: $targetUserId");
-    }
-    final currentState = state;
-    if (currentState is ProfileLoaded) {
-      state = ProfileLoaded(
-          currentState.userProfile.copyWith(isAlreadyFollowing: false));
+      state = ProfileError("Could not unfollow this person :(");
     }
   }
 }

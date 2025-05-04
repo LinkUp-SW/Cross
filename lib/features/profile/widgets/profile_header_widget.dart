@@ -45,13 +45,12 @@ class ProfileHeaderWidget extends ConsumerWidget {
             duration: const Duration(seconds: 1)),
       );
       try {
-        final success = await ref
+        if (!context.mounted) return;
+        context.pop();
+        context.go('/');
+        await ref
             .read(blockedUsersViewModelProvider.notifier)
             .blockUser(userId);
-
-        if (success && context.mounted) {
-          GoRouter.of(context).go('/feed');
-        }
       } catch (e) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -749,11 +748,10 @@ class ProfileHeaderWidget extends ConsumerWidget {
             isDarkMode: isDarkMode,
             icon: Icons.add_circle_outline_rounded,
             label: "Connect",
-            onPressed: () {
-              log('Connect button clicked for ${otherUserProfile.firstName}');
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content:
-                      Text('TODO: Connect to ${otherUserProfile.firstName}')));
+            onPressed: () async {
+              await ref
+                  .read(profileViewModelProvider.notifier)
+                  .sendConnectionRequest(userId);
             },
             buttonStyles: buttonStyles,
           ),
@@ -808,11 +806,10 @@ class ProfileHeaderWidget extends ConsumerWidget {
             isDarkMode: isDarkMode,
             icon: Icons.add_circle_outline_rounded,
             label: "Follow",
-            onPressed: () {
-              log('Connect button clicked for ${otherUserProfile.firstName}');
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content:
-                      Text('TODO: Follow  to ${otherUserProfile.firstName}')));
+            onPressed: () async {
+              await ref
+                  .read(profileViewModelProvider.notifier)
+                  .followUser(userId);
             },
             buttonStyles: buttonStyles,
           ),
@@ -873,12 +870,12 @@ class ProfileHeaderWidget extends ConsumerWidget {
                   ReusableBottomSheetOption(
                     icon: Icons.person_add_outlined,
                     title: 'Connect',
-                    onTap: () {
-                      // TODO: Implement connect functionality
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text(
-                              'TODO: Connect to ${otherUserProfile.firstName}')));
+                    onTap: () async {
+                      await ref
+                          .read(profileViewModelProvider.notifier)
+                          .sendConnectionRequest(userId);
+                      if (!context.mounted) return;
+                      context.pop();
                     },
                   ),
                 if (followPrimary && !isConnected && isRequestSentByMe)
@@ -897,9 +894,12 @@ class ProfileHeaderWidget extends ConsumerWidget {
                   ReusableBottomSheetOption(
                     icon: Icons.person_add_alt_1_outlined,
                     title: 'Follow',
-                    onTap: () {
-                      // TODO: Implement follow functionality
-                      Navigator.pop(context);
+                    onTap: () async {
+                      await ref
+                          .read(profileViewModelProvider.notifier)
+                          .followUser(userId);
+                      if (!context.mounted) return;
+                      context.pop();
                     },
                   ),
                 if (isConnected && followPrimary)
