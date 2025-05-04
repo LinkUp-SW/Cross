@@ -5,9 +5,14 @@ import 'package:flutter/services.dart';
 import 'package:link_up/routes/app_routes.dart';
 import 'package:link_up/shared/themes/app_themes.dart';
 import 'shared/themes/theme_provider.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:link_up/features/notifications/services/push_notification_service.dart';
 
-void main() {
+
+void main() async{
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]).then((_) {
@@ -20,6 +25,7 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+  PushNotificationService().initNotifications(context);
     return SafeArea(
       child: ScreenUtilInit(
           designSize: const Size(360, 690),
