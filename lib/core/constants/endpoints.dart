@@ -11,8 +11,8 @@ class InternalEndPoints {
 }
 
 class ExternalEndPoints {
-  //static const baseUrl = 'https://api.linkup-egypt.tech/';
-  static const baseUrl = 'http://10.0.2.2:3000/'; // for localhosting
+  static const baseUrl = 'https://api.linkup-app.tech/';
+  // static const baseUrl = 'http://10.0.2.2:3000/'; // for localhosting
   static const receivedConnectionInvitations =
       'api/v1/user/my-network/invitation-manager/received';
   static const sentConnectionInvitations =
@@ -72,10 +72,10 @@ class ExternalEndPoints {
   static const searchJobs = 'api/v1/jobs/search-jobs';
   static const applyForJob = 'api/v1/job-application/apply-for-job';
   static const createJobApplication =
-      'api/v1/job-application/create-job-application/{job_id}';
+      'api/v1/job-application/create-job-application/:job_id';
   static const getJobApplications =
-      'api/v1/job-application/get-job-applications/{job_id}';
+      'api/v1/job-application/get-job-applications/:job_id';
   static const getAppliedJobs = 'api/v1/job-application/get-applied-jobs';
   static const updateJobApplicationStatus =
-      'api/v1/job-application/update-job-application-status/{application_id}';
+      'api/v1/job-application/update-job-application-status/:application_id';
 }

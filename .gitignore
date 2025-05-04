@@ -31,7 +31,6 @@ migrate_working_dir/
 .pub/
 /build/
 
-/android/
 /windows/
 
 .metadata
@@ -48,5 +47,5 @@ app.*.map.json
 /android/app/release
 /android/app/.cxx
 /android/app/src/main/java/
-/android/app/src/main/res/
+# /android/app/src/main/res/
 /android/app/src/main/kotlin/
