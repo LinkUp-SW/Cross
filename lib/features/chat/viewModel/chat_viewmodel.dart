@@ -399,6 +399,8 @@ class ChatViewModel extends StateNotifier<ChatState> {
       );
     }
   }
+
+  void getAllCounts() {}
 }
 
 final chatViewModelProvider = StateNotifierProvider<ChatViewModel, ChatState>((ref) {

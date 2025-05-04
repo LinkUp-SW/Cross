@@ -62,11 +62,10 @@ import 'package:link_up/features/profile/view/blocked_users_pages.dart';
 import 'package:link_up/features/jobs/view/job_details.dart';
 import 'package:link_up/features/jobs/view/my_jobs_screen.dart';
 
-final goRouterProvider = Provider<GoRouter>(
-  (ref) {
-    final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+final goRouterProvider = Provider<GoRouter>((ref) {
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
-    return GoRouter(
+  return GoRouter(
       navigatorKey: navigatorKey,
       initialLocation: '/login',
       routes: <RouteBase>[
@@ -311,6 +310,24 @@ final goRouterProvider = Provider<GoRouter>(
                       path: "/searchjobs",
                       builder: (context, state) => const SearchJobsPage(),
                     ),
+                    GoRoute(
+                      path: '/jobs/my-jobs',
+                      builder: (context, state) => const MyJobsScreen(),
+                    ),
+
+                    // Job Details route
+                    GoRoute(
+                      path: '/jobs/details/:jobId',
+                      builder: (context, state) => JobDetailsPage(
+                        jobId: state.pathParameters['jobId']!,
+                      ),
+                    ),
+
+                    // Job Search route
+                    GoRoute(
+                      path: 'jobs/search',
+                      builder: (context, state) => const SearchJobsPage(),
+                    ),
                   ],
                 ),
               ],
@@ -400,11 +417,5 @@ final goRouterProvider = Provider<GoRouter>(
                   path: '/privacy',
                   builder: (context, state) => const PrivacySettings()),
             ]),
-        GoRoute(
-          path: "/payment",
-          builder: (context, state) => const SubscriptionManagementScreen(),
-        ),
-      ],
-    );
-  },
-);
+      ]);
+});
