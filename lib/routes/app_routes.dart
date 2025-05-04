@@ -391,7 +391,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             ),
           ],
         ),
-        GoRoute(path: "/company", builder: (context, state) => Container()),
+        GoRoute(
+            path: "/create-company",
+            builder: (context, state) => CreateCompanyProfilePage()),
         GoRoute(
             path: "/writePost",
             pageBuilder: (context, state) {
