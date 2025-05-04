@@ -33,24 +33,24 @@ class NotificationTile extends StatelessWidget {
             style: TextStyle(color: theme.colorScheme.onSurface, fontSize: 16),
             children: [
               TextSpan(
-                text: '${notification.name} ',
+                text: '${notification.firstName} ${notification.lastName}',
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
-              TextSpan(text: notification.message),
+              TextSpan(text: notification.content),
             ],
           ),
         ),
-        subtitle: Text(notification.time,
+        subtitle: Text(notification.createdAt,
             style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.6))),
         onTap: () {
   onTap(); // This calls the original onTap callback
   
   // Navigation logic based on notification type
-  if (notification.type == NotificationFilter.Posts && notification.postId != null) {
-    context.push('/testpost', extra: notification.postId);
+  if (notification.type == NotificationFilter.Posts && notification.referenceId != null) {
+    context.push('/testpost', extra: notification.referenceId);
     
-  } else if (notification.type == NotificationFilter.Connections && notification.userId != null) {
-    context.push('/testprofile', extra: notification.userId);
+  } else if (notification.type == NotificationFilter.Connections && notification.referenceId != null) {
+    context.push('/testprofile', extra: notification.referenceId);
   }
 } // Trigger read state change when tapped
       ),

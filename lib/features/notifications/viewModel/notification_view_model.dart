@@ -2,11 +2,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/notification_service.dart';
 import '../state/notification_state.dart';
 import '../model/notification_model.dart';
-import 'package:link_up/features/notifications/services/mock_notification_service.dart';
+
 
 final notificationServiceProvider = Provider<NotificationService>((ref) {
-  /* const bool useMock = true; */ // it will be for selecting the service to use
-  return MockNotificationService();
+  // For switching between mock and real service
+  
+  return  NotificationService();
 });
 
 final notificationsViewModelProvider = StateNotifierProvider.autoDispose<NotificationsViewModel, NotificationState>(
@@ -31,7 +32,7 @@ class NotificationsViewModel extends StateNotifier<NotificationState> {
   }
 
   void setFilter(NotificationFilter filter) {
-    state = state.copyWith(selectedFilter: filter); // Ensure selectedFilter can accept non-null values
+    state = state.copyWith(selectedFilter: filter);
   }
 
   void markAsRead(String notificationId) {

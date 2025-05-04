@@ -20,4 +20,7 @@ class ExternalEndPoints {
   static const userId = 'api/v1/user/my-network/connections/count';
   static const followingsList = 'api/v1/user/my-network/network-manager/following';
   static const unfollow = 'api/v1/user/unfollow/:user_id';
+  static const getnotifiacations= 'api/v1/notifications/get-notifications';
+  static const marknotificationasread=  'api/v1/notifications/:notificationId/read';
+  static const getunreadnotifications= 'api/v1/notifications/unread-count';
 }
