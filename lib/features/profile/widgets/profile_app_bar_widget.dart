@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:link_up/shared/themes/colors.dart'; 
 import 'package:link_up/shared/themes/text_styles.dart';
-
+import 'package:go_router/go_router.dart';
 final searchQueryProvider = StateProvider<String>((ref) => '');
 
 class ProfileAppBar extends ConsumerWidget implements PreferredSizeWidget {
@@ -67,12 +67,13 @@ class ProfileAppBar extends ConsumerWidget implements PreferredSizeWidget {
               ),
             ),
 
-            IconButton(
-              icon: Icon(Icons.settings, color: iconColor, size: 28.sp), 
-              onPressed: () {
-                // TODO: Implement settings action
-              },
-            ),
+          IconButton(
+            icon: Icon(Icons.settings, color: iconColor, size: 28.sp),
+            onPressed: () {
+              context.pop();
+              context.push('/settings');
+            },
+          ),
           ],
         ),
       ),
