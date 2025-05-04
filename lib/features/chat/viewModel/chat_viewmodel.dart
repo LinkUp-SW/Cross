@@ -29,11 +29,13 @@ class ChatViewModel extends StateNotifier<ChatState> {
     log('[CHAT_VIEWMODEL] Set up socket listeners for chat list updates');
   }
 
-  void updateChatLastMessage(String conversationId, String messageContent, DateTime timestamp) {
+  void updateChatLastMessage(
+      String conversationId, String messageContent, DateTime timestamp) {
     if (state.chats == null) return;
 
     final updatedChats = List<Chat>.from(state.chats!);
-    final index = updatedChats.indexWhere((chat) => chat.conversationId == conversationId);
+    final index = updatedChats
+        .indexWhere((chat) => chat.conversationId == conversationId);
 
     if (index != -1) {
       // Create a new chat object with updated properties
@@ -68,7 +70,8 @@ class ChatViewModel extends StateNotifier<ChatState> {
     if (state.chats == null) return;
 
     final updatedChats = List<Chat>.from(state.chats!);
-    final index = updatedChats.indexWhere((chat) => chat.conversationId == conversationId);
+    final index = updatedChats
+        .indexWhere((chat) => chat.conversationId == conversationId);
 
     if (index != -1) {
       // Create a new chat object with incremented unread count
@@ -82,7 +85,8 @@ class ChatViewModel extends StateNotifier<ChatState> {
       // Update the state with the modified list
       state = state.copyWith(
         chats: updatedChats,
-        unreadCount: state.unreadCount + 1, // Also update the total unread count
+        unreadCount:
+            state.unreadCount + 1, // Also update the total unread count
       );
 
       log('[CHAT_VIEWMODEL] Incremented unread count for conversation: $conversationId');
@@ -136,10 +140,13 @@ class ChatViewModel extends StateNotifier<ChatState> {
 
   void _handleLocalMessageSent(dynamic data) {
     try {
-      if (data is Map && data.containsKey('conversationId') && data.containsKey('message')) {
+      if (data is Map &&
+          data.containsKey('conversationId') &&
+          data.containsKey('message')) {
         final conversationId = data['conversationId'];
         final messageContent = data['message'];
-        final timestamp = DateTime.tryParse(data['timestamp'] ?? '') ?? DateTime.now();
+        final timestamp =
+            DateTime.tryParse(data['timestamp'] ?? '') ?? DateTime.now();
 
         // Immediately update the chat list with this message
         updateChatLastMessage(conversationId, messageContent, timestamp);
@@ -151,7 +158,9 @@ class ChatViewModel extends StateNotifier<ChatState> {
 
   void _handleUnreadCountUpdate(dynamic data) {
     try {
-      if (data is Map && data.containsKey('conversationId') && data.containsKey('unreadCount')) {
+      if (data is Map &&
+          data.containsKey('conversationId') &&
+          data.containsKey('unreadCount')) {
         final conversationId = data['conversationId'];
         final unreadCount = data['unreadCount'];
 
@@ -159,11 +168,13 @@ class ChatViewModel extends StateNotifier<ChatState> {
         if (state.chats == null) return;
 
         final updatedChats = List<Chat>.from(state.chats!);
-        final index = updatedChats.indexWhere((chat) => chat.conversationId == conversationId);
+        final index = updatedChats
+            .indexWhere((chat) => chat.conversationId == conversationId);
 
         if (index != -1) {
           final difference = unreadCount - updatedChats[index].unreadCount;
-          final updatedChat = updatedChats[index].copyWith(unreadCount: unreadCount);
+          final updatedChat =
+              updatedChats[index].copyWith(unreadCount: unreadCount);
           updatedChats[index] = updatedChat;
 
           state = state.copyWith(
@@ -185,8 +196,10 @@ class ChatViewModel extends StateNotifier<ChatState> {
     _globalSocket.off('private_message', _handleNewMessage);
     _globalSocket.off('new_message', _handleNewMessage);
     _globalSocket.off('message_sent', _handleNewMessage);
-    _globalSocket.off('local_message_sent', _handleLocalMessageSent); // Add this
-    _globalSocket.off('unread_count_update', _handleUnreadCountUpdate); // Add this
+    _globalSocket.off(
+        'local_message_sent', _handleLocalMessageSent); // Add this
+    _globalSocket.off(
+        'unread_count_update', _handleUnreadCountUpdate); // Add this
     _refreshDebouncer?.cancel();
     super.dispose();
   }
@@ -399,11 +412,10 @@ class ChatViewModel extends StateNotifier<ChatState> {
       );
     }
   }
-
-  void getAllCounts() {}
 }
 
-final chatViewModelProvider = StateNotifierProvider<ChatViewModel, ChatState>((ref) {
+final chatViewModelProvider =
+    StateNotifierProvider<ChatViewModel, ChatState>((ref) {
   final chatService = ref.read(chatServiceProvider);
   return ChatViewModel(chatService);
 });

@@ -153,7 +153,7 @@ class JobApplicationService {
       // Fixed: Directly pass the body as Map<String, dynamic> to match BaseService.put signature
       final response = await _baseService.put(
         endpoint,
-        {
+        body: {
           'application_status': status
         }, // This matches the signature in BaseService
       );
