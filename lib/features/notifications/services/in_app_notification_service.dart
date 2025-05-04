@@ -7,7 +7,7 @@ class InAppNotificationService {
   factory InAppNotificationService() => _instance;
   InAppNotificationService._internal();
 
-  // Create a navigator key that will be passed to GoRouter
+  // For accessing overlay
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   OverlayEntry? _currentNotification;
@@ -18,29 +18,35 @@ class InAppNotificationService {
     required String message,
     String? imageUrl,
     VoidCallback? onTap,
-    Duration duration = const Duration(seconds: 3),
+    Duration duration = const Duration(seconds: 4),
   }) {
     // Hide any existing notification first
     hideNotification();
 
-    // Get the overlay context from navigator
-    final overlay = navigatorKey.currentState?.overlay;
-    if (overlay == null) return;
+    final context = navigatorKey.currentContext;
+    if (context == null) {
+      print('❌ Cannot show notification: No navigator context available');
+      return;
+    }
+
+    final overlay = Overlay.of(context);
+    if (overlay == null) {
+      print('❌ Cannot show notification: No overlay available');
+      return;
+    }
 
     _currentNotification = OverlayEntry(
-      builder: (context) => InAppNotificationWidget(
+      builder: (context) => _InAppNotificationWidget(
         title: title,
         message: message,
         imageUrl: imageUrl,
-        onTap: () {
-          if (onTap != null) onTap();
-          hideNotification();
-        },
+        onTap: onTap,
         onDismiss: hideNotification,
       ),
     );
 
     overlay.insert(_currentNotification!);
+    print('✅ In-app notification shown');
 
     // Auto dismiss after duration
     _dismissTimer = Timer(duration, hideNotification);
@@ -53,31 +59,32 @@ class InAppNotificationService {
     if (_currentNotification != null) {
       _currentNotification!.remove();
       _currentNotification = null;
+      print('🔄 In-app notification dismissed');
     }
   }
 }
 
-class InAppNotificationWidget extends StatefulWidget {
+class _InAppNotificationWidget extends StatefulWidget {
   final String title;
   final String message;
   final String? imageUrl;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
   final VoidCallback onDismiss;
 
-  const InAppNotificationWidget({
+  const _InAppNotificationWidget({
     Key? key,
     required this.title,
     required this.message,
     this.imageUrl,
-    required this.onTap,
+    this.onTap,
     required this.onDismiss,
   }) : super(key: key);
 
   @override
-  State<InAppNotificationWidget> createState() => _InAppNotificationWidgetState();
+  State<_InAppNotificationWidget> createState() => _InAppNotificationWidgetState();
 }
 
-class _InAppNotificationWidgetState extends State<InAppNotificationWidget> with SingleTickerProviderStateMixin {
+class _InAppNotificationWidgetState extends State<_InAppNotificationWidget> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Offset> _offsetAnimation;
 
@@ -108,6 +115,8 @@ class _InAppNotificationWidgetState extends State<InAppNotificationWidget> with 
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return SafeArea(
       child: SlideTransition(
         position: _offsetAnimation,
@@ -115,11 +124,12 @@ class _InAppNotificationWidgetState extends State<InAppNotificationWidget> with 
           padding: const EdgeInsets.all(8.0),
           child: Material(
             color: Colors.transparent,
-            child: GestureDetector(
+            child: InkWell(
               onTap: widget.onTap,
               child: Container(
+                width: double.infinity,
                 decoration: BoxDecoration(
-                  color: Colors.grey[800],
+                  color: theme.colorScheme.surface,
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
@@ -133,8 +143,8 @@ class _InAppNotificationWidgetState extends State<InAppNotificationWidget> with 
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   child: Row(
                     children: [
-                      // Profile picture if available
-                      if (widget.imageUrl != null) ...[
+                      // Profile image
+                      if (widget.imageUrl != null && widget.imageUrl!.isNotEmpty)
                         ClipRRect(
                           borderRadius: BorderRadius.circular(20),
                           child: Image.network(
@@ -145,13 +155,12 @@ class _InAppNotificationWidgetState extends State<InAppNotificationWidget> with 
                             errorBuilder: (_, __, ___) => Container(
                               width: 40,
                               height: 40,
-                              color: Colors.grey,
+                              color: theme.colorScheme.primary,
                               child: Icon(Icons.person, color: Colors.white),
                             ),
                           ),
                         ),
-                        const SizedBox(width: 12),
-                      ],
+                      SizedBox(width: widget.imageUrl != null ? 12 : 0),
 
                       // Notification content
                       Expanded(
@@ -161,8 +170,8 @@ class _InAppNotificationWidgetState extends State<InAppNotificationWidget> with 
                           children: [
                             Text(
                               widget.title,
-                              style: const TextStyle(
-                                color: Colors.white,
+                              style: TextStyle(
+                                color: theme.colorScheme.onSurface,
                                 fontWeight: FontWeight.bold,
                               ),
                               maxLines: 1,
@@ -172,7 +181,7 @@ class _InAppNotificationWidgetState extends State<InAppNotificationWidget> with 
                             Text(
                               widget.message,
                               style: TextStyle(
-                                color: Colors.white.withOpacity(0.9),
+                                color: theme.colorScheme.onSurface.withOpacity(0.8),
                               ),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
@@ -183,10 +192,11 @@ class _InAppNotificationWidgetState extends State<InAppNotificationWidget> with 
 
                       // Close button
                       IconButton(
-                        icon: const Icon(Icons.close, color: Colors.white70, size: 16),
+                        icon: Icon(Icons.close, color: theme.colorScheme.onSurface.withOpacity(0.5)),
                         onPressed: widget.onDismiss,
-                        padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
+                        padding: EdgeInsets.zero,
+                        splashRadius: 24,
                       ),
                     ],
                   ),

@@ -1,4 +1,4 @@
-enum NotificationFilter { All, Posts,CONNECTION_REQUEST,CONNECTION_ACCEPTED,FOLLOW } // Define enum
+enum NotificationFilter { All, Posts,CONNECTION_REQUEST,CONNECTION_ACCEPTED,FOLLOW, CONNECTIONS } // Define enum
 
 class NotificationModel {
   final String id;
