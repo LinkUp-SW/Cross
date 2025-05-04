@@ -148,10 +148,13 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
     }
   }
 
-  Future<void> sendConnectionRequest(String targetUserId) async {
+  Future<void> sendConnectionRequest(
+    String targetUserId, {
+    Map<String, dynamic>? body,
+  }) async {
     state = ProfileLoading();
     try {
-      await _profileService.sendConnectionRequest(targetUserId);
+      await _profileService.sendConnectionRequest(targetUserId, body: body);
       final otherUserProfile =
           await _profileService.getUserProfile(targetUserId);
       state = ProfileLoaded(otherUserProfile);

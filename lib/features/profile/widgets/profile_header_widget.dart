@@ -750,17 +750,23 @@ class ProfileHeaderWidget extends ConsumerWidget {
             icon: Icons.add_circle_outline_rounded,
             label: "Connect",
             onPressed: () async {
-            if(isConnectByEmail){
-              showDialog( context: context,
-                          builder: (context) => EmailConfirmationPopUp(userId: userId, onConnectionRequestSent: () {
-                            ref.read(profileViewModelProvider.notifier).sendConnectionRequest(userId);
-                          },),);
-            }
-            else{
-              await ref
-                  .read(profileViewModelProvider.notifier)
-                  .sendConnectionRequest(userId);
-            }
+              if (isConnectByEmail) {
+                showDialog(
+                  context: context,
+                  builder: (context) => EmailConfirmationPopUp(
+                    userId: userId,
+                    onConnectionRequestSent: () async {
+                      await ref
+                          .read(profileViewModelProvider.notifier)
+                          .fetchUserProfile(userId);
+                    },
+                  ),
+                );
+              } else {
+                await ref
+                    .read(profileViewModelProvider.notifier)
+                    .sendConnectionRequest(userId);
+              }
             },
             buttonStyles: buttonStyles,
           ),
