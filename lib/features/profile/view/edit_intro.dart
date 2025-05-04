@@ -314,25 +314,7 @@ class _EditIntroPageState extends ConsumerState<EditIntroPage> {
                                   onTap: isSaving ? null : () => GoRouter.of(context).push('/add_new_education'),
                                   child: Text("+ Add new education", style: TextStyles.font14_400Weight.copyWith(color: AppColors.lightBlue)),
                                 ),
-                                SizedBox(height: 10.h),
-                                Row(
-                                  children: [
-                                    Checkbox(
-                                      value: formData.showEducationInIntro,
-                                      onChanged: isSaving ? null : (value) {
-                                        if (value != null) viewModel.toggleShowEducation(value);
-                                      },
-                                      activeColor: AppColors.lightGreen,
-                                      checkColor: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                        "Show current education in my intro",
-                                        style: TextStyles.font14_400Weight.copyWith(color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor)
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                                
                                 SizedBox(height: 20.h),
                                 SubPagesSectionHeader(title: "Location"),
                                 SizedBox(height: 10.h),
