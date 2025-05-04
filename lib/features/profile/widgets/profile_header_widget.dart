@@ -866,6 +866,18 @@ class ProfileHeaderWidget extends ConsumerWidget {
               log('More button clicked for ${otherUserProfile.firstName}');
 
               final List<ReusableBottomSheetOption> options = [
+                  if (isRequestReceivedByMe )
+                  ReusableBottomSheetOption(
+                    icon: Icons.cancel_outlined,
+                    title: 'Ignore Connection Request',
+                    onTap: () {
+                      // TODO: Implement accept connection request functionality
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(
+                              'TODO: Ignore request from ${otherUserProfile.firstName}')));
+                    },
+                  ),
                 if (followPrimary && !isConnected && !isRequestSentByMe)
                   ReusableBottomSheetOption(
                     icon: Icons.person_add_outlined,
