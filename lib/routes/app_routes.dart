@@ -355,7 +355,15 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       path: '/savedPosts',
       builder: (context, state) => SavedPostsPage(),
     ),
-    GoRoute(path: '/userPosts', builder: (context, state) => UserPostsPage()),
+     GoRoute(
+            path: '/userPosts',
+            builder: (context, state) {
+              final extraData = state.extra as Map<String, dynamic>?;
+              return UserPostsPage(
+                userId: extraData?['userId'] as String? ?? '',
+                userName: extraData?['userName'] as String? ?? '',
+              );
+            }),
     GoRoute(path: "/messages", builder: (context, state) => ChatListScreen()),
     GoRoute(
       path: "/chat/:userId",

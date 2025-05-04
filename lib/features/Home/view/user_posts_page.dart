@@ -10,7 +10,12 @@ import 'package:link_up/features/Home/post_functions.dart';
 import 'package:link_up/features/Home/widgets/posts.dart';
 
 class UserPostsPage extends StatefulWidget {
-  const UserPostsPage({super.key});
+  const UserPostsPage({super.key,
+    required this.userId,
+    required this.userName,
+  });
+  final String userId;
+  final String userName;
 
   @override
   State<UserPostsPage> createState() => _RepostsPageState();
@@ -20,15 +25,13 @@ class _RepostsPageState extends State<UserPostsPage> {
   final List<PostModel> posts = [];
   bool isLoading = true;
   bool isLoadingMore = false;
-  String userId = InternalEndPoints.userId; // Replace with actual user ID
-  String userName = "Salah"; // Replace with actual user name
   int? cursor = 0; // Initialize cursor to 0
   ScrollController scrollController = ScrollController();
   @override
   void initState() {
     super.initState();
     // Fetch saved posts when the page is initialized
-    getUserPosts(cursor, userId).then((fetchedPosts) {
+    getUserPosts(cursor, widget.userId).then((fetchedPosts) {
       setState(() {
         posts.addAll(fetchedPosts.first);
         cursor = fetchedPosts.last;
@@ -51,7 +54,7 @@ class _RepostsPageState extends State<UserPostsPage> {
     setState(() {
       isLoadingMore = true;
     });
-    await getUserPosts(cursor, userId).then((fetchedPosts) {
+    await getUserPosts(cursor, widget.userId).then((fetchedPosts) {
       setState(() {
         posts.addAll(fetchedPosts.first);
         cursor = fetchedPosts.last;
@@ -68,7 +71,7 @@ class _RepostsPageState extends State<UserPostsPage> {
     setState(() {
       isLoading = true;
     });
-    await getUserPosts(cursor, userId).then((fetchedPosts) {
+    await getUserPosts(cursor, widget.userId).then((fetchedPosts) {
       setState(() {
         posts.clear();
         posts.addAll(fetchedPosts.first);
@@ -87,9 +90,9 @@ class _RepostsPageState extends State<UserPostsPage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(userId == InternalEndPoints.userId
+        title: Text(widget.userId == InternalEndPoints.userId
             ? 'My Posts'
-            : '$userName Posts'),
+            : '${widget.userName}\'s Posts'),
         backgroundColor: Theme.of(context).colorScheme.primary,
         leading: IconButton(
           onPressed: () {
