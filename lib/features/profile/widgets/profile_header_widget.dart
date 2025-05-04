@@ -733,7 +733,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
         !followPrimary;
     bool showUnfollowButton = isAlreadyFollowing && followPrimary;
     bool showFollowButton = followPrimary && !isAlreadyFollowing;
-    bool showPendingButton = isRequestSentByMe;
+    bool showPendingButton = isRequestSentByMe && !followPrimary;
     bool showAcceptButton =
         isRequestReceivedByMe && !isConnected && !followPrimary;
     log('Calculated Conditions: isConnected=$isConnected, isRequestSentByMe=$isRequestSentByMe, isRequestReceivedByMe=$isRequestReceivedByMe');
@@ -775,8 +775,8 @@ class ProfileHeaderWidget extends ConsumerWidget {
           buildProfileActionButton(
             context: context,
             isDarkMode: isDarkMode,
-            icon: Icons.hourglass_top_rounded,
-            label: "Withdraw Connection",
+            icon: Icons.cancel_rounded,
+            label: "Withdraw ",
             onPressed: () {
               log('Withdraw button clicked for ${otherUserProfile.firstName}');
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -881,7 +881,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
                 if (followPrimary && !isConnected && isRequestSentByMe)
                   ReusableBottomSheetOption(
                     icon: Icons.person_remove_outlined,
-                    title: 'Withdraw Request',
+                    title: 'Withdraw',
                     onTap: () {
                       // TODO: Implement withdraw request functionality
                       Navigator.pop(context);
