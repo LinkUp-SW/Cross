@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/search/view/people_tab.dart';
+import 'package:link_up/features/search/view/post_tab.dart';
 import 'package:link_up/features/search/viewModel/search_vm.dart';
 import 'package:link_up/shared/widgets/custom_search_bar.dart';
 
@@ -106,14 +107,8 @@ class _SearchPageState extends ConsumerState<SearchPage>
         controller: tabController,
         children: [
           PeopleTab(keyWord: widget.searchKeyWord ?? ''),
-
           // Posts tab content
-          Center(
-            child: Text(
-              'Posts',
-              style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
-            ),
-          ),
+          SearchPostTab(),
         ],
       ),
     );

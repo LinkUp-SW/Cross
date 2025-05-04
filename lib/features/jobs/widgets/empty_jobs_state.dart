@@ -10,7 +10,9 @@ class EmptyJobsState extends StatelessWidget {
   const EmptyJobsState({
     super.key,
     required this.isDarkMode,
-    required this.onSearchTap, required String title, required String message,
+    required this.onSearchTap,
+    required String title,
+    required String message,
   });
 
   @override
@@ -30,7 +32,9 @@ class EmptyJobsState extends StatelessWidget {
             Text(
               'No recent job activity',
               style: TextStyles.font20_700Weight.copyWith(
-                color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+                color: isDarkMode
+                    ? AppColors.darkTextColor
+                    : AppColors.lightTextColor,
               ),
             ),
             SizedBox(height: 8.h),
@@ -38,7 +42,9 @@ class EmptyJobsState extends StatelessWidget {
               'Find new opportunities and manage your job search progress here.',
               textAlign: TextAlign.center,
               style: TextStyles.font14_400Weight.copyWith(
-                color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
+                color: isDarkMode
+                    ? AppColors.darkSecondaryText
+                    : AppColors.lightSecondaryText,
               ),
             ),
             SizedBox(height: 24.h),
@@ -66,4 +72,4 @@ class EmptyJobsState extends StatelessWidget {
       ),
     );
   }
-} 
+}

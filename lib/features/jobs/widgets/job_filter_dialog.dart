@@ -27,7 +27,7 @@ class _JobFilterWidgetState extends ConsumerState<JobFilterWidget> {
   List<String> selectedExperienceLevels = [];
   double _minSalary = 0;
   double _maxSalary = 100000;
-  
+
   final List<String> experienceLevels = [
     'Entry-level',
     'Associate',
@@ -42,9 +42,11 @@ class _JobFilterWidgetState extends ConsumerState<JobFilterWidget> {
     _locationController.dispose();
     super.dispose();
   }
-  
+
   void _resetFilters() {
-    ref.read(jobFilterViewModelProvider(widget.allJobs).notifier).resetAllFilters();
+    ref
+        .read(jobFilterViewModelProvider(widget.allJobs).notifier)
+        .resetAllFilters();
     _locationController.clear();
     setState(() {
       selectedExperienceLevels = [];
@@ -56,19 +58,21 @@ class _JobFilterWidgetState extends ConsumerState<JobFilterWidget> {
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
           'Filter Jobs',
           style: TextStyles.font18_700Weight.copyWith(
-            color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+            color:
+                isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
           ),
         ),
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back,
-            color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+            color:
+                isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
           ),
           onPressed: () => Navigator.pop(context),
         ),
@@ -87,7 +91,9 @@ class _JobFilterWidgetState extends ConsumerState<JobFilterWidget> {
                   Text(
                     'Location',
                     style: TextStyles.font18_700Weight.copyWith(
-                      color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightTextColor,
+                      color: isDarkMode
+                          ? AppColors.darkSecondaryText
+                          : AppColors.lightTextColor,
                     ),
                   ),
                   SizedBox(height: 8.h),
@@ -98,21 +104,26 @@ class _JobFilterWidgetState extends ConsumerState<JobFilterWidget> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.r),
                         borderSide: BorderSide(
-                          color: isDarkMode ? Colors.grey[700]! : Colors.grey[300]!,
+                          color: isDarkMode
+                              ? Colors.grey[700]!
+                              : Colors.grey[300]!,
                         ),
                       ),
                       prefixIcon: const Icon(Icons.location_on_outlined),
-                      fillColor: isDarkMode ? Colors.grey[800] : Colors.grey[50],
+                      fillColor:
+                          isDarkMode ? Colors.grey[800] : Colors.grey[50],
                       filled: true,
                     ),
                   ),
                   SizedBox(height: 24.h),
-                  
+
                   // Experience level filter
                   Text(
                     'Experience Level',
                     style: TextStyles.font18_700Weight.copyWith(
-                      color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightTextColor,
+                      color: isDarkMode
+                          ? AppColors.darkSecondaryText
+                          : AppColors.lightTextColor,
                     ),
                   ),
                   SizedBox(height: 8.h),
@@ -120,7 +131,8 @@ class _JobFilterWidgetState extends ConsumerState<JobFilterWidget> {
                     spacing: 8.w,
                     runSpacing: 8.h,
                     children: experienceLevels.map((level) {
-                      final isSelected = selectedExperienceLevels.contains(level);
+                      final isSelected =
+                          selectedExperienceLevels.contains(level);
                       return FilterChip(
                         label: Text(level),
                         selected: isSelected,
@@ -133,24 +145,30 @@ class _JobFilterWidgetState extends ConsumerState<JobFilterWidget> {
                             }
                           });
                         },
-                        backgroundColor: isDarkMode ? Colors.grey[800] : Colors.grey[200],
-                        selectedColor: isDarkMode ? Colors.blue[700] : Colors.blue[100],
+                        backgroundColor:
+                            isDarkMode ? Colors.grey[800] : Colors.grey[200],
+                        selectedColor:
+                            isDarkMode ? Colors.blue[700] : Colors.blue[100],
                         checkmarkColor: isDarkMode ? Colors.white : Colors.blue,
                         labelStyle: TextStyle(
-                          color: isSelected 
+                          color: isSelected
                               ? (isDarkMode ? Colors.white : Colors.blue[800])
-                              : (isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor),
+                              : (isDarkMode
+                                  ? AppColors.darkTextColor
+                                  : AppColors.lightTextColor),
                         ),
                       );
                     }).toList(),
                   ),
                   SizedBox(height: 24.h),
-                  
+
                   // Salary range filter
                   Text(
                     'Salary Range',
                     style: TextStyles.font18_700Weight.copyWith(
-                      color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightTextColor,
+                      color: isDarkMode
+                          ? AppColors.darkSecondaryText
+                          : AppColors.lightTextColor,
                     ),
                   ),
                   SizedBox(height: 8.h),
@@ -160,13 +178,17 @@ class _JobFilterWidgetState extends ConsumerState<JobFilterWidget> {
                       Text(
                         '\$${_minSalary.toInt()}',
                         style: TextStyles.font14_400Weight.copyWith(
-                          color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+                          color: isDarkMode
+                              ? AppColors.darkTextColor
+                              : AppColors.lightTextColor,
                         ),
                       ),
                       Text(
                         '\$${_maxSalary.toInt()}',
                         style: TextStyles.font14_400Weight.copyWith(
-                          color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+                          color: isDarkMode
+                              ? AppColors.darkTextColor
+                              : AppColors.lightTextColor,
                         ),
                       ),
                     ],
@@ -182,7 +204,8 @@ class _JobFilterWidgetState extends ConsumerState<JobFilterWidget> {
                       '\$${_maxSalary.toInt()}',
                     ),
                     activeColor: Colors.blue,
-                    inactiveColor: isDarkMode ? Colors.grey[700] : Colors.grey[300],
+                    inactiveColor:
+                        isDarkMode ? Colors.grey[700] : Colors.grey[300],
                     onChanged: (RangeValues values) {
                       setState(() {
                         _minSalary = values.start;
@@ -194,7 +217,7 @@ class _JobFilterWidgetState extends ConsumerState<JobFilterWidget> {
               ),
             ),
           ),
-          
+
           // Apply/Reset buttons
           Container(
             padding: EdgeInsets.all(16.w),
@@ -218,7 +241,8 @@ class _JobFilterWidgetState extends ConsumerState<JobFilterWidget> {
                     style: OutlinedButton.styleFrom(
                       padding: EdgeInsets.symmetric(vertical: 12.h),
                       side: BorderSide(
-                        color: isDarkMode ? Colors.grey[600]! : Colors.grey[400]!,
+                        color:
+                            isDarkMode ? Colors.grey[600]! : Colors.grey[400]!,
                       ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.r),
@@ -239,23 +263,32 @@ class _JobFilterWidgetState extends ConsumerState<JobFilterWidget> {
                   child: ElevatedButton(
                     onPressed: () {
                       // Create filter parameters
-                      final location = _locationController.text.isEmpty ? null : _locationController.text;
-                      final experienceLevel = selectedExperienceLevels.isEmpty ? null : selectedExperienceLevels;
-                      final minSalary = _minSalary > 0 ? _minSalary.toInt() : null;
-                      final maxSalary = _maxSalary < 100000 ? _maxSalary.toInt() : null;
-                      
+                      final location = _locationController.text.isEmpty
+                          ? null
+                          : _locationController.text;
+                      final experienceLevel = selectedExperienceLevels.isEmpty
+                          ? null
+                          : selectedExperienceLevels;
+                      final minSalary =
+                          _minSalary > 0 ? _minSalary.toInt() : null;
+                      final maxSalary =
+                          _maxSalary < 100000 ? _maxSalary.toInt() : null;
+
                       // Apply filters to get filtered jobs
-                      final filterViewModel = ref.read(jobFilterViewModelProvider(widget.allJobs).notifier);
+                      final filterViewModel = ref.read(
+                          jobFilterViewModelProvider(widget.allJobs).notifier);
                       filterViewModel.applyFilters(
                         location: location,
                         experienceLevel: experienceLevel,
                         minSalary: minSalary,
                         maxSalary: maxSalary,
                       );
-                      
+
                       // Get filtered jobs from state
-                      final filteredJobs = ref.read(jobFilterViewModelProvider(widget.allJobs)).filteredJobs;
-                      
+                      final filteredJobs = ref
+                          .read(jobFilterViewModelProvider(widget.allJobs))
+                          .filteredJobs;
+
                       // Create a map of applied filters for display
                       final appliedFilters = {
                         'location': location,
@@ -263,10 +296,10 @@ class _JobFilterWidgetState extends ConsumerState<JobFilterWidget> {
                         'minSalary': minSalary,
                         'maxSalary': maxSalary,
                       };
-                      
+
                       // Notify parent that filters were applied
                       widget.onFilterApplied(true);
-                      
+
                       // Navigate to filtered results page
                       Navigator.push(
                         context,

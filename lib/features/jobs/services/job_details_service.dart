@@ -14,26 +14,26 @@ class JobDetailsService {
   }) async {
     try {
       developer.log('Fetching job details for ID: $jobId');
-      
-   
+
       final response = await _baseService.get(
         ExternalEndPoints.jobDetails,
         routeParameters: {
           'jobId': jobId,
         },
       );
-      
+
       developer.log('Got response with status: ${response.statusCode}');
-      developer.log('Response URL: ${ExternalEndPoints.baseUrl}${ExternalEndPoints.jobDetails.replaceAll(':jobId', jobId)}');
-      
+      developer.log(
+          'Response URL: ${ExternalEndPoints.baseUrl}${ExternalEndPoints.jobDetails.replaceAll(':jobId', jobId)}');
+
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
         developer.log('Response body: ${response.body}');
-        
+
         if (jsonResponse['data'] == null) {
           throw Exception('No data found in response');
         }
-        
+
         return jsonResponse['data'];
       }
       throw Exception('Failed to get job details: ${response.statusCode}');
@@ -46,9 +46,10 @@ class JobDetailsService {
   Future<void> saveJob({required String jobId, required bool isSaved}) async {
     try {
       developer.log('${isSaved ? "Unsaving" : "Saving"} job with ID: $jobId');
-      
-      final endpoint = isSaved ? ExternalEndPoints.unsaveJob : ExternalEndPoints.saveJob;
-      final response = isSaved 
+
+      final endpoint =
+          isSaved ? ExternalEndPoints.unsaveJob : ExternalEndPoints.saveJob;
+      final response = isSaved
           ? await _baseService.delete(
               endpoint,
               {
@@ -61,20 +62,23 @@ class JobDetailsService {
                 'jobId': jobId,
               },
             );
-      
+
       developer.log('Response status: ${response.statusCode}');
       developer.log('Response body: ${response.body}');
-      
+
       if (response.statusCode == 200) {
         developer.log('Successfully ${isSaved ? "unsaved" : "saved"} job');
         return;
       } else if (response.statusCode == 400) {
         final responseBody = jsonDecode(response.body);
-        throw Exception(responseBody['message'] ?? 'Failed to ${isSaved ? "unsave" : "save"} job');
+        throw Exception(responseBody['message'] ??
+            'Failed to ${isSaved ? "unsave" : "save"} job');
       }
-      throw Exception('Failed to ${isSaved ? "unsave" : "save"} job: ${response.statusCode}');
+      throw Exception(
+          'Failed to ${isSaved ? "unsave" : "save"} job: ${response.statusCode}');
     } catch (e, stackTrace) {
-      developer.log('Error ${isSaved ? "unsaving" : "saving"} job: $e\n$stackTrace');
+      developer
+          .log('Error ${isSaved ? "unsaving" : "saving"} job: $e\n$stackTrace');
       rethrow;
     }
   }
@@ -82,19 +86,19 @@ class JobDetailsService {
   Future<List<String>> getSavedJobs() async {
     try {
       developer.log('Fetching saved jobs');
-      
+
       final response = await _baseService.get(ExternalEndPoints.getSavedJobs);
-      
+
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
         if (jsonResponse['data'] == null) {
           return [];
         }
-        
+
         final List<dynamic> savedJobs = jsonResponse['data'];
         return savedJobs.map((job) => job['_id'].toString()).toList();
       }
-      
+
       throw Exception('Failed to get saved jobs: ${response.statusCode}');
     } catch (e, stackTrace) {
       developer.log('Error fetching saved jobs: $e\n$stackTrace');

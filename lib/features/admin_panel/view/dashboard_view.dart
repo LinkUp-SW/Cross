@@ -15,14 +15,21 @@ class DashboardView extends ConsumerStatefulWidget {
 
 class _DashboardViewState extends ConsumerState<DashboardView> {
   @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      final notifier = ref.read(dashboardProvider.notifier);
+      notifier.getDashboardData();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final dashboardState = ref.watch(dashboardProvider);
     final dashboardNotifier = ref.read(dashboardProvider.notifier);
 
     ref.listen<DashboardStates>(dashboardProvider, (previous, next) {
-      if (next is DashboardInitialState) {
-        dashboardNotifier.getDashboardData();
-      } else if (next is DashboardErrorState) {
+      if (next is DashboardErrorState) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(next.errorMessage)),
         );
@@ -52,51 +59,41 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            StatCard(
-              title: "Reported Content",
-              value: "100",
-              changeTexts: [
-                "+10 since last week",
-                "+45 since last month",
-                "+320 since last year",
-                "+1200 since last decade",
-              ],
-            ),
-            StatCard(
-              title: "Pending Jobs",
-              value: "100",
-              changeTexts: [
-                "+10 since last week",
-                "+45 since last month",
-                "+320 since last year",
-                "+1200 since last decade",
-              ],
-            ),
-            StatCard(
-              title: "Active Users",
-              value: "100",
-              changeTexts: [
-                "+10 since last week",
-                "+45 since last month",
-                "+320 since last year",
-                "+1200 since last decade",
-              ],
-            ),
-            StatCard(
-              title: "Deleted Users",
-              value: "100",
-              changeTexts: [
-                "+10 since last week",
-                "+45 since last month",
-                "+320 since last year",
-                "+1200 since last decade",
-              ],
-            ),
-            const JobPostingWidget(
-              pendingCount: 2,
-              approvedTodayCount: 2,
-              rejectedTodayCount: 2,
-            ),
+            dashboardNotifier.statCardsData.isEmpty
+                ? const Center(
+                    child: SizedBox(
+                      width: 60,
+                      height: 60,
+                      child: CircularProgressIndicator(strokeWidth: 6),
+                    ),
+                  )
+                : Column(
+                    children: [
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: dashboardNotifier.statCardsData.length,
+                        itemBuilder: (context, index) {
+                          final card = dashboardNotifier.statCardsData[index];
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4.0),
+                            child: StatCard(
+                                title: card.title!,
+                                value: card.value!,
+                                changeValue: card.changeText!),
+                          );
+                        },
+                      ),
+                      JobPostingWidget(
+                        pendingCount:
+                            dashboardNotifier.jobPostingModel.pendingCount,
+                        approvedTodayCount: dashboardNotifier
+                            .jobPostingModel.approvedTodayCount,
+                        rejectedTodayCount: dashboardNotifier
+                            .jobPostingModel.rejectedTodayCount,
+                      ),
+                    ],
+                  ),
           ],
         )),
       ),

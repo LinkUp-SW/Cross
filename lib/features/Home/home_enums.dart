@@ -2,33 +2,113 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:link_up/shared/themes/colors.dart';
 
-enum Visibilities { anyone, connectionsOnly, noOne;
-  
-    static Visibilities getVisibility(String visibility) {
-      switch (visibility) {
-        case 'anyone' || 'Anyone':
-          return Visibilities.anyone;
-        case 'connectionsOnly' || 'Connections only':
-          return Visibilities.connectionsOnly;
-        case 'noOne' || 'No one':
-          return Visibilities.noOne;
-        default:
-          return Visibilities.anyone;
-      }
-    }
-  
-    static String getVisibilityString(Visibilities visibility) {
-      switch (visibility) {
-        case Visibilities.anyone:
-          return 'Anyone';
-        case Visibilities.connectionsOnly:
-          return 'Connections only';
-        case Visibilities.noOne:
-          return 'No one';
-      }
+enum ReportReasonEnum {
+  spam,
+  harassment,
+  nudity,
+  hateSpeech,
+  scam,
+  other;
+
+  static String getReasonString(ReportReasonEnum reason) {
+    switch (reason) {
+      case ReportReasonEnum.spam:
+        return 'spam';
+      case ReportReasonEnum.harassment:
+        return 'harassment';
+      case ReportReasonEnum.nudity:
+        return 'nudity';
+      case ReportReasonEnum.hateSpeech:
+        return 'hate_speech';
+      case ReportReasonEnum.scam:
+        return 'scam';
+      case ReportReasonEnum.other:
+        return 'other';
     }
   }
 
+  static String reportReasonFullString(ReportReasonEnum reason) {
+    switch (reason) {
+      case ReportReasonEnum.spam:
+        return 'Spam';
+      case ReportReasonEnum.harassment:
+        return 'Harassment';
+      case ReportReasonEnum.nudity:
+        return 'Nudity';
+      case ReportReasonEnum.hateSpeech:
+        return 'Hate Speech';
+      case ReportReasonEnum.scam:
+        return 'Scam';
+      case ReportReasonEnum.other:
+        return 'Other';
+    }
+  }
+
+  static Widget getIcon(ReportReasonEnum reason, {double size = 24.0}) {
+    switch (reason) {
+      case ReportReasonEnum.spam:
+        return Icon(
+          Icons.mark_email_unread_outlined,
+          size: size,
+        );
+      case ReportReasonEnum.harassment:
+        return Icon(
+          Icons.person_off_outlined,
+          size: size,
+        );
+      case ReportReasonEnum.nudity:
+        return Icon(
+          Icons.no_photography_outlined,
+          size: size,
+        );
+      case ReportReasonEnum.hateSpeech:
+        return Icon(
+          Icons.not_interested_outlined,
+          size: size,
+        );
+      case ReportReasonEnum.scam:
+        return Icon(
+          Icons.gpp_bad_outlined,
+          size: size,
+        );
+      case ReportReasonEnum.other:
+        return Icon(
+          Icons.report_problem_outlined,
+          size: size,
+        );
+    }
+  }
+}
+
+enum Visibilities {
+  anyone,
+  connectionsOnly,
+  noOne;
+
+  static Visibilities getVisibility(String visibility) {
+    switch (visibility) {
+      case 'anyone' || 'Anyone':
+        return Visibilities.anyone;
+      case 'connectionsOnly' || 'Connections only':
+        return Visibilities.connectionsOnly;
+      case 'noOne' || 'No one':
+        return Visibilities.noOne;
+      default:
+        return Visibilities.anyone;
+    }
+  }
+
+  static String getVisibilityString(Visibilities visibility) {
+    switch (visibility) {
+      case Visibilities.anyone:
+        return 'Anyone';
+      case Visibilities.connectionsOnly:
+        return 'Connections only';
+      case Visibilities.noOne:
+        return 'No one';
+    }
+  }
+}
 
 enum MediaType {
   image,
@@ -70,39 +150,66 @@ enum Reaction {
 
   static Reaction getReaction(String reaction) {
     switch (reaction) {
-      case 'Like'||'like':
+      case 'Like' || 'like':
         return Reaction.like;
-      case 'Celebrate'||'celebrate':
+      case 'Celebrate' || 'celebrate':
         return Reaction.celebrate;
-      case 'Support'||'support':
+      case 'Support' || 'support':
         return Reaction.support;
-      case 'Love'||'love':
+      case 'Love' || 'love':
         return Reaction.love;
-      case 'Insightful'||'insightful':
+      case 'Insightful' || 'insightful':
         return Reaction.insightful;
-      case 'Funny'||'funny':
+      case 'Funny' || 'funny':
         return Reaction.funny;
       default:
         return Reaction.none;
     }
   }
 
-  static Widget getIcon(Reaction reaction,double size) {
+  static Widget getIcon(Reaction reaction, double size) {
     switch (reaction) {
       case Reaction.like:
-        return SvgPicture.asset('assets/icons/Like.svg',width: size,height: size,);
+        return SvgPicture.asset(
+          'assets/icons/Like.svg',
+          width: size,
+          height: size,
+        );
       case Reaction.celebrate:
-        return SvgPicture.asset('assets/icons/Celebrate.svg',width: size,height: size,);
+        return SvgPicture.asset(
+          'assets/icons/Celebrate.svg',
+          width: size,
+          height: size,
+        );
       case Reaction.support:
-        return SvgPicture.asset('assets/icons/Support.svg',width: size,height: size,);
+        return SvgPicture.asset(
+          'assets/icons/Support.svg',
+          width: size,
+          height: size,
+        );
       case Reaction.love:
-        return SvgPicture.asset('assets/icons/Love.svg',width: size,height: size,);
+        return SvgPicture.asset(
+          'assets/icons/Love.svg',
+          width: size,
+          height: size,
+        );
       case Reaction.insightful:
-        return SvgPicture.asset('assets/icons/Insightful.svg',width: size,height: size,);
+        return SvgPicture.asset(
+          'assets/icons/Insightful.svg',
+          width: size,
+          height: size,
+        );
       case Reaction.funny:
-        return SvgPicture.asset('assets/icons/Funny.svg',width: size,height: size,);
+        return SvgPicture.asset(
+          'assets/icons/Funny.svg',
+          width: size,
+          height: size,
+        );
       case Reaction.none:
-        return Icon(Icons.thumb_up_alt_outlined,size: size,);
+        return Icon(
+          Icons.thumb_up_alt_outlined,
+          size: size,
+        );
     }
   }
 
@@ -144,8 +251,6 @@ enum Reaction {
     }
   }
 }
-
-
 
 enum ActitvityType {
   repost,
@@ -203,5 +308,4 @@ enum ActitvityType {
         return 'none';
     }
   }
-
 }

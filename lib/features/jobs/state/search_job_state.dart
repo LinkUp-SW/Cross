@@ -13,7 +13,6 @@ class SearchJobState {
   final int? totalPages;
   final int? limit;
   final List<String> recentSearches;
-  
 
   final List<String>? selectedExperienceLevels;
   final String? selectedLocation;
@@ -85,7 +84,8 @@ class SearchJobState {
       totalPages: totalPages ?? this.totalPages,
       limit: limit ?? this.limit,
       recentSearches: recentSearches ?? this.recentSearches,
-      selectedExperienceLevels: selectedExperienceLevels ?? this.selectedExperienceLevels,
+      selectedExperienceLevels:
+          selectedExperienceLevels ?? this.selectedExperienceLevels,
       selectedLocation: selectedLocation ?? this.selectedLocation,
       minSalary: minSalary ?? this.minSalary,
       maxSalary: maxSalary ?? this.maxSalary,

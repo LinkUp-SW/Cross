@@ -1,38 +1,48 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:link_up/core/services/base_service.dart';
+import 'package:link_up/features/admin_panel/model/dashboard_card_model.dart';
 import 'package:link_up/features/admin_panel/model/dashboard_model.dart';
 
-class DashboardService extends BaseService{
-  getDashboardData() async {
+class DashboardService extends BaseService {
+  Future<List<dynamic>> getDashboardData() async {
     try {
-      return [
-        StatCardsModel(
-          title: "Reported Content",
-          value: "100",
-          changeText: "+10 since yesterday",
-          changeColor: Colors.green,
-        ),
-        StatCardsModel(
-          title: "Pending Jobs",
-          value: "100",
-          changeText: "+10 since yesterday",
-          changeColor: Colors.green,
-        ),
-        StatCardsModel(
-          title: "Active Users",
-          value: "100",
-          changeText: "+10 since yesterday",
-          changeColor: Colors.green,
-        ),
-        StatCardsModel(
-          title: "Deleted Accounts",
-          value: "10.5%",
-          changeText: "+10.1% from last week",
-          changeColor: Colors.green,
-        ),
-      ];
+      final response = await get('api/v1/admin/dashboard');
+      log("Dashboard response: ${response.body}");
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return [
+          StatCardsModel(
+            title: "Reported Content",
+            value: data['summary']['reported_content'].toString(),
+            changeText: data['summary']['delta']['reports'],
+            changeColor: Colors.green,
+          ),
+          StatCardsModel(
+            title: "Total Jobs",
+            value: data['summary']['total_jobs'].toString(),
+            changeText: data['summary']['delta']['reports'],
+            changeColor: Colors.green,
+          ),
+          StatCardsModel(
+            title: "Total Users",
+            value: data['summary']['total_users'].toString(),
+            changeText: data['summary']['delta']['users'],
+            changeColor: Colors.green,
+          ),
+          JobPostingModel(
+            approvedTodayCount: data['job_management']['approved_today'],
+            rejectedTodayCount: data['job_management']['rejected_today'],
+            pendingCount: data['job_management']['pending_approval'],
+          ),
+        ];
+      } else {
+        throw Exception("Failed to load dashboard data");
+      }
     } catch (e) {
-      return null;
+      throw Exception("Error fetching dashboard data: $e");
     }
   }
 }

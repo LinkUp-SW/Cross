@@ -20,7 +20,8 @@ class JobApplicationService {
       );
 
       developer.log('Got response with status: ${response.statusCode}');
-      developer.log('Response URL: ${ExternalEndPoints.baseUrl}${ExternalEndPoints.applyForJob}');
+      developer.log(
+          'Response URL: ${ExternalEndPoints.baseUrl}${ExternalEndPoints.applyForJob}');
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
@@ -32,7 +33,8 @@ class JobApplicationService {
 
         return jsonResponse['data'];
       }
-      throw Exception('Failed to get application user data: ${response.statusCode}');
+      throw Exception(
+          'Failed to get application user data: ${response.statusCode}');
     } catch (e, stackTrace) {
       developer.log('Error fetching application user data: $e\n$stackTrace');
       rethrow;
@@ -40,41 +42,42 @@ class JobApplicationService {
   }
 
   Future<Map<String, dynamic>> submitJobApplication({
-  required String jobId, 
-  required JobApplicationSubmitModel applicationData,
-}) async {
-  try {
-    developer.log('Submitting job application for job ID: $jobId');
+    required String jobId,
+    required JobApplicationSubmitModel applicationData,
+  }) async {
+    try {
+      developer.log('Submitting job application for job ID: $jobId');
 
-    final endpoint = ExternalEndPoints.createJobApplication
-        .replaceAll(':job_id', jobId);
+      final endpoint =
+          ExternalEndPoints.createJobApplication.replaceAll(':job_id', jobId);
 
-    
-    final response = await _baseService.post(
-      endpoint,
-      body: applicationData.toJson(),  
-    );
+      final response = await _baseService.post(
+        endpoint,
+        body: applicationData.toJson(),
+      );
 
-    developer.log('Response status: ${response.statusCode}');
-    developer.log('Response body: ${response.body}');
+      developer.log('Response status: ${response.statusCode}');
+      developer.log('Response body: ${response.body}');
 
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      final jsonResponse = jsonDecode(response.body);
-      developer.log('Successfully submitted job application');
-      return jsonResponse;
-    } 
-    
-    if (response.statusCode == 400) {
-      final responseBody = jsonDecode(response.body);
-      throw Exception(responseBody['message'] ?? 'Failed to submit application');
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final jsonResponse = jsonDecode(response.body);
+        developer.log('Successfully submitted job application');
+        return jsonResponse;
+      }
+
+      if (response.statusCode == 400) {
+        final responseBody = jsonDecode(response.body);
+        throw Exception(
+            responseBody['message'] ?? 'Failed to submit application');
+      }
+
+      throw Exception(
+          'Failed to submit job application: ${response.statusCode}');
+    } catch (e, stackTrace) {
+      developer.log('Error submitting job application: $e\n$stackTrace');
+      rethrow;
     }
-    
-    throw Exception('Failed to submit job application: ${response.statusCode}');
-  } catch (e, stackTrace) {
-    developer.log('Error submitting job application: $e\n$stackTrace');
-    rethrow;
   }
-}
 
   Future<List<AppliedJobModel>> getAppliedJobs() async {
     try {
@@ -83,7 +86,8 @@ class JobApplicationService {
       final response = await _baseService.get(ExternalEndPoints.getAppliedJobs);
 
       developer.log('Got response with status: ${response.statusCode}');
-      developer.log('Response URL: ${ExternalEndPoints.baseUrl}${ExternalEndPoints.getAppliedJobs}');
+      developer.log(
+          'Response URL: ${ExternalEndPoints.baseUrl}${ExternalEndPoints.getAppliedJobs}');
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
@@ -94,9 +98,8 @@ class JobApplicationService {
         }
 
         final List<dynamic> jobsData = jsonResponse['data'];
-        final List<AppliedJobModel> appliedJobs = jobsData
-            .map((job) => AppliedJobModel.fromJson(job))
-            .toList();
+        final List<AppliedJobModel> appliedJobs =
+            jobsData.map((job) => AppliedJobModel.fromJson(job)).toList();
 
         return appliedJobs;
       }
@@ -111,8 +114,8 @@ class JobApplicationService {
     try {
       developer.log('Fetching applications for job ID: $jobId');
 
-      final endpoint = ExternalEndPoints.getJobApplications
-          .replaceAll(':job_id', jobId);
+      final endpoint =
+          ExternalEndPoints.getJobApplications.replaceAll(':job_id', jobId);
 
       final response = await _baseService.get(endpoint);
 
@@ -137,43 +140,47 @@ class JobApplicationService {
   }
 
   Future<Map<String, dynamic>> updateApplicationStatus({
-  required String applicationId,
-  required String status, 
-}) async {
-  try {
-    developer.log('Updating application status for ID: $applicationId to $status');
+    required String applicationId,
+    required String status,
+  }) async {
+    try {
+      developer
+          .log('Updating application status for ID: $applicationId to $status');
 
-    final endpoint = ExternalEndPoints.updateJobApplicationStatus
-        .replaceAll('{application_id}', applicationId);
+      final endpoint = ExternalEndPoints.updateJobApplicationStatus
+          .replaceAll('{application_id}', applicationId);
 
-    // Fixed: Directly pass the body as Map<String, dynamic> to match BaseService.put signature
-    final response = await _baseService.put(
-      endpoint,
-      {'application_status': status},  // This matches the signature in BaseService
-    );
+      // Fixed: Directly pass the body as Map<String, dynamic> to match BaseService.put signature
+      final response = await _baseService.put(
+        endpoint,
+        {
+          'application_status': status
+        }, // This matches the signature in BaseService
+      );
 
-    developer.log('Response status: ${response.statusCode}');
-    developer.log('Response body: ${response.body}');
+      developer.log('Response status: ${response.statusCode}');
+      developer.log('Response body: ${response.body}');
 
-    if (response.statusCode == 200) {
-      final jsonResponse = jsonDecode(response.body);
-      developer.log('Successfully updated application status');
-      return jsonResponse;
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+        developer.log('Successfully updated application status');
+        return jsonResponse;
+      }
+
+      if (response.statusCode == 400) {
+        final responseBody = jsonDecode(response.body);
+        throw Exception(
+            responseBody['message'] ?? 'Failed to update application status');
+      }
+
+      throw Exception(
+          'Failed to update application status: ${response.statusCode}');
+    } catch (e, stackTrace) {
+      developer.log('Error updating application status: $e\n$stackTrace');
+      rethrow;
     }
-    
-    if (response.statusCode == 400) {
-      final responseBody = jsonDecode(response.body);
-      throw Exception(responseBody['message'] ?? 'Failed to update application status');
-    }
-    
-    throw Exception('Failed to update application status: ${response.statusCode}');
-  } catch (e, stackTrace) {
-    developer.log('Error updating application status: $e\n$stackTrace');
-    rethrow;
   }
 }
-  }
-
 
 final jobApplicationServiceProvider = Provider<JobApplicationService>(
   (ref) {

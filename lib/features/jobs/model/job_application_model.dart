@@ -9,7 +9,7 @@ class JobApplicationModel {
   final String countryCode;
   final String resume;
   final String applicationStatus;
-  
+
   JobApplicationModel({
     required this.id,
     required this.jobId,

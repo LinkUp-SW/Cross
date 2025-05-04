@@ -9,7 +9,6 @@ import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/shared/utils/my_network_utils.dart';
 import 'dart:developer' as developer;
 
-
 class SearchJobsPage extends ConsumerStatefulWidget {
   const SearchJobsPage({super.key});
 
@@ -23,7 +22,7 @@ class _SearchJobsPageState extends ConsumerState<SearchJobsPage> {
   String searchKeyword = '';
   bool showClearButton = false;
   bool showSuggestions = false;
-  
+
   // Recent searches or dynamic suggestions based on input
   List<String> filteredSuggestions = [];
 
@@ -31,18 +30,19 @@ class _SearchJobsPageState extends ConsumerState<SearchJobsPage> {
   void initState() {
     super.initState();
     _setupSearchController();
-    
+
     // Initialize filtered suggestions with recent searches
     Future.microtask(() {
-      final recentSearches = ref.read(searchJobViewModelProvider).recentSearches;
+      final recentSearches =
+          ref.read(searchJobViewModelProvider).recentSearches;
       setState(() {
         filteredSuggestions = recentSearches;
       });
     });
-    
+
     // Give focus to search field when page opens
     Future.microtask(() => _searchFocusNode.requestFocus());
-    
+
     // Clear any previous search state
     Future.microtask(() {
       ref.read(searchJobViewModelProvider.notifier).clearSearch();
@@ -53,10 +53,11 @@ class _SearchJobsPageState extends ConsumerState<SearchJobsPage> {
     _searchController.addListener(() {
       setState(() {
         showClearButton = _searchController.text.isNotEmpty;
-        
+
         // Get recent searches from state
-        final recentSearches = ref.read(searchJobViewModelProvider).recentSearches;
-        
+        final recentSearches =
+            ref.read(searchJobViewModelProvider).recentSearches;
+
         // Filter suggestions based on input
         if (_searchController.text.isNotEmpty) {
           filteredSuggestions = recentSearches
@@ -64,7 +65,7 @@ class _SearchJobsPageState extends ConsumerState<SearchJobsPage> {
                     _searchController.text.toLowerCase(),
                   ))
               .toList();
-          
+
           // Show suggestions when typing
           showSuggestions = true;
         } else {
@@ -74,15 +75,17 @@ class _SearchJobsPageState extends ConsumerState<SearchJobsPage> {
         }
       });
     });
-    
+
     _searchFocusNode.addListener(() {
       setState(() {
         // Show suggestions when search bar is focused
-        showSuggestions = _searchFocusNode.hasFocus || _searchController.text.isNotEmpty;
-        
+        showSuggestions =
+            _searchFocusNode.hasFocus || _searchController.text.isNotEmpty;
+
         // Update filtered suggestions when focus changes
         if (showSuggestions) {
-          final recentSearches = ref.read(searchJobViewModelProvider).recentSearches;
+          final recentSearches =
+              ref.read(searchJobViewModelProvider).recentSearches;
           if (_searchController.text.isEmpty) {
             filteredSuggestions = recentSearches;
           } else {
@@ -107,36 +110,36 @@ class _SearchJobsPageState extends ConsumerState<SearchJobsPage> {
   void performSearch({String? query}) {
     // Hide keyboard
     FocusScope.of(context).unfocus();
-    
+
     // Trim and validate inputs
     final String trimmedQuery = (query ?? _searchController.text).trim();
-    
+
     developer.log('Performing search with query: "$trimmedQuery"');
-    
+
     if (trimmedQuery.isEmpty) {
       developer.log('Empty search query, not performing search');
       return;
     }
-    
+
     setState(() {
       searchKeyword = trimmedQuery;
       showSuggestions = false;
     });
-    
+
     // Perform search
     final Map<String, dynamic> searchParams = {
       'query': trimmedQuery,
       'page': '1',
       'limit': '10'
     };
-    
+
     developer.log('Search parameters: $searchParams');
-    
+
     // Trigger search in the ViewModel
     ref.read(searchJobViewModelProvider.notifier).searchJobs(
-      queryParameters: searchParams,
-    );
-    
+          queryParameters: searchParams,
+        );
+
     // Navigate to search results page
     Navigator.push(
       context,
@@ -190,7 +193,9 @@ class _SearchJobsPageState extends ConsumerState<SearchJobsPage> {
                         ? IconButton(
                             icon: Icon(
                               Icons.clear,
-                              color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                              color: isDarkMode
+                                  ? Colors.grey[400]
+                                  : Colors.grey[600],
                             ),
                             onPressed: () {
                               _searchController.clear();
@@ -207,7 +212,7 @@ class _SearchJobsPageState extends ConsumerState<SearchJobsPage> {
                 ),
               ),
             ),
-            
+
             // Show suggestions or search results
             Expanded(
               child: showSuggestions
@@ -218,7 +223,9 @@ class _SearchJobsPageState extends ConsumerState<SearchJobsPage> {
                           child: Text(
                             'Search for jobs to get started',
                             style: TextStyle(
-                              color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                              color: isDarkMode
+                                  ? Colors.grey[400]
+                                  : Colors.grey[600],
                             ),
                           ),
                         ),
@@ -239,8 +246,8 @@ class _SearchJobsPageState extends ConsumerState<SearchJobsPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                filteredSuggestions.isEmpty 
-                    ? 'No recent searches' 
+                filteredSuggestions.isEmpty
+                    ? 'No recent searches'
                     : 'Recent searches',
                 style: TextStyle(
                   color: isDarkMode ? Colors.grey[400] : Colors.grey[700],
@@ -252,7 +259,9 @@ class _SearchJobsPageState extends ConsumerState<SearchJobsPage> {
                 TextButton(
                   onPressed: () {
                     // Clear all recent searches
-                    ref.read(searchJobViewModelProvider.notifier).clearRecentSearches();
+                    ref
+                        .read(searchJobViewModelProvider.notifier)
+                        .clearRecentSearches();
                     setState(() {
                       filteredSuggestions = [];
                     });
@@ -260,7 +269,8 @@ class _SearchJobsPageState extends ConsumerState<SearchJobsPage> {
                   child: Text(
                     'Clear all',
                     style: TextStyle(
-                      color: isDarkMode ? AppColors.darkBlue : AppColors.lightBlue,
+                      color:
+                          isDarkMode ? AppColors.darkBlue : AppColors.lightBlue,
                       fontSize: 14.sp,
                     ),
                   ),
@@ -304,12 +314,16 @@ class _SearchJobsPageState extends ConsumerState<SearchJobsPage> {
                             icon: Icon(
                               Icons.close,
                               size: 18.sp,
-                              color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                              color: isDarkMode
+                                  ? Colors.grey[400]
+                                  : Colors.grey[600],
                             ),
                             onPressed: () {
                               // Remove this search from history
-                              ref.read(searchJobViewModelProvider.notifier)
-                                  .deleteFromRecentSearches(filteredSuggestions[index]);
+                              ref
+                                  .read(searchJobViewModelProvider.notifier)
+                                  .deleteFromRecentSearches(
+                                      filteredSuggestions[index]);
                               setState(() {
                                 filteredSuggestions.removeAt(index);
                               });
@@ -318,26 +332,30 @@ class _SearchJobsPageState extends ConsumerState<SearchJobsPage> {
                           Icon(
                             Icons.north_east,
                             size: 20.sp,
-                            color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                            color: isDarkMode
+                                ? Colors.grey[400]
+                                : Colors.grey[600],
                           ),
                         ],
                       ),
                       onTap: () {
                         final suggestion = filteredSuggestions[index];
                         _searchController.text = suggestion;
-                        
+
                         // Perform search with the suggestion
                         final searchParams = {
                           'query': suggestion,
                           'page': '1',
                           'limit': '10'
                         };
-                        
+
                         // Trigger search in view model
-                        ref.read(searchJobViewModelProvider.notifier).searchJobs(
-                          queryParameters: searchParams,
-                        );
-                        
+                        ref
+                            .read(searchJobViewModelProvider.notifier)
+                            .searchJobs(
+                              queryParameters: searchParams,
+                            );
+
                         // Navigate to search results
                         Navigator.push(
                           context,
@@ -410,8 +428,7 @@ class _SearchJobsPageState extends ConsumerState<SearchJobsPage> {
                             state.isError
                         ? SliverToBoxAdapter(
                             child: _buildEmptyMessage(
-                              searchKeyword.isNotEmpty &&
-                                      searchKeyword != " "
+                              searchKeyword.isNotEmpty && searchKeyword != " "
                                   ? 'No jobs found based on "${searchKeyword}"'
                                   : 'Please enter search keyword',
                               isDarkMode,
@@ -449,7 +466,7 @@ class _SearchJobsPageState extends ConsumerState<SearchJobsPage> {
       ],
     );
   }
-  
+
   Widget _buildLoadingSkeleton(bool isDarkMode) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 16.w),
@@ -466,7 +483,7 @@ class _SearchJobsPageState extends ConsumerState<SearchJobsPage> {
             ),
           ),
           SizedBox(width: 12.w),
-          
+
           // Content skeleton
           Expanded(
             child: Column(
@@ -523,7 +540,7 @@ class _SearchJobsPageState extends ConsumerState<SearchJobsPage> {
               ],
             ),
           ),
-          
+
           // Bookmark skeleton
           Container(
             width: 30.w,
@@ -537,7 +554,7 @@ class _SearchJobsPageState extends ConsumerState<SearchJobsPage> {
       ),
     );
   }
-  
+
   Widget _buildEmptyMessage(String message, bool isDarkMode) {
     return Center(
       child: Padding(

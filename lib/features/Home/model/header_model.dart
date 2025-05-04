@@ -9,6 +9,9 @@ class HeaderModel {
   String about;
   DateTime timeAgo;
   bool edited;
+  bool isFollowing = false;
+  bool followPrimary = false;
+  int followerCount = 0;
   Visibilities visibilityPost;
   Visibilities visibilityComments;
 
@@ -30,6 +33,9 @@ class HeaderModel {
         name = '${json['author']['first_name']}  ${json['author']['last_name']}',
         connectionDegree = json['author']['connection_degree'] ?? '3rd+',
         about = json['author']['headline'] ?? '',
+        isFollowing = json['author']['is_following'] ?? false,
+        followPrimary = json['author']['follow_primary'] ?? false,
+        followerCount = json['author']['followers_count'] ?? 0,
         timeAgo =json['date'] != null ? DateTime.fromMillisecondsSinceEpoch(json['date']*1000,) : DateTime.now(),
         edited = json['is_edited'] ?? false,
         visibilityComments = Visibilities.getVisibility(json['comments_disabled'] ?? 'anyone'),

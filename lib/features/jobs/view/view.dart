@@ -12,8 +12,6 @@ import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/shared/widgets/custom_app_bar.dart';
 import 'package:link_up/features/jobs/view/my_jobs_screen.dart';
 
-
-
 class JobsScreen extends ConsumerStatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
   const JobsScreen({
@@ -21,22 +19,20 @@ class JobsScreen extends ConsumerStatefulWidget {
     required this.scaffoldKey,
   });
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>_CreateJobsScreenState();
-
-    
-  
-}
-class _CreateJobsScreenState extends ConsumerState <JobsScreen>{
-
-Future<void> _refreshJobs() async {
-  final viewModel = ref.read(jobsScreenViewModelProvider.notifier);
-  await Future.wait([
-    viewModel.getTopJobs({'limit': 3, 'cursor': null}),
-    viewModel.getAllJobs({'limit': 10, 'cursor': null}),
-  ]);
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _CreateJobsScreenState();
 }
 
-@override
+class _CreateJobsScreenState extends ConsumerState<JobsScreen> {
+  Future<void> _refreshJobs() async {
+    final viewModel = ref.read(jobsScreenViewModelProvider.notifier);
+    await Future.wait([
+      viewModel.getTopJobs({'limit': 3, 'cursor': null}),
+      viewModel.getAllJobs({'limit': 10, 'cursor': null}),
+    ]);
+  }
+
+  @override
   void initState() {
     super.initState();
     Future.microtask(() {
@@ -44,11 +40,10 @@ Future<void> _refreshJobs() async {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(jobsScreenViewModelProvider);
-    
+
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: CustomAppBar(
@@ -107,7 +102,6 @@ Future<void> _refreshJobs() async {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    
                     TextButton(
                       onPressed: () {
                         Navigator.push(
@@ -135,7 +129,11 @@ Future<void> _refreshJobs() async {
                           context,
                           MaterialPageRoute(
                             builder: (context) => JobFilterWidget(
-                              allJobs: [...state.topJobPicksForYou, ...state.moreJobsForYou], onFilterApplied: (bool isApplied) {  },
+                              allJobs: [
+                                ...state.topJobPicksForYou,
+                                ...state.moreJobsForYou
+                              ],
+                              onFilterApplied: (bool isApplied) {},
                             ),
                           ),
                         );
@@ -178,7 +176,9 @@ Future<void> _refreshJobs() async {
                       Text(
                         'Error loading jobs: ${state.errorMessage}',
                         style: TextStyle(
-                          color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+                          color: isDarkMode
+                              ? AppColors.darkTextColor
+                              : AppColors.lightTextColor,
                         ),
                       ),
                       TextButton(
@@ -197,7 +197,8 @@ Future<void> _refreshJobs() async {
                       description:
                           'Based on your profile, preferences, and activity like applies, searches, and saves',
                       jobs: state.topJobPicksForYou
-                          .map((job) => JobsCard(isDarkMode: isDarkMode, data: job))
+                          .map((job) =>
+                              JobsCard(isDarkMode: isDarkMode, data: job))
                           .toList(),
                     ),
                     JobsSection(
@@ -206,7 +207,8 @@ Future<void> _refreshJobs() async {
                       description:
                           'Based on your profile, preferences, and activity like applies, searches, and saves',
                       jobs: state.moreJobsForYou
-                          .map((job) => JobsCard(isDarkMode: isDarkMode, data: job))
+                          .map((job) =>
+                              JobsCard(isDarkMode: isDarkMode, data: job))
                           .toList(),
                     ),
                   ],

@@ -18,20 +18,21 @@ class MyJobsScreen extends ConsumerStatefulWidget {
   ConsumerState<MyJobsScreen> createState() => _MyJobsScreenState();
 }
 
-class _MyJobsScreenState extends ConsumerState<MyJobsScreen> with SingleTickerProviderStateMixin {
+class _MyJobsScreenState extends ConsumerState<MyJobsScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    
+
     Future.microtask(() {
       // Load both saved and applied jobs
       ref.read(myJobsViewModelProvider.notifier).getSavedJobs();
       ref.read(appliedJobsViewModelProvider.notifier).getAppliedJobs();
     });
-    
+
     _tabController.addListener(() {
       // Reload data when tab changes
       if (_tabController.index == 0) {
@@ -41,7 +42,7 @@ class _MyJobsScreenState extends ConsumerState<MyJobsScreen> with SingleTickerPr
       }
     });
   }
-  
+
   @override
   void dispose() {
     _tabController.dispose();
@@ -67,7 +68,9 @@ class _MyJobsScreenState extends ConsumerState<MyJobsScreen> with SingleTickerPr
           controller: _tabController,
           indicatorColor: isDarkMode ? AppColors.white : AppColors.blue,
           labelColor: isDarkMode ? AppColors.white : AppColors.blue,
-          unselectedLabelColor: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
+          unselectedLabelColor: isDarkMode
+              ? AppColors.darkSecondaryText
+              : AppColors.lightSecondaryText,
           tabs: [
             Tab(
               icon: Icon(Icons.bookmark, size: 20.sp),
@@ -85,21 +88,21 @@ class _MyJobsScreenState extends ConsumerState<MyJobsScreen> with SingleTickerPr
         children: [
           // Saved Jobs Tab
           _buildSavedJobsTab(myJobsState, isDarkMode),
-          
+
           // Applied Jobs Tab
           _buildAppliedJobsTab(appliedJobsState, isDarkMode),
         ],
       ),
     );
   }
-  
+
   Widget _buildSavedJobsTab(myJobsState, bool isDarkMode) {
     if (myJobsState.isLoading) {
       return const Center(
         child: CircularProgressIndicator(),
       );
     }
-    
+
     if (myJobsState.savedJobs.isEmpty) {
       return EmptyJobsState(
         isDarkMode: isDarkMode,
@@ -134,15 +137,16 @@ class _MyJobsScreenState extends ConsumerState<MyJobsScreen> with SingleTickerPr
       ),
     );
   }
-  
+
   Widget _buildAppliedJobsTab(appliedJobsState, bool isDarkMode) {
     if (appliedJobsState.isLoading) {
       return const Center(
         child: CircularProgressIndicator(),
       );
     }
-    
-    if (appliedJobsState.appliedJobs == null || appliedJobsState.appliedJobs!.isEmpty) {
+
+    if (appliedJobsState.appliedJobs == null ||
+        appliedJobsState.appliedJobs!.isEmpty) {
       return EmptyJobsState(
         isDarkMode: isDarkMode,
         title: 'No Applied Jobs',

@@ -7,7 +7,7 @@ import 'package:link_up/shared/utils/my_network_utils.dart';
 
 class SearchView extends ConsumerWidget {
   final String searchQuery;
-  
+
   const SearchView({
     super.key,
     required this.searchQuery,
@@ -18,14 +18,16 @@ class SearchView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final state = ref.watch(searchJobViewModelProvider);
-    
+
     // Add to recent searches
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (searchQuery.isNotEmpty) {
-        ref.read(searchJobViewModelProvider.notifier).addToRecentSearches(searchQuery);
+        ref
+            .read(searchJobViewModelProvider.notifier)
+            .addToRecentSearches(searchQuery);
       }
     });
-    
+
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -55,14 +57,18 @@ class SearchView extends ConsumerWidget {
                         color: isDarkMode ? Colors.grey[800] : Colors.white,
                         borderRadius: BorderRadius.circular(4.r),
                         border: Border.all(
-                          color: isDarkMode ? Colors.grey[700]! : Colors.grey[300]!,
+                          color: isDarkMode
+                              ? Colors.grey[700]!
+                              : Colors.grey[300]!,
                         ),
                       ),
                       child: Row(
                         children: [
                           Icon(
                             Icons.search,
-                            color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                            color: isDarkMode
+                                ? Colors.grey[400]
+                                : Colors.grey[600],
                           ),
                           SizedBox(width: 8.w),
                           Expanded(
@@ -70,7 +76,9 @@ class SearchView extends ConsumerWidget {
                               searchQuery,
                               style: TextStyle(
                                 fontSize: 16.sp,
-                                color: isDarkMode ? Colors.grey[300] : Colors.grey[800],
+                                color: isDarkMode
+                                    ? Colors.grey[300]
+                                    : Colors.grey[800],
                               ),
                             ),
                           ),
@@ -109,13 +117,17 @@ class SearchView extends ConsumerWidget {
                               Text(
                                 'Error loading search results',
                                 style: TextStyle(
-                                  color: isDarkMode ? Colors.grey[300] : Colors.grey[800],
+                                  color: isDarkMode
+                                      ? Colors.grey[300]
+                                      : Colors.grey[800],
                                 ),
                               ),
                               SizedBox(height: 8.h),
                               ElevatedButton(
                                 onPressed: () {
-                                  ref.read(searchJobViewModelProvider.notifier).searchJobs(
+                                  ref
+                                      .read(searchJobViewModelProvider.notifier)
+                                      .searchJobs(
                                     queryParameters: {
                                       'query': searchQuery,
                                       'page': '1',
@@ -133,39 +145,47 @@ class SearchView extends ConsumerWidget {
                               child: Text(
                                 'No jobs found matching "$searchQuery"',
                                 style: TextStyle(
-                                  color: isDarkMode ? Colors.grey[300] : Colors.grey[800],
+                                  color: isDarkMode
+                                      ? Colors.grey[300]
+                                      : Colors.grey[800],
                                 ),
                               ),
                             )
                           : NotificationListener<ScrollNotification>(
                               onNotification: (notification) {
                                 if (notification is ScrollEndNotification &&
-                                    notification.metrics.pixels >= notification.metrics.maxScrollExtent - 200 &&
+                                    notification.metrics.pixels >=
+                                        notification.metrics.maxScrollExtent -
+                                            200 &&
                                     !state.isLoadingMore &&
                                     state.currentPage != null &&
-                                    state.currentPage! < (state.totalPages ?? 1)) {
-                                  
+                                    state.currentPage! <
+                                        (state.totalPages ?? 1)) {
                                   // Prepare parameters for pagination
                                   final Map<String, dynamic> params = {
                                     "query": searchQuery,
                                     "page": '${state.currentPage! + 1}',
                                     "limit": '${state.limit}'
                                   };
-                                  
+
                                   // Load more jobs
-                                  ref.read(searchJobViewModelProvider.notifier).loadMoreJobs(
-                                    queryParameters: params,
-                                  );
+                                  ref
+                                      .read(searchJobViewModelProvider.notifier)
+                                      .loadMoreJobs(
+                                        queryParameters: params,
+                                      );
                                 }
                                 return false;
                               },
                               child: ListView.builder(
-                                itemCount: state.searchJobs!.length + (state.isLoadingMore ? 1 : 0),
+                                itemCount: state.searchJobs!.length +
+                                    (state.isLoadingMore ? 1 : 0),
                                 itemBuilder: (context, index) {
                                   if (index == state.searchJobs!.length) {
                                     return Padding(
                                       padding: EdgeInsets.all(16.h),
-                                      child: const Center(child: CircularProgressIndicator()),
+                                      child: const Center(
+                                          child: CircularProgressIndicator()),
                                     );
                                   }
                                   return JobSearchCard(

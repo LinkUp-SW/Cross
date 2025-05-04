@@ -10,8 +10,10 @@ import 'package:link_up/features/profile/model/profile_model.dart';
 import 'package:link_up/features/profile/model/about_model.dart';
 import 'package:link_up/features/profile/model/skills_model.dart';
 
-final experienceDataProvider = StateProvider<List<PositionModel>?>((ref) => null);
-final educationDataProvider = StateProvider<List<EducationModel>?>((ref) => null);
+final experienceDataProvider =
+    StateProvider<List<PositionModel>?>((ref) => null);
+final educationDataProvider =
+    StateProvider<List<EducationModel>?>((ref) => null);
 final aboutDataProvider = StateProvider<AboutModel?>((ref) => null);
 final resumeUrlProvider = StateProvider<String?>((ref) => null);
 final licenseDataProvider = StateProvider<List<LicenseModel>?>((ref) => null);
@@ -20,10 +22,10 @@ final skillsDataProvider = StateProvider<List<SkillModel>?>((ref) => null);
 class ProfileViewModel extends StateNotifier<ProfileState> {
   final ProfileService _profileService;
   final Ref _ref;
-  String? _currentUserId; 
+  String? _currentUserId;
 
-  ProfileViewModel(this._profileService, this._ref) : super(const ProfileInitial());
-
+  ProfileViewModel(this._profileService, this._ref)
+      : super(const ProfileInitial());
 
   Future<void> fetchUserProfile([String? userId]) async {
     final String idToFetch = userId ?? InternalEndPoints.userId;
@@ -36,7 +38,7 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
 
     log("[ProfileVM] Fetching profile for ID: $idToFetch");
     state = const ProfileLoading();
-    _currentUserId = idToFetch; 
+    _currentUserId = idToFetch;
 
     _ref.read(educationDataProvider.notifier).state = null;
     _ref.read(experienceDataProvider.notifier).state = null;
@@ -46,7 +48,6 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
     _ref.read(skillsDataProvider.notifier).state = null;
 
     try {
-
       final userProfileFuture = _profileService.getUserProfile(idToFetch);
       final educationFuture = _profileService.getUserEducation(idToFetch);
       final experienceFuture = _profileService.getUserExperience(idToFetch);
@@ -66,10 +67,10 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
       ]);
 
       if (results.length < 7) {
-         throw Exception("One or more profile fetch operations failed to return.");
+        throw Exception(
+            "One or more profile fetch operations failed to return.");
       }
 
-     
       final userProfile = results[0] as UserProfile;
       final educationData = results[1] as List<EducationModel>;
       final experienceData = results[2] as List<PositionModel>;
@@ -82,7 +83,7 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
         if (userProfile.isMe && userProfile.profilePhotoUrl.isNotEmpty) {
           InternalEndPoints.profileUrl = userProfile.profilePhotoUrl;
         } else if (userProfile.isMe) {
-          InternalEndPoints.profileUrl = ''; 
+          InternalEndPoints.profileUrl = '';
         }
 
         _ref.read(educationDataProvider.notifier).state = educationData;
@@ -99,101 +100,151 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
         log("[ProfileVM] Updated licenseDataProvider with ${licenseData.length} items.");
         log("[ProfileVM] Updated skillsDataProvider with ${skillsData.length} items.");
 
-        
         state = ProfileLoaded(userProfile);
         log("[ProfileVM] Profile loaded successfully for ID: $idToFetch. isMe: ${userProfile.isMe}");
-
       }
     } catch (e, s) {
-       if (mounted) {
-         log("[ProfileVM] Error during fetchUserProfile for ID: $idToFetch - $e", stackTrace: s);
-         state = ProfileError('Failed to load profile: ${e.toString()}');
-         _ref.read(educationDataProvider.notifier).state = null;
-         _ref.read(experienceDataProvider.notifier).state = null;
-         _ref.read(aboutDataProvider.notifier).state = null;
-         _ref.read(resumeUrlProvider.notifier).state = null;
-         _ref.read(licenseDataProvider.notifier).state = null;
-         _ref.read(skillsDataProvider.notifier).state = null;
-       }
+      if (mounted) {
+        log("[ProfileVM] Error during fetchUserProfile for ID: $idToFetch - $e",
+            stackTrace: s);
+        state = ProfileError('Failed to load profile: ${e.toString()}');
+        _ref.read(educationDataProvider.notifier).state = null;
+        _ref.read(experienceDataProvider.notifier).state = null;
+        _ref.read(aboutDataProvider.notifier).state = null;
+        _ref.read(resumeUrlProvider.notifier).state = null;
+        _ref.read(licenseDataProvider.notifier).state = null;
+        _ref.read(skillsDataProvider.notifier).state = null;
+      }
     }
   }
 
-    void updateProfilePhotoUrl(String newUrl) {
-      final ProfileState currentState = state;
-      if (currentState is ProfileLoaded) {
-         final UserProfile currentProfile = currentState.userProfile;
-         final UserProfile updatedProfile = currentProfile.copyWith(profilePhotoUrl: newUrl);
+  void updateProfilePhotoUrl(String newUrl) {
+    final ProfileState currentState = state;
+    if (currentState is ProfileLoaded) {
+      final UserProfile currentProfile = currentState.userProfile;
+      final UserProfile updatedProfile =
+          currentProfile.copyWith(profilePhotoUrl: newUrl);
 
-         state = ProfileLoaded(updatedProfile);
-         log("[ProfileVM] Updated profilePhotoUrl in state.");
-         if(updatedProfile.isMe) {
-            InternalEndPoints.profileUrl = newUrl;
-         }
-      } else {
-         log("[ProfileVM] Cannot update profile photo URL, state is not ProfileLoaded. Current state: $currentState");
+      state = ProfileLoaded(updatedProfile);
+      log("[ProfileVM] Updated profilePhotoUrl in state.");
+      if (updatedProfile.isMe) {
+        InternalEndPoints.profileUrl = newUrl;
       }
-   }
+    } else {
+      log("[ProfileVM] Cannot update profile photo URL, state is not ProfileLoaded. Current state: $currentState");
+    }
+  }
 
-   void updateCoverPhotoUrl(String newUrl) {
-      final ProfileState currentState = state;
-      if (currentState is ProfileLoaded) {
-         final UserProfile currentProfile = currentState.userProfile;
-         final UserProfile updatedProfile = currentProfile.copyWith(coverPhotoUrl: newUrl);
-         state = ProfileLoaded(updatedProfile);
-         log("[ProfileVM] Updated coverPhotoUrl in state.");
-      } else {
-         log("[ProfileVM] Cannot update cover photo URL, state is not ProfileLoaded. Current state: $currentState");
-      }
-   }
+  void updateCoverPhotoUrl(String newUrl) {
+    final ProfileState currentState = state;
+    if (currentState is ProfileLoaded) {
+      final UserProfile currentProfile = currentState.userProfile;
+      final UserProfile updatedProfile =
+          currentProfile.copyWith(coverPhotoUrl: newUrl);
+      state = ProfileLoaded(updatedProfile);
+      log("[ProfileVM] Updated coverPhotoUrl in state.");
+    } else {
+      log("[ProfileVM] Cannot update cover photo URL, state is not ProfileLoaded. Current state: $currentState");
+    }
+  }
 
+  Future<void> sendConnectionRequest(
+    String targetUserId, {
+    Map<String, dynamic>? body,
+  }) async {
+    state = ProfileLoading();
+    try {
+      await _profileService.sendConnectionRequest(targetUserId, body: body);
+      final otherUserProfile =
+          await _profileService.getUserProfile(targetUserId);
+      state = ProfileLoaded(otherUserProfile);
+    } catch (error) {
+      log("Error sending connection request to user with id: $targetUserId");
+      state =
+          ProfileError("Could not send connection request to this person :(");
+    }
+  }
 
-   Future<void> sendConnectionRequest(String targetUserId) async {
-     // TODO: Implement connection request logic
-     // 1. Set state to indicate loading (e.g., ProfileUpdatingConnection)
-     // 2. Call a service method (e.g., _connectionService.sendRequest(targetUserId))
-     // 3. On success: Update the UserProfile in the state (e.g., set is_in_sent_connections = true)
-     // 4. On failure: Revert state and show error
-     log("[ProfileVM] TODO: Implement sendConnectionRequest for $targetUserId");
-       final currentState = state;
-       if (currentState is ProfileLoaded) {
-          // Example optimistic update (update UI immediately)
-          state = ProfileLoaded(currentState.userProfile.copyWith(isInSentConnections: true));
-          // Then call service, revert on failure
-       }
-   }
+  // Method to handle withdrawing a connection request
+  Future<void> withdrawConnectionRequest(String targetUserId) async {
+    state = ProfileLoading();
+    try {
+      await _profileService.withdrawInvitation(targetUserId);
+      final otherUserProfile =
+          await _profileService.getUserProfile(targetUserId);
+      state = ProfileLoaded(otherUserProfile);
+    } catch (error) {
+      log("Error withdrawing user with id: $targetUserId");
+      state = ProfileError(
+          "Could not withdraw connection request with this person :(");
+    }
+  }
 
-    // Method to handle withdrawing a connection request
-   Future<void> withdrawConnectionRequest(String targetUserId) async {
-     // TODO: Implement withdraw logic (similar structure to send request)
-     log("[ProfileVM] TODO: Implement withdrawConnectionRequest for $targetUserId");
-      final currentState = state;
-       if (currentState is ProfileLoaded) {
-          state = ProfileLoaded(currentState.userProfile.copyWith(isInSentConnections: false));
-       }
-   }
+  Future<void> followUser(String targetUserId) async {
+    state = ProfileLoading();
+    try {
+      await _profileService.follow(targetUserId);
+      final otherUserProfile =
+          await _profileService.getUserProfile(targetUserId);
+      state = ProfileLoaded(otherUserProfile);
+    } catch (error) {
+      log("Error following user with id: $targetUserId");
+      state = ProfileError("Could not unfollow this person :(");
+    }
+  }
 
-   // Method to handle following a user
-   Future<void> followUser(String targetUserId) async {
-      // TODO: Implement follow logic
-      log("[ProfileVM] TODO: Implement followUser for $targetUserId");
-       final currentState = state;
-       if (currentState is ProfileLoaded) {
-          state = ProfileLoaded(currentState.userProfile.copyWith(isAlreadyFollowing: true));
-       }
-   }
+  Future<void> unfollowUser(String targetUserId) async {
+    state = ProfileLoading();
+    try {
+      await _profileService.unfollow(targetUserId);
+      final otherUserProfile =
+          await _profileService.getUserProfile(targetUserId);
+      state = ProfileLoaded(otherUserProfile);
+    } catch (error) {
+      log("Error unfollowing user with id: $targetUserId");
+      state = ProfileError("Could not unfollow this person :(");
+    }
+  }
 
-   // Method to handle unfollowing a user
-   Future<void> unfollowUser(String targetUserId) async {
-      // TODO: Implement unfollow logic
-      log("[ProfileVM] TODO: Implement unfollowUser for $targetUserId");
-       final currentState = state;
-       if (currentState is ProfileLoaded) {
-          state = ProfileLoaded(currentState.userProfile.copyWith(isAlreadyFollowing: false));
-       }
-   }
+  Future<void> acceptInvitation(String targetUserId) async {
+    state = ProfileLoading();
+    try {
+      await _profileService.acceptInvitation(targetUserId);
+      final otherUserProfile =
+          await _profileService.getUserProfile(targetUserId);
+      state = ProfileLoaded(otherUserProfile);
+    } catch (error) {
+      log("Error accepting invitation from user with id: $targetUserId");
+      state = ProfileError("Could not accept invitation from this person :(");
+    }
+  }
 
+  Future<void> ignoreInvitation(String targetUserId) async {
+    state = ProfileLoading();
+    try {
+      await _profileService.ignoreInvitation(targetUserId);
+      final otherUserProfile =
+          await _profileService.getUserProfile(targetUserId);
+      state = ProfileLoaded(otherUserProfile);
+    } catch (error) {
+      log("Error ignoring invitation from user with id: $targetUserId");
+      state = ProfileError("Could not ignore invitation from this person :(");
+    }
+  }
+
+  Future<void> removeConnection(String targetUserId) async {
+    state = ProfileLoading();
+    try {
+      await _profileService.removeConnection(targetUserId);
+      final otherUserProfile =
+          await _profileService.getUserProfile(targetUserId);
+      state = ProfileLoaded(otherUserProfile);
+    } catch (error) {
+      log("Error removing user with id: $targetUserId from connections");
+      state = ProfileError("Could not remove this person from connections :(");
+    }
+  }
 }
-
 
 // --- Provider Definition ---
 final profileViewModelProvider =

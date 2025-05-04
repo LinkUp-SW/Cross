@@ -12,21 +12,20 @@ import 'package:go_router/go_router.dart';
 class JobFilterResultsWidget extends ConsumerWidget {
   final List<JobsCardModel> allJobs;
   final VoidCallback onEditFilters;
-  
+
   const JobFilterResultsWidget({
     Key? key,
     required this.allJobs,
     required this.onEditFilters,
   }) : super(key: key);
-  
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final state = ref.watch(jobFilterViewModelProvider(allJobs));
-    
+
     return Column(
       children: [
-   
         Padding(
           padding: EdgeInsets.all(16.w),
           child: Row(
@@ -34,7 +33,9 @@ class JobFilterResultsWidget extends ConsumerWidget {
               Text(
                 'Found ${state.filteredJobs.length} jobs',
                 style: TextStyles.font16_500Weight.copyWith(
-                  color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+                  color: isDarkMode
+                      ? AppColors.darkTextColor
+                      : AppColors.lightTextColor,
                 ),
               ),
               const Spacer(),
@@ -49,8 +50,6 @@ class JobFilterResultsWidget extends ConsumerWidget {
             ],
           ),
         ),
-        
-
         if (state.hasFilters)
           Padding(
             padding: EdgeInsets.only(left: 16.w, right: 16.w, bottom: 8.h),
@@ -62,34 +61,41 @@ class JobFilterResultsWidget extends ConsumerWidget {
                     _buildFilterChip(
                       label: 'Location: ${state.location}',
                       onDeleted: () {
-                        ref.read(jobFilterViewModelProvider(allJobs).notifier)
+                        ref
+                            .read(jobFilterViewModelProvider(allJobs).notifier)
                             .clearFilter('location');
                       },
                       isDarkMode: isDarkMode,
                     ),
-                    
-                  if (state.experienceLevel != null && state.experienceLevel!.isNotEmpty)
+                  if (state.experienceLevel != null &&
+                      state.experienceLevel!.isNotEmpty)
                     ...state.experienceLevel!.map((level) => _buildFilterChip(
-                      label: level,
-                      onDeleted: () {
-                        final List<String> newLevels = List.from(state.experienceLevel!)
-                          ..remove(level);
-                          
-                        ref.read(jobFilterViewModelProvider(allJobs).notifier).applyFilters(
-                          location: state.location,
-                          experienceLevel: newLevels.isEmpty ? null : newLevels,
-                          minSalary: state.minSalary,
-                          maxSalary: state.maxSalary,
-                        );
-                      },
-                      isDarkMode: isDarkMode,
-                    )),
-                    
+                          label: level,
+                          onDeleted: () {
+                            final List<String> newLevels =
+                                List.from(state.experienceLevel!)
+                                  ..remove(level);
+
+                            ref
+                                .read(jobFilterViewModelProvider(allJobs)
+                                    .notifier)
+                                .applyFilters(
+                                  location: state.location,
+                                  experienceLevel:
+                                      newLevels.isEmpty ? null : newLevels,
+                                  minSalary: state.minSalary,
+                                  maxSalary: state.maxSalary,
+                                );
+                          },
+                          isDarkMode: isDarkMode,
+                        )),
                   if (state.minSalary != null || state.maxSalary != null)
                     _buildFilterChip(
-                      label: 'Salary: \$${state.minSalary ?? 0} - \$${state.maxSalary ?? '∞'}',
+                      label:
+                          'Salary: \$${state.minSalary ?? 0} - \$${state.maxSalary ?? '∞'}',
                       onDeleted: () {
-                        ref.read(jobFilterViewModelProvider(allJobs).notifier)
+                        ref
+                            .read(jobFilterViewModelProvider(allJobs).notifier)
                             .clearFilter('salary');
                       },
                       isDarkMode: isDarkMode,
@@ -98,17 +104,14 @@ class JobFilterResultsWidget extends ConsumerWidget {
               ),
             ),
           ),
-          
         Divider(height: 1.h),
-        
-      
         Expanded(
           child: _buildResultsList(context, state, isDarkMode),
         ),
       ],
     );
   }
-  
+
   Widget _buildFilterChip({
     required String label,
     required VoidCallback onDeleted,
@@ -134,12 +137,13 @@ class JobFilterResultsWidget extends ConsumerWidget {
       ),
     );
   }
-  
-  Widget _buildResultsList(BuildContext context, JobFilterState state, bool isDarkMode) {
+
+  Widget _buildResultsList(
+      BuildContext context, JobFilterState state, bool isDarkMode) {
     if (state.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
-    
+
     if (state.filteredJobs.isEmpty) {
       return Center(
         child: Column(
@@ -154,7 +158,9 @@ class JobFilterResultsWidget extends ConsumerWidget {
             Text(
               'No jobs match your filter criteria',
               style: TextStyles.font16_500Weight.copyWith(
-                color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+                color: isDarkMode
+                    ? AppColors.darkTextColor
+                    : AppColors.lightTextColor,
               ),
               textAlign: TextAlign.center,
             ),
@@ -162,7 +168,9 @@ class JobFilterResultsWidget extends ConsumerWidget {
             Text(
               'Try adjusting your filters to see more results',
               style: TextStyles.font14_400Weight.copyWith(
-                color: isDarkMode ? AppColors.darkTextColor : AppColors.lightSecondaryText,
+                color: isDarkMode
+                    ? AppColors.darkTextColor
+                    : AppColors.lightSecondaryText,
               ),
               textAlign: TextAlign.center,
             ),
@@ -170,7 +178,7 @@ class JobFilterResultsWidget extends ConsumerWidget {
         ),
       );
     }
-    
+
     return ListView.separated(
       padding: EdgeInsets.all(16.w),
       itemCount: state.filteredJobs.length,

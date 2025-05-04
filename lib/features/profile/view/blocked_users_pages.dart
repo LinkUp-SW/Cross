@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/profile/state/blocked_users_state.dart';
 import 'package:link_up/features/profile/viewModel/blocked_users_view_model.dart';
-import 'package:link_up/features/profile/widgets/blocked_list_item_widget.dart'; 
+import 'package:link_up/features/profile/widgets/blocked_list_item_widget.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 
@@ -23,8 +23,8 @@ class BlockedUsersPage extends ConsumerWidget {
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
-        backgroundColor: cardColor, 
-        elevation: 0, 
+        backgroundColor: cardColor,
+        elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: textColor),
           onPressed: () => GoRouter.of(context).pop(),
@@ -34,12 +34,12 @@ class BlockedUsersPage extends ConsumerWidget {
           'Blocked Users',
           style: TextStyles.font18_700Weight.copyWith(color: textColor),
         ),
-        centerTitle: false, 
+        centerTitle: false,
       ),
       body: RefreshIndicator(
         onRefresh: () => ref.read(blockedUsersViewModelProvider.notifier).fetchBlockedUsers(),
         child: switch (state) {
-          BlockedUsersInitial() || BlockedUsersLoading() => const Center(child: CircularProgressIndicator()),
+          BlockedUsersInitial() || BlockedUsersLoading() || BlockedUsersBlocking() => const Center(child: CircularProgressIndicator()),
           BlockedUsersError(:final message) => Center(
               child: Padding(
                 padding: EdgeInsets.all(20.w),
@@ -50,15 +50,14 @@ class BlockedUsersPage extends ConsumerWidget {
                 ),
               ),
             ),
-          BlockedUsersLoaded(:final users) => Container(
-              margin: EdgeInsets.all(16.w), 
+          BlockedUsersLoaded(:final users) || BlockedUsersUnblocking(:final users) => Container(
+              margin: EdgeInsets.all(16.w),
               decoration: BoxDecoration(
                  color: cardColor,
                  borderRadius: BorderRadius.circular(8.r),
-              
               ),
               child: Column(
-                 mainAxisSize: MainAxisSize.min, 
+                 mainAxisSize: MainAxisSize.min,
                  crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                    Padding(
@@ -76,6 +75,7 @@ class BlockedUsersPage extends ConsumerWidget {
                          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
                          itemCount: users.length,
                          itemBuilder: (context, index) {
+                           // Pass the specific user to the list item
                            return BlockedUserListItem(user: users[index]);
                          },
                          separatorBuilder: (context, index) => Divider(
@@ -85,14 +85,13 @@ class BlockedUsersPage extends ConsumerWidget {
                          ),
                        ),
                     ),
-                  if (users.isEmpty) 
-                     SizedBox(height: 20.h),
+                  if (users.isEmpty)
+                     SizedBox(height: 20.h), 
                  ],
                ),
              ),
          },
        ),
       );
-    
   }
 }

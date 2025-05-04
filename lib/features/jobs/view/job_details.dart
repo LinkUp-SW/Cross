@@ -9,12 +9,12 @@ import 'package:go_router/go_router.dart';
 
 class JobDetailsPage extends ConsumerStatefulWidget {
   final String jobId;
-  
+
   const JobDetailsPage({
     super.key,
     required this.jobId,
   });
-  
+
   @override
   ConsumerState<JobDetailsPage> createState() => _JobDetailsPageState();
 }
@@ -24,7 +24,9 @@ class _JobDetailsPageState extends ConsumerState<JobDetailsPage> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      ref.read(jobDetailsViewModelProvider.notifier).getJobDetails(widget.jobId);
+      ref
+          .read(jobDetailsViewModelProvider.notifier)
+          .getJobDetails(widget.jobId);
     });
   }
 
@@ -32,7 +34,7 @@ class _JobDetailsPageState extends ConsumerState<JobDetailsPage> {
   Widget build(BuildContext context) {
     final state = ref.watch(jobDetailsViewModelProvider);
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Scaffold(
       appBar: CustomAppBar(
         leadingAction: () => context.pop(),
@@ -53,20 +55,25 @@ class _JobDetailsPageState extends ConsumerState<JobDetailsPage> {
                           Icon(
                             Icons.error_outline,
                             size: 48.w,
-                            color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
+                            color: isDarkMode
+                                ? AppColors.darkGrey
+                                : AppColors.lightGrey,
                           ),
                           SizedBox(height: 16.h),
                           Text(
                             state.errorMessage ?? 'Error loading job details',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                              color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+                              color: isDarkMode
+                                  ? AppColors.darkTextColor
+                                  : AppColors.lightTextColor,
                             ),
                           ),
                           SizedBox(height: 16.h),
                           ElevatedButton(
                             onPressed: () {
-                              ref.read(jobDetailsViewModelProvider.notifier)
+                              ref
+                                  .read(jobDetailsViewModelProvider.notifier)
                                   .getJobDetails(widget.jobId);
                             },
                             child: const Text('Retry'),
@@ -80,7 +87,9 @@ class _JobDetailsPageState extends ConsumerState<JobDetailsPage> {
                         child: Text(
                           'No job details found',
                           style: TextStyle(
-                            color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+                            color: isDarkMode
+                                ? AppColors.darkTextColor
+                                : AppColors.lightTextColor,
                           ),
                         ),
                       )

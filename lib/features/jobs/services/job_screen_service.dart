@@ -13,37 +13,39 @@ class JobScreenService {
     Map<String, dynamic>? queryParameters,
   }) async {
     try {
-      final fullUrl = '${ExternalEndPoints.baseUrl}${ExternalEndPoints.topJobs}';
+      final fullUrl =
+          '${ExternalEndPoints.baseUrl}${ExternalEndPoints.topJobs}';
       developer.log('Making API call to $fullUrl');
       developer.log('Query parameters: $queryParameters');
-      
+
       final response = await _baseService.get(
         ExternalEndPoints.topJobs,
         queryParameters: queryParameters,
       );
-      
+
       developer.log('Got API response with status: ${response.statusCode}');
       if (response.statusCode != 200) {
         developer.log('Error response body: ${response.body}');
       }
-      
+
       if (response.statusCode == 200) {
         final decodedResponse = jsonDecode(response.body);
         developer.log('Successful response: $decodedResponse');
-        
-        
+
         if (decodedResponse is! Map<String, dynamic>) {
-          throw Exception('Invalid response format: expected Map, got ${decodedResponse.runtimeType}');
+          throw Exception(
+              'Invalid response format: expected Map, got ${decodedResponse.runtimeType}');
         }
-        
+
         if (!decodedResponse.containsKey('data')) {
           throw Exception('Response missing required "data" field');
         }
-        
+
         if (decodedResponse['data'] is! List) {
-          throw Exception('Invalid "data" format: expected List, got ${decodedResponse['data'].runtimeType}');
+          throw Exception(
+              'Invalid "data" format: expected List, got ${decodedResponse['data'].runtimeType}');
         }
-        
+
         return decodedResponse;
       }
       throw Exception('Failed to get top jobs data: ${response.statusCode}');
@@ -57,37 +59,39 @@ class JobScreenService {
     Map<String, dynamic>? queryParameters,
   }) async {
     try {
-      final fullUrl = '${ExternalEndPoints.baseUrl}${ExternalEndPoints.getJobs}';
+      final fullUrl =
+          '${ExternalEndPoints.baseUrl}${ExternalEndPoints.getJobs}';
       developer.log('Making API call to $fullUrl');
       developer.log('Query parameters: $queryParameters');
-      
+
       final response = await _baseService.get(
         ExternalEndPoints.getJobs,
         queryParameters: queryParameters,
       );
-      
+
       developer.log('Got API response with status: ${response.statusCode}');
       if (response.statusCode != 200) {
         developer.log('Error response body: ${response.body}');
       }
-      
+
       if (response.statusCode == 200) {
         final decodedResponse = jsonDecode(response.body);
         developer.log('Successful response: $decodedResponse');
-        
-      
+
         if (decodedResponse is! Map<String, dynamic>) {
-          throw Exception('Invalid response format: expected Map, got ${decodedResponse.runtimeType}');
+          throw Exception(
+              'Invalid response format: expected Map, got ${decodedResponse.runtimeType}');
         }
-        
+
         if (!decodedResponse.containsKey('data')) {
           throw Exception('Response missing required "data" field');
         }
-        
+
         if (decodedResponse['data'] is! List) {
-          throw Exception('Invalid "data" format: expected List, got ${decodedResponse['data'].runtimeType}');
+          throw Exception(
+              'Invalid "data" format: expected List, got ${decodedResponse['data'].runtimeType}');
         }
-        
+
         return decodedResponse;
       }
       throw Exception('Failed to get all jobs data: ${response.statusCode}');

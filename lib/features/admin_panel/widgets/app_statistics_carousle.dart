@@ -1,188 +1,121 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:link_up/features/admin_panel/viewModel/statistics_provider.dart';
+import 'package:link_up/features/admin_panel/model/statistics_model.dart';
 
-class AppStatisticsCarousel extends StatefulWidget {
+class AppStatisticsCarousel extends ConsumerStatefulWidget {
   const AppStatisticsCarousel({super.key});
 
   @override
-  _AppStatisticsCarouselState createState() => _AppStatisticsCarouselState();
+  ConsumerState<AppStatisticsCarousel> createState() => _AppStatisticsCarouselState();
 }
 
-class _AppStatisticsCarouselState extends State<AppStatisticsCarousel> {
-  String selectedRange = "Past Week";
-  List<Widget> graphWidgets = [];
+class _AppStatisticsCarouselState extends ConsumerState<AppStatisticsCarousel> {
+  String selectedRange = '30days';
+  int _currentPage = 0;
+  final PageController _pageController = PageController();
 
   @override
   void initState() {
     super.initState();
-    _generateStatistics();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(statisticsProvider.notifier).loadStatistics(selectedRange);
+    });
   }
 
-  void _generateStatistics() {
-    graphWidgets.clear();
-
-    switch (selectedRange) {
-      case "Past Week":
-        graphWidgets = List.generate(
-          4,
-          (index) => _buildGraph(
-            title: "Graph ${index + 1} - Past Week",
-            xValues: ["M", "T", "W", "T", "F", "S", "S"],
-            yValues: List.generate(7, (i) => _randomValue()),
-          ),
-        );
-        break;
-      case "Past Month":
-        graphWidgets = List.generate(
-          4,
-          (index) => _buildGraph(
-            title: "Graph ${index + 1} - Past Month",
-            xValues: ["Wk1", "Wk2", "Wk3", "Wk4"],
-            yValues: List.generate(4, (i) => _randomValue()),
-          ),
-        );
-        break;
-      case "Past Year":
-        graphWidgets = List.generate(
-          4,
-          (index) => _buildGraph(
-            title: "Graph ${index + 1} - Past Year",
-            xValues: [
-              "J",
-              "F",
-              "M",
-              "A",
-              "M",
-              "J",
-              "J",
-              "A",
-              "S",
-              "O",
-              "N",
-              "D"
-            ],
-            yValues: List.generate(12, (i) => _randomValue()),
-          ),
-        );
-        break;
-      case "Past Decade":
-        graphWidgets = List.generate(
-          4,
-          (index) => _buildGraph(
-            title: "Graph ${index + 1} - Past Decade",
-            xValues: List.generate(10, (i) => (20 + i).toString()),
-            yValues: List.generate(10, (i) => _randomValue()),
-          ),
-        );
-        break;
-    }
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
-  int _randomValue() {
-    return (20 + (80 * (DateTime.now().millisecondsSinceEpoch % 1000) / 1000))
-        .toInt();
+  @override
+  Widget build(BuildContext context) {
+    final state = ref.watch(statisticsProvider);
+    
+    // Take up all available space
+    return Expanded(
+      child: Column(
+        children: [
+          _buildRangeSelector(),
+          const SizedBox(height: 10),
+          state.isLoading
+              ? const Expanded(child: Center(child: CircularProgressIndicator()))
+              : Expanded(child: _buildCarousel(state.graphs)),
+        ],
+      ),
+    );
   }
 
-  Widget _buildGraph({
-    required String title,
-    required List<String> xValues,
-    required List<int> yValues,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+  Widget _buildRangeSelector() {
+    return SizedBox(
+      height: 40,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: [
+          _rangeButton('7days', 'Last 7 Days'),
+          _rangeButton('30days', 'Last 30 Days'),
+          _rangeButton('90days', 'Last 90 Days'),
+          _rangeButton('1year', 'Last Year'),
+        ],
+      ),
+    );
+  }
+
+  Widget _rangeButton(String range, String label) {
+    final isSelected = selectedRange == range;
+    
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: isSelected ? Colors.blue : Colors.grey.shade200,
+          foregroundColor: isSelected ? Colors.white : Colors.black,
         ),
-        const SizedBox(height: 8),
+        onPressed: () {
+          setState(() {
+            selectedRange = range;
+          });
+          ref.read(statisticsProvider.notifier).loadStatistics(range);
+        },
+        child: Text(label),
+      ),
+    );
+  }
+
+  Widget _buildCarousel(List<GraphData> graphs) {
+    if (graphs.isEmpty) {
+      return const Center(child: Text('No data available'));
+    }
+
+    return Column(
+      children: [
+        // Make the carousel take most of the available space
         Expanded(
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: SizedBox(
-              width: yValues.length * 60, // Wider bars: 60px per bar
-              child: BarChart(
-                BarChartData(
-                  alignment: BarChartAlignment.spaceAround,
-                  gridData: FlGridData(
-                    show: true,
-                    drawHorizontalLine: true,
-                    horizontalInterval: 20,
-                    getDrawingHorizontalLine: (value) => FlLine(
-                      color: Colors.grey.withOpacity(0.2),
-                      strokeWidth: 1,
-                    ),
-                  ),
-                  titlesData: FlTitlesData(
-                    leftTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        reservedSize: 40,
-                        interval: 20,
-                      ),
-                    ),
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        reservedSize: 30,
-                        getTitlesWidget: (value, meta) {
-                          int index = value.toInt();
-                          if (index >= 0 && index < xValues.length) {
-                            return SideTitleWidget(
-                              fitInside:
-                                  SideTitleFitInsideData.fromTitleMeta(meta),
-                              meta: meta,
-                              child: Text(
-                                xValues[index],
-                                style: const TextStyle(fontSize: 12),
-                              ),
-                            );
-                          }
-                          return const SizedBox.shrink();
-                        },
-                      ),
-                    ),
-                    rightTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                    topTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                  ),
-                  borderData: FlBorderData(
-                    show: true,
-                    border: Border.all(color: Colors.grey.withOpacity(0.5)),
-                  ),
-                  barGroups: List.generate(
-                    yValues.length,
-                    (index) => BarChartGroupData(
-                      x: index,
-                      barRods: [
-                        BarChartRodData(
-                          toY: yValues[index].toDouble(),
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.blue.shade400,
-                              Colors.blue.shade900
-                            ],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                          ),
-                          width: 30,
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide:
-                              BorderSide(color: Colors.blue.shade900, width: 1),
-                          backDrawRodData: BackgroundBarChartRodData(
-                            show: true,
-                            toY: 100,
-                            color: Colors.grey.withOpacity(0.1),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  maxY: 100,
-                ),
+          flex: 9,
+          child: PageView.builder(
+            controller: _pageController,
+            onPageChanged: (page) {
+              setState(() {
+                _currentPage = page;
+              });
+            },
+            itemCount: graphs.length,
+            itemBuilder: (context, index) {
+              return _buildGraphCard(graphs[index]);
+            },
+          ),
+        ),
+        // Page indicator at the bottom
+        Expanded(
+          flex: 1,
+          child: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(
+                graphs.length,
+                (index) => _buildDotIndicator(index),
               ),
             ),
           ),
@@ -191,71 +124,154 @@ class _AppStatisticsCarouselState extends State<AppStatisticsCarousel> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: graphWidgets.length,
-      child: Container(
-        margin: const EdgeInsets.all(16),
+  Widget _buildDotIndicator(int index) {
+    return Container(
+      width: 8,
+      height: 8,
+      margin: const EdgeInsets.symmetric(horizontal: 4),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: _currentPage == index ? Colors.blue : Colors.grey.shade300,
+      ),
+    );
+  }
+
+  Widget _buildGraphCard(GraphData graph) {
+    return Card(
+      elevation: 4,
+      margin: const EdgeInsets.symmetric(horizontal: 8),
+      child: Padding(
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey),
-          borderRadius: BorderRadius.circular(8),
-        ),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                DropdownButton<String>(
-                  value: selectedRange,
-                  items: [
-                    "Past Week",
-                    "Past Month",
-                    "Past Year",
-                    "Past Decade",
-                  ].map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged: (newValue) {
-                    setState(() {
-                      selectedRange = newValue!;
-                      _generateStatistics();
-                    });
-                  },
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    _generateStatistics();
-                    setState(() {});
-                  },
-                  child: const Text("Search"),
-                ),
-              ],
+            Text(
+              graph.title,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 16),
-            TabBar(
-              isScrollable: true,
-              labelColor: Theme.of(context).primaryColor,
-              unselectedLabelColor: Colors.grey,
-              indicatorColor: Theme.of(context).primaryColor,
-              tabs: List.generate(
-                graphWidgets.length,
-                (index) => Tab(text: "Graph ${index + 1}"),
-              ),
-            ),
-            const SizedBox(height: 16),
-            SizedBox(
-              height: 420,
-              child: TabBarView(
-                children: graphWidgets,
-              ),
+            const SizedBox(height: 10),
+            Expanded(
+              child: graph.type == 'bar' 
+                  ? _buildBarChart(graph) 
+                  : _buildLineChart(graph),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLineChart(GraphData graph) {
+    return LineChart(
+      LineChartData(
+        gridData: FlGridData(show: true),
+        titlesData: FlTitlesData(
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 30,
+              getTitlesWidget: (value, meta) {
+                if (value.toInt() >= 0 && value.toInt() < graph.xValues.length) {
+                  return SideTitleWidget(
+                    fitInside: SideTitleFitInsideData.fromTitleMeta(meta),
+                    meta: meta,
+                    child: Text(graph.xValues[value.toInt()]),
+                  );
+                }
+                return const SizedBox.shrink();
+              },
+            ),
+          ),
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 40,
+              getTitlesWidget: (value, meta) {
+                return SideTitleWidget(
+                  fitInside: SideTitleFitInsideData.fromTitleMeta(meta),
+                  meta: meta,
+                  child: Text(value.toInt().toString()),
+                );
+              },
+            ),
+          ),
+          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        ),
+        borderData: FlBorderData(show: true),
+        lineBarsData: [
+          LineChartBarData(
+            spots: List.generate(
+              graph.yValues.length,
+              (i) => FlSpot(i.toDouble(), graph.yValues[i]),
+            ),
+            isCurved: true,
+            color: Colors.blue,
+            barWidth: 3,
+            dotData: FlDotData(show: true),
+            belowBarData: BarAreaData(show: true, color: Colors.blue.withOpacity(0.3)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBarChart(GraphData graph) {
+    return BarChart(
+      BarChartData(
+        alignment: BarChartAlignment.spaceAround,
+        maxY: graph.yValues.isNotEmpty ? graph.yValues.reduce((a, b) => a > b ? a : b) * 1.2 : 100,
+        titlesData: FlTitlesData(
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 30,
+              getTitlesWidget: (value, meta) {
+                if (value.toInt() >= 0 && value.toInt() < graph.xValues.length) {
+                  return SideTitleWidget(
+                    fitInside: SideTitleFitInsideData.fromTitleMeta(meta),
+                    meta: meta,
+                    child: Text(graph.xValues[value.toInt()]),
+                  );
+                }
+                return const SizedBox.shrink();
+              },
+            ),
+          ),
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 40,
+              getTitlesWidget: (value, meta) {
+                return SideTitleWidget(
+                  fitInside: SideTitleFitInsideData.fromTitleMeta(meta),
+                  meta: meta,
+                  child: Text(value.toInt().toString()),
+                );
+              },
+            ),
+          ),
+          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        ),
+        borderData: FlBorderData(show: true),
+        gridData: FlGridData(show: true),
+        barGroups: List.generate(
+          graph.yValues.length,
+          (i) => BarChartGroupData(
+            x: i,
+            barRods: [
+              BarChartRodData(
+                toY: graph.yValues[i],
+                color: Colors.blue,
+                width: 20,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(4),
+                  topRight: Radius.circular(4),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
