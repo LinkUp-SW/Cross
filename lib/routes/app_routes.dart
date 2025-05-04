@@ -61,6 +61,7 @@ import 'package:link_up/features/profile/view/license_list_page.dart';
 import 'package:link_up/features/profile/view/contact_info.dart';
 import 'package:link_up/features/profile/model/profile_model.dart';
 import 'package:link_up/features/profile/view/blocked_users_pages.dart';
+import 'package:link_up/features/profile/view/add_media_link.dart';
 import 'package:link_up/features/jobs/view/job_details.dart';
 import 'package:link_up/features/jobs/view/my_jobs_screen.dart';
 
@@ -159,10 +160,15 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       },
     ),
 
+
     GoRoute(
       path: "/edit_about",
       builder: (context, state) => const EditAboutPage(),
     ),
+    GoRoute(
+          path: "/add_media_link",
+          builder: (context, state) => const AddMediaLinkPage(),
+        ),
     GoRoute(
         path: "/search_school",
         pageBuilder: (context, state) {

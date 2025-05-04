@@ -16,11 +16,13 @@ class ProfileActivityPreview extends StatefulWidget {
   final String userId;
   final String userName;
   final int numberOfConnections;
+  final bool isMyProfile;
 
   const ProfileActivityPreview({
     required this.userId,
     required this.userName,
     required this.numberOfConnections,
+    required this.isMyProfile,
     super.key,
   });
 
@@ -136,7 +138,9 @@ class _ProfileActivityPreviewState extends State<ProfileActivityPreview> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+  ) {
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final sectionTextColor =
         isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor;
@@ -170,34 +174,36 @@ class _ProfileActivityPreviewState extends State<ProfileActivityPreview> {
                   ),
                 ],
               ),
-              OutlinedButton(
-                onPressed: () {
-                  context.push('/writePost');
-                },
-                style: isDarkMode
-                    ? buttonStyles.blueOutlinedButtonDark()
-                    : buttonStyles.blueOutlinedButton(),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.add,
-                      size: 16.sp,
-                      color:
-                          isDarkMode ? AppColors.darkBlue : AppColors.lightBlue,
-                    ),
-                    SizedBox(width: 4.w),
-                    Text(
-                      "Create Post",
-                      style: TextStyles.font14_500Weight.copyWith(
+              if (widget.isMyProfile)
+                OutlinedButton(
+                  onPressed: () {
+                    context.push('/writePost');
+                  },
+                  style: isDarkMode
+                      ? buttonStyles.blueOutlinedButtonDark()
+                      : buttonStyles.blueOutlinedButton(),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.add,
+                        size: 16.sp,
                         color: isDarkMode
                             ? AppColors.darkBlue
                             : AppColors.lightBlue,
                       ),
-                    ),
-                  ],
+                      SizedBox(width: 4.w),
+                      Text(
+                        "Create Post",
+                        style: TextStyles.font14_500Weight.copyWith(
+                          color: isDarkMode
+                              ? AppColors.darkBlue
+                              : AppColors.lightBlue,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
             ],
           ),
           SizedBox(height: 5.h),

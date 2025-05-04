@@ -583,6 +583,8 @@ class ProfileHeaderWidget extends ConsumerWidget {
           ],
         ),
         SizedBox(height: 5.h),
+        if(userProfile.isSubscribed !=true)
+
         SizedBox(
           width: double.infinity,
           child: OutlinedButton(

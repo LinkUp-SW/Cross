@@ -13,10 +13,10 @@ class EducationListPage extends ConsumerWidget {
     return FullListPage<EducationModel>( 
       pageTitle: "Education",
       dataProvider: educationDataProvider, 
-      itemBuilder: (item, isDarkMode, context) => EducationListItem(
+      itemBuilder: (item, isDarkMode, context, isMyProfile) => EducationListItem(
         education: item,
         isDarkMode: isDarkMode,
-        showActions: true,
+        showActions: isMyProfile,
       ),
       addRoute: '/add_new_education', 
       editRoute: '/edit_education_list', 

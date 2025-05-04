@@ -7,9 +7,7 @@ import 'package:link_up/features/profile/state/add_position_state.dart';
 import 'package:link_up/features/profile/viewModel/profile_view_model.dart';
 import 'dart:async';
 import 'dart:developer';
-import 'package:link_up/features/profile/services/profile_services.dart';
-import 'package:link_up/features/profile/state/add_position_state.dart';
-import 'package:link_up/features/profile/viewModel/profile_view_model.dart'; 
+
 class AddPositionViewModel extends StateNotifier<AddPositionState> {
   final ProfileService _profileService;
   final Ref _ref;
@@ -176,11 +174,10 @@ class AddPositionViewModel extends StateNotifier<AddPositionState> {
     return null;
   }
 
-  Future<void> savePosition() async {
+  Future<void> savePosition(List<String> currentSkills) async { // <<< Accepts skills list
     final currentFormData = _getCurrentFormData();
-    
-    final validationError = validateForm();
 
+    final validationError = validateForm();
     if (validationError != null) {
       state = AddPositionFailure(currentFormData, validationError);
       return;
@@ -189,18 +186,19 @@ class AddPositionViewModel extends StateNotifier<AddPositionState> {
     state = AddPositionLoading(currentFormData);
 
     final positionModel = PositionModel(
-          id: _editingPositionId, 
+          id: _editingPositionId,
           title: _titleController.text.trim(),
-          employeeType: _selectedEmploymentType ?? '', 
-          organizationId: _selectedOrganization?['_id'] as String?,
-          companyName: _companyNameController.text.trim(), 
+          employeeType: _selectedEmploymentType ?? '',
+          organizationId: _selectedOrganization?['_id'] as String?, // Use ID if selected
+          companyName: _companyNameController.text.trim(), // Always send current name
           isCurrent: _isCurrentPosition,
-          startDate: _selectedStartDate != null ? DateFormat('yyyy-MM-dd').format(_selectedStartDate!) : '', 
-          endDate: _isCurrentPosition ? null : (_selectedEndDate != null ? DateFormat('yyyy-MM-dd').format(_selectedEndDate!) : null), 
+          startDate: _selectedStartDate != null ? DateFormat('yyyy-MM-dd').format(_selectedStartDate!) : '',
+          endDate: _isCurrentPosition ? null : (_selectedEndDate != null ? DateFormat('yyyy-MM-dd').format(_selectedEndDate!) : null),
           description: _descriptionController.text.trim().isNotEmpty ? _descriptionController.text.trim() : null,
           location: _locationController.text.trim().isNotEmpty ? _locationController.text.trim() : null,
           locationType: _selectedLocationType,
-          skills: _skills, 
+          skills: currentSkills.isNotEmpty ? List.from(currentSkills) : null, // <<< Assigns passed skills
+          companyLogoUrl: _selectedOrganization?['logo'] as String?, // Pass logo only if org was selected
       );
 
     try {

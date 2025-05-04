@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import 'package:link_up/features/profile/state/edit_about_state.dart';
 import 'package:link_up/features/profile/viewModel/edit_about_view_model.dart';
 import 'package:link_up/features/profile/widgets/subpages_app_bar.dart';
-import 'package:link_up/features/profile/widgets/subpages_section_headers.dart';
 import 'package:link_up/shared/themes/button_styles.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
@@ -161,35 +160,7 @@ class _EditAboutPageState extends ConsumerState<EditAboutPage> {
                                 ),
                                 SizedBox(height: 15.h),
 
-                                SubPagesSectionHeader(title: "Skills"),
-                                SizedBox(height: 10.h),
-                                Text(
-                                  "Show your top skills – add up to 5 skills you want to be known for. They'll also appear in your Skills section.",
-                                  style: TextStyles.font14_400Weight.copyWith(
-                                    color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
-                                  ),
-                                ),
-                                SizedBox(height: 10.h),
-                                ElevatedButton(
-                                  onPressed: isSaving ? null : () {
-                                     // Navigate to Add Skills page
-                                     GoRouter.of(context).push('/add_skills');
-                                  },
-                                  style: isDarkMode
-                                      ? buttonStyles.blueOutlinedButtonDark()
-                                      : buttonStyles.blueOutlinedButton(),
-                                  child: Text(
-                                    "+ Add skill",
-                                    style: TextStyles.font14_600Weight.copyWith(
-                                      color: isDarkMode ? AppColors.darkBlue : AppColors.lightBlue,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-              ),
-            ),
+                                
             // Save Button Footer
             if (!isLoading)
               Container(
@@ -230,6 +201,6 @@ class _EditAboutPageState extends ConsumerState<EditAboutPage> {
           ],
         ),
       ),
-    );
+    ))])));
   }
 }

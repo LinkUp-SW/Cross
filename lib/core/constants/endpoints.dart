@@ -78,6 +78,9 @@ class ExternalEndPoints {
   static const getAppliedJobs = 'api/v1/job-application/get-applied-jobs';
   static const updateJobApplicationStatus =
       'api/v1/job-application/update-job-application-status/:application_id';
+  static const profileVisibility =
+      'api/v1/user/privacy-settings/profile-visibility';
+
   static const getnotifications = 'api/v1/notifications/get-notifications';
   static const marknotificationasread =
       'api/v1/notifications/:notificationId/read';
