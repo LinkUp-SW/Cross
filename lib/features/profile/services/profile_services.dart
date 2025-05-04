@@ -1289,6 +1289,66 @@ class ProfileService extends BaseService {
       rethrow;
     }
   }
+
+  Future<Map<String, dynamic>> acceptInvitation(String userId) async {
+    try {
+      final response = await super.post(
+          ExternalEndPoints.acceptConnectionInvitation,
+          routeParameters: {'user_id': userId});
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+      throw Exception(
+          'Failed to accept received connection invitation: ${response.statusCode}');
+    } catch (e) {
+      log("Error accepting connection request from user with id: $userId, error: $e");
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> ignoreInvitation(String userId) async {
+    try {
+      final response = await super.delete(
+          ExternalEndPoints.ignoreConnectionInvitation, {'user_id': userId});
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+      throw Exception(
+          'Failed to ignore received connection invitation: ${response.statusCode}');
+    } catch (e) {
+      log("Error ignoring connection request from user with id: $userId, error: $e");
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> withdrawInvitation(String userId) async {
+    try {
+      final response = await super.delete(
+          ExternalEndPoints.withdrawConnectionInvitation, {'user_id': userId});
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+      throw Exception(
+          'Failed to withdraw sent connection invitation: ${response.statusCode}');
+    } catch (e) {
+      log("Error withdrawing sent connection request: $e");
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> removeConnection(String userId) async {
+    try {
+      final response = await super
+          .delete(ExternalEndPoints.removeConnection, {'user_id': userId});
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+      throw Exception('Failed to remove connection ${response.statusCode}');
+    } catch (e) {
+      log("Error removing connection of user id: $userId, error: $e");
+      rethrow;
+    }
+  }
 }
 
 final profileServiceProvider = Provider<ProfileService>((ref) {

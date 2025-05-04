@@ -762,11 +762,10 @@ class ProfileHeaderWidget extends ConsumerWidget {
             isDarkMode: isDarkMode,
             icon: Icons.check_circle_outline_rounded,
             label: "Accept",
-            onPressed: () {
-              log('Accept button clicked for ${otherUserProfile.firstName}');
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(
-                      'TODO:  connection accepted  ${otherUserProfile.firstName}')));
+            onPressed: () async {
+              ref
+                  .read(profileViewModelProvider.notifier)
+                  .acceptInvitation(userId);
             },
             buttonStyles: buttonStyles,
           ),
@@ -777,11 +776,10 @@ class ProfileHeaderWidget extends ConsumerWidget {
             isDarkMode: isDarkMode,
             icon: Icons.hourglass_top_rounded,
             label: "Withdraw Connection",
-            onPressed: () {
-              log('Withdraw button clicked for ${otherUserProfile.firstName}');
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(
-                      'TODO: Withdraw connection request to ${otherUserProfile.firstName}')));
+            onPressed: () async {
+              await ref
+                  .read(profileViewModelProvider.notifier)
+                  .withdrawConnectionRequest(userId);
             },
             buttonStyles: buttonStyles,
           ),
@@ -882,12 +880,12 @@ class ProfileHeaderWidget extends ConsumerWidget {
                   ReusableBottomSheetOption(
                     icon: Icons.person_remove_outlined,
                     title: 'Withdraw Request',
-                    onTap: () {
-                      // TODO: Implement withdraw request functionality
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text(
-                              'TODO: Withdraw request to ${otherUserProfile.firstName}')));
+                    onTap: () async {
+                      await ref
+                          .read(profileViewModelProvider.notifier)
+                          .withdrawConnectionRequest(userId);
+                      if (!context.mounted) return;
+                      context.pop();
                     },
                   ),
                 if (!followPrimary && !isConnected && !isAlreadyFollowing)
@@ -906,9 +904,12 @@ class ProfileHeaderWidget extends ConsumerWidget {
                   ReusableBottomSheetOption(
                     icon: Icons.person_remove_alt_1_outlined,
                     title: 'Remove Connection',
-                    onTap: () {
-                      // TODO: Implement remove connection functionality
-                      Navigator.pop(context);
+                    onTap: () async {
+                      await ref
+                          .read(profileViewModelProvider.notifier)
+                          .removeConnection(userId);
+                      if (!context.mounted) return;
+                      context.pop();
                     },
                   ),
                 if (isAlreadyFollowing && !followPrimary)
@@ -927,12 +928,12 @@ class ProfileHeaderWidget extends ConsumerWidget {
                   ReusableBottomSheetOption(
                     icon: Icons.check_circle_outline_rounded,
                     title: 'Accept Connection Request',
-                    onTap: () {
-                      // TODO: Implement accept connection request functionality
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text(
-                              'TODO: Accept request from ${otherUserProfile.firstName}')));
+                    onTap: () async {
+                      await ref
+                          .read(profileViewModelProvider.notifier)
+                          .acceptInvitation(userId);
+                      if (!context.mounted) return;
+                      context.pop();
                     },
                   ),
                 ReusableBottomSheetOption(

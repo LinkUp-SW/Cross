@@ -164,16 +164,19 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
 
   // Method to handle withdrawing a connection request
   Future<void> withdrawConnectionRequest(String targetUserId) async {
-    // TODO: Implement withdraw logic (similar structure to send request)
-    log("[ProfileVM] TODO: Implement withdrawConnectionRequest for $targetUserId");
-    final currentState = state;
-    if (currentState is ProfileLoaded) {
-      state = ProfileLoaded(
-          currentState.userProfile.copyWith(isInSentConnections: false));
+    state = ProfileLoading();
+    try {
+      await _profileService.withdrawInvitation(targetUserId);
+      final otherUserProfile =
+          await _profileService.getUserProfile(targetUserId);
+      state = ProfileLoaded(otherUserProfile);
+    } catch (error) {
+      log("Error withdrawing user with id: $targetUserId");
+      state = ProfileError(
+          "Could not withdraw connection request with this person :(");
     }
   }
 
-  // Method to handle following a user
   Future<void> followUser(String targetUserId) async {
     state = ProfileLoading();
     try {
@@ -187,7 +190,6 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
     }
   }
 
-  // Method to handle unfollowing a user
   Future<void> unfollowUser(String targetUserId) async {
     state = ProfileLoading();
     try {
@@ -198,6 +200,45 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
     } catch (error) {
       log("Error unfollowing user with id: $targetUserId");
       state = ProfileError("Could not unfollow this person :(");
+    }
+  }
+
+  Future<void> acceptInvitation(String targetUserId) async {
+    state = ProfileLoading();
+    try {
+      await _profileService.acceptInvitation(targetUserId);
+      final otherUserProfile =
+          await _profileService.getUserProfile(targetUserId);
+      state = ProfileLoaded(otherUserProfile);
+    } catch (error) {
+      log("Error accepting invitation from user with id: $targetUserId");
+      state = ProfileError("Could not accept invitation from this person :(");
+    }
+  }
+
+  Future<void> ignoreInvitation(String targetUserId) async {
+    state = ProfileLoading();
+    try {
+      await _profileService.ignoreInvitation(targetUserId);
+      final otherUserProfile =
+          await _profileService.getUserProfile(targetUserId);
+      state = ProfileLoaded(otherUserProfile);
+    } catch (error) {
+      log("Error ignoring invitation from user with id: $targetUserId");
+      state = ProfileError("Could not ignore invitation from this person :(");
+    }
+  }
+
+  Future<void> removeConnection(String targetUserId) async {
+    state = ProfileLoading();
+    try {
+      await _profileService.removeConnection(targetUserId);
+      final otherUserProfile =
+          await _profileService.getUserProfile(targetUserId);
+      state = ProfileLoaded(otherUserProfile);
+    } catch (error) {
+      log("Error removing user with id: $targetUserId from connections");
+      state = ProfileError("Could not remove this person from connections :(");
     }
   }
 }
