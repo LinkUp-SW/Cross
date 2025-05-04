@@ -868,12 +868,12 @@ class ProfileHeaderWidget extends ConsumerWidget {
                   ReusableBottomSheetOption(
                     icon: Icons.cancel_outlined,
                     title: 'Ignore Connection Request',
-                    onTap: () {
-                      // TODO: Implement accept connection request functionality
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text(
-                              'TODO: Ignore request from ${otherUserProfile.firstName}')));
+                    onTap: () async {
+                      await ref
+                          .read(profileViewModelProvider.notifier)
+                          .ignoreInvitation(userId);
+                      if (!context.mounted) return;
+                      context.pop();
                     },
                   ),
                 if (followPrimary && !isConnected && !isRequestSentByMe)
@@ -912,7 +912,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
                       context.pop();
                     },
                   ),
-                if (isConnected && followPrimary)
+                if (isConnected)
                   ReusableBottomSheetOption(
                     icon: Icons.person_remove_alt_1_outlined,
                     title: 'Remove Connection',
