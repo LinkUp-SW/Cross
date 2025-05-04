@@ -209,7 +209,6 @@ class _EditIntroPageState extends ConsumerState<EditIntroPage> {
                                    ),
                                   decoration: InputDecoration(
                                      hintText: "Enter your first name",
-                                     // Borders moved inside InputDecoration
                                      border: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.lightGrey)),
                                      enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.lightGrey)),
                                      focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.lightBlue)),
@@ -350,7 +349,6 @@ class _EditIntroPageState extends ConsumerState<EditIntroPage> {
                                     ),
                                    decoration: InputDecoration(
                                      hintText: "e.g., https://www.yourwebsite.com",
-                                      // Borders moved inside InputDecoration
                                       border: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.lightGrey)),
                                       enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.lightGrey)),
                                       focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.lightBlue)),
