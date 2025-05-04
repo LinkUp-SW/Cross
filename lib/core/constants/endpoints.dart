@@ -11,8 +11,8 @@ class InternalEndPoints {
 }
 
 class ExternalEndPoints {
-  static const baseUrl = 'https://api.linkup-app.tech/';
-  // static const baseUrl = 'http://10.0.2.2:3000/'; // for localhosting
+  // static const baseUrl = 'https://api.linkup-app.tech/';
+  static const baseUrl = 'http://10.0.2.2:3000/'; // for localhosting
   static const receivedConnectionInvitations =
       'api/v1/user/my-network/invitation-manager/received';
   static const sentConnectionInvitations =
@@ -78,4 +78,6 @@ class ExternalEndPoints {
   static const getAppliedJobs = 'api/v1/job-application/get-applied-jobs';
   static const updateJobApplicationStatus =
       'api/v1/job-application/update-job-application-status/:application_id';
+  static const profileVisibility =
+      'api/v1/user/privacy-settings/profile-visibility';
 }

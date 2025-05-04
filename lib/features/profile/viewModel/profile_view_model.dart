@@ -244,6 +244,21 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
       state = ProfileError("Could not remove this person from connections :(");
     }
   }
+
+  Future<bool> getProfilePrivacy() async {
+    try {
+      final response = await _profileService.getProfileVisibility();
+      final privacySetting = response['profileVisibility'];
+      return (privacySetting != null || privacySetting == "")
+          ? privacySetting == 'public'
+              ? true
+              : false
+          : false;
+    } catch (error) {
+      log("Error returning profile visibility $error");
+      rethrow;
+    }
+  }
 }
 
 // --- Provider Definition ---
