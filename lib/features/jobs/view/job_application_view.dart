@@ -27,6 +27,11 @@ class JobApplicationDialog extends ConsumerStatefulWidget {
 
 class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
   final TextEditingController _coverLetterController = TextEditingController();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _countryCodeController = TextEditingController();
   bool _showCoverLetterField = false;
 
   @override
@@ -42,6 +47,11 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
   @override
   void dispose() {
     _coverLetterController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _countryCodeController.dispose();
     super.dispose();
   }
 
@@ -346,11 +356,11 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
 
   void _submitApplication(JobApplicationUserModel data) {
     final applicationData = JobApplicationSubmitModel(
-      firstName: data.firstName,
-      lastName: data.lastName,
-      emailAddress: data.emailAddress,
-      phoneNumber: data.phoneNumber,
-      countryCode: data.countryCode,
+      firstName: _firstNameController.text,
+      lastName: _lastNameController.text,
+      emailAddress: _emailController.text,
+      phoneNumber: int.tryParse(_phoneController.text) ?? 0,
+      countryCode: _countryCodeController.text,
       resume: data.resume,
       coverLetter: _showCoverLetterField ? _coverLetterController.text : null,
     );
@@ -366,7 +376,7 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Your Profile',
+          'Your Information',
           style: TextStyles.font18_700Weight.copyWith(
             color:
                 isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
@@ -389,65 +399,59 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
             padding: EdgeInsets.all(16.w),
             child: Column(
               children: [
-                // Name and Contact Info
+                // First Name and Last Name
                 Row(
                   children: [
-                    Icon(
-                      Icons.person,
-                      size: 20.sp,
-                      color: isDarkMode
-                          ? AppColors.darkSecondaryText
-                          : AppColors.lightSecondaryText,
+                    Expanded(
+                      child: _buildTextField(
+                        controller: _firstNameController,
+                        hint: 'First Name',
+                        icon: Icons.person_outline,
+                        isDarkMode: isDarkMode,
+                      ),
                     ),
-                    SizedBox(width: 8.w),
-                    Text(
-                      '${data.firstName} ${data.lastName}',
-                      style: TextStyles.font16_500Weight.copyWith(
-                        color: isDarkMode
-                            ? AppColors.darkTextColor
-                            : AppColors.lightTextColor,
+                    SizedBox(width: 16.w),
+                    Expanded(
+                      child: _buildTextField(
+                        controller: _lastNameController,
+                        hint: 'Last Name',
+                        isDarkMode: isDarkMode,
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: 12.h),
+                SizedBox(height: 16.h),
+
+                // Email
+                _buildTextField(
+                  controller: _emailController,
+                  hint: 'Email Address',
+                  icon: Icons.email_outlined,
+                  isDarkMode: isDarkMode,
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                SizedBox(height: 16.h),
+
+                // Phone Number
                 Row(
                   children: [
-                    Icon(
-                      Icons.email,
-                      size: 20.sp,
-                      color: isDarkMode
-                          ? AppColors.darkSecondaryText
-                          : AppColors.lightSecondaryText,
-                    ),
-                    SizedBox(width: 8.w),
-                    Text(
-                      data.emailAddress,
-                      style: TextStyles.font14_400Weight.copyWith(
-                        color: isDarkMode
-                            ? AppColors.darkSecondaryText
-                            : AppColors.lightSecondaryText,
+                    SizedBox(
+                      width: 100.w,
+                      child: _buildTextField(
+                        controller: _countryCodeController,
+                        hint: '+1',
+                        icon: Icons.flag_outlined,
+                        isDarkMode: isDarkMode,
+                        keyboardType: TextInputType.phone,
                       ),
                     ),
-                  ],
-                ),
-                SizedBox(height: 12.h),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.phone,
-                      size: 20.sp,
-                      color: isDarkMode
-                          ? AppColors.darkSecondaryText
-                          : AppColors.lightSecondaryText,
-                    ),
-                    SizedBox(width: 8.w),
-                    Text(
-                      '${data.countryCode} ${data.phoneNumber}',
-                      style: TextStyles.font14_400Weight.copyWith(
-                        color: isDarkMode
-                            ? AppColors.darkSecondaryText
-                            : AppColors.lightSecondaryText,
+                    SizedBox(width: 16.w),
+                    Expanded(
+                      child: _buildTextField(
+                        controller: _phoneController,
+                        hint: 'Phone Number',
+                        isDarkMode: isDarkMode,
+                        keyboardType: TextInputType.phone,
                       ),
                     ),
                   ],
@@ -457,6 +461,61 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hint,
+    required bool isDarkMode,
+    IconData? icon,
+    TextInputType? keyboardType,
+  }) {
+    return TextField(
+      controller: controller,
+      keyboardType: keyboardType,
+      style: TextStyle(
+        color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+      ),
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: TextStyle(
+          color: isDarkMode
+              ? AppColors.darkSecondaryText
+              : AppColors.lightSecondaryText,
+        ),
+        prefixIcon: icon != null
+            ? Icon(
+                icon,
+                color: isDarkMode
+                    ? AppColors.darkSecondaryText
+                    : AppColors.lightSecondaryText,
+              )
+            : null,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.r),
+          borderSide: BorderSide(
+            color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.r),
+          borderSide: BorderSide(
+            color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.r),
+          borderSide: BorderSide(
+            color: isDarkMode ? Colors.blue.shade700 : Colors.blue,
+          ),
+        ),
+        filled: true,
+        fillColor: isDarkMode
+            ? AppColors.darkGrey.withOpacity(0.2)
+            : AppColors.lightGrey.withOpacity(0.1),
+        contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+      ),
     );
   }
 

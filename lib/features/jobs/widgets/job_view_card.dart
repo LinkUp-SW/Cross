@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:link_up/features/jobs/model/job_detail_model.dart';
 import 'package:link_up/features/jobs/viewModel/job_details_view_model.dart';
 import 'package:link_up/features/jobs/view/job_application_view.dart';
@@ -71,6 +72,23 @@ class JobDetailsCard extends ConsumerWidget {
     );
   }
 
+  void _navigateToCompanyProfile(BuildContext context) {
+    // Navigate to company profile
+    // Assuming you have the organization ID in the data
+    if (data.organizationId != null && data.organizationId!.isNotEmpty) {
+      context.push('/company/${data.organizationId}');
+    } else {
+      // If no organizationId, use organization name as a fallback
+      // You might want to implement a search by name functionality in your backend
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Cannot view company profile at this time'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final jobDetailsState = ref.watch(jobDetailsViewModelProvider);
@@ -81,28 +99,100 @@ class JobDetailsCard extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Company logo and name
+          // Company logo and name with View Company Profile option
           Padding(
             padding: EdgeInsets.all(16.0.w),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildCompanyLogo(),
+                // Make logo clickable
+                GestureDetector(
+                  onTap: () => _navigateToCompanyProfile(context),
+                  child: _buildCompanyLogo(),
+                ),
                 SizedBox(width: 16.w),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        data.organizationName,
-                        style: TextStyles.font18_700Weight.copyWith(
-                          color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightTextColor,
+                      // Make company name clickable
+                      GestureDetector(
+                        onTap: () => _navigateToCompanyProfile(context),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                data.organizationName,
+                                style: TextStyles.font18_700Weight.copyWith(
+                                  color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightTextColor,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            SizedBox(width: 4.w),
+                            Icon(
+                              Icons.arrow_forward_ios,
+                              size: 14.sp,
+                              color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
+                            ),
+                          ],
                         ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
                       ),
                       SizedBox(height: 4.h),
+                      // Add "View Company Profile" text link
+                      GestureDetector(
+                        onTap: () => _navigateToCompanyProfile(context),
+                        child: Text(
+                          'View Company Profile',
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.w500,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
+                ),
+                // Add a menu button for more options
+                PopupMenuButton<String>(
+                  icon: Icon(
+                    Icons.more_vert,
+                    color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
+                    size: 24.sp,
+                  ),
+                  color: isDarkMode ? Colors.grey[800] : Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: 'view_company',
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.business,
+                            size: 18.sp,
+                            color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightTextColor,
+                          ),
+                          SizedBox(width: 8.w),
+                          Text(
+                            'View Company Profile',
+                            style: TextStyle(
+                              color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightTextColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  onSelected: (value) {
+                    if (value == 'view_company') {
+                      _navigateToCompanyProfile(context);
+                    }
+                  },
                 ),
               ],
             ),

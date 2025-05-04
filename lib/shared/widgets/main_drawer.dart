@@ -121,6 +121,15 @@ class _MainDrawerState extends ConsumerState<MainDrawer> {
                     context.push('/groups');
                   },
                 ),
+                // Create Company Profile button
+                ListTile(
+                  leading: const Icon(Icons.business),
+                  title: const Text('Create Company Profile'),
+                  onTap: () {
+                    context.pop();
+                    context.push('/create-company');
+                  },
+                ),
               ],
             ),
             Column(
