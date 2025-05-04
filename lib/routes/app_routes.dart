@@ -63,12 +63,10 @@ import 'package:link_up/features/profile/view/add_media_link.dart';
 import 'package:link_up/features/jobs/view/job_details.dart';
 import 'package:link_up/features/jobs/view/my_jobs_screen.dart';
 
+final goRouterProvider = Provider<GoRouter>((ref) {
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
-final goRouterProvider = Provider<GoRouter>(
-  (ref) {
-    final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-
-    return GoRouter(
+  return GoRouter(
       navigatorKey: navigatorKey,
       initialLocation: '/login',
       routes: <RouteBase>[
@@ -317,6 +315,24 @@ final goRouterProvider = Provider<GoRouter>(
                       path: "/searchjobs",
                       builder: (context, state) => const SearchJobsPage(),
                     ),
+                    GoRoute(
+                      path: '/jobs/my-jobs',
+                      builder: (context, state) => const MyJobsScreen(),
+                    ),
+
+                    // Job Details route
+                    GoRoute(
+                      path: '/jobs/details/:jobId',
+                      builder: (context, state) => JobDetailsPage(
+                        jobId: state.pathParameters['jobId']!,
+                      ),
+                    ),
+
+                    // Job Search route
+                    GoRoute(
+                      path: 'jobs/search',
+                      builder: (context, state) => const SearchJobsPage(),
+                    ),
                   ],
                 ),
               ],
@@ -388,7 +404,14 @@ final goRouterProvider = Provider<GoRouter>(
           builder: (context, state) => SavedPostsPage(),
         ),
         GoRoute(
-            path: '/userPosts', builder: (context, state) => UserPostsPage()),
+            path: '/userPosts',
+            builder: (context, state) {
+              final extraData = state.extra as Map<String, dynamic>?;
+              return UserPostsPage(
+                userId: extraData?['userId'] as String? ?? '',
+                userName: extraData?['userName'] as String? ?? '',
+              );
+            }),
         GoRoute(
             path: "/messages", builder: (context, state) => ChatListScreen()),
         GoRoute(path: "/chatpage", builder: (context, state) => Container()),
@@ -399,6 +422,10 @@ final goRouterProvider = Provider<GoRouter>(
           ),
         ),
         GoRoute(
+          path: '/payment',
+          builder: (context, state) => SubscriptionManagementScreen(),
+        ),
+        GoRoute(
             path: "/settings",
             builder: (context, state) => SettingsPage(),
             routes: [
@@ -406,11 +433,5 @@ final goRouterProvider = Provider<GoRouter>(
                   path: '/privacy',
                   builder: (context, state) => const PrivacySettings()),
             ]),
-        GoRoute(
-          path: "/payment",
-          builder: (context, state) => const SubscriptionManagementScreen(),
-        ),
-      ],
-    );
-  },
-);
+      ]);
+});

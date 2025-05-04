@@ -37,4 +37,6 @@ class JobsCardModel {
       experienceLevel: json['experience_level'],
     );
   }
+
+  get jobId => null;
 }

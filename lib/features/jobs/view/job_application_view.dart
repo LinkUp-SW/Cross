@@ -6,6 +6,7 @@ import 'package:link_up/features/jobs/model/job_application_user_model.dart';
 import 'package:link_up/features/jobs/viewModel/job_application_view_model.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
+import 'package:go_router/go_router.dart';
 
 class JobApplicationDialog extends ConsumerStatefulWidget {
   final String jobId;
@@ -20,7 +21,8 @@ class JobApplicationDialog extends ConsumerStatefulWidget {
   }) : super(key: key);
 
   @override
-  ConsumerState<JobApplicationDialog> createState() => _JobApplicationDialogState();
+  ConsumerState<JobApplicationDialog> createState() =>
+      _JobApplicationDialogState();
 }
 
 class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
@@ -31,7 +33,9 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      ref.read(jobApplicationViewModelProvider.notifier).getApplicationUserData();
+      ref
+          .read(jobApplicationViewModelProvider.notifier)
+          .getApplicationUserData();
     });
   }
 
@@ -45,13 +49,14 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
   Widget build(BuildContext context) {
     final state = ref.watch(jobApplicationViewModelProvider);
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    
+
     if (state.isSuccess) {
       return _buildSuccessDialog(isDarkMode);
     }
 
     return Dialog(
-      backgroundColor: isDarkMode ? AppColors.darkBackground : AppColors.lightBackground,
+      backgroundColor:
+          isDarkMode ? AppColors.darkBackground : AppColors.lightBackground,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16.r),
       ),
@@ -60,8 +65,10 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
         child: state.isLoading
             ? _buildLoadingState(isDarkMode)
             : state.isError
-                ? _buildErrorState(isDarkMode, state.errorMessage ?? 'Failed to load your profile data')
-                : _buildApplicationForm(isDarkMode, state.userData, state.isSubmitting),
+                ? _buildErrorState(isDarkMode,
+                    state.errorMessage ?? 'Failed to load your profile data')
+                : _buildApplicationForm(
+                    isDarkMode, state.userData, state.isSubmitting),
       ),
     );
   }
@@ -82,7 +89,9 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
           Text(
             'Loading your profile...',
             style: TextStyles.font16_500Weight.copyWith(
-              color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+              color: isDarkMode
+                  ? AppColors.darkTextColor
+                  : AppColors.lightTextColor,
             ),
           ),
         ],
@@ -105,7 +114,9 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
           Text(
             'Error',
             style: TextStyles.font18_700Weight.copyWith(
-              color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+              color: isDarkMode
+                  ? AppColors.darkTextColor
+                  : AppColors.lightTextColor,
             ),
           ),
           SizedBox(height: 8.h),
@@ -113,7 +124,9 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
             errorMessage,
             textAlign: TextAlign.center,
             style: TextStyles.font14_400Weight.copyWith(
-              color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+              color: isDarkMode
+                  ? AppColors.darkTextColor
+                  : AppColors.lightTextColor,
             ),
           ),
           SizedBox(height: 24.h),
@@ -122,12 +135,16 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
             children: [
               ElevatedButton(
                 onPressed: () {
-                  ref.read(jobApplicationViewModelProvider.notifier).getApplicationUserData();
+                  ref
+                      .read(jobApplicationViewModelProvider.notifier)
+                      .getApplicationUserData();
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: isDarkMode ? Colors.blue.shade700 : Colors.blue,
+                  backgroundColor:
+                      isDarkMode ? Colors.blue.shade700 : Colors.blue,
                   foregroundColor: Colors.white,
-                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.r),
                   ),
@@ -137,13 +154,14 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
               SizedBox(width: 16.w),
               OutlinedButton(
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  context.pop();
                 },
                 style: OutlinedButton.styleFrom(
                   side: BorderSide(
                     color: isDarkMode ? Colors.blue.shade700 : Colors.blue,
                   ),
-                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.r),
                   ),
@@ -162,7 +180,8 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
     );
   }
 
-  Widget _buildApplicationForm(bool isDarkMode, JobApplicationUserModel? data, bool isSubmitting) {
+  Widget _buildApplicationForm(
+      bool isDarkMode, JobApplicationUserModel? data, bool isSubmitting) {
     if (data == null) {
       return _buildErrorState(isDarkMode, 'Profile data is missing');
     }
@@ -176,26 +195,30 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
           Text(
             'Apply to ${widget.jobTitle}',
             style: TextStyles.font18_700Weight.copyWith(
-              color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+              color: isDarkMode
+                  ? AppColors.darkTextColor
+                  : AppColors.lightTextColor,
             ),
           ),
           SizedBox(height: 4.h),
           Text(
             'at ${widget.companyName}',
             style: TextStyles.font14_400Weight.copyWith(
-              color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
+              color: isDarkMode
+                  ? AppColors.darkSecondaryText
+                  : AppColors.lightSecondaryText,
             ),
           ),
           Divider(height: 32.h),
-          
+
           // Profile information section
           _buildProfileSection(isDarkMode, data),
           SizedBox(height: 24.h),
-          
+
           // Resume section
           _buildResumeSection(isDarkMode, data),
           SizedBox(height: 24.h),
-          
+
           // Cover letter option
           Row(
             children: [
@@ -211,12 +234,14 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
               Text(
                 'Add a cover letter',
                 style: TextStyles.font14_500Weight.copyWith(
-                  color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+                  color: isDarkMode
+                      ? AppColors.darkTextColor
+                      : AppColors.lightTextColor,
                 ),
               ),
             ],
           ),
-          
+
           // Cover letter field
           if (_showCoverLetterField) ...[
             SizedBox(height: 16.h),
@@ -226,18 +251,22 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
               decoration: InputDecoration(
                 hintText: 'Write your cover letter here...',
                 hintStyle: TextStyle(
-                  color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
+                  color: isDarkMode
+                      ? AppColors.darkSecondaryText
+                      : AppColors.lightSecondaryText,
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.r),
                   borderSide: BorderSide(
-                    color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
+                    color:
+                        isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
                   ),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.r),
                   borderSide: BorderSide(
-                    color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
+                    color:
+                        isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
@@ -247,40 +276,51 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
                   ),
                 ),
                 filled: true,
-                fillColor: isDarkMode ? AppColors.darkGrey.withOpacity(0.2) : AppColors.lightGrey.withOpacity(0.1),
+                fillColor: isDarkMode
+                    ? AppColors.darkGrey.withOpacity(0.2)
+                    : AppColors.lightGrey.withOpacity(0.1),
                 contentPadding: EdgeInsets.all(16.w),
               ),
               style: TextStyle(
-                color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+                color: isDarkMode
+                    ? AppColors.darkTextColor
+                    : AppColors.lightTextColor,
               ),
             ),
           ],
-          
+
           SizedBox(height: 24.h),
-          
+
           // Action buttons
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               TextButton(
-                onPressed: isSubmitting ? null : () {
-                  Navigator.of(context).pop();
-                },
+                onPressed: isSubmitting
+                    ? null
+                    : () {
+                        context.pop();
+                      },
                 child: Text(
                   'Cancel',
                   style: TextStyle(
-                    color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
+                    color: isDarkMode
+                        ? AppColors.darkSecondaryText
+                        : AppColors.lightSecondaryText,
                   ),
                 ),
               ),
               ElevatedButton(
-                onPressed: isSubmitting ? null : () {
-                  _submitApplication(data);
-                },
+                onPressed: isSubmitting
+                    ? null
+                    : () {
+                        _submitApplication(data);
+                      },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
                   foregroundColor: Colors.white,
-                  padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(24.r),
                   ),
@@ -291,7 +331,8 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
                         width: 20.w,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
                         ),
                       )
                     : Text('Submit Application'),
@@ -302,7 +343,7 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
       ),
     );
   }
-  
+
   void _submitApplication(JobApplicationUserModel data) {
     final applicationData = JobApplicationSubmitModel(
       firstName: data.firstName,
@@ -313,11 +354,11 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
       resume: data.resume,
       coverLetter: _showCoverLetterField ? _coverLetterController.text : null,
     );
-    
+
     ref.read(jobApplicationViewModelProvider.notifier).submitJobApplication(
-      jobId: widget.jobId,
-      applicationData: applicationData,
-    );
+          jobId: widget.jobId,
+          applicationData: applicationData,
+        );
   }
 
   Widget _buildProfileSection(bool isDarkMode, JobApplicationUserModel data) {
@@ -327,19 +368,20 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
         Text(
           'Your Profile',
           style: TextStyles.font18_700Weight.copyWith(
-            color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+            color:
+                isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
           ),
         ),
         SizedBox(height: 16.h),
         Card(
-          color: isDarkMode 
-              ? AppColors.darkGrey.withOpacity(0.2) 
+          color: isDarkMode
+              ? AppColors.darkGrey.withOpacity(0.2)
               : AppColors.lightGrey.withOpacity(0.1),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8.r),
             side: BorderSide(
-              color: isDarkMode 
-                  ? AppColors.darkGrey.withOpacity(0.3) 
+              color: isDarkMode
+                  ? AppColors.darkGrey.withOpacity(0.3)
                   : AppColors.lightGrey.withOpacity(0.3),
             ),
           ),
@@ -353,13 +395,17 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
                     Icon(
                       Icons.person,
                       size: 20.sp,
-                      color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
+                      color: isDarkMode
+                          ? AppColors.darkSecondaryText
+                          : AppColors.lightSecondaryText,
                     ),
                     SizedBox(width: 8.w),
                     Text(
                       '${data.firstName} ${data.lastName}',
                       style: TextStyles.font16_500Weight.copyWith(
-                        color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+                        color: isDarkMode
+                            ? AppColors.darkTextColor
+                            : AppColors.lightTextColor,
                       ),
                     ),
                   ],
@@ -370,13 +416,17 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
                     Icon(
                       Icons.email,
                       size: 20.sp,
-                      color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
+                      color: isDarkMode
+                          ? AppColors.darkSecondaryText
+                          : AppColors.lightSecondaryText,
                     ),
                     SizedBox(width: 8.w),
                     Text(
                       data.emailAddress,
                       style: TextStyles.font14_400Weight.copyWith(
-                        color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
+                        color: isDarkMode
+                            ? AppColors.darkSecondaryText
+                            : AppColors.lightSecondaryText,
                       ),
                     ),
                   ],
@@ -387,13 +437,17 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
                     Icon(
                       Icons.phone,
                       size: 20.sp,
-                      color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
+                      color: isDarkMode
+                          ? AppColors.darkSecondaryText
+                          : AppColors.lightSecondaryText,
                     ),
                     SizedBox(width: 8.w),
                     Text(
                       '${data.countryCode} ${data.phoneNumber}',
                       style: TextStyles.font14_400Weight.copyWith(
-                        color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
+                        color: isDarkMode
+                            ? AppColors.darkSecondaryText
+                            : AppColors.lightSecondaryText,
                       ),
                     ),
                   ],
@@ -413,7 +467,8 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
         Text(
           'Your Resume',
           style: TextStyles.font18_700Weight.copyWith(
-            color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+            color:
+                isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
           ),
         ),
         SizedBox(height: 12.h),
@@ -421,10 +476,14 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
           Container(
             padding: EdgeInsets.all(16.w),
             decoration: BoxDecoration(
-              color: isDarkMode ? AppColors.darkGrey.withOpacity(0.2) : AppColors.lightGrey.withOpacity(0.1),
+              color: isDarkMode
+                  ? AppColors.darkGrey.withOpacity(0.2)
+                  : AppColors.lightGrey.withOpacity(0.1),
               borderRadius: BorderRadius.circular(8.r),
               border: Border.all(
-                color: isDarkMode ? AppColors.darkGrey.withOpacity(0.5) : AppColors.lightGrey.withOpacity(0.5),
+                color: isDarkMode
+                    ? AppColors.darkGrey.withOpacity(0.5)
+                    : AppColors.lightGrey.withOpacity(0.5),
               ),
             ),
             child: Row(
@@ -432,7 +491,9 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
                 Icon(
                   Icons.description,
                   size: 24.w,
-                  color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
+                  color: isDarkMode
+                      ? AppColors.darkSecondaryText
+                      : AppColors.lightSecondaryText,
                 ),
                 SizedBox(width: 12.w),
                 Expanded(
@@ -442,14 +503,18 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
                       Text(
                         'Resume.pdf',
                         style: TextStyles.font14_500Weight.copyWith(
-                          color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+                          color: isDarkMode
+                              ? AppColors.darkTextColor
+                              : AppColors.lightTextColor,
                         ),
                       ),
                       SizedBox(height: 4.h),
                       Text(
                         'Your resume will be shared with the employer',
                         style: TextStyles.font12_400Weight.copyWith(
-                          color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
+                          color: isDarkMode
+                              ? AppColors.darkSecondaryText
+                              : AppColors.lightSecondaryText,
                         ),
                       ),
                     ],
@@ -471,7 +536,9 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
           Container(
             padding: EdgeInsets.all(16.w),
             decoration: BoxDecoration(
-              color: isDarkMode ? Colors.red.withOpacity(0.1) : Colors.red.withOpacity(0.05),
+              color: isDarkMode
+                  ? Colors.red.withOpacity(0.1)
+                  : Colors.red.withOpacity(0.05),
               borderRadius: BorderRadius.circular(8.r),
               border: Border.all(
                 color: Colors.red.withOpacity(0.3),
@@ -499,7 +566,9 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
                       Text(
                         'Please upload a resume in your profile before applying',
                         style: TextStyles.font12_400Weight.copyWith(
-                          color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
+                          color: isDarkMode
+                              ? AppColors.darkSecondaryText
+                              : AppColors.lightSecondaryText,
                         ),
                       ),
                     ],
@@ -514,14 +583,15 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
 
   Widget _buildSuccessDialog(bool isDarkMode) {
     return Dialog(
-      backgroundColor: isDarkMode ? AppColors.darkBackground : AppColors.lightBackground,
+      backgroundColor:
+          isDarkMode ? AppColors.darkBackground : AppColors.lightBackground,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16.r),
       ),
       child: Container(
         padding: EdgeInsets.all(24.w),
         child: Column(
-           mainAxisSize: MainAxisSize.min,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               width: 72.w,
@@ -540,7 +610,9 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
             Text(
               'Application Submitted!',
               style: TextStyles.font20_700Weight.copyWith(
-                color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+                color: isDarkMode
+                    ? AppColors.darkTextColor
+                    : AppColors.lightTextColor,
               ),
             ),
             SizedBox(height: 16.h),
@@ -548,14 +620,17 @@ class _JobApplicationDialogState extends ConsumerState<JobApplicationDialog> {
               'Your application for ${widget.jobTitle} at ${widget.companyName} has been successfully submitted.',
               textAlign: TextAlign.center,
               style: TextStyles.font14_400Weight.copyWith(
-                color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+                color: isDarkMode
+                    ? AppColors.darkTextColor
+                    : AppColors.lightTextColor,
               ),
             ),
             SizedBox(height: 24.h),
             ElevatedButton(
               onPressed: () {
                 ref.read(jobApplicationViewModelProvider.notifier).resetState();
-                Navigator.of(context).pop(true); // Return true to indicate successful submission
+                context
+                    .pop(true); // Return true to indicate successful submission
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,
