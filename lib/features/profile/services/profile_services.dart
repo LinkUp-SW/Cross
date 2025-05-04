@@ -1257,6 +1257,38 @@ class ProfileService extends BaseService {
       rethrow;
     }
   }
+
+  Future<Map<String, dynamic>> follow(String userId) async {
+    try {
+      final response = await super
+          .post(ExternalEndPoints.follow, routeParameters: {'user_id': userId});
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+      throw Exception('Failed to follow ${response.statusCode}');
+    } catch (e) {
+      log("Error following user with user id: $userId, error: $e");
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> sendConnectionRequest(
+    String userId, {
+    Map<String, dynamic>? body,
+  }) async {
+    try {
+      final response = await super.post(ExternalEndPoints.connect,
+          body: body, routeParameters: {'user_id': userId});
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+      throw Exception(
+          'Failed to send connection request: ${response.body} , status code: ${response.statusCode}');
+    } catch (e) {
+      log("Error sending connection request to user with id: $userId, error: $e");
+      rethrow;
+    }
+  }
 }
 
 final profileServiceProvider = Provider<ProfileService>((ref) {
