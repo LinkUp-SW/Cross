@@ -410,6 +410,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           ),
         ),
         GoRoute(
+          path: '/payment',
+          builder: (context, state) => SubscriptionManagementScreen(),
+        ),
+        GoRoute(
             path: "/settings",
             builder: (context, state) => SettingsPage(),
             routes: [
