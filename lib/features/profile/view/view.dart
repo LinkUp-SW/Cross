@@ -110,11 +110,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               child: Column(
                 children: [
                   ProfileHeaderWidget(userProfile: userProfile, userId: widget.userId),
-                  ProfileActivityPreview(
-                    userId: widget.userId,
-                    userName: '${userProfile.firstName} ${userProfile.lastName}', 
-                    numberOfConnections: userProfile.numberOfConnections,
-                  ),
+                  
                   if (hasResume)
                    SectionWidget(
                      title: "Resume",
@@ -151,7 +147,11 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                              ],
                            ),
                    ),
-
+                  ProfileActivityPreview(
+                    userId: widget.userId,
+                    userName: '${userProfile.firstName} ${userProfile.lastName}', 
+                    numberOfConnections: userProfile.numberOfConnections,
+                  ),
                     if (showAboutSection)
                       SectionWidget(
                         title: "About",
