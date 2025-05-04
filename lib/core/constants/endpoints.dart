@@ -78,4 +78,6 @@ class ExternalEndPoints {
   static const getAppliedJobs = 'api/v1/job-application/get-applied-jobs';
   static const updateJobApplicationStatus =
       'api/v1/job-application/update-job-application-status/:application_id';
+      static const createCompanyProfile='api/v1/company/create-company-profile';
+  static const getCompanyProfile='api/v1/company/get-company-profile/:companyId';
 }

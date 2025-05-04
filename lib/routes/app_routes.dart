@@ -7,6 +7,7 @@ import 'package:link_up/features/admin_panel/view/privilages_view.dart';
 import 'package:link_up/features/Home/view/user_posts_page.dart';
 import 'package:link_up/features/admin_panel/view/statistics_view.dart';
 import 'package:link_up/features/admin_panel/view/users_view.dart';
+import 'package:link_up/features/company_profile/view/company_profile_view.dart';
 import 'package:link_up/features/my-network/view/connections_screen.dart';
 import 'package:link_up/core/utils/global_keys.dart';
 import 'package:link_up/features/logIn/view/forgot_pasword_view.dart';
@@ -61,7 +62,7 @@ import 'package:link_up/features/profile/model/profile_model.dart';
 import 'package:link_up/features/profile/view/blocked_users_pages.dart';
 import 'package:link_up/features/jobs/view/job_details.dart';
 import 'package:link_up/features/jobs/view/my_jobs_screen.dart';
-
+import 'package:link_up/features/company_profile/view/create_company_view.dart';
 final goRouterProvider = Provider<GoRouter>((ref) {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -234,6 +235,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           path: "/add_new_position",
           builder: (context, state) => const AddNewPosition(),
         ),
+        GoRoute(
+  path: '/company/:companyId',
+  builder: (context, state) => CompanyProfileViewPage(
+    companyId: state.pathParameters['companyId']!,
+  ),
+),
         GoRoute(
           path: "/add_new_education",
           builder: (context, state) => const AddNewEducation(),
