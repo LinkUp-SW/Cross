@@ -1,4 +1,4 @@
-enum NotificationFilter { All, Posts, Connections } // Define enum
+enum NotificationFilter { All, Posts,CONNECTION_REQUEST,CONNECTION_ACCEPTED,FOLLOW } // Define enum
 
 class NotificationModel {
   final String id;
@@ -58,12 +58,41 @@ class NotificationModel {
     );
   }
 
+  // Add this factory method to handle socket notification data
+  factory NotificationModel.fromSocketData(Map<String, dynamic> data) {
+    return NotificationModel(
+      id: data['id'],
+      senderId: data['senderId'],
+      firstName: data['senderName']?.split(' ')?.first ?? '',
+      lastName: data['senderName']?.split(' ')?.last ?? '',
+      profilePhoto: data['senderPhoto'] ?? '',
+      content: data['content'] ?? '',
+      createdAt: data['createdAt'],
+      type: _parseNotificationType(data['type']),
+      isRead: false,
+      referenceId: data['referenceId'] ?? '',
+    );
+  }
+
   static NotificationFilter _parseNotificationType(String typeString) {
     switch (typeString.toLowerCase()) {
+      // Post-related notifications
+      case 'reacted':
+      case 'comment':
       case 'posts':
         return NotificationFilter.Posts;
-      case 'connections':
-        return NotificationFilter.Connections;
+
+      // Connection-related notifications
+      case 'connection_request':
+       return NotificationFilter.CONNECTION_REQUEST;
+      case 'connection_accepted':
+       return NotificationFilter.CONNECTION_ACCEPTED;
+      case 'follow':
+      return NotificationFilter.FOLLOW;
+     
+
+      // Default case
+      case 'message':
       default:
         return NotificationFilter.All;
     }

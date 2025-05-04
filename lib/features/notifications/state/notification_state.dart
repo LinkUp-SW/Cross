@@ -5,12 +5,13 @@ class NotificationState {
   final List<NotificationModel> notifications;
   final bool isLoading;
   final String? errorMessage;
-
+  final int unreadCount;
   NotificationState({
     this.selectedFilter = NotificationFilter.All,
     this.notifications = const [],
     this.isLoading = false,
     this.errorMessage,
+    this.unreadCount = 0,
   });
 
   List<NotificationModel> get filteredNotifications {
@@ -29,12 +30,14 @@ class NotificationState {
     List<NotificationModel>? notifications,
     bool? isLoading,
     String? errorMessage,
+    int? unreadCount,
   }) {
     return NotificationState(
       selectedFilter: selectedFilter ?? this.selectedFilter,
       notifications: notifications ?? this.notifications,
       isLoading: isLoading ?? this.isLoading,
       errorMessage: errorMessage ?? this.errorMessage,
+      unreadCount: unreadCount ?? this.unreadCount,
     );
   }
 }

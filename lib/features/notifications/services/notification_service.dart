@@ -1,3 +1,5 @@
+import 'package:link_up/core/services/storage.dart';
+
 import '../model/notification_model.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -7,23 +9,26 @@ class NotificationService {
   Future<List<NotificationModel>> fetchNotifications() async {
     try {
       // Handle the leading slash in the endpoint to avoid double slashes
-      final endpoint = ExternalEndPoints.getnotifiacations.startsWith('/')
-          ? ExternalEndPoints.getnotifiacations.substring(1)
-          : ExternalEndPoints.getnotifiacations;
+      final endpoint = ExternalEndPoints.getnotifications.startsWith('/')
+          ? ExternalEndPoints.getnotifications.substring(1)
+          : ExternalEndPoints.getnotifications;
 
       final url = '${ExternalEndPoints.baseUrl}$endpoint';
+      final String? authToken = await _getAuthToken();
 
       final response = await http.get(
         Uri.parse(url),
         headers: {
           'Content-Type': 'application/json',
-       
+          'Authorization': 'Bearer $authToken',
         },
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
-        return data.map((item) => NotificationModel.fromJson(item)).toList();
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final List<dynamic> notificationsData = responseData['notifications'] as List<dynamic>;
+
+        return notificationsData.map((item) => NotificationModel.fromJson(item)).toList();
       } else {
         throw Exception('Failed to load notifications: ${response.statusCode}');
       }
@@ -43,12 +48,14 @@ class NotificationService {
 
       final url = '${ExternalEndPoints.baseUrl}$endpoint';
 
+      // Get authentication token from secure storage or state management
+      final String? authToken = await _getAuthToken();
+
       final response = await http.put(
         Uri.parse(url),
         headers: {
           'Content-Type': 'application/json',
-          // Add authentication headers if needed
-          // 'Authorization': 'Bearer ${yourAuthToken}',
+          'Authorization': 'Bearer $authToken', // Add auth header
         },
       );
 
@@ -62,6 +69,11 @@ class NotificationService {
     }
   }
 
+  // Helper method to get auth token
+  Future<String?> _getAuthToken() async {
+    return await getToken();
+  }
+
   Future<int> getUnreadNotificationsCount() async {
     try {
       final endpoint = ExternalEndPoints.getunreadnotifications.startsWith('/')
@@ -69,13 +81,12 @@ class NotificationService {
           : ExternalEndPoints.getunreadnotifications;
 
       final url = '${ExternalEndPoints.baseUrl}$endpoint';
-
+      final String? authToken = await _getAuthToken();
       final response = await http.get(
         Uri.parse(url),
         headers: {
           'Content-Type': 'application/json',
-          // Add authentication headers if needed
-          // 'Authorization': 'Bearer ${yourAuthToken}',
+          'Authorization': 'Bearer $authToken',
         },
       );
 
