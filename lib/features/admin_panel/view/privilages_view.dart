@@ -1,4 +1,4 @@
-// privilages_view.dart
+// THEMED ONLY VERSION
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,6 +9,7 @@ import 'package:link_up/features/admin_panel/widgets/admin_drawer.dart';
 import 'package:link_up/features/admin_panel/widgets/report_popup.dart';
 import 'package:link_up/features/admin_panel/widgets/reports.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
+import 'package:link_up/shared/themes/text_styles.dart';
 
 class ReportsPage extends ConsumerStatefulWidget {
   const ReportsPage({super.key});
@@ -58,6 +59,7 @@ class _ReportsPageState extends ConsumerState<ReportsPage>
   @override
   Widget build(BuildContext context) {
     final reportState = ref.watch(reportProvider);
+    final theme = Theme.of(context);
 
     return Scaffold(
       drawer: const AdminDrawer(),
@@ -70,21 +72,19 @@ class _ReportsPageState extends ConsumerState<ReportsPage>
             ),
           ),
         ),
-        backgroundColor: Colors.white,
-        title: const Text(
+        backgroundColor: theme.colorScheme.surface,
+        title: Text(
           "Reports",
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-            fontSize: 25,
+          style: TextStyles.font25_700Weight.copyWith(
+            color: theme.colorScheme.onSurface,
           ),
         ),
-        iconTheme: const IconThemeData(color: Colors.black),
+        iconTheme: IconThemeData(color: theme.colorScheme.onSurface),
         bottom: TabBar(
           controller: _tabController,
-          labelColor: Colors.black,
-          unselectedLabelColor: Colors.grey,
-          indicatorColor: Colors.blue,
+          labelColor: theme.colorScheme.primary,
+          unselectedLabelColor: theme.hintColor,
+          indicatorColor: theme.colorScheme.primary,
           tabs: const [
             Tab(text: "Pending"),
             Tab(text: "Resolved"),
@@ -139,20 +139,14 @@ class _ReportsPageState extends ConsumerState<ReportsPage>
                   type: report.type,
                 );
 
-                // Only Pending reports get the popup
-                if (report.status.toLowerCase() != "pending") {
-                  return card;
-                }
+                if (report.status.toLowerCase() != "pending") return card;
 
                 return GestureDetector(
                   onTap: () async {
                     final notifier = ref.read(reportProvider.notifier);
-
-                    // If it's a post/comment, fetch content first
                     if (report.contentRef != null &&
                         (report.type.toLowerCase() == 'post' ||
                             report.type.toLowerCase() == 'comment')) {
-                      // show loading
                       showReportPopup(
                         context: context,
                         type: report.type,
@@ -166,8 +160,7 @@ class _ReportsPageState extends ConsumerState<ReportsPage>
                             .read(reportServiceProvider)
                             .fetchPost(report.type, report.contentRef!);
                         if (!context.mounted) return;
-                        Navigator.pop(context); // close loader
-
+                        Navigator.pop(context);
                         showReportPopup(
                           context: context,
                           type: report.type,
@@ -185,7 +178,7 @@ class _ReportsPageState extends ConsumerState<ReportsPage>
                         );
                       } catch (_) {
                         if (!context.mounted) return;
-                        Navigator.pop(context); // close loader
+                        Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                               content:
@@ -193,7 +186,6 @@ class _ReportsPageState extends ConsumerState<ReportsPage>
                         );
                       }
                     } else {
-                      // generic types (e.g. Job Listing)
                       showReportPopup(
                         context: context,
                         type: report.type,
