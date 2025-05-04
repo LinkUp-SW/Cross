@@ -2,11 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
-import 'package:link_up/features/profile/model/education_model.dart';
-import 'package:link_up/features/profile/model/position_model.dart';
-import 'package:link_up/features/profile/model/license_model.dart';
-import 'package:link_up/features/profile/model/about_model.dart';
 import 'package:link_up/features/profile/model/skills_model.dart';
 import 'package:link_up/features/profile/viewModel/profile_view_model.dart';
 import 'package:link_up/features/profile/widgets/profile_app_bar_widget.dart';
@@ -133,7 +128,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                     numberOfConnections: userProfile.numberOfConnections,
                     isMyProfile: isMyProfile,
                   ),
-
                   if (hasResume)
                     SectionWidget(
                       title: "Resume",

@@ -23,6 +23,8 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
   final ProfileService _profileService;
   final Ref _ref;
   String? _currentUserId;
+  
+
 
   ProfileViewModel(this._profileService, this._ref)
       : super(const ProfileInitial());
@@ -55,7 +57,7 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
       final resumeUrlFuture = _profileService.getCurrentResumeUrl(idToFetch);
       final licensesFuture = _profileService.getUserLicenses(idToFetch);
       final skillsFuture = _profileService.getUserSkills(idToFetch);
-
+      final isPublicProfile= await _profileService.getProfileVisibility();
       final results = await Future.wait([
         userProfileFuture,
         educationFuture,
