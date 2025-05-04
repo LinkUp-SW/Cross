@@ -69,9 +69,9 @@ dependencies:
   video_compress: ^3.1.2
   path: ^1.8.2
   chewie: ^1.7.0
-  firebase_core: ^2.25.0
-  firebase_messaging: ^14.7.10
-  firebase_analytics: ^10.0.0
+  # firebase_core: ^2.25.0
+  # firebase_messaging: ^14.7.10
+  # firebase_analytics: ^10.0.0
 
 dev_dependencies:
   flutter_test:
