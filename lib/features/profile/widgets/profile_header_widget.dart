@@ -733,7 +733,7 @@ class ProfileHeaderWidget extends ConsumerWidget {
         !followPrimary;
     bool showUnfollowButton = isAlreadyFollowing && followPrimary;
     bool showFollowButton = followPrimary && !isAlreadyFollowing;
-    bool showPendingButton = isRequestSentByMe;
+    bool showPendingButton = isRequestSentByMe && !followPrimary;
     bool showAcceptButton =
         isRequestReceivedByMe && !isConnected && !followPrimary;
     log('Calculated Conditions: isConnected=$isConnected, isRequestSentByMe=$isRequestSentByMe, isRequestReceivedByMe=$isRequestReceivedByMe');
@@ -774,8 +774,8 @@ class ProfileHeaderWidget extends ConsumerWidget {
           buildProfileActionButton(
             context: context,
             isDarkMode: isDarkMode,
-            icon: Icons.hourglass_top_rounded,
-            label: "Withdraw Connection",
+            icon: Icons.cancel_rounded,
+            label: "Withdraw ",
             onPressed: () async {
               await ref
                   .read(profileViewModelProvider.notifier)
@@ -864,6 +864,18 @@ class ProfileHeaderWidget extends ConsumerWidget {
               log('More button clicked for ${otherUserProfile.firstName}');
 
               final List<ReusableBottomSheetOption> options = [
+                if (isRequestReceivedByMe)
+                  ReusableBottomSheetOption(
+                    icon: Icons.cancel_outlined,
+                    title: 'Ignore Connection Request',
+                    onTap: () {
+                      // TODO: Implement accept connection request functionality
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(
+                              'TODO: Ignore request from ${otherUserProfile.firstName}')));
+                    },
+                  ),
                 if (followPrimary && !isConnected && !isRequestSentByMe)
                   ReusableBottomSheetOption(
                     icon: Icons.person_add_outlined,
