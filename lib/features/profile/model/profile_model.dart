@@ -81,7 +81,7 @@ class UserProfile {
       followPrimary: json['follow_primary'] as bool? ?? false,
       isSubscribed: json['isSubscribed'] as bool? ?? false, 
       viewUserSubscribed: json['view_user_is_subscribed'] as bool? ?? false,
-      isConnectByEmail: json['isConnectedByEmail'] as bool? ?? false,
+      isConnectByEmail: json['isConnectByEmail'] as bool? ?? false,
 
     );
   }

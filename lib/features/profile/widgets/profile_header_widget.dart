@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/features/profile/model/profile_model.dart';
+import 'package:link_up/features/search/widgets/email_confirmation_pop_up.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/shared/themes/button_styles.dart';
@@ -749,9 +750,23 @@ class ProfileHeaderWidget extends ConsumerWidget {
             icon: Icons.add_circle_outline_rounded,
             label: "Connect",
             onPressed: () async {
-              await ref
-                  .read(profileViewModelProvider.notifier)
-                  .sendConnectionRequest(userId);
+              if (isConnectByEmail) {
+                showDialog(
+                  context: context,
+                  builder: (context) => EmailConfirmationPopUp(
+                    userId: userId,
+                    onConnectionRequestSent: () async {
+                      await ref
+                          .read(profileViewModelProvider.notifier)
+                          .fetchUserProfile(userId);
+                    },
+                  ),
+                );
+              } else {
+                await ref
+                    .read(profileViewModelProvider.notifier)
+                    .sendConnectionRequest(userId);
+              }
             },
             buttonStyles: buttonStyles,
           ),
