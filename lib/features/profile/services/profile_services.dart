@@ -1085,6 +1085,60 @@ class ProfileService extends BaseService {
     }
   }
 
+//block
+  Future<bool> blockUser(String userIdToBlock) async {
+    final String endpointTemplate = 'api/v1/user/block/:user_id';
+    final String endpointPath =
+        endpointTemplate.replaceFirst(':user_id', userIdToBlock);
+    final Uri uri = Uri.parse(
+        '${ExternalEndPoints.baseUrl}$endpointPath'); // Construct full URL
+
+    log('ProfileService: Attempting to block user ID: $userIdToBlock via POST $uri');
+
+    final String? token = await getToken();
+    if (token == null || token.isEmpty) {
+      log('ProfileService: Block failed - Auth token not found.');
+      throw Exception("Authentication token not found.");
+    }
+
+    try {
+      final http.Response response = await http.post(
+        uri,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      ).timeout(const Duration(seconds: 15));
+
+      log('ProfileService: Block User API Response Status Code: ${response.statusCode}');
+      log('ProfileService: Block User API Response Body: ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        log('ProfileService: User $userIdToBlock blocked successfully.');
+        return true;
+      } else if (response.statusCode == 400 &&
+          response.body.contains('User is already blocked')) {
+        log('ProfileService: User $userIdToBlock is already blocked.');
+        return true;
+      } else {
+        log('ProfileService: Block failed for user $userIdToBlock. Status Code: ${response.statusCode}, Body: ${response.body}');
+        String errorMessage =
+            'Failed to block user (Status code: ${response.statusCode})';
+        try {
+          final errorJson = jsonDecode(response.body);
+          errorMessage = errorJson['message'] ?? errorMessage;
+        } catch (_) {}
+        throw Exception(errorMessage);
+      }
+    } on TimeoutException catch (e) {
+      log('ProfileService: Block request timed out for user $userIdToBlock: $e');
+      throw Exception('Request timed out. Please try again.');
+    } catch (e) {
+      log('ProfileService: Error sending block request for $userIdToBlock: $e');
+      rethrow;
+    }
+  }
+
   Future<List<BlockedUser>> getBlockedUsers() async {
     const String endpoint = 'api/v1/user/manage-by-blocked-list/blocked';
     log('ProfileService: Fetching blocked users list from $endpoint');
@@ -1186,6 +1240,112 @@ class ProfileService extends BaseService {
     } catch (e) {
       log('ProfileService: Error sending unblock request for $userIdToUnblock: $e');
 
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> unfollow(String userId) async {
+    try {
+      final response =
+          await super.delete(ExternalEndPoints.unfollow, {'user_id': userId});
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+      throw Exception('Failed to unfollow ${response.statusCode}');
+    } catch (e) {
+      log("Error unfollowing user with user id: $userId, error: $e");
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> follow(String userId) async {
+    try {
+      final response = await super
+          .post(ExternalEndPoints.follow, routeParameters: {'user_id': userId});
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+      throw Exception('Failed to follow ${response.statusCode}');
+    } catch (e) {
+      log("Error following user with user id: $userId, error: $e");
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> sendConnectionRequest(
+    String userId, {
+    Map<String, dynamic>? body,
+  }) async {
+    try {
+      final response = await super.post(ExternalEndPoints.connect,
+          body: body, routeParameters: {'user_id': userId});
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+      throw Exception(
+          'Failed to send connection request: ${response.body} , status code: ${response.statusCode}');
+    } catch (e) {
+      log("Error sending connection request to user with id: $userId, error: $e");
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> acceptInvitation(String userId) async {
+    try {
+      final response = await super.post(
+          ExternalEndPoints.acceptConnectionInvitation,
+          routeParameters: {'user_id': userId});
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+      throw Exception(
+          'Failed to accept received connection invitation: ${response.statusCode}');
+    } catch (e) {
+      log("Error accepting connection request from user with id: $userId, error: $e");
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> ignoreInvitation(String userId) async {
+    try {
+      final response = await super.delete(
+          ExternalEndPoints.ignoreConnectionInvitation, {'user_id': userId});
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+      throw Exception(
+          'Failed to ignore received connection invitation: ${response.statusCode}');
+    } catch (e) {
+      log("Error ignoring connection request from user with id: $userId, error: $e");
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> withdrawInvitation(String userId) async {
+    try {
+      final response = await super.delete(
+          ExternalEndPoints.withdrawConnectionInvitation, {'user_id': userId});
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+      throw Exception(
+          'Failed to withdraw sent connection invitation: ${response.statusCode}');
+    } catch (e) {
+      log("Error withdrawing sent connection request: $e");
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> removeConnection(String userId) async {
+    try {
+      final response = await super
+          .delete(ExternalEndPoints.removeConnection, {'user_id': userId});
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+      throw Exception('Failed to remove connection ${response.statusCode}');
+    } catch (e) {
+      log("Error removing connection of user id: $userId, error: $e");
       rethrow;
     }
   }

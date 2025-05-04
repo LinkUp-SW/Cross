@@ -42,3 +42,17 @@ class BlockedUsersError extends BlockedUsersState {
   @override
   int get hashCode => message.hashCode;
 }
+class BlockedUsersBlocking extends BlockedUsersState {
+  final String blockingUserId;
+  const BlockedUsersBlocking(this.blockingUserId);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BlockedUsersBlocking &&
+          runtimeType == other.runtimeType &&
+          blockingUserId == other.blockingUserId;
+
+  @override
+  int get hashCode => blockingUserId.hashCode;
+}
