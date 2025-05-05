@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart' show immutable;
-import 'package:link_up/features/profile/model/education_model.dart';
 
 @immutable
 class UserProfile {
@@ -165,9 +164,9 @@ class UserProfile {
         firstName: firstName ?? this.firstName,
         lastName: lastName ?? this.lastName,
         headline: headline ?? this.headline,
-        countryRegion: countryRegion == const Object() ? this.countryRegion : countryRegion as String?, 
-        city: city == const Object() ? this.city : city as String?,
-        website: website == const Object() ? this.website : website as String?,
+        countryRegion: countryRegion == const Object() ? this.countryRegion : countryRegion , 
+        city: city == const Object() ? this.city : city,
+        website: website == const Object() ? this.website : website,
         profilePhotoUrl: profilePhotoUrl ?? this.profilePhotoUrl,
         coverPhotoUrl: coverPhotoUrl ?? this.coverPhotoUrl,
         numberOfConnections: numberOfConnections ?? this.numberOfConnections,
