@@ -18,12 +18,13 @@ final aboutDataProvider = StateProvider<AboutModel?>((ref) => null);
 final resumeUrlProvider = StateProvider<String?>((ref) => null);
 final licenseDataProvider = StateProvider<List<LicenseModel>?>((ref) => null);
 final skillsDataProvider = StateProvider<List<SkillModel>?>((ref) => null);
-final profileVisibilityProvider = StateProvider<bool>((ref) => false);
 
 class ProfileViewModel extends StateNotifier<ProfileState> {
   final ProfileService _profileService;
   final Ref _ref;
   String? _currentUserId;
+  
+
 
   ProfileViewModel(this._profileService, this._ref)
       : super(const ProfileInitial());
@@ -41,7 +42,6 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
     state = const ProfileLoading();
     _currentUserId = idToFetch;
 
-    // Reset all providers
     _ref.read(educationDataProvider.notifier).state = null;
     _ref.read(experienceDataProvider.notifier).state = null;
     _ref.read(aboutDataProvider.notifier).state = null;
@@ -50,18 +50,6 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
     _ref.read(skillsDataProvider.notifier).state = null;
 
     try {
-      // Fetch profile visibility as part of the initial data load
-      bool isProfilePublic = false;
-      try {
-        isProfilePublic = await getProfilePrivacy();
-        // Store the visibility value in the provider
-        _ref.read(profileVisibilityProvider.notifier).state = isProfilePublic;
-        log("[ProfileVM] Profile visibility set to: ${isProfilePublic ? 'public' : 'private'}");
-      } catch (e) {
-        log("[ProfileVM] Failed to fetch profile visibility: $e");
-      }
-
-      // Continue with other profile data fetching...
       final userProfileFuture = _profileService.getUserProfile(idToFetch);
       final educationFuture = _profileService.getUserEducation(idToFetch);
       final experienceFuture = _profileService.getUserExperience(idToFetch);
@@ -113,10 +101,7 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
         log("[ProfileVM] Updated licenseDataProvider with ${licenseData.length} items.");
         log("[ProfileVM] Updated skillsDataProvider with ${skillsData.length} items.");
 
-        // Update UserProfile with visibility setting
-        final updatedProfile =
-            userProfile.copyWith(isPublicProfile: isProfilePublic);
-        state = ProfileLoaded(updatedProfile);
+        state = ProfileLoaded(userProfile);
         log("[ProfileVM] Profile loaded successfully for ID: $idToFetch. isMe: ${userProfile.isMe}");
       }
     } catch (e, s) {
@@ -261,20 +246,6 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
     }
   }
 
-  Future<bool> getProfilePrivacy() async {
-    try {
-      final response = await _profileService.getProfileVisibility();
-      final privacySetting = response['profileVisibility'];
-      return (privacySetting != null || privacySetting == "")
-          ? privacySetting == 'public'
-              ? true
-              : false
-          : false;
-    } catch (error) {
-      log("Error returning profile visibility $error");
-      rethrow;
-    }
-  }
 }
 
 // --- Provider Definition ---

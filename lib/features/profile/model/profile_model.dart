@@ -23,6 +23,7 @@ class UserProfile {
   final bool? isAlreadyFollowing; 
   final bool? allowMessaging;
   final bool? isPublicProfile;
+  final String? profileVisibility;
   
 
 
@@ -49,6 +50,8 @@ class UserProfile {
     this.viewUserSubscribed,
     this.isConnectByEmail,
     this.isPublicProfile = false,
+    this.profileVisibility,
+
 
 
 
@@ -83,7 +86,7 @@ class UserProfile {
       isSubscribed: json['isSubscribed'] as bool? ?? false, 
       viewUserSubscribed: json['view_user_is_subscribed'] as bool? ?? false,
       isConnectByEmail: json['isConnectByEmail'] as bool? ?? false,
-
+      profileVisibility: json['profile_visibility'] as String? ?? '',
     );
   }
 
@@ -118,6 +121,7 @@ class UserProfile {
       website: null,
       profilePhotoUrl: '',
       coverPhotoUrl: '',
+      profileVisibility: '',
       numberOfConnections: 0,
       isInConnections: false,
       isInReceivedConnections: false,
@@ -129,6 +133,7 @@ class UserProfile {
       isSubscribed: false,
       viewUserSubscribed: false,
       isConnectByEmail: false,
+      
 
     );
   }
@@ -143,7 +148,7 @@ class UserProfile {
       String? profilePhotoUrl,
       String? coverPhotoUrl,
       int? numberOfConnections,
-
+      String? profileVisibility,
       bool? isInConnections,
       bool? isInReceivedConnections,
       bool? isInSentConnections,  
@@ -164,6 +169,7 @@ class UserProfile {
         firstName: firstName ?? this.firstName,
         lastName: lastName ?? this.lastName,
         headline: headline ?? this.headline,
+        profileVisibility: profileVisibility?? this.profileVisibility,
         countryRegion: countryRegion == const Object() ? this.countryRegion : countryRegion , 
         city: city == const Object() ? this.city : city,
         website: website == const Object() ? this.website : website,
@@ -181,6 +187,7 @@ class UserProfile {
         viewUserSubscribed: viewUserSubscribed ?? this.viewUserSubscribed,
         isConnectByEmail: isConnectByEmail ?? this.isConnectByEmail,
         isPublicProfile: isPublicProfile ?? this.isPublicProfile, 
+        
 
       );
    }
@@ -193,6 +200,7 @@ class UserProfile {
           firstName == other.firstName &&
           lastName == other.lastName &&
           headline == other.headline &&
+          profileVisibility == other.profileVisibility&&
           countryRegion == other.countryRegion &&
           city == other.city &&
           website == other.website &&
@@ -234,7 +242,8 @@ class UserProfile {
         isSubscribed.hashCode ^
         viewUserSubscribed.hashCode ^
         isConnectByEmail.hashCode ^
-        isPublicProfile.hashCode;
+        isPublicProfile.hashCode^
+        profileVisibility.hashCode;
         
 
         

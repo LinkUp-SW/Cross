@@ -33,7 +33,6 @@ class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
   String? _editingEducationId;
   bool get isEditMode => _editingEducationId != null;
   List<String>? _skills;
-  List<Map<String, dynamic>> _mediaList = [];
   AddEducationViewModel(this._profileService, this._ref)
       
       : super(AddEducationIdle(AddEducationFormData(
@@ -46,7 +45,6 @@ class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
           activitiesController: TextEditingController(),
           descriptionController: TextEditingController(),
           isEndDatePresent: false,
-          mediaList: [],
           
         ))) {
     state = AddEducationIdle(_createFormData());
@@ -68,7 +66,6 @@ class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
         selectedEndDate: _selectedEndDate,
         isEndDatePresent: _isEndDatePresent,
         skills: _skills,
-        mediaList: List.unmodifiable(_mediaList),
 
       );
    }
@@ -100,7 +97,6 @@ class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
     _selectedSchoolData = education.schoolData;
     _schoolController.text = _selectedSchoolData?['name'] ?? education.institution;
     _skills = education.skills != null ? List<String>.from(education.skills!) : null; 
-    _mediaList = List<Map<String, dynamic>>.from(education.media ?? []); 
 
     _selectedStartDate = DateTime.tryParse(education.startDate);
     _startDateController.text = _selectedStartDate != null ? DateFormat('yyyy-MM-dd').format(_selectedStartDate!) : '';
@@ -184,11 +180,7 @@ class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
     if (_degreeController.text.length > maxDegreeChars) {
       return "Degree cannot exceed $maxDegreeChars characters (currently ${_degreeController.text.length}).";
     }
-    for (var mediaItem in _mediaList) {
-       if (mediaItem['title'] == null || (mediaItem['title'] as String).trim().isEmpty) {
-          return "Media title cannot be empty.";
-       }
-    }
+
     
     return null;
   }
@@ -274,7 +266,6 @@ class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
      if (mounted) {
        state = AddEducationIdle(_createFormData());
      }
-    _mediaList=[];
   }
 
   @override

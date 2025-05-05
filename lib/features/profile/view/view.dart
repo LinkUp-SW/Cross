@@ -60,6 +60,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     bool isMyProfile = false;
     UserProfile? currentUserProfile;
 
+
     if (profileState is ProfileLoaded) {
       currentUserProfile = profileState.userProfile;
       isMyProfile = currentUserProfile.isMe;
@@ -85,6 +86,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     final bool hasAboutSkills = aboutData?.skills.isNotEmpty ?? false;
     final bool showAboutSection = hasAboutText || hasAboutSkills;
     final bool hasResume = resumeUrl != null && resumeUrl.isNotEmpty;
+    final String profileVisibility = currentUserProfile?.profileVisibility ?? '';
+    final bool isConnected = currentUserProfile?.isInConnections ?? false;
+    final bool isPublicView = (profileVisibility == "Public");
 
     return Scaffold(
       backgroundColor:
@@ -116,8 +120,11 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 ),
               ),
             ),
+            
           ProfileLoaded(:final userProfile) => SingleChildScrollView(
+
               child: Column(
+                
                 children: [
                   ProfileHeaderWidget(
                       userProfile: userProfile, userId: widget.userId),
@@ -128,7 +135,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                     numberOfConnections: userProfile.numberOfConnections,
                     isMyProfile: isMyProfile,
                   ),
-                  if (hasResume && userProfile.isPublicProfile!)
+                  if (isPublicView || isConnected || isMyProfile) ...[                  
+                    if (hasResume)
                     SectionWidget(
                       title: "Resume",
                       onEditPressed: isMyProfile
@@ -178,8 +186,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                             ),
                     ),
 
-                  // --- About Section ---
-                  if (showAboutSection && userProfile.isPublicProfile!)
+                    //About
+                   if (showAboutSection )
                     SectionWidget(
                         title: "About",
                         onEditPressed: isMyProfile
@@ -208,7 +216,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                 ],
                               )),
 
-                  if (userProfile.isPublicProfile!)
                     // --- Experience Section ---
                     SectionWidget(
                       title: "Experience",
@@ -310,7 +317,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                     ),
                     ),
 
-                  if (userProfile.isPublicProfile!)
                     // --- Education Section ---
                     SectionWidget(
                       title: "Education",
@@ -409,7 +415,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                     ),
                     ),
 
-                  if (userProfile.isPublicProfile!)
                     // --- Licenses & Certifications Section ---
                     SectionWidget(
                       title: "Licenses & Certifications",
@@ -509,7 +514,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                       ],
                                     ),
                     ),
-                  if (userProfile.isPublicProfile!)
                     // --- Skills Section ---
                     SectionWidget(
                       title: "Skills",
@@ -641,8 +645,39 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                     ),
 
                   SizedBox(height: 20.h),
-                ],
-              ),
+                ] else if (!isMyProfile) ...[
+                    // --- NEW: Placeholder for Private Profile ---
+                    Container(
+                      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
+                      padding: EdgeInsets.all(20.w),
+                      decoration: BoxDecoration(
+                        color: isDarkMode ? AppColors.darkMain.withOpacity(0.5) : AppColors.lightGrey.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8.r),
+                        border: Border.all(color: AppColors.lightGrey.withOpacity(0.3))
+                      ),
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.lock_outline,
+                            size: 40.sp,
+                            color: AppColors.lightGrey,
+                          ),
+                          SizedBox(height: 15.h),
+                          Text(
+                            "${userProfile.firstName}'s full profile is only visible to connections.",
+                            textAlign: TextAlign.center,
+                            style: TextStyles.font15_500Weight.copyWith(
+                              color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
+                            ),
+                          ),
+                          SizedBox(height: 8.h),
+                           Text(
+                            "Send a connection request to view their experience, education, skills, and more.",
+                            textAlign: TextAlign.center,
+                            style: TextStyles.font13_400Weight.copyWith(color: AppColors.lightGrey),
+                          ),],
+                
+          ))], ]),
             ),
           ProfileInitial() => const Center(child: CircularProgressIndicator()),
         },
