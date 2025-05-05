@@ -128,7 +128,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                     numberOfConnections: userProfile.numberOfConnections,
                     isMyProfile: isMyProfile,
                   ),
-                  if (hasResume)
+                  if (hasResume && userProfile.isPublicProfile!)
                     SectionWidget(
                       title: "Resume",
                       onEditPressed: isMyProfile
@@ -179,7 +179,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                     ),
 
                   // --- About Section ---
-                  if (showAboutSection)
+                  if (showAboutSection && userProfile.isPublicProfile!)
                     SectionWidget(
                         title: "About",
                         onEditPressed: isMyProfile
@@ -208,421 +208,437 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                                 ],
                               )),
 
-                  // --- Experience Section ---
-                  SectionWidget(
-                    title: "Experience",
-                    onAddPressed: isMyProfile
-                        ? () => GoRouter.of(context).push('/add_new_position')
-                        : null,
-                    onEditPressed: isMyProfile &&
-                            allExperiences != null &&
-                            allExperiences.isNotEmpty
-                        ? () =>
-                            GoRouter.of(context).push('/experience_list_page')
-                        : null,
-                    isMyProfile: isMyProfile,
-                    child: allExperiences == null
-                        ? const Center(
-                            child: CircularProgressIndicator(strokeWidth: 2))
-                        : (allExperiences.isEmpty && isMyProfile)
-                            ? EmptySectionPlaceholder(
-                                icon: Icons.business_center_outlined,
-                                titlePlaceholder: "Job Title",
-                                subtitlePlaceholder: "Organization",
-                                datePlaceholder: "YYYY - Present",
-                                sectionSubtitle:
-                                    "Showcase your accomplishments and get up to 2X as many profile views and connections",
-                                callToActionText: "Add Experience",
-                                onAddPressed: () => GoRouter.of(context)
-                                    .push('/add_new_position'),
-                              )
-                            : (allExperiences.isEmpty && !isMyProfile)
-                                ? Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(vertical: 10.h),
-                                    child: Text("No experience listed.",
-                                        style: TextStyles.font14_400Weight
-                                            .copyWith(
-                                                color: AppColors.lightGrey)))
-                                : Column(
-                                    children: [
-                                      Column(
-                                        children: displayedExperiences
-                                            .map((exp) => ExperienceListItem(
-                                                  exp: exp,
-                                                  isDarkMode: isDarkMode,
-                                                  showActions: false,
-                                                ))
-                                            .toList(),
-                                      ),
-                                      if (showShowAllExperienceButton) ...[
-                                        Padding(
-                                            padding: EdgeInsets.only(top: 8.h),
-                                            child: Divider(
-                                                height: 1.h,
-                                                thickness: 0.5,
-                                                color: isDarkMode
-                                                    ? AppColors.darkGrey
-                                                        .withOpacity(0.5)
-                                                    : AppColors.lightGrey
-                                                        .withOpacity(0.3))),
-                                        SizedBox(
-                                          width: double.infinity,
-                                          child: TextButton(
-                                              // Anyone can view the full list
-                                              onPressed: () =>
-                                                  GoRouter.of(context).push(
-                                                      '/experience_list_page',
-                                                      extra: {
-                                                        'userId': widget.userId,
-                                                        'isMyProfile':
-                                                            isMyProfile
-                                                      }),
-                                              style: TextButton.styleFrom(
-                                                  padding: EdgeInsets.symmetric(
-                                                      vertical: 8.h),
-                                                  tapTargetSize:
-                                                      MaterialTapTargetSize
-                                                          .shrinkWrap,
-                                                  alignment: Alignment.center),
-                                              child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Text(
-                                                        'Show all $totalExperienceCount experiences',
-                                                        style: TextStyles
-                                                            .font14_600Weight
-                                                            .copyWith(
-                                                                color:
-                                                                    sectionTextColor)),
-                                                    SizedBox(width: 4.w),
-                                                    Icon(Icons.arrow_forward,
-                                                        size: 16.sp,
-                                                        color: sectionTextColor)
-                                                  ])),
-                                        ),
-                                      ]
-                                    ],
-                                  ),
-                  ),
-
-                  // --- Education Section ---
-                  SectionWidget(
-                    title: "Education",
-                    onAddPressed: isMyProfile
-                        ? () => GoRouter.of(context).push('/add_new_education')
-                        : null,
-                    onEditPressed: isMyProfile &&
-                            allEducations != null &&
-                            allEducations.isNotEmpty
-                        ? () =>
-                            GoRouter.of(context).push('/education_list_page')
-                        : null,
-                    isMyProfile: isMyProfile,
-                    child: allEducations == null
-                        ? const Center(
-                            child: CircularProgressIndicator(strokeWidth: 2))
-                        : (allEducations.isEmpty && isMyProfile)
-                            ? EmptySectionPlaceholder(
-                                icon: Icons.school_outlined,
-                                titlePlaceholder: "School Name",
-                                subtitlePlaceholder: "Degree, Field of Study",
-                                datePlaceholder: "YYYY -<y_bin_721>",
-                                callToActionText: "Add Education",
-                                onAddPressed: () => GoRouter.of(context)
-                                    .push('/add_new_education'),
-                              )
-                            : (allEducations.isEmpty && !isMyProfile)
-                                ? Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(vertical: 10.h),
-                                    child: Text("No education listed.",
-                                        style: TextStyles.font14_400Weight
-                                            .copyWith(
-                                                color: AppColors.lightGrey)))
-                                : Column(
-                                    children: [
-                                      Column(
-                                          children: displayedEducations
-                                              .map((edu) => EducationListItem(
-                                                    education: edu,
+                  if (userProfile.isPublicProfile!)
+                    // --- Experience Section ---
+                    SectionWidget(
+                      title: "Experience",
+                      onAddPressed: isMyProfile
+                          ? () => GoRouter.of(context).push('/add_new_position')
+                          : null,
+                      onEditPressed: isMyProfile &&
+                              allExperiences != null &&
+                              allExperiences.isNotEmpty
+                          ? () =>
+                              GoRouter.of(context).push('/experience_list_page')
+                          : null,
+                      isMyProfile: isMyProfile,
+                      child: allExperiences == null
+                          ? const Center(
+                              child: CircularProgressIndicator(strokeWidth: 2))
+                          : (allExperiences.isEmpty && isMyProfile)
+                              ? EmptySectionPlaceholder(
+                                  icon: Icons.business_center_outlined,
+                                  titlePlaceholder: "Job Title",
+                                  subtitlePlaceholder: "Organization",
+                                  datePlaceholder: "YYYY - Present",
+                                  sectionSubtitle:
+                                      "Showcase your accomplishments and get up to 2X as many profile views and connections",
+                                  callToActionText: "Add Experience",
+                                  onAddPressed: () => GoRouter.of(context)
+                                      .push('/add_new_position'),
+                                )
+                              : (allExperiences.isEmpty && !isMyProfile)
+                                  ? Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 10.h),
+                                      child: Text("No experience listed.",
+                                          style: TextStyles.font14_400Weight
+                                              .copyWith(
+                                                  color: AppColors.lightGrey)))
+                                  : Column(
+                                      children: [
+                                        Column(
+                                          children: displayedExperiences
+                                              .map((exp) => ExperienceListItem(
+                                                    exp: exp,
                                                     isDarkMode: isDarkMode,
                                                     showActions: false,
                                                   ))
-                                              .toList()),
-                                      if (showShowAllEducationButton) ...[
-                                        Padding(
-                                            padding: EdgeInsets.only(top: 8.h),
-                                            child: Divider(
-                                                height: 1.h,
-                                                thickness: 0.5,
-                                                color: isDarkMode
-                                                    ? AppColors.darkGrey
-                                                        .withOpacity(0.5)
-                                                    : AppColors.lightGrey
-                                                        .withOpacity(0.3))),
-                                        SizedBox(
-                                          width: double.infinity,
-                                          child: TextButton(
-                                              onPressed: () =>
-                                                  GoRouter.of(context).push(
-                                                      '/education_list_page',
-                                                      extra: {
-                                                        'userId': widget.userId,
-                                                        'isMyProfile':
-                                                            isMyProfile
-                                                      }),
-                                              style: TextButton.styleFrom(
-                                                  padding: EdgeInsets.symmetric(
-                                                      vertical: 8.h),
-                                                  tapTargetSize:
-                                                      MaterialTapTargetSize
-                                                          .shrinkWrap,
-                                                  alignment: Alignment.center),
-                                              child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Text(
-                                                        'Show all $totalEducationCount educations',
-                                                        style: TextStyles
-                                                            .font14_600Weight
-                                                            .copyWith(
-                                                                color:
-                                                                    sectionTextColor)),
-                                                    SizedBox(width: 4.w),
-                                                    Icon(Icons.arrow_forward,
-                                                        size: 16.sp,
-                                                        color: sectionTextColor)
-                                                  ])),
+                                              .toList(),
                                         ),
-                                      ]
-                                    ],
-                                  ),
-                  ),
+                                        if (showShowAllExperienceButton) ...[
+                                          Padding(
+                                              padding:
+                                                  EdgeInsets.only(top: 8.h),
+                                              child: Divider(
+                                                  height: 1.h,
+                                                  thickness: 0.5,
+                                                  color: isDarkMode
+                                                      ? AppColors.darkGrey
+                                                          .withOpacity(0.5)
+                                                      : AppColors.lightGrey
+                                                          .withOpacity(0.3))),
+                                          SizedBox(
+                                            width: double.infinity,
+                                            child: TextButton(
+                                                // Anyone can view the full list
+                                                onPressed: () =>
+                                                    GoRouter.of(context)
+                                                        .push('/experience_list_page', extra: {
+                                                      'userId': widget.userId,
+                                                      'isMyProfile': isMyProfile
+                                                    }),
+                                                style: TextButton.styleFrom(
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            vertical: 8.h),
+                                                    tapTargetSize:
+                                                        MaterialTapTargetSize
+                                                            .shrinkWrap,
+                                                    alignment:
+                                                        Alignment.center),
+                                                child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.center,
+                                                    children: [
+                                                      Text(
+                                                          'Show all $totalExperienceCount experiences',
+                                                          style: TextStyles
+                                                              .font14_600Weight
+                                                              .copyWith(
+                                                                  color:
+                                                                      sectionTextColor)),
+                                                      SizedBox(width: 4.w),
+                                                      Icon(Icons.arrow_forward,
+                                                          size: 16.sp,
+                                                          color:
+                                                              sectionTextColor)
+                                                    ])),
+                                          ),
+                                        ]
+                                      ],
+                                    ),
+                    ),
 
-                  // --- Licenses & Certifications Section ---
-                  SectionWidget(
-                    title: "Licenses & Certifications",
-                    onAddPressed: isMyProfile
-                        ? () => GoRouter.of(context).push('/add_new_license')
-                        : null,
-                    onEditPressed: isMyProfile &&
-                            allLicenses != null &&
-                            allLicenses.isNotEmpty
-                        ? () => GoRouter.of(context).push('/license_list_page')
-                        : null,
-                    isMyProfile: isMyProfile,
-                    child: allLicenses == null
-                        ? const Center(
-                            child: CircularProgressIndicator(strokeWidth: 2))
-                        : (allLicenses.isEmpty && isMyProfile)
-                            ? EmptySectionPlaceholder(
-                                icon: Icons.card_membership_outlined,
-                                titlePlaceholder: "License/Certification Name",
-                                subtitlePlaceholder: "Issuing Organization",
-                                datePlaceholder: "Issued<seg_44>",
-                                callToActionText: "Add License",
-                                onAddPressed: () => GoRouter.of(context)
-                                    .push('/add_new_license'),
-                              )
-                            : (allLicenses.isEmpty && !isMyProfile)
-                                ? Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(vertical: 10.h),
-                                    child: Text(
-                                        "No licenses or certifications listed.",
-                                        style: TextStyles.font14_400Weight
-                                            .copyWith(
-                                                color: AppColors.lightGrey)))
-                                : Column(
-                                    children: [
-                                      Column(
-                                        children: displayedLicenses
-                                            .map((lic) => LicenseListItem(
-                                                  license: lic,
+                  if (userProfile.isPublicProfile!)
+                    // --- Education Section ---
+                    SectionWidget(
+                      title: "Education",
+                      onAddPressed: isMyProfile
+                          ? () =>
+                              GoRouter.of(context).push('/add_new_education')
+                          : null,
+                      onEditPressed: isMyProfile &&
+                              allEducations != null &&
+                              allEducations.isNotEmpty
+                          ? () =>
+                              GoRouter.of(context).push('/education_list_page')
+                          : null,
+                      isMyProfile: isMyProfile,
+                      child: allEducations == null
+                          ? const Center(
+                              child: CircularProgressIndicator(strokeWidth: 2))
+                          : (allEducations.isEmpty && isMyProfile)
+                              ? EmptySectionPlaceholder(
+                                  icon: Icons.school_outlined,
+                                  titlePlaceholder: "School Name",
+                                  subtitlePlaceholder: "Degree, Field of Study",
+                                  datePlaceholder: "YYYY -<y_bin_721>",
+                                  callToActionText: "Add Education",
+                                  onAddPressed: () => GoRouter.of(context)
+                                      .push('/add_new_education'),
+                                )
+                              : (allEducations.isEmpty && !isMyProfile)
+                                  ? Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 10.h),
+                                      child: Text("No education listed.",
+                                          style: TextStyles.font14_400Weight
+                                              .copyWith(
+                                                  color: AppColors.lightGrey)))
+                                  : Column(
+                                      children: [
+                                        Column(
+                                            children: displayedEducations
+                                                .map((edu) => EducationListItem(
+                                                      education: edu,
+                                                      isDarkMode: isDarkMode,
+                                                      showActions: false,
+                                                    ))
+                                                .toList()),
+                                        if (showShowAllEducationButton) ...[
+                                          Padding(
+                                              padding:
+                                                  EdgeInsets.only(top: 8.h),
+                                              child: Divider(
+                                                  height: 1.h,
+                                                  thickness: 0.5,
+                                                  color: isDarkMode
+                                                      ? AppColors.darkGrey
+                                                          .withOpacity(0.5)
+                                                      : AppColors.lightGrey
+                                                          .withOpacity(0.3))),
+                                          SizedBox(
+                                            width: double.infinity,
+                                            child: TextButton(
+                                                onPressed: () =>
+                                                    GoRouter.of(context)
+                                                        .push('/education_list_page', extra: {
+                                                      'userId': widget.userId,
+                                                      'isMyProfile': isMyProfile
+                                                    }),
+                                                style: TextButton.styleFrom(
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            vertical: 8.h),
+                                                    tapTargetSize:
+                                                        MaterialTapTargetSize
+                                                            .shrinkWrap,
+                                                    alignment:
+                                                        Alignment.center),
+                                                child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.center,
+                                                    children: [
+                                                      Text(
+                                                          'Show all $totalEducationCount educations',
+                                                          style: TextStyles
+                                                              .font14_600Weight
+                                                              .copyWith(
+                                                                  color:
+                                                                      sectionTextColor)),
+                                                      SizedBox(width: 4.w),
+                                                      Icon(Icons.arrow_forward,
+                                                          size: 16.sp,
+                                                          color:
+                                                              sectionTextColor)
+                                                    ])),
+                                          ),
+                                        ]
+                                      ],
+                                    ),
+                    ),
+
+                  if (userProfile.isPublicProfile!)
+                    // --- Licenses & Certifications Section ---
+                    SectionWidget(
+                      title: "Licenses & Certifications",
+                      onAddPressed: isMyProfile
+                          ? () => GoRouter.of(context).push('/add_new_license')
+                          : null,
+                      onEditPressed: isMyProfile &&
+                              allLicenses != null &&
+                              allLicenses.isNotEmpty
+                          ? () =>
+                              GoRouter.of(context).push('/license_list_page')
+                          : null,
+                      isMyProfile: isMyProfile,
+                      child: allLicenses == null
+                          ? const Center(
+                              child: CircularProgressIndicator(strokeWidth: 2))
+                          : (allLicenses.isEmpty && isMyProfile)
+                              ? EmptySectionPlaceholder(
+                                  icon: Icons.card_membership_outlined,
+                                  titlePlaceholder:
+                                      "License/Certification Name",
+                                  subtitlePlaceholder: "Issuing Organization",
+                                  datePlaceholder: "Issued<seg_44>",
+                                  callToActionText: "Add License",
+                                  onAddPressed: () => GoRouter.of(context)
+                                      .push('/add_new_license'),
+                                )
+                              : (allLicenses.isEmpty && !isMyProfile)
+                                  ? Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 10.h),
+                                      child: Text(
+                                          "No licenses or certifications listed.",
+                                          style: TextStyles.font14_400Weight
+                                              .copyWith(
+                                                  color: AppColors.lightGrey)))
+                                  : Column(
+                                      children: [
+                                        Column(
+                                          children: displayedLicenses
+                                              .map((lic) => LicenseListItem(
+                                                    license: lic,
+                                                    isDarkMode: isDarkMode,
+                                                    showActions: false,
+                                                  ))
+                                              .toList(),
+                                        ),
+                                        if (showShowAllLicensesButton) ...[
+                                          Padding(
+                                              padding:
+                                                  EdgeInsets.only(top: 8.h),
+                                              child: Divider(
+                                                  height: 1.h,
+                                                  thickness: 0.5,
+                                                  color: isDarkMode
+                                                      ? AppColors.darkGrey
+                                                          .withOpacity(0.5)
+                                                      : AppColors.lightGrey
+                                                          .withOpacity(0.3))),
+                                          SizedBox(
+                                            width: double.infinity,
+                                            child: TextButton(
+                                                onPressed: () =>
+                                                    GoRouter.of(context)
+                                                        .push('/license_list_page', extra: {
+                                                      'userId': widget.userId,
+                                                      'isMyProfile': isMyProfile
+                                                    }),
+                                                style: TextButton.styleFrom(
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            vertical: 8.h),
+                                                    tapTargetSize:
+                                                        MaterialTapTargetSize
+                                                            .shrinkWrap,
+                                                    alignment:
+                                                        Alignment.center),
+                                                child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.center,
+                                                    children: [
+                                                      Text(
+                                                          'Show all $totalLicenseCount licenses',
+                                                          style: TextStyles
+                                                              .font14_600Weight
+                                                              .copyWith(
+                                                                  color:
+                                                                      sectionTextColor)),
+                                                      SizedBox(width: 4.w),
+                                                      Icon(Icons.arrow_forward,
+                                                          size: 16.sp,
+                                                          color:
+                                                              sectionTextColor)
+                                                    ])),
+                                          ),
+                                        ]
+                                      ],
+                                    ),
+                    ),
+                  if (userProfile.isPublicProfile!)
+                    // --- Skills Section ---
+                    SectionWidget(
+                      title: "Skills",
+                      onAddPressed: isMyProfile
+                          ? () => GoRouter.of(context).push('/add_new_skill')
+                          : null,
+                      onEditPressed: isMyProfile &&
+                              allSkills != null &&
+                              allSkills.isNotEmpty
+                          ? () => GoRouter.of(context).push('/skills_list_page')
+                          : null,
+                      isMyProfile: isMyProfile,
+                      child: allSkills == null
+                          ? const Center(
+                              child: CircularProgressIndicator(strokeWidth: 2))
+                          : (allSkills.isEmpty && isMyProfile)
+                              ? EmptySectionPlaceholder(
+                                  icon: Icons.star_outline,
+                                  titlePlaceholder: "Skill Name",
+                                  subtitlePlaceholder:
+                                      "e.g., Project Management",
+                                  datePlaceholder: "",
+                                  callToActionText: "Add Skill",
+                                  onAddPressed: () => GoRouter.of(context)
+                                      .push('/add_new_skill'),
+                                )
+                              : (allSkills.isEmpty && !isMyProfile)
+                                  ? Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 10.h),
+                                      child: Text("No skills listed.",
+                                          style: TextStyles.font14_400Weight
+                                              .copyWith(
+                                                  color: AppColors.lightGrey)))
+                                  : Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: displayedSkills
+                                              .asMap()
+                                              .entries
+                                              .map((entry) {
+                                            int index = entry.key;
+                                            SkillModel skill = entry.value;
+                                            bool isLastItem = index ==
+                                                displayedSkills.length - 1;
+                                            return Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                SkillListItem(
+                                                  skill: skill,
                                                   isDarkMode: isDarkMode,
                                                   showActions: false,
-                                                ))
-                                            .toList(),
-                                      ),
-                                      if (showShowAllLicensesButton) ...[
-                                        Padding(
-                                            padding: EdgeInsets.only(top: 8.h),
-                                            child: Divider(
-                                                height: 1.h,
-                                                thickness: 0.5,
-                                                color: isDarkMode
-                                                    ? AppColors.darkGrey
-                                                        .withOpacity(0.5)
-                                                    : AppColors.lightGrey
-                                                        .withOpacity(0.3))),
-                                        SizedBox(
-                                          width: double.infinity,
-                                          child: TextButton(
-                                              onPressed: () =>
-                                                  GoRouter.of(context).push(
-                                                      '/license_list_page',
-                                                      extra: {
-                                                        'userId': widget.userId,
-                                                        'isMyProfile':
-                                                            isMyProfile
-                                                      }),
-                                              style: TextButton.styleFrom(
-                                                  padding: EdgeInsets.symmetric(
-                                                      vertical: 8.h),
-                                                  tapTargetSize:
-                                                      MaterialTapTargetSize
-                                                          .shrinkWrap,
-                                                  alignment: Alignment.center),
-                                              child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Text(
-                                                        'Show all $totalLicenseCount licenses',
-                                                        style: TextStyles
-                                                            .font14_600Weight
-                                                            .copyWith(
-                                                                color:
-                                                                    sectionTextColor)),
-                                                    SizedBox(width: 4.w),
-                                                    Icon(Icons.arrow_forward,
-                                                        size: 16.sp,
-                                                        color: sectionTextColor)
-                                                  ])),
-                                        ),
-                                      ]
-                                    ],
-                                  ),
-                  ),
-
-                  // --- Skills Section ---
-                  SectionWidget(
-                    title: "Skills",
-                    onAddPressed: isMyProfile
-                        ? () => GoRouter.of(context).push('/add_new_skill')
-                        : null,
-                    onEditPressed: isMyProfile &&
-                            allSkills != null &&
-                            allSkills.isNotEmpty
-                        ? () => GoRouter.of(context).push('/skills_list_page')
-                        : null,
-                    isMyProfile: isMyProfile,
-                    child: allSkills == null
-                        ? const Center(
-                            child: CircularProgressIndicator(strokeWidth: 2))
-                        : (allSkills.isEmpty && isMyProfile)
-                            ? EmptySectionPlaceholder(
-                                icon: Icons.star_outline,
-                                titlePlaceholder: "Skill Name",
-                                subtitlePlaceholder: "e.g., Project Management",
-                                datePlaceholder: "",
-                                callToActionText: "Add Skill",
-                                onAddPressed: () =>
-                                    GoRouter.of(context).push('/add_new_skill'),
-                              )
-                            : (allSkills.isEmpty && !isMyProfile)
-                                ? Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(vertical: 10.h),
-                                    child: Text("No skills listed.",
-                                        style: TextStyles.font14_400Weight
-                                            .copyWith(
-                                                color: AppColors.lightGrey)))
-                                : Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: displayedSkills
-                                            .asMap()
-                                            .entries
-                                            .map((entry) {
-                                          int index = entry.key;
-                                          SkillModel skill = entry.value;
-                                          bool isLastItem = index ==
-                                              displayedSkills.length - 1;
-                                          return Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              SkillListItem(
-                                                skill: skill,
-                                                isDarkMode: isDarkMode,
-                                                showActions: false,
-                                              ),
-                                              if (!isLastItem)
-                                                Padding(
-                                                  padding: EdgeInsets.symmetric(
-                                                      vertical: 8.h),
-                                                  child: Divider(
-                                                    height: 1.h,
-                                                    thickness: 0.5,
-                                                    color: isDarkMode
-                                                        ? AppColors.darkGrey
-                                                            .withOpacity(0.5)
-                                                        : AppColors.lightGrey
-                                                            .withOpacity(0.3),
-                                                  ),
                                                 ),
-                                            ],
-                                          );
-                                        }).toList(),
-                                      ),
-                                      if (showShowAllSkillsButton) ...[
-                                        Padding(
-                                            padding: EdgeInsets.only(top: 8.h),
-                                            child: Divider(
-                                                height: 1.h,
-                                                thickness: 0.5,
-                                                color: isDarkMode
-                                                    ? AppColors.darkGrey
-                                                        .withOpacity(0.5)
-                                                    : AppColors.lightGrey
-                                                        .withOpacity(0.3))),
-                                        SizedBox(
-                                          width: double.infinity,
-                                          child: TextButton(
-                                              onPressed: () =>
-                                                  GoRouter.of(context).push(
-                                                      '/skills_list_page',
-                                                      extra: {
-                                                        'userId': widget.userId,
-                                                        'isMyProfile':
-                                                            isMyProfile
-                                                      }),
-                                              style: TextButton.styleFrom(
-                                                  padding: EdgeInsets.symmetric(
-                                                      vertical: 8.h),
-                                                  tapTargetSize:
-                                                      MaterialTapTargetSize
-                                                          .shrinkWrap,
-                                                  alignment: Alignment.center),
-                                              child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Text(
-                                                        'Show all $totalSkillCount skills',
-                                                        style: TextStyles
-                                                            .font14_600Weight
-                                                            .copyWith(
-                                                                color:
-                                                                    sectionTextColor)),
-                                                    SizedBox(width: 4.w),
-                                                    Icon(Icons.arrow_forward,
-                                                        size: 16.sp,
-                                                        color: sectionTextColor)
-                                                  ])),
+                                                if (!isLastItem)
+                                                  Padding(
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            vertical: 8.h),
+                                                    child: Divider(
+                                                      height: 1.h,
+                                                      thickness: 0.5,
+                                                      color: isDarkMode
+                                                          ? AppColors.darkGrey
+                                                              .withOpacity(0.5)
+                                                          : AppColors.lightGrey
+                                                              .withOpacity(0.3),
+                                                    ),
+                                                  ),
+                                              ],
+                                            );
+                                          }).toList(),
                                         ),
-                                      ]
-                                    ],
-                                  ),
-                  ),
+                                        if (showShowAllSkillsButton) ...[
+                                          Padding(
+                                              padding:
+                                                  EdgeInsets.only(top: 8.h),
+                                              child: Divider(
+                                                  height: 1.h,
+                                                  thickness: 0.5,
+                                                  color: isDarkMode
+                                                      ? AppColors.darkGrey
+                                                          .withOpacity(0.5)
+                                                      : AppColors.lightGrey
+                                                          .withOpacity(0.3))),
+                                          SizedBox(
+                                            width: double.infinity,
+                                            child: TextButton(
+                                                onPressed: () =>
+                                                    GoRouter.of(context)
+                                                        .push('/skills_list_page', extra: {
+                                                      'userId': widget.userId,
+                                                      'isMyProfile': isMyProfile
+                                                    }),
+                                                style: TextButton.styleFrom(
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            vertical: 8.h),
+                                                    tapTargetSize:
+                                                        MaterialTapTargetSize
+                                                            .shrinkWrap,
+                                                    alignment:
+                                                        Alignment.center),
+                                                child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.center,
+                                                    children: [
+                                                      Text(
+                                                          'Show all $totalSkillCount skills',
+                                                          style: TextStyles
+                                                              .font14_600Weight
+                                                              .copyWith(
+                                                                  color:
+                                                                      sectionTextColor)),
+                                                      SizedBox(width: 4.w),
+                                                      Icon(Icons.arrow_forward,
+                                                          size: 16.sp,
+                                                          color:
+                                                              sectionTextColor)
+                                                    ])),
+                                          ),
+                                        ]
+                                      ],
+                                    ),
+                    ),
 
                   SizedBox(height: 20.h),
                 ],
