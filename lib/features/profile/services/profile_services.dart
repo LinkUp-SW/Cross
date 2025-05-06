@@ -32,6 +32,8 @@ class ProfileService extends BaseService {
       );
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonData = jsonDecode(response.body);
+        log('ProfileService: getUserProfile Body: ${response.body}');
+
         return UserProfile.fromJson(jsonData);
       } else {
         log('ProfileService: getUserProfile API Error: Status Code ${response.statusCode}, Body: ${response.body}');

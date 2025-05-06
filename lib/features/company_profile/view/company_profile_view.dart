@@ -356,7 +356,7 @@ class _CompanyProfileViewPageState extends ConsumerState<CompanyProfileViewPage>
           Text(
             subtitle,
             style: TextStyles.font14_400Weight.copyWith(
-              color: isLink
+              color: isLink               
                   ? Colors.blue
                   : (isDarkMode ? AppColors.darkSecondaryText : AppColors.lightTextColor),
               decoration: isLink ? TextDecoration.underline : null,

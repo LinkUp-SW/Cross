@@ -69,7 +69,7 @@ class _CompanyLogoPickerState extends State<CompanyLogoPicker> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: widget.isDarkMode ? Colors.grey[800] : Colors.white,
+        backgroundColor: widget.isDarkMode ?AppColors.darkMain : AppColors.lightMain,
         title: Text(
           'Select Image Source',
           style: TextStyle(
@@ -135,10 +135,10 @@ class _CompanyLogoPickerState extends State<CompanyLogoPicker> {
             width: 120.w,
             height: 120.h,
             decoration: BoxDecoration(
-              color: widget.isDarkMode ? Colors.grey[700] : Colors.grey[200],
+              color: widget.isDarkMode ? AppColors.darkMain : AppColors.lightMain,
               borderRadius: BorderRadius.circular(12.r),
               border: Border.all(
-                color: widget.isDarkMode ? Colors.grey[600]! : Colors.grey[300]!,
+                color: widget.isDarkMode ? AppColors.darkMain : AppColors.lightMain,
                 width: 1,
               ),
             ),

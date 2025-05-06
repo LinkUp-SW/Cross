@@ -1,7 +1,6 @@
 
 
 import 'package:flutter/foundation.dart' show immutable;
-import 'package:intl/intl.dart'; 
 
 @immutable
 class ContactInfoModel {
