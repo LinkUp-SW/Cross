@@ -667,7 +667,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                             "${userProfile.firstName}'s full profile is only visible to connections.",
                             textAlign: TextAlign.center,
                             style: TextStyles.font15_500Weight.copyWith(
-                              color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
+                              color: isDarkMode ? AppColors.lightMain : AppColors.darkMain
                             ),
                           ),
                           SizedBox(height: 8.h),

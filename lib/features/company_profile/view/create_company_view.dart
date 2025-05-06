@@ -1,14 +1,12 @@
-// lib/features/company_profile/views/create_company_profile_view.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:link_up/features/company_profile/model/company_profile_model.dart';
+import 'package:country_state_city_pro/country_state_city_pro.dart';
+import 'package:link_up/features/company_profile/state/company_profile_state.dart';
 import 'package:link_up/features/company_profile/viewModel/company_profile_view_model.dart';
 import 'package:link_up/features/company_profile/widgets/company_logo_picker.dart';
 import 'package:link_up/features/company_profile/widgets/create_company_widget.dart';
-import 'package:link_up/shared/widgets/custom_app_bar.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 
@@ -21,126 +19,80 @@ class CreateCompanyProfilePage extends ConsumerStatefulWidget {
 
 class _CreateCompanyProfilePageState extends ConsumerState<CreateCompanyProfilePage> {
   final _formKey = GlobalKey<FormState>();
-  
-  // Controllers
-  final _nameController = TextEditingController();
-  final _websiteController = TextEditingController();
-  final _logoController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  final _countryController = TextEditingController();
-  final _cityController = TextEditingController();
-  
-  // Industry options
+  bool _formSubmitted = false;
   final List<String> _industries = [
-    'Information Technology',
-    'Healthcare',
-    'Finance',
-    'Education',
-    'Manufacturing',
-    'Retail',
-    'Transportation',
-    'Media',
-    'Construction',
-    'Other'
+    'Information Technology', 'Healthcare', 'Finance', 'Education',
+    'Manufacturing', 'Retail', 'Transportation', 'Media', 'Construction', 'Other'
   ];
-
-  // Company size options
   final List<String> _companySizes = [
-    '1-10 employees',
-    '11-50 employees',
-    '51-200 employees',
-    '201-500 employees',
-    '501-1000 employees',
-    '1001-5000 employees',
-    '5001-10000 employees',
-    '10001+ employees'
+    '1-10 employees', '11-50 employees', '51-200 employees', '201-500 employees',
+    '501-1000 employees', '1001-5000 employees', '5001-10000 employees', '10001+ employees'
   ];
-
-  // Company type options
   final List<String> _companyTypes = [
-    'Private company',
-    'Public company',
-    'Government agency',
-    'Nonprofit',
-    'Partnership',
+    'Private company', 'Public company', 'Government agency', 'Nonprofit', 'Partnership'
   ];
-  
-  // Dropdown values - set them initially to the first item in each list
-  late String _selectedIndustry;
-  late String _selectedSize;
-  late String _selectedType;
 
   @override
   void initState() {
     super.initState();
-    // Initialize dropdown values with the first item from each list
-    _selectedIndustry = _industries[0];
-    _selectedSize = _companySizes[0];
-    _selectedType = _companyTypes[0];
-  }
 
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _websiteController.dispose();
-    _logoController.dispose();
-    _descriptionController.dispose();
-    _countryController.dispose();
-    _cityController.dispose();
-    super.dispose();
   }
 
   void _submitForm() {
+    setState(() { 
+      _formSubmitted = true; 
+    });
     if (_formKey.currentState!.validate()) {
-      final companyProfile = CompanyProfileModel(
-        name: _nameController.text,
-        // categoryType is default 'company' in the model
-        website: _websiteController.text,
-        logo: _logoController.text,
-        description: _descriptionController.text,
-        industry: _selectedIndustry,
-        location: LocationModel(
-          country: _countryController.text,
-          city: _cityController.text,
-        ),
-        size: _selectedSize,
-        type: _selectedType,
-      );
-
-      ref.read(companyProfileViewModelProvider.notifier).createCompanyProfile(companyProfile);
+      ref.read(companyProfileViewModelProvider.notifier).createCompanyProfile();
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(companyProfileViewModelProvider);
+    final viewModel = ref.read(companyProfileViewModelProvider.notifier);
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    // Showing success message and navigating back
-    if (state.isSuccess) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+    ref.listen<CompanyProfileState>(companyProfileViewModelProvider, (previous, next) {
+      if (next.isSuccess) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Company profile created successfully!'),
             backgroundColor: Colors.green,
           ),
         );
-        
-        // Reset state and navigate back
-        Future.delayed(const Duration(seconds: 2), () {
-          ref.read(companyProfileViewModelProvider.notifier).resetState();
-          context.pop();
+        Future.delayed(const Duration(milliseconds: 500), () {
+          if (context.mounted) {
+             context.pop(); 
+             viewModel.resetState(); 
+          }
         });
-      });
-    }
+      } else if (next.isError && next.errorMessage != null) {
+          if (previous?.errorMessage != next.errorMessage) {
+             ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                   content: Text('Error: ${next.errorMessage}'),
+                   backgroundColor: Colors.red,
+                ),
+             );
+          }
+       }
+    });
+
 
     return Scaffold(
-      appBar: CustomAppBar(
-        leadingAction: () => context.pop(),
-        searchBar: Container(), // Empty container as per your existing pattern
+      appBar: AppBar(
+         backgroundColor: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+         elevation: 1,
+         leading: IconButton(
+           icon: Icon(Icons.arrow_back, color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor),
+           onPressed: () => context.pop(),
+         ),
+         title: Text('Create Company', style: TextStyles.font18_700Weight.copyWith(color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor)),
       ),
       body: SafeArea(
-        child: state.isLoading
+        child: state.isLoading 
             ? const Center(child: CircularProgressIndicator())
             : SingleChildScrollView(
                 child: Padding(
@@ -154,160 +106,171 @@ class _CreateCompanyProfilePageState extends ConsumerState<CreateCompanyProfileP
                           'Create Company Profile',
                           style: TextStyles.font20_700Weight.copyWith(
                             color: isDarkMode
-                                ? AppColors.darkSecondaryText
-                                : AppColors.lightTextColor,
+                                ? AppColors.lightMain
+                                : AppColors.darkMain,
                           ),
                         ),
                         SizedBox(height: 24.h),
-                        
-                        // Company name
+
+                      
                         CompanyFormField(
                           label: 'Company Name *',
                           hintText: 'Enter company name',
-                          controller: _nameController,
+                          controller: viewModel.nameController,
                           isDarkMode: isDarkMode,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter company name';
+                            return 'Please enter company name';
                             }
+                             if (value.length > 50) { 
+                               return 'Name Can not exceed 50 characters';
+                             }
                             return null;
                           },
                         ),
                         SizedBox(height: 16.h),
 
-                        // Category Type field removed as requested
-
-                        // Website
                         CompanyFormField(
                           label: 'Website',
                           hintText: 'https://www.example.com',
-                          controller: _websiteController,
+                          controller: viewModel.websiteController,
                           keyboardType: TextInputType.url,
                           isDarkMode: isDarkMode,
-                        ),
-                        SizedBox(height: 16.h),
-
-                        // Logo picker
-                        CompanyLogoPicker(
-                          isDarkMode: isDarkMode,
-                          onLogoSelected: (String logoUrl) {
-                            setState(() {
-                              _logoController.text = logoUrl;
-                            });
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return null; 
+                            }
+                            final trimmedValue = value.trim();
+                            final uri = Uri.tryParse(trimmedValue);
+                            final bool isValidUrl = uri != null && uri.isAbsolute && (uri.scheme == 'http' || uri.scheme == 'https');
+                            if (!isValidUrl) {
+                              return 'Please enter a valid website URL (e.g., https://www.example.com)';
+                            }
+                            return null; 
                           },
                         ),
                         SizedBox(height: 16.h),
 
-                        // Description
+                        CompanyLogoPicker(
+                          isDarkMode: isDarkMode,
+                          currentLogoUrl: viewModel.logoController.text,
+                          onLogoSelected: (String logoUrl) {
+                              viewModel.setLogoUrl(logoUrl); 
+                          },
+                        ),
+                        SizedBox(height: 16.h),
+
+                        // Description - Use ViewModel's controller
                         CompanyFormField(
                           label: 'Company Description *',
                           hintText: 'Describe your company',
-                          controller: _descriptionController,
+                          controller: viewModel.descriptionController,
                           isMultiline: true,
                           isDarkMode: isDarkMode,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter company description';
                             }
+                             if (value.length < 20) { 
+                               return 'Description must be at least 20 characters';
+                             }
+                             if (value.length > 500) { 
+                               return 'Description can not exceed 500 characters';
+                             }
                             return null;
                           },
                         ),
                         SizedBox(height: 16.h),
 
-                        // Industry dropdown
+                        // Industry dropdown - Use ViewModel's value and setter
                         CompanyDropdownField(
                           label: 'Industry *',
-                          value: _selectedIndustry,
+                          value: viewModel.selectedIndustry,
                           items: _industries,
                           onChanged: (value) {
                             if (value != null && _industries.contains(value)) {
-                              setState(() {
-                                _selectedIndustry = value;
-                              });
+                               viewModel.setSelectedIndustry(value);
                             }
                           },
                           isDarkMode: isDarkMode,
                         ),
                         SizedBox(height: 16.h),
 
-                        // Location
+                        // --- Location Picker ---
                         Text(
-                          'Location',
-                          style: TextStyles.font20_700Weight.copyWith(
-                            color: isDarkMode
-                                ? AppColors.darkSecondaryText
-                                : AppColors.lightTextColor,
+                          'Location *',
+                          style: TextStyles.font16_600Weight.copyWith(
+                            color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightTextColor,
                           ),
                         ),
-                        SizedBox(height: 16.h),
+                        SizedBox(height: 8.h),
+                        CountryStateCityPicker(
+                          country: viewModel.countryController,
+                          state: viewModel.stateController,
+                          city: viewModel.cityController,
+                          textFieldDecoration: InputDecoration(
+                             filled: true,
+                             fillColor: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+                             suffixIcon: Icon(Icons.arrow_drop_down, color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey),
+                             border: OutlineInputBorder(
+                               borderRadius: BorderRadius.circular(8.r),
+                               borderSide: BorderSide.none, 
+                             ),
+                             contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                              hintStyle: TextStyle(color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey),
+                          ),
+                          dialogColor: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+                          
 
-                        // Country
-                        CompanyFormField(
-                          label: 'Country *',
-                          hintText: 'Enter country',
-                          controller: _countryController,
-                          isDarkMode: isDarkMode,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter country';
-                            }
-                            return null;
-                          },
                         ),
+                         Padding(
+                           padding: const EdgeInsets.only(top: 4.0),
+                           child: ValueListenableBuilder<TextEditingValue>(
+                             valueListenable: viewModel.countryController,
+                             builder: (context, value, child) {
+                             if (value.text.trim().isEmpty && _formSubmitted) { // <--- MODIFIED CONDITION
+                                 return Text(
+                                   'Please select a country',
+                                   style: TextStyle(color: Theme.of(context).colorScheme.error, fontSize: 12.sp),
+                                 );
+                               }
+                               return const SizedBox.shrink();
+                             },
+                           ),
+                         ),
+
                         SizedBox(height: 16.h),
 
-                        // City
-                        CompanyFormField(
-                          label: 'City *',
-                          hintText: 'Enter city',
-                          controller: _cityController,
-                          isDarkMode: isDarkMode,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter city';
-                            }
-                            return null;
-                          },
-                        ),
-                        SizedBox(height: 16.h),
-
-                        // Company size dropdown
                         CompanyDropdownField(
                           label: 'Company Size',
-                          value: _selectedSize,
+                          value: viewModel.selectedSize,
                           items: _companySizes,
                           onChanged: (value) {
                             if (value != null && _companySizes.contains(value)) {
-                              setState(() {
-                                _selectedSize = value;
-                              });
+                               viewModel.setSelectedSize(value);
                             }
                           },
                           isDarkMode: isDarkMode,
                         ),
                         SizedBox(height: 16.h),
 
-                        // Company type dropdown
                         CompanyDropdownField(
                           label: 'Company Type',
-                          value: _selectedType,
+                          value: viewModel.selectedType,
                           items: _companyTypes,
                           onChanged: (value) {
                             if (value != null && _companyTypes.contains(value)) {
-                              setState(() {
-                                _selectedType = value;
-                              });
+                               viewModel.setSelectedType(value);
                             }
                           },
                           isDarkMode: isDarkMode,
                         ),
                         SizedBox(height: 32.h),
 
-                        // Submit button
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: state.isLoading ? null : _submitForm,
+                            onPressed: state.isLoading ? null : _submitForm, 
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue,
                               foregroundColor: Colors.white,
@@ -317,7 +280,7 @@ class _CreateCompanyProfilePageState extends ConsumerState<CreateCompanyProfileP
                               ),
                               disabledBackgroundColor: Colors.grey,
                             ),
-                            child: state.isLoading
+                            child: state.isLoading 
                                 ? const SizedBox(
                                     width: 24,
                                     height: 24,
@@ -335,28 +298,23 @@ class _CreateCompanyProfilePageState extends ConsumerState<CreateCompanyProfileP
                                   ),
                           ),
                         ),
-                        
-                        // Error message
-                        if (state.isError) ...[
-                          SizedBox(height: 16.h),
-                          Container(
-                            width: double.infinity,
-                            padding: EdgeInsets.all(12.w),
-                            decoration: BoxDecoration(
-                              color: Colors.red.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(8.r),
-                              border: Border.all(color: Colors.red),
-                            ),
-                            child: Text(
-                              state.errorMessage ?? 'An error occurred while creating the company profile',
-                              style: TextStyle(
-                                color: Colors.red,
-                                fontSize: 14.sp,
-                              ),
-                            ),
-                          ),
+
+                        if (state.isError && state.errorMessage != null) ...[
+                           SizedBox(height: 16.h),
+                           Container(
+                             width: double.infinity,
+                             padding: EdgeInsets.all(12.w),
+                             decoration: BoxDecoration(
+                               color: Colors.red.withOpacity(0.1),
+                               borderRadius: BorderRadius.circular(8.r),
+                               border: Border.all(color: Colors.red),
+                             ),
+                             child: Text(
+                               state.errorMessage!,
+                               style: TextStyle(color: Colors.red, fontSize: 14.sp),
+                             ),
+                           ),
                         ],
-                        
                         SizedBox(height: 24.h),
                       ],
                     ),
