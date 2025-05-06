@@ -139,7 +139,7 @@ class JobPostingWidget extends StatelessWidget {
           Text(
             count.toString(),
             style: TextStyles.font18_700Weight.copyWith(
-              color: theme.colorScheme.primary,
+              color: theme.colorScheme.inverseSurface,
             ),
           ),
         ],

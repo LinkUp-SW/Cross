@@ -54,12 +54,14 @@ class ReportService extends BaseService {
     String contentType,
     String contentRef,
   ) async {
-    await delete(
+    log('Deleting report for $contentType and $contentRef');
+    final response = await delete(
       'api/v1/admin/report/resolve/:contentType/:contentRef',
       {
         'contentType': contentType,
         'contentRef': contentRef,
       },
     );
+    log('Response: ${response.body}');
   }
 }
