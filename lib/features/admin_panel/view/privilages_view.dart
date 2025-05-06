@@ -1,7 +1,10 @@
 // THEMED ONLY VERSION
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:link_up/features/admin_panel/model/job_report_model.dart';
 import 'package:link_up/features/admin_panel/model/privilages_model.dart';
 import 'package:link_up/features/admin_panel/state/privilages_state.dart';
 import 'package:link_up/features/admin_panel/viewModel/privilages_provider.dart';
@@ -146,7 +149,8 @@ class _ReportsPageState extends ConsumerState<ReportsPage>
                     final notifier = ref.read(reportProvider.notifier);
                     if (report.contentRef != null &&
                         (report.type.toLowerCase() == 'post' ||
-                            report.type.toLowerCase() == 'comment')) {
+                            report.type.toLowerCase() == 'comment' ||
+                            report.type.toLowerCase() == 'job')) {
                       showReportPopup(
                         context: context,
                         type: report.type,
@@ -164,7 +168,8 @@ class _ReportsPageState extends ConsumerState<ReportsPage>
                         showReportPopup(
                           context: context,
                           type: report.type,
-                          post: post,
+                          post: post is PostModel ? post : null,
+                          job: post is JobReportModel ? post : null,
                           onAccept: () {
                             Navigator.pop(context);
                             notifier.dismissReport(
@@ -177,6 +182,7 @@ class _ReportsPageState extends ConsumerState<ReportsPage>
                           },
                         );
                       } catch (_) {
+                        log("Error fetching post: $_");
                         if (!context.mounted) return;
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
