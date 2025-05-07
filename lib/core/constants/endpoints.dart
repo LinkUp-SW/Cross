@@ -84,7 +84,7 @@ class ExternalEndPoints {
 
   static const profileVisibility =
       'api/v1/user/privacy-settings/profile-visibility';
-
+static const getJobsFromCompany='api/v1/company/get-jobs-from-company/:organization_id';
   static const getnotifications = 'api/v1/notifications/get-notifications';
   static const marknotificationasread =
       'api/v1/notifications/:notificationId/read';
