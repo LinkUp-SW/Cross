@@ -16,10 +16,13 @@ import 'package:link_up/shared/themes/button_styles.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 import 'dart:developer';
-
+import 'package:link_up/features/profile/model/position_model.dart';
 
 class AddNewPosition extends ConsumerStatefulWidget {
-  const AddNewPosition({super.key});
+final PositionModel? positionToEdit;
+
+
+const AddNewPosition({super.key, this.positionToEdit});
 
   @override
   ConsumerState<AddNewPosition> createState() => _AddNewPositionState();
@@ -30,6 +33,83 @@ class _AddNewPositionState extends ConsumerState<AddNewPosition> {
   final FocusNode _endDateFocusNode = FocusNode();
   final FocusNode _companyFocusNode = FocusNode();
 
+  PositionModel? _initialPositionData; 
+  bool _isEditMode = false;
+   List<String> _currentSkills = [];  
+
+@override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+       final extraData = GoRouterState.of(context).extra;
+       PositionModel? initialData;
+       if (extraData is PositionModel) {
+          initialData = extraData; 
+       } else {
+          initialData = widget.positionToEdit; 
+       }
+    if (initialData != null) {
+         setState(() {
+           _isEditMode = true;
+           _currentSkills = List<String>.from(initialData!.skills ?? []);
+           log("InitState - Editing Position: Skills loaded: $_currentSkills");
+         });
+        ref.read(addPositionViewModelProvider.notifier).initializeForEdit(_initialPositionData!);
+      } else {
+         ref.read(addPositionViewModelProvider.notifier).resetForm();
+         setState(() {
+           _currentSkills = []; 
+           log("InitState - Adding New Position: Skills reset.");
+         });
+      }
+    });
+  }
+Future<void> _handleAddSkill() async {
+  final TextEditingController _controller = TextEditingController();
+
+  final newSkill = await showDialog<String>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text("Add Skill"),
+      backgroundColor: Theme.of(context).brightness == Brightness.dark ? AppColors.darkMain : AppColors.lightMain, 
+      content: TextField(
+        controller: _controller,
+        autofocus: true,
+        decoration: InputDecoration(hintText: "Enter skill name"),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context), 
+          child: Text("Cancel")
+        ),
+        TextButton(
+          onPressed: () {
+            final value = _controller.text.trim();
+            Navigator.pop(context, value);
+          },
+          child: Text("Add")
+        ),
+      ],
+    ),
+  );
+
+  if (newSkill != null && newSkill.isNotEmpty && !_currentSkills.contains(newSkill)) {
+    setState(() {
+      _currentSkills.add(newSkill);
+      log("Skill added locally: $newSkill. Current skills: $_currentSkills");
+    });
+  }
+}
+
+
+   void _removeSkill(String skillToRemove) {
+      setState(() {
+         _currentSkills.remove(skillToRemove);
+         log("Skill removed locally: $skillToRemove. Current skills: $_currentSkills");
+      });
+   }
+
+  
   @override
   void dispose() {
     _startDateFocusNode.dispose();
@@ -39,10 +119,12 @@ class _AddNewPositionState extends ConsumerState<AddNewPosition> {
   }
 
   AddPositionFormData? _getFormDataFromState(AddPositionState state) {
-    if (state is AddPositionInitial) return state.formData;
-    if (state is AddPositionLoading) return state.formData;
-    if (state is AddPositionFailure) return state.formData;
-    return null;
+     if (state is AddPositionInitial) return state.formData;
+     if (state is AddPositionLoading) return state.formData;
+     if (state is AddPositionFailure) return state.formData;
+
+     return null; 
+
   }
 
     Future<void> _selectDate(BuildContext context, bool isStartDate) async {
@@ -92,6 +174,8 @@ class _AddNewPositionState extends ConsumerState<AddNewPosition> {
     }
   }
 
+  
+
 
   @override
   Widget build(BuildContext context) {
@@ -99,15 +183,19 @@ class _AddNewPositionState extends ConsumerState<AddNewPosition> {
     final buttonStyles = LinkUpButtonStyles();
     final state = ref.watch(addPositionViewModelProvider);
     final viewModel = ref.read(addPositionViewModelProvider.notifier);
+    final String appBarTitle = _isEditMode ? "Edit position" : "Add position";
     final formData = _getFormDataFromState(state);
+    final isSaving = state is AddPositionLoading;
 
     ref.listen<AddPositionState>(addPositionViewModelProvider, (previous, next) {
       if (next is AddPositionSuccess) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Position saved successfully!'), backgroundColor: Colors.green),
+          SnackBar(content: Text('Position ${_isEditMode ? 'updated' : 'saved'} successfully!'), backgroundColor: Colors.green),
         );
-        GoRouter.of(context).pop();
-      } else if (next is AddPositionFailure) {
+         if (GoRouter.of(context).canPop()) {
+             GoRouter.of(context).pop();
+         }} 
+         else if (next is AddPositionFailure) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: ${next.message}'), backgroundColor: Colors.red),
         );
@@ -115,9 +203,7 @@ class _AddNewPositionState extends ConsumerState<AddNewPosition> {
     });
 
     final maxDescriptionChars = viewModel.maxDescriptionChars;
-    final descriptionCharCount = ref.watch(addPositionViewModelProvider.select(
-        (s) => _getFormDataFromState(s)?.descriptionController.text.length ?? 0
-    ));
+
 
 
     return Scaffold(
@@ -126,7 +212,7 @@ class _AddNewPositionState extends ConsumerState<AddNewPosition> {
         child: Column(
           children: [
             SubPagesAppBar(
-              title: "Add position",
+              title: appBarTitle, 
               onClosePressed: () => GoRouter.of(context).pop(),
             ),
             Expanded(
@@ -146,6 +232,7 @@ class _AddNewPositionState extends ConsumerState<AddNewPosition> {
                             SubPagesCustomTextField(
                               controller: formData.titleController,
                               hintText: "Ex: Retail Sales Manager",
+
                             ),
                             SizedBox(height: 20.h),
                             SubPagesFormLabel(label: "Employment type"),
@@ -272,46 +359,52 @@ class _AddNewPositionState extends ConsumerState<AddNewPosition> {
                               padding: EdgeInsets.only(top: 4.h, right: 8.w),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Text(
-                                    "$descriptionCharCount / $maxDescriptionChars characters",
-                                    style: TextStyles.font12_400Weight.copyWith(
-                                      color: descriptionCharCount > maxDescriptionChars
-                                          ? Colors.red
-                                          : AppColors.lightGrey,
-                                    ),
-                                  ),
-                                ],
+                                
                               ),
                             ),
                             SizedBox(height: 20.h),
-                            SubPagesSectionHeader(title: "Skills"),
-                            SizedBox(height: 10.h),
-                            Text(
-                              "We recommend adding skills related to this position.",
-                              style: TextStyles.font14_400Weight.copyWith(
-                                color: isDarkMode
-                                    ? AppColors.darkTextColor
-                                    : AppColors.lightTextColor,
-                              ),
-                            ),
-                            SizedBox(height: 10.h),
-                            ElevatedButton(
-                              onPressed: () {
+                         // --- Skills Section ---
+                         SubPagesSectionHeader(title: "Skills"),
+                         SizedBox(height: 10.h),
+                         Text(
+                           "Add skills related to this position.", 
+                           style: TextStyles.font14_400Weight.copyWith(
+                             color: isDarkMode
+                                 ? AppColors.darkTextColor
+                                 : AppColors.lightTextColor,
+                           ),
+                         ),
+                         SizedBox(height: 10.h),
 
-                              },
-                              style: isDarkMode
-                                  ? buttonStyles.blueOutlinedButtonDark()
-                                  : buttonStyles.blueOutlinedButton(),
-                              child: Text(
-                                "+ Add skill",
-                                style: TextStyles.font14_600Weight.copyWith(
-                                  color: isDarkMode
-                                      ? AppColors.darkBlue
-                                      : AppColors.lightBlue,
-                                ),
+                         Wrap(
+                            spacing: 8.w,
+                            runSpacing: 4.h,
+                            children: _currentSkills.map((skill) => Chip(
+                               label: Text(skill, style: TextStyles.font12_500Weight.copyWith(color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor)),
+                               onDeleted: isSaving ? null : () => _removeSkill(skill),
+                               deleteIcon: Icon(Icons.close, size: 14.sp),
+                               backgroundColor: isDarkMode ? AppColors.darkGrey.withOpacity(0.5) : AppColors.lightGrey.withOpacity(0.2),
+                               padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                               shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16.r),
+                                  side: BorderSide(color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey.withOpacity(0.5))
+                               ),
+                            )).toList(),
+                         ),
+                         SizedBox(height: 10.h),
+
+                        ElevatedButton(
+                           onPressed: isSaving ? null : _handleAddSkill, 
+                                style: isDarkMode
+                                    ? buttonStyles.blueOutlinedButtonDark()
+                                    : buttonStyles.blueOutlinedButton(),
+                                child: Text("+ Add Skill",
+                                    style: TextStyles.font14_600Weight.copyWith(
+                                        color: isDarkMode
+                                            ? AppColors.darkBlue
+                                            : AppColors.lightBlue)),
                               ),
-                            ),
+                         // --- End Skills Section ---
                             SizedBox(height: 20.h),
                               SubPagesSectionHeader(title: "Media"),
                               SizedBox(height: 10.h),
@@ -342,31 +435,25 @@ class _AddNewPositionState extends ConsumerState<AddNewPosition> {
                       ),
               ),
             ),
-            if (formData != null)
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: state is AddPositionLoading ? null : () => viewModel.savePosition(),
-                    style: (isDarkMode
-                        ? buttonStyles.wideBlueElevatedButtonDark()
-                        : buttonStyles.wideBlueElevatedButton())
-                        .copyWith(minimumSize: MaterialStateProperty.all(Size.fromHeight(50.h))),
-                    child: state is AddPositionLoading
-                        ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: AppColors.lightMain, strokeWidth: 2.0))
-                        : Text(
-                            "Save",
-                            style: TextStyles.font15_500Weight.copyWith(
-                              color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
-                            ),
+          if (formData != null)
+            Padding(
+               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+               child: SizedBox(
+                 width: double.infinity,
+                 child: ElevatedButton(
+                   onPressed: isSaving ? null : () => viewModel.savePosition(_currentSkills),
+                   style: (isDarkMode
+                       ? buttonStyles.wideBlueElevatedButtonDark()
+                       : buttonStyles.wideBlueElevatedButton())
+                       .copyWith(minimumSize: MaterialStateProperty.all(Size.fromHeight(50.h))),
+                   child: isSaving
+                       ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: AppColors.lightMain, strokeWidth: 2.0))
+                       : Text( "Save", style: TextStyles.font15_500Weight.copyWith( color: isDarkMode ? AppColors.darkMain : AppColors.lightMain, ), ),
                           ),
-                  ),
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+               ),
+             ),
+       ],
+     ),
+   ),
+);
+}}

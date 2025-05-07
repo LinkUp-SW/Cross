@@ -9,6 +9,7 @@ import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/shared/utils/my_network_utils.dart';
 import 'dart:math' show pi;
 import 'package:go_router/go_router.dart';
+import 'package:link_up/features/chat/util/chat_navigation_util.dart';
 
 class ConnectionsCard extends ConsumerWidget {
   final ConnectionsCardModel data;
@@ -66,7 +67,7 @@ class ConnectionsCard extends ConsumerWidget {
                         children: [
                           // Name
                           Text(
-                            "${data.firstName} ${data.lastName}",
+                            data.name,
                             style: TextStyles.font15_700Weight,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -104,7 +105,7 @@ class ConnectionsCard extends ConsumerWidget {
                       builder: (context) => ConfirmationPopUp(
                         title: 'Remove connection',
                         content:
-                            'Are you sure you want to remove your connection with ${data.firstName} ${data.lastName}?',
+                            'Are you sure you want to remove your connection with ${data.name} ?',
                         buttonText: 'Remove',
                         buttonFunctionality: () {
                           Navigator.of(context).pop();
@@ -124,7 +125,14 @@ class ConnectionsCard extends ConsumerWidget {
                   ),
                 ),
                 IconButton(
-                  onPressed: () => {},
+                  onPressed: () => {navigateDirectlyToChat(
+                                      context: context,
+                                      ref: ref,
+                                      userId: data.cardId,
+                                      firstName: data.name.split(" ")[0],
+                                      lastName: data.name.split(" ")[1],
+                                      profilePic: data.profilePicture,
+                                    )},
                   icon: Transform.rotate(
                     angle: -pi / 4, // 45 degrees counterclockwise
                     child: Icon(

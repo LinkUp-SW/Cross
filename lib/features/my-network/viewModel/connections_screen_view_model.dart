@@ -159,14 +159,14 @@ class ConnectionsScreenViewModel extends StateNotifier<ConnectionsScreenState> {
     // Ascending order by first name
     else if (sortingType == 2) {
       connectionsList.sort((a, b) {
-        return a.firstName.compareTo(b.firstName);
+        return a.name.compareTo(b.name);
       });
     }
 
     // Descending order by first name
     else if (sortingType == 3) {
       connectionsList.sort((a, b) {
-        return b.firstName.compareTo(a.firstName);
+        return b.name.compareTo(a.name);
       });
     }
 

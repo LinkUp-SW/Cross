@@ -1,9 +1,12 @@
 // for internal endpoints like token storage
 
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:link_up/core/utils/global_keys.dart';
+import 'package:link_up/features/chat/services/global_socket_service.dart';
 
 const FlutterSecureStorage secureStorage = FlutterSecureStorage();
 
@@ -39,10 +42,19 @@ Future returncred() async {
 }
 
 Future<void> logout(BuildContext context) async {
+    try {
+    final socketService = GlobalSocketService();
+    socketService.dispose();
+    log('Socket service disposed successfully during logout');
+  } catch (e) {
+    log('Error disposing socket service: $e');
+  }
   await secureStorage.delete(key: "token");
   await secureStorage.delete(key: "email");
   await secureStorage.delete(key: "password");
   (navigatorKey.currentContext ?? context).go('/login');
+ 
+
 }
 
 

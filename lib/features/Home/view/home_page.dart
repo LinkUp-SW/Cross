@@ -113,6 +113,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         ref.read(currentTabProvider.notifier).state = false;
       });
     });
+    setState(() {});
     return Scaffold(
       body: NestedScrollView(
         controller: scrollController2,
@@ -134,6 +135,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             onRefresh: () async {
               PostsState.nextCursor = 0;
               await ref.read(postsProvider.notifier).refreshPosts();
+              setState(() {});
             },
             child: Builder(builder: (context) {
               if (PostsState.isLoading) {

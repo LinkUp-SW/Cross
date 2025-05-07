@@ -13,14 +13,17 @@ import 'package:link_up/features/profile/widgets/subpages_text_field.dart';
 import 'package:link_up/shared/themes/button_styles.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
-import 'dart:developer';
+import 'package:link_up/features/profile/model/license_model.dart';
 
 class AddNewLicensePage extends ConsumerStatefulWidget {
-  const AddNewLicensePage({super.key});
+final LicenseModel? licenseToEdit;
+const AddNewLicensePage({super.key, this.licenseToEdit});
 
   @override
   ConsumerState<AddNewLicensePage> createState() => _AddNewLicensePageState();
 }
+
+
 
 class _AddNewLicensePageState extends ConsumerState<AddNewLicensePage> {
   final FocusNode _issueDateFocusNode = FocusNode();
@@ -28,7 +31,80 @@ class _AddNewLicensePageState extends ConsumerState<AddNewLicensePage> {
   final FocusNode _organizationFocusNode = FocusNode();
   final FocusNode _credentialIdFocusNode = FocusNode();
   final FocusNode _credentialUrlFocusNode = FocusNode();
+  LicenseModel? _initialLicenseData;
+  bool _isEditMode = false;
+  List<String> _currentSkills = [];  
 
+@override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final extraData = GoRouterState.of(context).extra;
+      LicenseModel? initialData;
+
+      if (extraData is LicenseModel) {
+        _initialLicenseData = extraData;
+      } else {
+        _initialLicenseData = widget.licenseToEdit;
+      }
+
+      if (initialData != null) {
+        setState(() {
+           _isEditMode = true; 
+          _currentSkills = List<String>.from(initialData!.skills ?? []);
+
+        });
+        ref.read(addLicenseViewModelProvider.notifier).initializeForEdit(_initialLicenseData!);
+      } else {
+      ref.read(addLicenseViewModelProvider.notifier).resetForm();
+         setState(() {
+           _currentSkills = []; 
+         });      }
+    });
+  }
+  Future<void> _handleAddSkill() async {
+  final TextEditingController _controller = TextEditingController();
+
+  final newSkill = await showDialog<String>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text("Add Skill"),
+      backgroundColor: Theme.of(context).brightness == Brightness.dark ? AppColors.darkMain : AppColors.lightMain, 
+      content: TextField(
+        controller: _controller,
+        autofocus: true,
+        decoration: InputDecoration(hintText: "Enter skill name"),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context), 
+          child: Text("Cancel")
+        ),
+        TextButton(
+          onPressed: () {
+            final value = _controller.text.trim();
+            Navigator.pop(context, value);
+          },
+          child: Text("Add")
+        ),
+      ],
+    ),
+  );
+
+  if (newSkill != null && newSkill.isNotEmpty && !_currentSkills.contains(newSkill)) {
+    setState(() {
+      _currentSkills.add(newSkill);
+    });
+  }
+}
+
+
+
+   void _removeSkill(String skillToRemove) {
+      setState(() {
+         _currentSkills.remove(skillToRemove);
+      });
+   }  
   @override
   void dispose() {
     _issueDateFocusNode.dispose();
@@ -101,17 +177,19 @@ class _AddNewLicensePageState extends ConsumerState<AddNewLicensePage> {
     final buttonStyles = LinkUpButtonStyles();
     final state = ref.watch(addLicenseViewModelProvider);
     final viewModel = ref.read(addLicenseViewModelProvider.notifier);
+    final String appBarTitle = _isEditMode ? "Edit License or Certificate" : "Add License or Certificate";
     final formData = _getFormDataFromState(state);
-
     final bool isSaving = state is AddLicenseLoading;
 
     ref.listen<AddLicenseState>(addLicenseViewModelProvider, (previous, next) {
       if (next is AddLicenseSuccess) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('License saved successfully!'), backgroundColor: Colors.green),
+          SnackBar(content: Text('License ${_isEditMode ? 'updated' : 'saved'} successfully!'), backgroundColor: Colors.green),
         );
-        GoRouter.of(context).pop();
-      } else if (next is AddLicenseFailure) {
+         if (GoRouter.of(context).canPop()) {
+             GoRouter.of(context).pop();
+         }
+          } else if (next is AddLicenseFailure) {
         if (previous is! AddLicenseFailure || previous.message != next.message) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Error: ${next.message}'), backgroundColor: Colors.red),
@@ -126,7 +204,7 @@ class _AddNewLicensePageState extends ConsumerState<AddNewLicensePage> {
         child: Column(
           children: [
             SubPagesAppBar(
-              title: "Add license or certification",
+              title: appBarTitle,
               onClosePressed: () => GoRouter.of(context).pop(),
             ),
             Expanded(
@@ -257,27 +335,45 @@ class _AddNewLicensePageState extends ConsumerState<AddNewLicensePage> {
                               focusNode: _credentialUrlFocusNode,
                             ),
                             SizedBox(height: 20.h),
-                            SubPagesSectionHeader(title: "Skills"),
-                            SizedBox(height: 10.h),
-                            Text(
-                              "Add skills related to this license or certification.",
-                              style: TextStyles.font14_400Weight.copyWith(
-                                color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+                        SubPagesSectionHeader(title: "Skills"),
+                         SizedBox(height: 10.h),
+                         Text(
+                           "Add skills related to this position.", 
+                           style: TextStyles.font14_400Weight.copyWith(
+                             color: isDarkMode
+                                 ? AppColors.darkTextColor
+                                 : AppColors.lightTextColor,
+                           ),
+                         ),
+                         SizedBox(height: 10.h),
+
+                         Wrap(
+                            spacing: 8.w,
+                            runSpacing: 4.h,
+                            children: _currentSkills.map((skill) => Chip(
+                               label: Text(skill, style: TextStyles.font12_500Weight.copyWith(color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor)),
+                               onDeleted: isSaving ? null : () => _removeSkill(skill),
+                               deleteIcon: Icon(Icons.close, size: 14.sp),
+                               backgroundColor: isDarkMode ? AppColors.darkGrey.withOpacity(0.5) : AppColors.lightGrey.withOpacity(0.2),
+                               padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                               shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16.r),
+                                  side: BorderSide(color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey.withOpacity(0.5))
+                               ),
+                            )).toList(),
+                         ),
+                        ElevatedButton(
+                           onPressed: isSaving ? null : _handleAddSkill, 
+                                style: isDarkMode
+                                    ? buttonStyles.blueOutlinedButtonDark()
+                                    : buttonStyles.blueOutlinedButton(),
+                                child: Text("+ Add Skill",
+                                    style: TextStyles.font14_600Weight.copyWith(
+                                        color: isDarkMode
+                                            ? AppColors.darkBlue
+                                            : AppColors.lightBlue)),
                               ),
-                            ),
-                            SizedBox(height: 10.h),
-                            ElevatedButton(
-                              onPressed: isSaving ? null : () {},
-                              style: isDarkMode
-                                  ? buttonStyles.blueOutlinedButtonDark()
-                                  : buttonStyles.blueOutlinedButton(),
-                              child: Text(
-                                "+ Add skill",
-                                style: TextStyles.font14_600Weight.copyWith(
-                                  color: isDarkMode ? AppColors.darkBlue : AppColors.lightBlue,
-                                ),
-                              ),
-                            ),
+                         // --- End Skills Section ---
                             SizedBox(height: 20.h),
                             SubPagesSectionHeader(title: "Media"),
                             SizedBox(height: 10.h),
@@ -307,33 +403,30 @@ class _AddNewLicensePageState extends ConsumerState<AddNewLicensePage> {
               ),
             ),
             if (formData != null)
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: isSaving ? null : () => viewModel.saveLicense(),
-                    style: (isDarkMode
-                            ? buttonStyles.wideBlueElevatedButtonDark()
-                            : buttonStyles.wideBlueElevatedButton())
-                        .copyWith(minimumSize: MaterialStateProperty.all(Size.fromHeight(50.h))),
-                    child: isSaving
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(color: AppColors.lightMain, strokeWidth: 2.0))
-                        : Text(
-                            "Save",
-                            style: TextStyles.font15_500Weight.copyWith(
-                              color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+                      Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                            child: SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: state is AddLicenseLoading ? null : () => viewModel.saveLicense(_currentSkills),
+                                style: (isDarkMode
+                                    ? buttonStyles.wideBlueElevatedButtonDark()
+                                    : buttonStyles.wideBlueElevatedButton())
+                                    .copyWith(minimumSize: MaterialStateProperty.all(Size.fromHeight(50.h))),
+                                child: state is AddLicenseLoading
+                                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: AppColors.lightMain, strokeWidth: 2.0))
+                                    : Text(
+                                        "Save",
+                                        style: TextStyles.font15_500Weight.copyWith(
+                                          color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+                                        ),
+                                      ),
+                              ),
                             ),
                           ),
+                      ],
+                    ),
                   ),
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+                );
+              }
+            }

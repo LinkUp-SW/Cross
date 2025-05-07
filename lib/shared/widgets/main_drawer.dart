@@ -74,7 +74,7 @@ class _MainDrawerState extends ConsumerState<MainDrawer> {
                             height: 5.h,
                           ),
                           Text(
-                              '${InternalEndPoints.userId.split('-')[0][0].toUpperCase()}${InternalEndPoints.userId.split('-')[0].substring(1)} ${InternalEndPoints.userId.split('-')[1][0].toUpperCase()}${InternalEndPoints.userId.split('-')[1].substring(1)}',
+                              '${InternalEndPoints.firstName} ${InternalEndPoints.lastName}',
                               style: TextStyle(
                                   fontSize: 20.r, fontWeight: FontWeight.bold)),
                           SizedBox(
@@ -119,6 +119,15 @@ class _MainDrawerState extends ConsumerState<MainDrawer> {
                   title: const Text('Groups'),
                   onTap: () {
                     context.push('/groups');
+                  },
+                ),
+                // Create Company Profile button
+                ListTile(
+                  leading: const Icon(Icons.business),
+                  title: const Text('Create Company Profile'),
+                  onTap: () {
+                    context.pop();
+                    context.push('/create-company');
                   },
                 ),
               ],

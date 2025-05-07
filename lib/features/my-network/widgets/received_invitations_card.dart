@@ -63,7 +63,7 @@ class ReceivedInvitationsCard extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "${data.firstName} ${data.lastName}",
+                            data.name,
                             style: TextStyles.font14_500Weight,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -111,7 +111,7 @@ class ReceivedInvitationsCard extends ConsumerWidget {
                       openSnackbar(
                           child: SnackbarContent(
                         message:
-                            'You have successfuly accepted ${data.firstName} ${data.lastName} connection invitation',
+                            'You have successfuly accepted ${data.name} connection invitation',
                         icon: Icons.add_box_outlined,
                       ));
                     },
@@ -147,7 +147,7 @@ class ReceivedInvitationsCard extends ConsumerWidget {
                       openSnackbar(
                           child: SnackbarContent(
                         message:
-                            'You have ignored ${data.firstName} ${data.lastName} connection invitation',
+                            'You have ignored ${data.name} connection invitation',
                         icon: Icons.block_outlined,
                       ));
                     },

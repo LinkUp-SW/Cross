@@ -13,11 +13,20 @@ class UserProfile {
   final String profilePhotoUrl;
   final String coverPhotoUrl;
   final int numberOfConnections;
-   final bool? isInConnections; // Already connected
-  final bool? isInReceivedConnections; // You have a pending request from them
-  final bool? isInSentConnections; // You sent them a pending request
-  final bool? isAlreadyFollowing; // You are following them
-  final bool? allowMessaging; // Can you message them? (Likely if connected)
+  final String? nameOfOneMutualConnection;
+  final bool? followPrimary; 
+  final bool? isSubscribed; 
+  final bool? viewUserSubscribed;
+  final bool? isConnectByEmail;
+  final bool? isInConnections; 
+  final bool? isInReceivedConnections; 
+  final bool? isInSentConnections;
+  final bool? isAlreadyFollowing; 
+  final bool? allowMessaging;
+  final bool? isPublicProfile;
+  
+
+
 
   const UserProfile({
     required this.isMe,
@@ -35,6 +44,16 @@ class UserProfile {
     this.isInSentConnections, 
     this.isAlreadyFollowing,
     this.allowMessaging,
+    this.nameOfOneMutualConnection,
+    this.followPrimary,
+    this.isSubscribed,
+    this.viewUserSubscribed,
+    this.isConnectByEmail,
+    this.isPublicProfile = false,
+
+
+
+    
 
   });
 
@@ -56,10 +75,16 @@ class UserProfile {
       coverPhotoUrl: json['cover_photo'] as String? ?? '',
       numberOfConnections: json['number_of_connections'] as int? ?? 0,
        isInConnections: json['isInConnections'] as bool? ?? false,
-      isInReceivedConnections: json['isInReceivedConnections'] as bool? ?? false,
-      isInSentConnections: json['isInSentConnections'] as bool? ?? false,
+      isInReceivedConnections: json['is_in_received_connections'] as bool? ?? false,
+      isInSentConnections: json['is_in_sent_connections'] as bool? ?? false,
       isAlreadyFollowing: json['isAlreadyFollowing'] as bool? ?? false,
-      allowMessaging: json['allowMessaging'] as bool? ?? false, 
+      allowMessaging: json['allow_messaging'] as bool? ?? false,
+      nameOfOneMutualConnection: json['name_of_one_mutual_connection'] as String?,
+      followPrimary: json['follow_primary'] as bool? ?? false,
+      isSubscribed: json['isSubscribed'] as bool? ?? false, 
+      viewUserSubscribed: json['view_user_is_subscribed'] as bool? ?? false,
+      isConnectByEmail: json['isConnectByEmail'] as bool? ?? false,
+
     );
   }
 
@@ -100,6 +125,12 @@ class UserProfile {
       isInSentConnections: false,
       isAlreadyFollowing: false,
       allowMessaging: false,
+      nameOfOneMutualConnection: null,
+      followPrimary: false,
+      isSubscribed: false,
+      viewUserSubscribed: false,
+      isConnectByEmail: false,
+
     );
   }
   UserProfile copyWith({
@@ -120,6 +151,13 @@ class UserProfile {
       bool? isAlreadyFollowing,
       bool? allowMessaging,
 
+      String? nameOfOneMutualConnection,
+      bool? followPrimary,
+      bool? isSubscribed,
+      bool? viewUserSubscribed,
+      bool? isConnectByEmail,
+      bool? isPublicProfile,
+
    }) {
       return UserProfile(
  
@@ -138,6 +176,12 @@ class UserProfile {
         isInSentConnections: isInSentConnections ?? this.isInSentConnections,
         isAlreadyFollowing: isAlreadyFollowing ?? this.isAlreadyFollowing,
         allowMessaging: allowMessaging ?? this.allowMessaging,
+        nameOfOneMutualConnection: nameOfOneMutualConnection ?? this.nameOfOneMutualConnection, 
+        followPrimary: followPrimary ?? this.followPrimary,
+        isSubscribed: isSubscribed ?? this.isSubscribed,
+        viewUserSubscribed: viewUserSubscribed ?? this.viewUserSubscribed,
+        isConnectByEmail: isConnectByEmail ?? this.isConnectByEmail,
+        isPublicProfile: isPublicProfile ?? this.isPublicProfile, 
 
       );
    }
@@ -160,7 +204,13 @@ class UserProfile {
           isInSentConnections == other.isInSentConnections &&
           isAlreadyFollowing == other.isAlreadyFollowing &&
           allowMessaging == other.allowMessaging &&
-          isInConnections == other.isInConnections;
+          isInConnections == other.isInConnections &&
+          nameOfOneMutualConnection == other.nameOfOneMutualConnection &&
+          followPrimary == other.followPrimary &&
+          isSubscribed == other.isSubscribed &&
+          viewUserSubscribed == other.viewUserSubscribed &&
+          isConnectByEmail == other.isConnectByEmail &&
+          isPublicProfile == other.isPublicProfile;
           
 
    @override
@@ -179,7 +229,14 @@ class UserProfile {
         isInSentConnections.hashCode ^
         isAlreadyFollowing.hashCode ^
         allowMessaging.hashCode ^
-        isInConnections.hashCode; 
+        isInConnections.hashCode ^
+        nameOfOneMutualConnection.hashCode ^
+        followPrimary.hashCode ^
+        isSubscribed.hashCode ^
+        viewUserSubscribed.hashCode ^
+        isConnectByEmail.hashCode ^
+        isPublicProfile.hashCode;
+        
 
         
 }

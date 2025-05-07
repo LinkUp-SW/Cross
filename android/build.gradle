@@ -8,6 +8,10 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:8.2.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+<<<<<<< HEAD
+=======
+        // classpath 'com.google.gms:google-services:4.4.0' 
+>>>>>>> 85aec1fb2c4f5d4c56732e88d7c836e2a9b600c9
     }
 }
 

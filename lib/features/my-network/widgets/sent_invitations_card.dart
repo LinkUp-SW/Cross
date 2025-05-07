@@ -60,7 +60,7 @@ class SentInvitationsCard extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "${data.firstName} ${data.lastName}",
+                            data.name,
                             style: TextStyles.font14_500Weight,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -95,7 +95,7 @@ class SentInvitationsCard extends ConsumerWidget {
                     builder: (context) => ConfirmationPopUp(
                       title: 'Withdraw invitation',
                       content:
-                          'Are you sure you want to withdraw your connection invitation to ${data.firstName} ${data.lastName}?',
+                          'Are you sure you want to withdraw your connection invitation to ${data.name} ?',
                       buttonText: 'Withdraw',
                       buttonFunctionality: () {
                         Navigator.of(context).pop();

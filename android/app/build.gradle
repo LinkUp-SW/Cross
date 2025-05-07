@@ -39,6 +39,14 @@ android {
     }
 }
 
+<<<<<<< HEAD
 flutter {
     source="../.."
 }
+=======
+
+flutter {
+    source="../.."
+}
+// apply plugin: 'com.google.gms.google-services'
+>>>>>>> 85aec1fb2c4f5d4c56732e88d7c836e2a9b600c9

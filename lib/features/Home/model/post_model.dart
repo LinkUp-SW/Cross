@@ -44,7 +44,7 @@ class PostModel {
       : id = json['_id'],
         activity = json['activity_context'] != null ? ActivityModel.fromJson(json['activity_context']): ActivityModel.initial(),
         header = HeaderModel.fromJson(json),
-        text = json['content'],
+        text = json['content'] ?? '',
         media = Media.fromJson(json['media'],
             ogPost: json['original_post']),
         reactions =  json['reactions_count'] ?? 0,
@@ -53,7 +53,7 @@ class PostModel {
         postType = json['post_type'] ?? 'Standard',
         reaction = Reaction.getReaction(json['user_reaction'] ?? 'none'),
         isAd = json['isAd'] ?? false,
-        isCompany = json['isCompany'] ?? false,
+        isCompany = json['is_company'] ?? false,
         saved = json['is_saved'] ?? false,
         topReactions = List<Reaction>.from(
             json['top_reactions']?.map((e) => Reaction.getReaction(e)) ?? []),

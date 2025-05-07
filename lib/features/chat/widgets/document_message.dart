@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:link_up/features/chat/model/chat_model.dart';
+import 'package:link_up/features/chat/model/message_model.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
@@ -23,7 +23,11 @@ class _DocumentMessageWidgetState extends State<DocumentMessageWidget> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    final filePath = widget.message.content;
+    // Get file path either from message content or first media item
+    final filePath = widget.message.message.isNotEmpty
+        ? widget.message.message
+        : (widget.message.media.isNotEmpty ? widget.message.media.first : '');
+
     final isUrl = filePath.startsWith('http');
     final fileName = filePath.split('/').last;
 
@@ -66,12 +70,12 @@ class _DocumentMessageWidgetState extends State<DocumentMessageWidget> {
       child: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: theme.cardColor, // Adaptive background
+          color: theme.cardColor,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
           children: [
-            Icon(Icons.insert_drive_file, color: colorScheme.primary), // Theme-aware icon color
+            Icon(Icons.insert_drive_file, color: colorScheme.primary),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
