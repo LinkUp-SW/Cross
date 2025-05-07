@@ -33,7 +33,8 @@ class CompanyFormField extends StatelessWidget {
         Text(
           label,
           style: TextStyles.font16_600Weight.copyWith(
-            color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
+            color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightTextColor,
+
           ),
         ),
         SizedBox(height: 8.h),
@@ -48,9 +49,11 @@ class CompanyFormField extends StatelessWidget {
           decoration: InputDecoration(
             hintText: hintText,
             hintStyle: TextStyle(
-              color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightTextColor,
+
+              color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
             ),
-            fillColor: isDarkMode ?AppColors.darkMain : AppColors.lightMain,
+            fillColor: isDarkMode ? Colors.grey[800] : Colors.grey[200],
+
             filled: true,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.r),
@@ -98,7 +101,8 @@ class CompanyDropdownField extends StatelessWidget {
         Container(
           padding: EdgeInsets.symmetric(horizontal: 16.w),
           decoration: BoxDecoration(
-            color: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+            color: isDarkMode ? Colors.grey[800] : Colors.grey[200],
+
             borderRadius: BorderRadius.circular(8.r),
           ),
           child: DropdownButtonHideUnderline(

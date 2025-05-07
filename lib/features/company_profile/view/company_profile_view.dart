@@ -8,6 +8,9 @@ import 'package:link_up/features/company_profile/viewModel/company_profile_view_
 import 'package:link_up/shared/widgets/custom_app_bar.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
+import 'package:link_up/features/jobs/viewModel/job_details_view_model.dart';
+import 'package:link_up/features/company_profile/widgets/company_job_card.dart';
+
 
 class CompanyProfileViewPage extends ConsumerStatefulWidget {
   final String companyId;
@@ -27,6 +30,8 @@ class _CompanyProfileViewPageState extends ConsumerState<CompanyProfileViewPage>
     super.initState();
     Future.microtask(() {
       ref.read(companyProfileViewViewModelProvider.notifier).getCompanyProfile(widget.companyId);
+       ref.read(companyProfileViewViewModelProvider.notifier).getCompanyJobs(widget.companyId);
+
     });
   }
 
@@ -274,16 +279,18 @@ class _CompanyProfileViewPageState extends ConsumerState<CompanyProfileViewPage>
                               ),
                               SizedBox(height: 24.h),
 
-                              // Jobs section - Can be expanded later
+                              // Jobs section
                               Text(
-                                'Jobs',
+                                'Jobs at ${state.companyProfile?.name ?? 'Company'}',
+
                                 style: TextStyles.font20_700Weight.copyWith(
                                   color: isDarkMode
                                       ? AppColors.darkSecondaryText
                                       : AppColors.lightTextColor,
                                 ),
                               ),
-                              SizedBox(height: 8.h),
+                              SizedBox(height: 12.h),
+
                               Container(
                                 padding: EdgeInsets.all(16.w),
                                 decoration: BoxDecoration(
@@ -297,18 +304,86 @@ class _CompanyProfileViewPageState extends ConsumerState<CompanyProfileViewPage>
                                     ),
                                   ],
                                 ),
-                                child: Center(
-                                  child: Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 24.h),
-                                    child: Text(
-                                      'No jobs available at the moment',
-                                      style: TextStyles.font16_400Weight.copyWith(
-                                        color: isDarkMode
-                                            ? AppColors.darkGrey
-                                            : AppColors.lightGrey,
+                                child: Column(
+                                  children: [
+                                    if (state.isJobsLoading) 
+                                      Center(
+                                        child: Padding(
+                                          padding: EdgeInsets.symmetric(vertical: 24.h),
+                                          child: CircularProgressIndicator(),
+                                        ),
+                                      )
+                                    else if (state.isJobsError)
+                                      Center(
+                                        child: Padding(
+                                          padding: EdgeInsets.symmetric(vertical: 24.h),
+                                          child: Column(
+                                            children: [
+                                              Icon(
+                                                Icons.error_outline,
+                                                size: 32.sp,
+                                                color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
+                                              ),
+                                              SizedBox(height: 8.h),
+                                              Text(
+                                                'Could not load jobs',
+                                                style: TextStyles.font14_400Weight.copyWith(
+                                                  color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      )
+                                    else if (state.companyJobs.isEmpty)
+                                      Center(
+                                        child: Padding(
+                                          padding: EdgeInsets.symmetric(vertical: 24.h),
+                                          child: Text(
+                                            'No jobs available at the moment',
+                                            style: TextStyles.font16_400Weight.copyWith(
+                                              color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    else
+                                      Column(
+                                        children: [
+                                          ...state.companyJobs.map((job) => 
+                                            CompanyJobCard(
+                                              job: job,
+                                              isDarkMode: isDarkMode,
+                                            )
+                                          ).toList(),
+                                          if (state.companyJobs.isNotEmpty)
+                                            Padding(
+                                              padding: EdgeInsets.only(top: 16.h),
+                                              child: TextButton(
+                                                onPressed: () {
+                                                  // Navigate to a full job listing page
+                                                  // You could implement this later
+                                                },
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      'View all ${state.companyJobs.length} jobs',
+                                                      style: TextStyle(
+                                                        color: Colors.blue,
+                                                        fontWeight: FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 4.w),
+                                                    Icon(Icons.arrow_forward, size: 16.sp, color: Colors.blue),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                        ],
                                       ),
-                                    ),
-                                  ),
+                                  ],
+
                                 ),
                               ),
                             ],
@@ -356,7 +431,8 @@ class _CompanyProfileViewPageState extends ConsumerState<CompanyProfileViewPage>
           Text(
             subtitle,
             style: TextStyles.font14_400Weight.copyWith(
-              color: isLink               
+              color: isLink
+
                   ? Colors.blue
                   : (isDarkMode ? AppColors.darkSecondaryText : AppColors.lightTextColor),
               decoration: isLink ? TextDecoration.underline : null,

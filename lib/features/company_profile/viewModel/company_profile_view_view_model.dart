@@ -42,6 +42,36 @@ class CompanyProfileViewViewModel extends StateNotifier<CompanyProfileViewState>
       );
     }
   }
+
+  // lib/features/company_profile/viewModel/company_profile_view_view_model.dart
+// Add this method to your existing CompanyProfileViewViewModel class
+
+Future<void> getCompanyJobs(String organizationId) async {
+  developer.log('Fetching jobs for company ID: $organizationId');
+  state = state.copyWith(isJobsLoading: true, isJobsError: false, jobsErrorMessage: null);
+
+  try {
+    final jobs = await _companyProfileService.getJobsFromCompany(
+      organizationId: organizationId,
+    );
+    
+    developer.log('Successfully fetched ${jobs.length} jobs for company');
+    state = state.copyWith(
+      isJobsLoading: false,
+      companyJobs: jobs,
+      isJobsError: false,
+      jobsErrorMessage: null,
+    );
+  } catch (e, stackTrace) {
+    developer.log('Error fetching jobs for company: $e\n$stackTrace');
+    state = state.copyWith(
+      isJobsLoading: false,
+      isJobsError: true,
+      jobsErrorMessage: e.toString(),
+    );
+  }
+}
+
 }
 
 final companyProfileViewViewModelProvider =
