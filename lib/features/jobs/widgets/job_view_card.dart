@@ -75,8 +75,8 @@ class JobDetailsCard extends ConsumerWidget {
   void _navigateToCompanyProfile(BuildContext context) {
     // Navigate to company profile
     // Assuming you have the organization ID in the data
-    if (data.organizationId != null && data.organizationId!.isNotEmpty) {
-      context.push('/company/${data.organizationId}');
+    if (data.companyId != null && data.companyId!.isNotEmpty) {
+      context.push('/company/${data.companyId}');
     } else {
       // If no organizationId, use organization name as a fallback
       // You might want to implement a search by name functionality in your backend

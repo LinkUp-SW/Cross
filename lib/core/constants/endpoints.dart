@@ -79,5 +79,6 @@ class ExternalEndPoints {
   static const updateJobApplicationStatus =
       'api/v1/job-application/update-job-application-status/:application_id';
       static const createCompanyProfile='api/v1/company/create-company-profile';
-  static const getCompanyProfile='api/v1/company/get-company-profile/:companyId';
+  static const getCompanyProfile='api/v1/company/get-company-all-view/:companyId';
+  static const getJobsFromCompany = 'api/v1/company/get-jobs-from-company/:organization_id';
 }
