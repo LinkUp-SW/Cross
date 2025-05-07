@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:link_up/core/constants/endpoints.dart';
 
-
 import '../model/message_model.dart';
 
 import 'package:intl/intl.dart';
@@ -64,9 +63,12 @@ class ChatMessageBubble extends StatelessWidget {
     // Update the displayName logic to always show a friendly name
     final displayName = isCurrentUser
         ? currentUserName
-        : (message.senderName.contains('-') ? (senderName ?? "Unknown User") : message.senderName);
+        : (message.senderName.contains('-')
+            ? (senderName ?? "Unknown User")
+            : message.senderName);
 
-    final displayPic = isCurrentUser ? currentUserProfilePicUrl : chatProfilePicUrl;
+    final displayPic =
+        isCurrentUser ? currentUserProfilePicUrl : chatProfilePicUrl;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
@@ -105,7 +107,7 @@ class ChatMessageBubble extends StatelessWidget {
               bottom: 0,
               child: CircleAvatar(
                 radius: 8,
-                backgroundImage: _getImageProvider(InternalEndPoints.profileUrl),
+                backgroundImage: _getImageProvider(chatProfilePicUrl),
               ),
             ),
         ],
@@ -133,7 +135,7 @@ class ChatMessageBubble extends StatelessWidget {
 
   ImageProvider _getImageProvider(String? url) {
     if (url == null || url.isEmpty) {
-      return  AssetImage(InternalEndPoints.profileUrl);
+      return AssetImage(InternalEndPoints.profileUrl);
     } else if (url.startsWith('http')) {
       return NetworkImage(url);
     } else {
@@ -162,7 +164,8 @@ class ChatMessageBubble extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 8),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
                   color: theme.colorScheme.surfaceVariant,
                   borderRadius: BorderRadius.circular(12),
@@ -218,7 +221,8 @@ class ChatMessageBubble extends StatelessWidget {
           decoration: BoxDecoration(
             color: theme.colorScheme.surface,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: theme.colorScheme.surfaceVariant, width: 1),
+            border:
+                Border.all(color: theme.colorScheme.surfaceVariant, width: 1),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.1),
@@ -230,8 +234,13 @@ class ChatMessageBubble extends StatelessWidget {
           margin: const EdgeInsets.only(bottom: 4),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(12),
-            child: _buildMediaWidget(_isImageFile(mediaUrl), _isVideoFile(mediaUrl),
-                !_isImageFile(mediaUrl) && !_isVideoFile(mediaUrl), mediaUrl, isUrl, theme),
+            child: _buildMediaWidget(
+                _isImageFile(mediaUrl),
+                _isVideoFile(mediaUrl),
+                !_isImageFile(mediaUrl) && !_isVideoFile(mediaUrl),
+                mediaUrl,
+                isUrl,
+                theme),
           ),
         ),
         // Both loading and error indicators have been removed
@@ -239,7 +248,8 @@ class ChatMessageBubble extends StatelessWidget {
     );
   }
 
-  Widget _buildMediaWidget(bool isImage, bool isVideo, bool isDocument, String mediaUrl, bool isUrl, ThemeData theme) {
+  Widget _buildMediaWidget(bool isImage, bool isVideo, bool isDocument,
+      String mediaUrl, bool isUrl, ThemeData theme) {
     if (isImage) {
       // Display image
       return Stack(
@@ -260,7 +270,8 @@ class ChatMessageBubble extends StatelessWidget {
                     return Center(
                       child: CircularProgressIndicator(
                         value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                            ? loadingProgress.cumulativeBytesLoaded /
+                                loadingProgress.expectedTotalBytes!
                             : null,
                       ),
                     );
@@ -358,7 +369,8 @@ class ChatMessageBubble extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: message.sendProgress == MessageProgress.failed
-                  ? theme.colorScheme.primary.withOpacity(0.3) // Don't show error border
+                  ? theme.colorScheme.primary
+                      .withOpacity(0.3) // Don't show error border
                   : theme.colorScheme.primary.withOpacity(0.3),
               width: 1.0,
             ),
@@ -395,14 +407,16 @@ class ChatMessageBubble extends StatelessWidget {
                     Text(
                       'Tap to open',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
+                        color:
+                            theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
                       ),
                     ),
                   ],
                 ),
               ),
               // Add download button - only show for successfully sent documents
-              if (message.sendProgress != MessageProgress.uploading && message.sendProgress != MessageProgress.failed)
+              if (message.sendProgress != MessageProgress.uploading &&
+                  message.sendProgress != MessageProgress.failed)
                 IconButton(
                   icon: Icon(
                     Icons.download_rounded,
@@ -477,7 +491,9 @@ class ChatMessageBubble extends StatelessWidget {
     }
 
     // Check for document indicators in URL
-    if (mediaPath.contains('document') || mediaPath.contains('/pdf') || mediaPath.contains('application/')) {
+    if (mediaPath.contains('document') ||
+        mediaPath.contains('/pdf') ||
+        mediaPath.contains('application/')) {
       return true;
     }
 
@@ -493,9 +509,11 @@ class ChatMessageBubble extends StatelessWidget {
 
     if (lowercasePath.endsWith('.pdf')) {
       return Icons.picture_as_pdf;
-    } else if (lowercasePath.endsWith('.doc') || lowercasePath.endsWith('.docx')) {
+    } else if (lowercasePath.endsWith('.doc') ||
+        lowercasePath.endsWith('.docx')) {
       return Icons.description;
-    } else if (lowercasePath.endsWith('.xls') || lowercasePath.endsWith('.xlsx')) {
+    } else if (lowercasePath.endsWith('.xls') ||
+        lowercasePath.endsWith('.xlsx')) {
       return Icons.table_chart;
     } else if (lowercasePath.endsWith('.txt')) {
       return Icons.text_snippet;

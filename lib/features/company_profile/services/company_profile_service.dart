@@ -5,8 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/core/services/base_service.dart';
 import 'package:link_up/core/constants/endpoints.dart';
 import 'package:link_up/features/company_profile/model/company_jobs_model.dart';
-import 'package:link_up/features/company_profile/model/company_profile_model.dart';
-import 'dart:developer' as developer;
+
 
 class CompanyProfileService {
   final BaseService _baseService;
@@ -46,6 +45,7 @@ class CompanyProfileService {
       rethrow;
     }
   }
+
 // lib/features/company_profile/services/company_profile_service.dart
 // Add this method to your existing CompanyProfileService class
 
@@ -85,6 +85,7 @@ Future<List<CompanyJobModel>> getJobsFromCompany({
     rethrow;
   }
 }
+
   Future<Map<String, dynamic>> getCompanyProfile({
     required String companyId,
   }) async {

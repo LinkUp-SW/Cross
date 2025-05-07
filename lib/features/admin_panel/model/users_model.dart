@@ -24,20 +24,17 @@ class UserModel {
       lastName: json['last_name'] ?? '',
       email: json['email'] ?? '',
       password: json['password'], // Optional: store or ignore
-      id: json['user_id'] ?? 0,
+      id: json['id'] ?? "0",
       type: json['is_admin'] == true ? 'admin' : 'user',
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'profile_image_url': profileImageUrl,
-      'first_name': firstName,
-      'last_name': lastName,
+      'firstName': firstName,
+      'lastName': lastName,
       'email': email,
       'password': password, // Optional: store or ignore
-      'id': id,
-      'type': type,
     };
   }
 }

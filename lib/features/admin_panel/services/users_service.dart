@@ -24,22 +24,25 @@ class UserService extends BaseService {
   }
 
   Future<void> addUser(UserModel user) async {
-    final response = post(
-      'api/v1/admin/users',
+    log('Adding user: ${user.toJson()}');
+    final response = await post(
+      'api/v1/admin/create-admin',
       body: user.toJson(),
     );
-    log('Response: ${response}');
+    log('Response: ${response.body}');
   }
 
   Future<void> deleteUser(String id) async {
     // simulate backend call
     try {
+      log('Deleting user with id: $id');
       final response = await delete(
-        'api/v1/admin/users/:id',
+        'api/v1/admin/delete/:id',
         {
           'id': id,
         },
       );
+      log('Response: ${response.body}');
     } catch (e) {
       log("Error: $e");
       throw Exception("Failed to delete user");

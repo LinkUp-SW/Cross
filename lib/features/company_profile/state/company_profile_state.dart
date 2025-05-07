@@ -1,5 +1,7 @@
 // lib/features/company/state/company_profile_state.dart
 
+import 'package:flutter/material.dart';
+
 import 'package:link_up/features/company_profile/model/company_profile_model.dart';
 
 class CompanyProfileState {
@@ -9,12 +11,15 @@ class CompanyProfileState {
   final bool isError;
   final bool isSuccess;
 
+
+
   CompanyProfileState({
     this.companyProfile,
     this.errorMessage,
     this.isLoading = false,
     this.isError = false,
     this.isSuccess = false,
+
   });
 
   factory CompanyProfileState.initial() {
@@ -25,6 +30,7 @@ class CompanyProfileState {
       isError: false,
       isSuccess: false,
     );
+
   }
 
   CompanyProfileState copyWith({
@@ -33,6 +39,7 @@ class CompanyProfileState {
     bool? isLoading,
     bool? isError,
     bool? isSuccess,
+
   }) {
     return CompanyProfileState(
       companyProfile: companyProfile ?? this.companyProfile,
@@ -40,6 +47,7 @@ class CompanyProfileState {
       isLoading: isLoading ?? this.isLoading,
       isError: isError ?? this.isError,
       isSuccess: isSuccess ?? this.isSuccess,
+
     );
   }
 }

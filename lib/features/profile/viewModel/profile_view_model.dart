@@ -57,7 +57,6 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
       final resumeUrlFuture = _profileService.getCurrentResumeUrl(idToFetch);
       final licensesFuture = _profileService.getUserLicenses(idToFetch);
       final skillsFuture = _profileService.getUserSkills(idToFetch);
-      final isPublicProfile= await _profileService.getProfileVisibility();
       final results = await Future.wait([
         userProfileFuture,
         educationFuture,
@@ -247,20 +246,6 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
     }
   }
 
-  Future<bool> getProfilePrivacy() async {
-    try {
-      final response = await _profileService.getProfileVisibility();
-      final privacySetting = response['profileVisibility'];
-      return (privacySetting != null || privacySetting == "")
-          ? privacySetting == 'public'
-              ? true
-              : false
-          : false;
-    } catch (error) {
-      log("Error returning profile visibility $error");
-      rethrow;
-    }
-  }
 }
 
 // --- Provider Definition ---

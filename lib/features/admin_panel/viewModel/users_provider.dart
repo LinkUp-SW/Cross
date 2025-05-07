@@ -17,8 +17,8 @@ class UserNotifier extends StateNotifier<UserState> {
   final UserService _service;
   static const int _pageSize = 10;
 
-  int  _cursor         = 0;
-  bool _hasMore        = true;
+  int _cursor = 0;
+  bool _hasMore = true;
   bool _isLoadMoreBusy = false;
 
   UserNotifier(this._service) : super(const UserInitial()) {
@@ -31,15 +31,15 @@ class UserNotifier extends StateNotifier<UserState> {
   /// Pull-to-refresh: reload from scratch
   Future<void> refreshUsers() async {
     state = const UserLoading();
-    _cursor  = 0;
+    _cursor = 0;
     _hasMore = true;
 
     try {
       final users = await _service.fetchUsers(
         cursor: _cursor,
-        limit:  _pageSize,
+        limit: _pageSize,
       );
-      state   = UserLoaded(users);
+      state = UserLoaded(users);
       _cursor = users.length;
       _hasMore = users.length == _pageSize;
     } catch (e) {
@@ -56,10 +56,10 @@ class UserNotifier extends StateNotifier<UserState> {
     try {
       final nextPage = await _service.fetchUsers(
         cursor: _cursor,
-        limit:  _pageSize,
+        limit: _pageSize,
       );
       final current = (state as UserLoaded).users;
-      state   = UserLoaded([...current, ...nextPage]);
+      state = UserLoaded([...current, ...nextPage]);
       _cursor += nextPage.length;
       _hasMore = nextPage.length == _pageSize;
     } catch (_) {
@@ -73,7 +73,8 @@ class UserNotifier extends StateNotifier<UserState> {
     try {
       final current = (state as UserLoaded).users;
       await _service.addUser(user);
-      state = UserLoaded([user, ...current]);
+      refreshUsers(); // refresh the list after adding a user
+      state = UserLoaded([...current, user]);
     } catch (e) {
       state = const UserError("Failed to add user");
     }

@@ -77,6 +77,7 @@ class JobDetailsCard extends ConsumerWidget {
     // Assuming you have the organization ID in the data
     if (data.companyId != null && data.companyId!.isNotEmpty) {
       context.push('/company/${data.companyId}');
+
     } else {
       // If no organizationId, use organization name as a fallback
       // You might want to implement a search by name functionality in your backend

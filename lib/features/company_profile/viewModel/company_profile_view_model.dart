@@ -1,5 +1,6 @@
 // lib/features/company/viewModel/company_profile_view_model.dart
 
+import 'package:flutter/material.dart'; // Import material
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:link_up/features/company_profile/model/company_profile_model.dart';
 import 'package:link_up/features/company_profile/services/company_profile_service.dart';
@@ -28,6 +29,7 @@ class CompanyProfileViewModel extends StateNotifier<CompanyProfileState> {
       state = state.copyWith(
         isLoading: false,
         companyProfile: CompanyProfileModel.fromJson(response),
+
         isError: false,
         isSuccess: true,
         errorMessage: null,
@@ -57,3 +59,4 @@ final companyProfileViewModelProvider =
     );
   },
 );
+

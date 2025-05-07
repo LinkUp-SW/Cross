@@ -11,6 +11,7 @@ import 'package:link_up/shared/themes/text_styles.dart';
 import 'package:link_up/features/jobs/viewModel/job_details_view_model.dart';
 import 'package:link_up/features/company_profile/widgets/company_job_card.dart';
 
+
 class CompanyProfileViewPage extends ConsumerStatefulWidget {
   final String companyId;
 
@@ -30,6 +31,7 @@ class _CompanyProfileViewPageState extends ConsumerState<CompanyProfileViewPage>
     Future.microtask(() {
       ref.read(companyProfileViewViewModelProvider.notifier).getCompanyProfile(widget.companyId);
        ref.read(companyProfileViewViewModelProvider.notifier).getCompanyJobs(widget.companyId);
+
     });
   }
 
@@ -280,6 +282,7 @@ class _CompanyProfileViewPageState extends ConsumerState<CompanyProfileViewPage>
                               // Jobs section
                               Text(
                                 'Jobs at ${state.companyProfile?.name ?? 'Company'}',
+
                                 style: TextStyles.font20_700Weight.copyWith(
                                   color: isDarkMode
                                       ? AppColors.darkSecondaryText
@@ -287,6 +290,7 @@ class _CompanyProfileViewPageState extends ConsumerState<CompanyProfileViewPage>
                                 ),
                               ),
                               SizedBox(height: 12.h),
+
                               Container(
                                 padding: EdgeInsets.all(16.w),
                                 decoration: BoxDecoration(
@@ -379,6 +383,7 @@ class _CompanyProfileViewPageState extends ConsumerState<CompanyProfileViewPage>
                                         ],
                                       ),
                                   ],
+
                                 ),
                               ),
                             ],
@@ -427,6 +432,7 @@ class _CompanyProfileViewPageState extends ConsumerState<CompanyProfileViewPage>
             subtitle,
             style: TextStyles.font14_400Weight.copyWith(
               color: isLink
+
                   ? Colors.blue
                   : (isDarkMode ? AppColors.darkSecondaryText : AppColors.lightTextColor),
               decoration: isLink ? TextDecoration.underline : null,

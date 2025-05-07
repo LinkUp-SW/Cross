@@ -1,4 +1,3 @@
-// lib/features/company_profile/views/create_company_profile_view.dart
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,6 +8,7 @@ import 'package:link_up/features/company_profile/viewModel/company_profile_view_
 import 'package:link_up/features/company_profile/widgets/company_logo_picker.dart';
 import 'package:link_up/features/company_profile/widgets/create_company_widget.dart';
 import 'package:link_up/shared/widgets/custom_app_bar.dart';
+
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
 
@@ -69,6 +69,7 @@ class _CreateCompanyProfilePageState extends ConsumerState<CreateCompanyProfileP
   late String _selectedIndustry;
   late String _selectedSize;
   late String _selectedType;
+p
 
   @override
   void initState() {
@@ -119,6 +120,7 @@ class _CreateCompanyProfilePageState extends ConsumerState<CreateCompanyProfileP
     // Showing success message and navigating back
     if (state.isSuccess) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Company profile created successfully!'),
@@ -141,6 +143,7 @@ class _CreateCompanyProfilePageState extends ConsumerState<CreateCompanyProfileP
       ),
       body: SafeArea(
         child: state.isLoading
+
             ? const Center(child: CircularProgressIndicator())
             : SingleChildScrollView(
                 child: Padding(
@@ -170,6 +173,7 @@ class _CreateCompanyProfilePageState extends ConsumerState<CreateCompanyProfileP
                             if (value == null || value.isEmpty) {
                               return 'Please enter company name';
                             }
+
                             return null;
                           },
                         ),
@@ -194,6 +198,7 @@ class _CreateCompanyProfilePageState extends ConsumerState<CreateCompanyProfileP
                             setState(() {
                               _logoController.text = logoUrl;
                             });
+
                           },
                         ),
                         SizedBox(height: 16.h),
@@ -203,12 +208,14 @@ class _CreateCompanyProfilePageState extends ConsumerState<CreateCompanyProfileP
                           label: 'Company Description *',
                           hintText: 'Describe your company',
                           controller: _descriptionController,
+
                           isMultiline: true,
                           isDarkMode: isDarkMode,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter company description';
                             }
+
                             return null;
                           },
                         ),
@@ -224,6 +231,7 @@ class _CreateCompanyProfilePageState extends ConsumerState<CreateCompanyProfileP
                               setState(() {
                                 _selectedIndustry = value;
                               });
+
                             }
                           },
                           isDarkMode: isDarkMode,
@@ -281,6 +289,7 @@ class _CreateCompanyProfilePageState extends ConsumerState<CreateCompanyProfileP
                               setState(() {
                                 _selectedSize = value;
                               });
+
                             }
                           },
                           isDarkMode: isDarkMode,
@@ -297,6 +306,7 @@ class _CreateCompanyProfilePageState extends ConsumerState<CreateCompanyProfileP
                               setState(() {
                                 _selectedType = value;
                               });
+
                             }
                           },
                           isDarkMode: isDarkMode,
@@ -308,6 +318,7 @@ class _CreateCompanyProfilePageState extends ConsumerState<CreateCompanyProfileP
                           width: double.infinity,
                           child: ElevatedButton(
                             onPressed: state.isLoading ? null : _submitForm,
+
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue,
                               foregroundColor: Colors.white,
@@ -318,6 +329,7 @@ class _CreateCompanyProfilePageState extends ConsumerState<CreateCompanyProfileP
                               disabledBackgroundColor: Colors.grey,
                             ),
                             child: state.isLoading
+
                                 ? const SizedBox(
                                     width: 24,
                                     height: 24,
@@ -357,6 +369,7 @@ class _CreateCompanyProfilePageState extends ConsumerState<CreateCompanyProfileP
                           ),
                         ],
                         
+
                         SizedBox(height: 24.h),
                       ],
                     ),

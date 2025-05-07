@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:link_up/features/Home/model/post_model.dart';
 import 'package:link_up/features/Home/widgets/posts.dart';
+import 'package:link_up/features/admin_panel/model/job_report_model.dart';
+import 'package:link_up/features/Home/model/post_model.dart';
+import 'package:link_up/features/admin_panel/widgets/job_report.dart';
 
 class ReportPopup extends StatelessWidget {
   final String type;
   final VoidCallback onAccept;
   final VoidCallback onReject;
-  final PostModel? post;
+  final PostModel? post; // Post data
+  final JobReportModel? job; // Job report data
   final bool isLoading;
 
   const ReportPopup({
@@ -16,6 +18,7 @@ class ReportPopup extends StatelessWidget {
     required this.onAccept,
     required this.onReject,
     this.post,
+    this.job,
     this.isLoading = false,
   });
 
@@ -32,12 +35,11 @@ class ReportPopup extends StatelessWidget {
       case 'comment':
         return post != null
             ? Posts(post: post!, inFeed: false, showBottom: false)
-            : const Text("⚠️ Unable to load content.");
-      case 'job listing':
-        return const Text(
-          "This is a Job Listing preview.\n(You can later insert the actual job details widget here.)",
-          textAlign: TextAlign.center,
-        );
+            : const Text("⚠️ Unable to load post content.");
+      case 'job':
+        return job != null
+            ? JobReportCard(jobReport: job!) // Job report card widget
+            : const Text("⚠️ Unable to load job content.");
       default:
         return const Text(
           "Unknown report type.\nPlease check the data.",
@@ -69,7 +71,7 @@ class ReportPopup extends StatelessWidget {
                 'Report Details',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 20.h),
+              SizedBox(height: 20),
 
               // Content area with scrolling
               Expanded(
@@ -77,7 +79,7 @@ class ReportPopup extends StatelessWidget {
                   child: _buildContentForType(type),
                 ),
               ),
-              SizedBox(height: 20.h),
+              SizedBox(height: 20),
 
               // Actions
               Row(
@@ -135,6 +137,7 @@ Future<void> showReportPopup({
   required VoidCallback onAccept,
   required VoidCallback onReject,
   PostModel? post,
+  JobReportModel? job,
   bool isLoading = false,
 }) {
   return showDialog(
@@ -142,6 +145,7 @@ Future<void> showReportPopup({
     builder: (context) => ReportPopup(
       type: type,
       post: post,
+      job: job,
       isLoading: isLoading,
       onAccept: onAccept,
       onReject: onReject,

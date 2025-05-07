@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:link_up/core/services/base_service.dart';
 import 'package:link_up/features/Home/model/post_model.dart';
+import 'package:link_up/features/admin_panel/model/job_report_model.dart';
 import 'package:link_up/features/admin_panel/model/privilages_model.dart';
 
 class ReportService extends BaseService {
@@ -21,7 +22,7 @@ class ReportService extends BaseService {
     );
   }
 
-  Future<PostModel> fetchPost(
+  Future<Object> fetchPost(
     String contentType,
     String contentRef,
   ) async {
@@ -35,6 +36,9 @@ class ReportService extends BaseService {
 
     final data = jsonDecode(response.body)['data']['content'];
     log(data.toString());
+    if (data['type'] == 'Job') {
+      return JobReportModel.fromJson(data);
+    }
     return PostModel.fromJson(data);
   }
 
@@ -54,12 +58,14 @@ class ReportService extends BaseService {
     String contentType,
     String contentRef,
   ) async {
-    await delete(
+    log('Deleting report for $contentType and $contentRef');
+    final response = await delete(
       'api/v1/admin/report/resolve/:contentType/:contentRef',
       {
         'contentType': contentType,
         'contentRef': contentRef,
       },
     );
+    log('Response: ${response.body}');
   }
 }

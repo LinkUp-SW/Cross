@@ -71,6 +71,7 @@ Future<void> getCompanyJobs(String organizationId) async {
     );
   }
 }
+
 }
 
 final companyProfileViewViewModelProvider =

@@ -44,7 +44,7 @@ class LogInNotifier extends StateNotifier<LogInState> {
         final socketService = ref.read(globalSocketServiceProvider);
         socketService.initialize();
 
-        state = LogInSuccessState(isAdmin: success['user']['isAdmin'] ?? true);
+        state = LogInSuccessState(isAdmin: success['user']['isAdmin'] ?? false);
       }
     } catch (e) {
       state = const LogInErrorState(

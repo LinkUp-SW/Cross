@@ -23,6 +23,7 @@ class CompanyProfileViewState {
     this.isJobsLoading = false,
     this.isJobsError = false,
     this.jobsErrorMessage,
+
   });
 
   factory CompanyProfileViewState.initial() {
@@ -35,11 +36,13 @@ class CompanyProfileViewState {
       isJobsLoading: true,
       isJobsError: false,
       jobsErrorMessage: null,
+
     );
   }
 
   CompanyProfileViewState copyWith({
     CompanyProfileModel? companyProfile,
+
     List<CompanyJobModel>? companyJobs,
     String? errorMessage,
     bool? isLoading,
@@ -57,6 +60,7 @@ class CompanyProfileViewState {
       isJobsLoading: isJobsLoading ?? this.isJobsLoading,
       isJobsError: isJobsError ?? this.isJobsError,
       jobsErrorMessage: jobsErrorMessage ?? this.jobsErrorMessage,
+
     );
   }
 }
