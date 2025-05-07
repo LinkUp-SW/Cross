@@ -33,27 +33,78 @@ class _AddNewLicensePageState extends ConsumerState<AddNewLicensePage> {
   final FocusNode _credentialUrlFocusNode = FocusNode();
   LicenseModel? _initialLicenseData;
   bool _isEditMode = false;
+  List<String> _currentSkills = [];  
+
 @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final extraData = GoRouterState.of(context).extra;
+      LicenseModel? initialData;
+
       if (extraData is LicenseModel) {
         _initialLicenseData = extraData;
       } else {
         _initialLicenseData = widget.licenseToEdit;
       }
 
-      if (_initialLicenseData != null) {
+      if (initialData != null) {
         setState(() {
            _isEditMode = true; 
+          _currentSkills = List<String>.from(initialData!.skills ?? []);
+
         });
         ref.read(addLicenseViewModelProvider.notifier).initializeForEdit(_initialLicenseData!);
       } else {
-         ref.read(addLicenseViewModelProvider.notifier).resetForm();
-      }
+      ref.read(addLicenseViewModelProvider.notifier).resetForm();
+         setState(() {
+           _currentSkills = []; 
+         });      }
     });
   }
+  Future<void> _handleAddSkill() async {
+  final TextEditingController _controller = TextEditingController();
+
+  final newSkill = await showDialog<String>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text("Add Skill"),
+      backgroundColor: Theme.of(context).brightness == Brightness.dark ? AppColors.darkMain : AppColors.lightMain, 
+      content: TextField(
+        controller: _controller,
+        autofocus: true,
+        decoration: InputDecoration(hintText: "Enter skill name"),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context), 
+          child: Text("Cancel")
+        ),
+        TextButton(
+          onPressed: () {
+            final value = _controller.text.trim();
+            Navigator.pop(context, value);
+          },
+          child: Text("Add")
+        ),
+      ],
+    ),
+  );
+
+  if (newSkill != null && newSkill.isNotEmpty && !_currentSkills.contains(newSkill)) {
+    setState(() {
+      _currentSkills.add(newSkill);
+    });
+  }
+}
+
+
+
+   void _removeSkill(String skillToRemove) {
+      setState(() {
+         _currentSkills.remove(skillToRemove);
+      });
+   }  
   @override
   void dispose() {
     _issueDateFocusNode.dispose();
@@ -284,27 +335,45 @@ class _AddNewLicensePageState extends ConsumerState<AddNewLicensePage> {
                               focusNode: _credentialUrlFocusNode,
                             ),
                             SizedBox(height: 20.h),
-                            SubPagesSectionHeader(title: "Skills"),
-                            SizedBox(height: 10.h),
-                            Text(
-                              "Add skills related to this license or certification.",
-                              style: TextStyles.font14_400Weight.copyWith(
-                                color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+                        SubPagesSectionHeader(title: "Skills"),
+                         SizedBox(height: 10.h),
+                         Text(
+                           "Add skills related to this position.", 
+                           style: TextStyles.font14_400Weight.copyWith(
+                             color: isDarkMode
+                                 ? AppColors.darkTextColor
+                                 : AppColors.lightTextColor,
+                           ),
+                         ),
+                         SizedBox(height: 10.h),
+
+                         Wrap(
+                            spacing: 8.w,
+                            runSpacing: 4.h,
+                            children: _currentSkills.map((skill) => Chip(
+                               label: Text(skill, style: TextStyles.font12_500Weight.copyWith(color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor)),
+                               onDeleted: isSaving ? null : () => _removeSkill(skill),
+                               deleteIcon: Icon(Icons.close, size: 14.sp),
+                               backgroundColor: isDarkMode ? AppColors.darkGrey.withOpacity(0.5) : AppColors.lightGrey.withOpacity(0.2),
+                               padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                               shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16.r),
+                                  side: BorderSide(color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey.withOpacity(0.5))
+                               ),
+                            )).toList(),
+                         ),
+                        ElevatedButton(
+                           onPressed: isSaving ? null : _handleAddSkill, 
+                                style: isDarkMode
+                                    ? buttonStyles.blueOutlinedButtonDark()
+                                    : buttonStyles.blueOutlinedButton(),
+                                child: Text("+ Add Skill",
+                                    style: TextStyles.font14_600Weight.copyWith(
+                                        color: isDarkMode
+                                            ? AppColors.darkBlue
+                                            : AppColors.lightBlue)),
                               ),
-                            ),
-                            SizedBox(height: 10.h),
-                            ElevatedButton(
-                              onPressed: isSaving ? null : () {},
-                              style: isDarkMode
-                                  ? buttonStyles.blueOutlinedButtonDark()
-                                  : buttonStyles.blueOutlinedButton(),
-                              child: Text(
-                                "+ Add skill",
-                                style: TextStyles.font14_600Weight.copyWith(
-                                  color: isDarkMode ? AppColors.darkBlue : AppColors.lightBlue,
-                                ),
-                              ),
-                            ),
+                         // --- End Skills Section ---
                             SizedBox(height: 20.h),
                             SubPagesSectionHeader(title: "Media"),
                             SizedBox(height: 10.h),
@@ -339,7 +408,7 @@ class _AddNewLicensePageState extends ConsumerState<AddNewLicensePage> {
                             child: SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
-                                onPressed: state is AddLicenseLoading ? null : () => viewModel.saveLicense(),
+                                onPressed: state is AddLicenseLoading ? null : () => viewModel.saveLicense(_currentSkills),
                                 style: (isDarkMode
                                     ? buttonStyles.wideBlueElevatedButtonDark()
                                     : buttonStyles.wideBlueElevatedButton())

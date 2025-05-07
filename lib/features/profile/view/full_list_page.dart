@@ -7,7 +7,7 @@ import 'package:link_up/shared/themes/text_styles.dart';
 
 
 typedef ItemWidgetBuilder<T> = Widget Function(
-    T itemData, bool isDarkMode, BuildContext context);
+    T itemData, bool isDarkMode, BuildContext context, bool isMyProfile);
 
 class FullListPage<T> extends ConsumerWidget {
   final String pageTitle;
@@ -16,6 +16,7 @@ class FullListPage<T> extends ConsumerWidget {
   final String addRoute; 
   final String? editRoute; 
   final String emptyListMessage; 
+  
 
   const FullListPage({
     super.key,
@@ -31,6 +32,11 @@ class FullListPage<T> extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final allItems = ref.watch(dataProvider);
+    bool isMyProfile = true; 
+    final routeArgs = GoRouterState.of(context).extra;
+    if (routeArgs is Map && routeArgs.containsKey('isMyProfile')) {
+      isMyProfile = routeArgs['isMyProfile'] as bool? ?? true;
+    }
 
     return Scaffold(
       backgroundColor: isDarkMode ? AppColors.darkMain : AppColors.lightMain,
@@ -50,6 +56,7 @@ class FullListPage<T> extends ConsumerWidget {
                   isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor),
         ),
         actions: [
+          if(isMyProfile)
           IconButton(
             icon: Icon(Icons.add,
                 color: isDarkMode
@@ -58,7 +65,7 @@ class FullListPage<T> extends ConsumerWidget {
             tooltip: "Add ${pageTitle.replaceFirst('s', '')}",
             onPressed: () => GoRouter.of(context).push(addRoute), 
           ),
-          if (editRoute != null && allItems != null && allItems.isNotEmpty)
+          if (isMyProfile && editRoute != null && allItems != null && allItems.isNotEmpty)
             IconButton(
               icon: Icon(Icons.edit,
                   color: isDarkMode
@@ -73,6 +80,7 @@ class FullListPage<T> extends ConsumerWidget {
                         Text('Bulk Edit/Reorder for $pageTitle not implemented yet.')));
               },
             ),
+            if (!isMyProfile) SizedBox(width: 48.w)
         ],
       ),
       body: allItems == null
@@ -94,7 +102,7 @@ class FullListPage<T> extends ConsumerWidget {
                   itemCount: allItems.length,
                   itemBuilder: (context, index) {
                     final item = allItems[index];
-                    return itemBuilder(item, isDarkMode, context);
+                    return itemBuilder(item, isDarkMode, context, isMyProfile);
                   },
                   separatorBuilder: (context, index) => Padding(
                     padding: EdgeInsets.symmetric(vertical: 4.h), 

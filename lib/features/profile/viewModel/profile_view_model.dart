@@ -23,6 +23,8 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
   final ProfileService _profileService;
   final Ref _ref;
   String? _currentUserId;
+  
+
 
   ProfileViewModel(this._profileService, this._ref)
       : super(const ProfileInitial());
@@ -55,7 +57,7 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
       final resumeUrlFuture = _profileService.getCurrentResumeUrl(idToFetch);
       final licensesFuture = _profileService.getUserLicenses(idToFetch);
       final skillsFuture = _profileService.getUserSkills(idToFetch);
-
+      final isPublicProfile= await _profileService.getProfileVisibility();
       final results = await Future.wait([
         userProfileFuture,
         educationFuture,
@@ -242,6 +244,21 @@ class ProfileViewModel extends StateNotifier<ProfileState> {
     } catch (error) {
       log("Error removing user with id: $targetUserId from connections");
       state = ProfileError("Could not remove this person from connections :(");
+    }
+  }
+
+  Future<bool> getProfilePrivacy() async {
+    try {
+      final response = await _profileService.getProfileVisibility();
+      final privacySetting = response['profileVisibility'];
+      return (privacySetting != null || privacySetting == "")
+          ? privacySetting == 'public'
+              ? true
+              : false
+          : false;
+    } catch (error) {
+      log("Error returning profile visibility $error");
+      rethrow;
     }
   }
 }

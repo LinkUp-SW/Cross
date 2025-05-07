@@ -170,7 +170,7 @@ class AddLicenseViewModel extends StateNotifier<AddLicenseState> {
      return null;
    }
 
-  Future<void> saveLicense() async {
+  Future<void> saveLicense(List<String> currentSkills) async {
     final currentFormData = _createFormData(); 
     final validationError = validateForm();
 
@@ -198,7 +198,7 @@ class AddLicenseViewModel extends StateNotifier<AddLicenseState> {
       credentialUrl: _credentialUrlController.text.trim().isNotEmpty
           ? _credentialUrlController.text.trim()
           : null,
-      skills: _skills,
+      skills: currentSkills.isNotEmpty ? List.from(currentSkills) : null, 
     );
 
     log("Saving License Data: ${licenseModel.toJson()}"); 

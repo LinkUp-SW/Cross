@@ -20,6 +20,10 @@ class CustomBottomNavigationBar extends ConsumerWidget {
     return BottomNavigationBar(
       currentIndex: currentIndex,
       onTap: (int index) {
+          if (index == 3) { 
+    // Refresh unread count when tapping notifications tab
+    ref.read(notificationsViewModelProvider.notifier).fetchUnreadCount();
+         }
         index == currentIndex
             ? ref.read(currentTabProvider.notifier).state = true
             : navigationShell.goBranch(index);
@@ -60,14 +64,13 @@ class CustomBottomNavigationBar extends ConsumerWidget {
             builder: (context, ref, child) {
               final notificationState =
                   ref.watch(notificationsViewModelProvider);
-              final unreadCount = notificationState.notifications
-                  .where((n) => !n.isRead)
-                  .length;
+              final unreadCount= notificationState.unreadCount;
 
               return Badge(
                 backgroundColor: AppColors.red, textColor: AppColors.lightMain,
                 label:
-                    Text(unreadCount.toString()), //  Show dynamic unread count
+                    Text(unreadCount.toString()), 
+                    isLabelVisible: unreadCount > 0,//  Show dynamic unread count
                 offset: const Offset(-10, 0),
                 child: _buildNavItem(
                   context,

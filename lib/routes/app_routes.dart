@@ -7,6 +7,8 @@ import 'package:link_up/features/admin_panel/view/privilages_view.dart';
 import 'package:link_up/features/Home/view/user_posts_page.dart';
 import 'package:link_up/features/admin_panel/view/statistics_view.dart';
 import 'package:link_up/features/admin_panel/view/users_view.dart';
+import 'package:link_up/features/chat/view/chat_navigation_handler.dart';
+import 'package:link_up/features/chat/view/chat_screen.dart';
 import 'package:link_up/features/company_profile/view/company_profile_view.dart';
 import 'package:link_up/features/my-network/view/connections_screen.dart';
 import 'package:link_up/core/utils/global_keys.dart';
@@ -60,9 +62,11 @@ import 'package:link_up/features/profile/view/license_list_page.dart';
 import 'package:link_up/features/profile/view/contact_info.dart';
 import 'package:link_up/features/profile/model/profile_model.dart';
 import 'package:link_up/features/profile/view/blocked_users_pages.dart';
+import 'package:link_up/features/profile/view/add_media_link.dart';
 import 'package:link_up/features/jobs/view/job_details.dart';
 import 'package:link_up/features/jobs/view/my_jobs_screen.dart';
 import 'package:link_up/features/company_profile/view/create_company_view.dart';
+
 final goRouterProvider = Provider<GoRouter>((ref) {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -193,6 +197,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           builder: (context, state) => const EditAboutPage(),
         ),
         GoRoute(
+          path: "/add_media_link",
+          builder: (context, state) => const AddMediaLinkPage(),
+        ),
+        GoRoute(
             path: "/search_school",
             pageBuilder: (context, state) {
               final initialQuery = state.extra as String?;
@@ -236,11 +244,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           builder: (context, state) => const AddNewPosition(),
         ),
         GoRoute(
-  path: '/company/:companyId',
-  builder: (context, state) => CompanyProfileViewPage(
-    companyId: state.pathParameters['companyId']!,
-  ),
-),
+          path: '/company/:companyId',
+          builder: (context, state) => CompanyProfileViewPage(
+            companyId: state.pathParameters['companyId']!,
+          ),
+        ),
         GoRoute(
           path: "/add_new_education",
           builder: (context, state) => const AddNewEducation(),
@@ -406,15 +414,57 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           builder: (context, state) => SavedPostsPage(),
         ),
         GoRoute(
-            path: '/userPosts', builder: (context, state) => UserPostsPage()),
+            path: '/userPosts',
+            builder: (context, state) {
+              final extraData = state.extra as Map<String, dynamic>?;
+              return UserPostsPage(
+                userId: extraData?['userId'] as String? ?? '',
+                userName: extraData?['userName'] as String? ?? '',
+              );
+            }),
         GoRoute(
             path: "/messages", builder: (context, state) => ChatListScreen()),
+        GoRoute(
+          path: "/chat/:userId",
+          builder: (context, state) {
+            final String userId = state.pathParameters['userId']!;
+            final Map<String, dynamic>? extras =
+                state.extra as Map<String, dynamic>?;
+
+            return ChatNavigationHandler(
+              userId: userId,
+              firstName: extras?['firstName'] ?? '',
+              lastName: extras?['lastName'] ?? '',
+              profilePic: extras?['profilePic'] ?? '',
+            );
+          },
+        ),
+        GoRoute(
+          path: "/chatroom/:conversationId",
+          builder: (context, state) {
+            final String conversationId =
+                state.pathParameters['conversationId']!;
+            final Map<String, dynamic>? extras =
+                state.extra as Map<String, dynamic>?;
+
+            return ChatScreen(
+              otheruserid: extras?['otheruserid'] ?? '',
+              conversationId: conversationId,
+              senderName: extras?['senderName'] ?? '',
+              senderProfilePicUrl: extras?['senderProfilePicUrl'] ?? '',
+            );
+          },
+        ),
         GoRoute(path: "/chatpage", builder: (context, state) => Container()),
         GoRoute(
           path: '/search',
           builder: (context, state) => SearchPage(
             searchKeyWord: state.extra as String?,
           ),
+        ),
+        GoRoute(
+          path: '/payment',
+          builder: (context, state) => SubscriptionManagementScreen(),
         ),
         GoRoute(
             path: "/settings",

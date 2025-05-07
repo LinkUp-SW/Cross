@@ -11,7 +11,7 @@ class InternalEndPoints {
 }
 
 class ExternalEndPoints {
-  //static const baseUrl = 'https://api.linkup-app.tech/';
+  // static const baseUrl = 'https://api.linkup-app.tech/';
   static const baseUrl = 'http://10.0.2.2:3000/'; // for localhosting
   static const receivedConnectionInvitations =
       'api/v1/user/my-network/invitation-manager/received';
@@ -78,7 +78,15 @@ class ExternalEndPoints {
   static const getAppliedJobs = 'api/v1/job-application/get-applied-jobs';
   static const updateJobApplicationStatus =
       'api/v1/job-application/update-job-application-status/:application_id';
-      static const createCompanyProfile='api/v1/company/create-company-profile';
-  static const getCompanyProfile='api/v1/company/get-company-all-view/:companyId';
-  static const getJobsFromCompany = 'api/v1/company/get-jobs-from-company/:organization_id';
+  static const createCompanyProfile = 'api/v1/company/create-company-profile';
+  static const getCompanyProfile =
+      'api/v1/company/get-company-profile/:companyId';
+
+  static const profileVisibility =
+      'api/v1/user/privacy-settings/profile-visibility';
+
+  static const getnotifications = 'api/v1/notifications/get-notifications';
+  static const marknotificationasread =
+      'api/v1/notifications/:notificationId/read';
+  static const getunreadnotifications = 'api/v1/notifications/unread-count';
 }

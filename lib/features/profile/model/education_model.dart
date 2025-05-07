@@ -43,7 +43,26 @@ class EducationModel {
     } else if (json['school'] is String) {
       fetchedSchoolData = {'_id': json['school'] as String};
     }
-
+   List<Map<String, dynamic>>? parsedMedia;
+    if (json['media'] is List) {
+      parsedMedia = (json['media'] as List).map((item) {
+        if (item is Map<String, dynamic>) {
+          if (item.containsKey('_id') && item['_id'] != null) {
+            final mutableItem = Map<String, dynamic>.from(item);
+            mutableItem['_id'] = mutableItem['_id'].toString();
+            mutableItem['media'] = mutableItem['media']?.toString();
+            mutableItem['title'] = mutableItem['title']?.toString();
+            mutableItem['description'] = mutableItem['description']?.toString();
+            return mutableItem; 
+          }
+          item['media'] = item['media']?.toString();
+          item['title'] = item['title']?.toString();
+          item['description'] = item['description']?.toString();
+          return Map<String, dynamic>.from(item); 
+        }
+        return <String, dynamic>{};
+      }).where((item) => item.isNotEmpty).toList(); 
+    }
     return EducationModel(
       id: json['_id'] as String? ?? json['id'] as String?,
       schoolData: fetchedSchoolData,
@@ -56,14 +75,8 @@ class EducationModel {
       grade: json['grade']?.toString(),
       activitesAndSocials: json['activites_and_socials'] as String?,
       description: json['description'] as String?,
-      skills: (json['skills'] as List?)?.map((item) => item.toString()).toList(),
-      media: (json['media'] as List?)?.map((item) {
-        if (item is Map<String, dynamic>) {
-          item['_id'] = item['_id']?.toString();
-          return item;
-        }
-        return <String, dynamic>{};
-      }).whereType<Map<String, dynamic>>().toList(),
+         skills: (json['skills'] as List?)?.map((item) => item.toString()).toList(),
+      media: parsedMedia, 
     );
   }
 
@@ -88,6 +101,8 @@ class EducationModel {
           'logo': schoolData!['logo']!,
         },
     };
+    data.removeWhere((key, value) => value == null);
+    log('EducationModel toJson sending: $data'); 
     return data;
   }
 }

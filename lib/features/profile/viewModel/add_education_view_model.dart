@@ -1,4 +1,3 @@
-// lib/features/profile/viewModel/add_education_view_model.dart
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,7 +7,6 @@ import 'package:link_up/features/profile/services/profile_services.dart';
 import 'package:link_up/features/profile/state/add_education_state.dart';
 import 'dart:async';
 import 'package:link_up/features/profile/viewModel/profile_view_model.dart';
-import 'dart:convert';
 
 class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
   final ProfileService _profileService;
@@ -34,8 +32,10 @@ class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
   Map<String, String>? _selectedSchoolData;
   String? _editingEducationId;
   bool get isEditMode => _editingEducationId != null;
-
+  List<String>? _skills;
+  List<Map<String, dynamic>> _mediaList = [];
   AddEducationViewModel(this._profileService, this._ref)
+      
       : super(AddEducationIdle(AddEducationFormData(
           schoolController: TextEditingController(),
           degreeController: TextEditingController(),
@@ -46,6 +46,8 @@ class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
           activitiesController: TextEditingController(),
           descriptionController: TextEditingController(),
           isEndDatePresent: false,
+          mediaList: [],
+          
         ))) {
     state = AddEducationIdle(_createFormData());
     _descriptionController.addListener(() => _updateFormDataState());
@@ -65,6 +67,9 @@ class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
         selectedStartDate: _selectedStartDate,
         selectedEndDate: _selectedEndDate,
         isEndDatePresent: _isEndDatePresent,
+        skills: _skills,
+        mediaList: List.unmodifiable(_mediaList),
+
       );
    }
 
@@ -94,6 +99,8 @@ class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
 
     _selectedSchoolData = education.schoolData;
     _schoolController.text = _selectedSchoolData?['name'] ?? education.institution;
+    _skills = education.skills != null ? List<String>.from(education.skills!) : null; 
+    _mediaList = List<Map<String, dynamic>>.from(education.media ?? []); 
 
     _selectedStartDate = DateTime.tryParse(education.startDate);
     _startDateController.text = _selectedStartDate != null ? DateFormat('yyyy-MM-dd').format(_selectedStartDate!) : '';
@@ -177,10 +184,16 @@ class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
     if (_degreeController.text.length > maxDegreeChars) {
       return "Degree cannot exceed $maxDegreeChars characters (currently ${_degreeController.text.length}).";
     }
+    for (var mediaItem in _mediaList) {
+       if (mediaItem['title'] == null || (mediaItem['title'] as String).trim().isEmpty) {
+          return "Media title cannot be empty.";
+       }
+    }
+    
     return null;
   }
 
-  Future<void> saveEducation() async {
+  Future<void> saveEducation(List<String> currentSkills) async { 
     final currentFormData = _getFormDataFromState(state);
     if (currentFormData == null) {
        log("Cannot save, current form data state is null.");
@@ -206,6 +219,8 @@ class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
       grade: _gradeController.text.trim().isNotEmpty ? _gradeController.text.trim() : null,
       activitesAndSocials: _activitiesController.text.trim().isNotEmpty ? _activitiesController.text.trim() : null,
       description: _descriptionController.text.trim().isNotEmpty ? _descriptionController.text.trim() : null,
+      skills: currentSkills.isNotEmpty ? List.from(currentSkills) : null, 
+
     );
 
     try {
@@ -255,10 +270,11 @@ class AddEducationViewModel extends StateNotifier<AddEducationFormState> {
     _isEndDatePresent = false;
     _selectedSchoolData = null;
     _editingEducationId = null;
-
+    _skills = null;
      if (mounted) {
        state = AddEducationIdle(_createFormData());
      }
+    _mediaList=[];
   }
 
   @override
