@@ -6,7 +6,8 @@ import 'package:link_up/features/company_profile/services/company_profile_servic
 import 'package:link_up/features/company_profile/state/company_profile_view_state.dart';
 import 'dart:developer' as developer;
 
-class CompanyProfileViewViewModel extends StateNotifier<CompanyProfileViewState> {
+class CompanyProfileViewViewModel
+    extends StateNotifier<CompanyProfileViewState> {
   final CompanyProfileService _companyProfileService;
 
   CompanyProfileViewViewModel(
@@ -25,7 +26,7 @@ class CompanyProfileViewViewModel extends StateNotifier<CompanyProfileViewState>
       );
 
       final companyProfile = CompanyProfileModel.fromJson(response);
-      
+
       developer.log('Successfully fetched company profile');
       state = state.copyWith(
         isLoading: false,
@@ -39,6 +40,36 @@ class CompanyProfileViewViewModel extends StateNotifier<CompanyProfileViewState>
         isLoading: false,
         isError: true,
         errorMessage: e.toString(),
+      );
+    }
+  }
+
+  // lib/features/company_profile/viewModel/company_profile_view_view_model.dart
+// Add this method to your existing CompanyProfileViewViewModel class
+
+  Future<void> getCompanyJobs(String organizationId) async {
+    developer.log('Fetching jobs for company ID: $organizationId');
+    state = state.copyWith(
+        isJobsLoading: true, isJobsError: false, jobsErrorMessage: null);
+
+    try {
+      final jobs = await _companyProfileService.getJobsFromCompany(
+        organizationId: organizationId,
+      );
+
+      developer.log('Successfully fetched ${jobs.length} jobs for company');
+      state = state.copyWith(
+        isJobsLoading: false,
+        companyJobs: jobs,
+        isJobsError: false,
+        jobsErrorMessage: null,
+      );
+    } catch (e, stackTrace) {
+      developer.log('Error fetching jobs for company: $e\n$stackTrace');
+      state = state.copyWith(
+        isJobsLoading: false,
+        isJobsError: true,
+        jobsErrorMessage: e.toString(),
       );
     }
   }

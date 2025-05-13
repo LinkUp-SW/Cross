@@ -44,10 +44,10 @@ class _CompanyLogoPickerState extends State<CompanyLogoPicker> {
         // Here you would typically upload the image to your server/storage
         // and get back a URL. For now, we'll simulate this with a delay.
         await Future.delayed(const Duration(seconds: 2));
-        
+
         // Pass the URL (or path for now) to the parent
         widget.onLogoSelected(_selectedImage!.path);
-        
+
         setState(() {
           _isUploading = false;
         });
@@ -69,11 +69,13 @@ class _CompanyLogoPickerState extends State<CompanyLogoPicker> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: widget.isDarkMode ?AppColors.darkMain : AppColors.lightMain,
+        backgroundColor: widget.isDarkMode ? Colors.grey[800] : Colors.white,
         title: Text(
           'Select Image Source',
           style: TextStyle(
-            color: widget.isDarkMode ? AppColors.darkSecondaryText : AppColors.lightTextColor,
+            color: widget.isDarkMode
+                ? AppColors.darkSecondaryText
+                : AppColors.lightTextColor,
           ),
         ),
         content: Column(
@@ -82,12 +84,16 @@ class _CompanyLogoPickerState extends State<CompanyLogoPicker> {
             ListTile(
               leading: Icon(
                 Icons.photo_library,
-                color: widget.isDarkMode ? AppColors.darkSecondaryText : AppColors.lightTextColor,
+                color: widget.isDarkMode
+                    ? AppColors.darkSecondaryText
+                    : AppColors.lightTextColor,
               ),
               title: Text(
                 'Gallery',
                 style: TextStyle(
-                  color: widget.isDarkMode ? AppColors.darkSecondaryText : AppColors.lightTextColor,
+                  color: widget.isDarkMode
+                      ? AppColors.darkSecondaryText
+                      : AppColors.lightTextColor,
                 ),
               ),
               onTap: () {
@@ -98,12 +104,16 @@ class _CompanyLogoPickerState extends State<CompanyLogoPicker> {
             ListTile(
               leading: Icon(
                 Icons.camera_alt,
-                color: widget.isDarkMode ? AppColors.darkSecondaryText : AppColors.lightTextColor,
+                color: widget.isDarkMode
+                    ? AppColors.darkSecondaryText
+                    : AppColors.lightTextColor,
               ),
               title: Text(
                 'Camera',
                 style: TextStyle(
-                  color: widget.isDarkMode ? AppColors.darkSecondaryText : AppColors.lightTextColor,
+                  color: widget.isDarkMode
+                      ? AppColors.darkSecondaryText
+                      : AppColors.lightTextColor,
                 ),
               ),
               onTap: () {
@@ -125,7 +135,9 @@ class _CompanyLogoPickerState extends State<CompanyLogoPicker> {
         Text(
           'Company Logo',
           style: TextStyles.font16_600Weight.copyWith(
-            color: widget.isDarkMode ? AppColors.darkSecondaryText : AppColors.lightTextColor,
+            color: widget.isDarkMode
+                ? AppColors.darkSecondaryText
+                : AppColors.lightTextColor,
           ),
         ),
         SizedBox(height: 12.h),
@@ -135,10 +147,11 @@ class _CompanyLogoPickerState extends State<CompanyLogoPicker> {
             width: 120.w,
             height: 120.h,
             decoration: BoxDecoration(
-              color: widget.isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+              color: widget.isDarkMode ? Colors.grey[700] : Colors.grey[200],
               borderRadius: BorderRadius.circular(12.r),
               border: Border.all(
-                color: widget.isDarkMode ? AppColors.darkMain : AppColors.lightMain,
+                color:
+                    widget.isDarkMode ? Colors.grey[600]! : Colors.grey[300]!,
                 width: 1,
               ),
             ),
@@ -160,7 +173,8 @@ class _CompanyLogoPickerState extends State<CompanyLogoPicker> {
                           height: 120.h,
                         ),
                       )
-                    : widget.currentLogoUrl != null && widget.currentLogoUrl!.isNotEmpty
+                    : widget.currentLogoUrl != null &&
+                            widget.currentLogoUrl!.isNotEmpty
                         ? ClipRRect(
                             borderRadius: BorderRadius.circular(12.r),
                             child: Image.network(
@@ -171,16 +185,21 @@ class _CompanyLogoPickerState extends State<CompanyLogoPicker> {
                               errorBuilder: (context, error, stackTrace) {
                                 return _buildPlaceholder();
                               },
-                              loadingBuilder: (context, child, loadingProgress) {
+                              loadingBuilder:
+                                  (context, child, loadingProgress) {
                                 if (loadingProgress == null) return child;
                                 return Center(
                                   child: CircularProgressIndicator(
-                                    value: loadingProgress.expectedTotalBytes != null
-                                        ? loadingProgress.cumulativeBytesLoaded /
+                                    value: loadingProgress.expectedTotalBytes !=
+                                            null
+                                        ? loadingProgress
+                                                .cumulativeBytesLoaded /
                                             loadingProgress.expectedTotalBytes!
                                         : null,
                                     valueColor: AlwaysStoppedAnimation<Color>(
-                                      widget.isDarkMode ? Colors.white : Colors.blue,
+                                      widget.isDarkMode
+                                          ? Colors.white
+                                          : Colors.blue,
                                     ),
                                   ),
                                 );

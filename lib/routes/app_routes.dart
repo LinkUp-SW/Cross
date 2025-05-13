@@ -66,7 +66,6 @@ import 'package:link_up/features/profile/view/add_media_link.dart';
 import 'package:link_up/features/jobs/view/job_details.dart';
 import 'package:link_up/features/jobs/view/my_jobs_screen.dart';
 import 'package:link_up/features/company_profile/view/create_company_view.dart';
-import 'package:link_up/features/company_profile/view/create.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
@@ -245,11 +244,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           builder: (context, state) => const AddNewPosition(),
         ),
         GoRoute(
-          path: '/company_gateway',
-          builder: (context, state) => const CreateInstitute(),
-          ),
-        
-        GoRoute(
           path: '/company/:companyId',
           builder: (context, state) => CompanyProfileViewPage(
             companyId: state.pathParameters['companyId']!,
@@ -397,9 +391,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             ),
           ],
         ),
-        GoRoute(
-            path: "/create-company",
-            builder: (context, state) => CreateCompanyProfilePage()),
+        GoRoute(path: "/company", builder: (context, state) => Container()),
         GoRoute(
             path: "/writePost",
             pageBuilder: (context, state) {

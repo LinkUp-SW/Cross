@@ -71,9 +71,9 @@ class LocationModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = {};
-    if (country != null && country!.isNotEmpty) data['country'] = country;
-    if (city != null && city!.isNotEmpty) data['city'] = city;
-    return data;
+    return {
+      'country': country,
+      'city': city,
+    };
   }
-  }
+}

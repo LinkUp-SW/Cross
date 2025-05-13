@@ -75,8 +75,8 @@ class JobDetailsCard extends ConsumerWidget {
   void _navigateToCompanyProfile(BuildContext context) {
     // Navigate to company profile
     // Assuming you have the organization ID in the data
-    if (data.organizationId != null && data.organizationId!.isNotEmpty) {
-      context.push('/company/${data.organizationId}');
+    if (data.companyId != null && data.companyId!.isNotEmpty) {
+      context.push('/company/${data.companyId}');
     } else {
       // If no organizationId, use organization name as a fallback
       // You might want to implement a search by name functionality in your backend
@@ -124,7 +124,9 @@ class JobDetailsCard extends ConsumerWidget {
                               child: Text(
                                 data.organizationName,
                                 style: TextStyles.font18_700Weight.copyWith(
-                                  color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightTextColor,
+                                  color: isDarkMode
+                                      ? AppColors.darkSecondaryText
+                                      : AppColors.lightTextColor,
                                 ),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
@@ -134,7 +136,9 @@ class JobDetailsCard extends ConsumerWidget {
                             Icon(
                               Icons.arrow_forward_ios,
                               size: 14.sp,
-                              color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
+                              color: isDarkMode
+                                  ? AppColors.darkGrey
+                                  : AppColors.lightGrey,
                             ),
                           ],
                         ),
@@ -160,7 +164,8 @@ class JobDetailsCard extends ConsumerWidget {
                 PopupMenuButton<String>(
                   icon: Icon(
                     Icons.more_vert,
-                    color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
+                    color:
+                        isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
                     size: 24.sp,
                   ),
                   color: isDarkMode ? Colors.grey[800] : Colors.white,
@@ -175,13 +180,17 @@ class JobDetailsCard extends ConsumerWidget {
                           Icon(
                             Icons.business,
                             size: 18.sp,
-                            color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightTextColor,
+                            color: isDarkMode
+                                ? AppColors.darkSecondaryText
+                                : AppColors.lightTextColor,
                           ),
                           SizedBox(width: 8.w),
                           Text(
                             'View Company Profile',
                             style: TextStyle(
-                              color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightTextColor,
+                              color: isDarkMode
+                                  ? AppColors.darkSecondaryText
+                                  : AppColors.lightTextColor,
                             ),
                           ),
                         ],
@@ -197,18 +206,20 @@ class JobDetailsCard extends ConsumerWidget {
               ],
             ),
           ),
-          
+
           // Job title
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.0.w),
             child: Text(
               data.jobTitle,
               style: TextStyles.font25_700Weight.copyWith(
-                color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightTextColor,
+                color: isDarkMode
+                    ? AppColors.darkSecondaryText
+                    : AppColors.lightTextColor,
               ),
             ),
           ),
-          
+
           // Location and time posted
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.0.w, vertical: 8.0.h),
@@ -217,7 +228,9 @@ class JobDetailsCard extends ConsumerWidget {
                 Text(
                   '${data.location} · ',
                   style: TextStyles.font14_400Weight.copyWith(
-                    color: isDarkMode ? AppColors.darkTextColor : AppColors.lightSecondaryText,
+                    color: isDarkMode
+                        ? AppColors.darkTextColor
+                        : AppColors.lightSecondaryText,
                   ),
                 ),
                 Text(
@@ -229,7 +242,7 @@ class JobDetailsCard extends ConsumerWidget {
               ],
             ),
           ),
-          
+
           // Job type tags
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.0.w),
@@ -242,9 +255,9 @@ class JobDetailsCard extends ConsumerWidget {
               ],
             ),
           ),
-          
+
           SizedBox(height: 16.h),
-          
+
           // Apply and Save buttons
           Padding(
             padding: EdgeInsets.all(16.0.w),
@@ -268,7 +281,8 @@ class JobDetailsCard extends ConsumerWidget {
                         if (value == true) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Application submitted successfully!'),
+                              content:
+                                  Text('Application submitted successfully!'),
                               backgroundColor: Colors.green,
                               behavior: SnackBarBehavior.floating,
                               duration: const Duration(seconds: 3),
@@ -298,18 +312,22 @@ class JobDetailsCard extends ConsumerWidget {
                 SizedBox(width: 12.w),
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: isLoading ? null : () {
-                      ref.read(jobDetailsViewModelProvider.notifier).saveJob(data.jobId);
-                    },
+                    onPressed: isLoading
+                        ? null
+                        : () {
+                            ref
+                                .read(jobDetailsViewModelProvider.notifier)
+                                .saveJob(data.jobId);
+                          },
                     style: OutlinedButton.styleFrom(
                       padding: EdgeInsets.symmetric(vertical: 12.h),
                       side: BorderSide(
                         color: isSaved ? Colors.green : Colors.blue,
                         width: 1.5,
                       ),
-                      backgroundColor: isSaved 
-                        ? Colors.green.withOpacity(0.1)
-                        : Colors.blue.withOpacity(0.1),
+                      backgroundColor: isSaved
+                          ? Colors.green.withOpacity(0.1)
+                          : Colors.blue.withOpacity(0.1),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(24.r),
                       ),
@@ -336,7 +354,9 @@ class JobDetailsCard extends ConsumerWidget {
                           ),
                         SizedBox(width: 8.w),
                         Text(
-                          isLoading ? 'Saving...' : (isSaved ? 'Saved' : 'Save'),
+                          isLoading
+                              ? 'Saving...'
+                              : (isSaved ? 'Saved' : 'Save'),
                           style: TextStyle(
                             color: isSaved ? Colors.green : Colors.blue,
                             fontWeight: FontWeight.w600,
@@ -349,7 +369,7 @@ class JobDetailsCard extends ConsumerWidget {
               ],
             ),
           ),
-          
+
           // About the job
           Padding(
             padding: EdgeInsets.all(16.0.w),
@@ -359,14 +379,18 @@ class JobDetailsCard extends ConsumerWidget {
                 Text(
                   'About the job',
                   style: TextStyles.font18_700Weight.copyWith(
-                    color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightTextColor,
+                    color: isDarkMode
+                        ? AppColors.darkSecondaryText
+                        : AppColors.lightTextColor,
                   ),
                 ),
                 SizedBox(height: 12.h),
                 Text(
                   data.description,
                   style: TextStyles.font14_400Weight.copyWith(
-                    color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+                    color: isDarkMode
+                        ? AppColors.darkTextColor
+                        : AppColors.lightTextColor,
                   ),
                 ),
                 if (data.qualifications.isNotEmpty) ...[
@@ -374,7 +398,9 @@ class JobDetailsCard extends ConsumerWidget {
                   Text(
                     'Required Qualifications',
                     style: TextStyles.font18_700Weight.copyWith(
-                      color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightTextColor,
+                      color: isDarkMode
+                          ? AppColors.darkSecondaryText
+                          : AppColors.lightTextColor,
                     ),
                   ),
                   SizedBox(height: 8.h),
@@ -391,7 +417,9 @@ class JobDetailsCard extends ConsumerWidget {
                   Text(
                     'Responsibilities',
                     style: TextStyles.font18_700Weight.copyWith(
-                      color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightTextColor,
+                      color: isDarkMode
+                          ? AppColors.darkSecondaryText
+                          : AppColors.lightTextColor,
                     ),
                   ),
                   SizedBox(height: 8.h),
@@ -408,7 +436,9 @@ class JobDetailsCard extends ConsumerWidget {
                   Text(
                     'Benefits',
                     style: TextStyles.font18_700Weight.copyWith(
-                      color: isDarkMode ? AppColors.darkSecondaryText : AppColors.lightTextColor,
+                      color: isDarkMode
+                          ? AppColors.darkSecondaryText
+                          : AppColors.lightTextColor,
                     ),
                   ),
                   SizedBox(height: 8.h),
@@ -433,13 +463,16 @@ class JobDetailsCard extends ConsumerWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12.0.w, vertical: 6.0.h),
       decoration: BoxDecoration(
-        color: isDarkMode ? AppColors.darkGrey.withOpacity(0.3) : AppColors.lightGrey.withOpacity(0.3),
+        color: isDarkMode
+            ? AppColors.darkGrey.withOpacity(0.3)
+            : AppColors.lightGrey.withOpacity(0.3),
         borderRadius: BorderRadius.circular(16.r),
       ),
       child: Text(
         text,
         style: TextStyles.font14_400Weight.copyWith(
-          color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+          color:
+              isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
         ),
       ),
     );

@@ -8,6 +8,8 @@ import 'package:link_up/features/company_profile/viewModel/company_profile_view_
 import 'package:link_up/shared/widgets/custom_app_bar.dart';
 import 'package:link_up/shared/themes/colors.dart';
 import 'package:link_up/shared/themes/text_styles.dart';
+import 'package:link_up/features/jobs/viewModel/job_details_view_model.dart';
+import 'package:link_up/features/company_profile/widgets/company_job_card.dart';
 
 class CompanyProfileViewPage extends ConsumerStatefulWidget {
   final String companyId;
@@ -18,15 +20,22 @@ class CompanyProfileViewPage extends ConsumerStatefulWidget {
   }) : super(key: key);
 
   @override
-  ConsumerState<CompanyProfileViewPage> createState() => _CompanyProfileViewPageState();
+  ConsumerState<CompanyProfileViewPage> createState() =>
+      _CompanyProfileViewPageState();
 }
 
-class _CompanyProfileViewPageState extends ConsumerState<CompanyProfileViewPage> {
+class _CompanyProfileViewPageState
+    extends ConsumerState<CompanyProfileViewPage> {
   @override
   void initState() {
     super.initState();
     Future.microtask(() {
-      ref.read(companyProfileViewViewModelProvider.notifier).getCompanyProfile(widget.companyId);
+      ref
+          .read(companyProfileViewViewModelProvider.notifier)
+          .getCompanyProfile(widget.companyId);
+      ref
+          .read(companyProfileViewViewModelProvider.notifier)
+          .getCompanyJobs(widget.companyId);
     });
   }
 
@@ -53,20 +62,27 @@ class _CompanyProfileViewPageState extends ConsumerState<CompanyProfileViewPage>
                           Icon(
                             Icons.error_outline,
                             size: 48.w,
-                            color: isDarkMode ? AppColors.darkGrey : AppColors.lightGrey,
+                            color: isDarkMode
+                                ? AppColors.darkGrey
+                                : AppColors.lightGrey,
                           ),
                           SizedBox(height: 16.h),
                           Text(
-                            state.errorMessage ?? 'Error loading company profile',
+                            state.errorMessage ??
+                                'Error loading company profile',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                              color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+                              color: isDarkMode
+                                  ? AppColors.darkTextColor
+                                  : AppColors.lightTextColor,
                             ),
                           ),
                           SizedBox(height: 16.h),
                           ElevatedButton(
                             onPressed: () {
-                              ref.read(companyProfileViewViewModelProvider.notifier)
+                              ref
+                                  .read(companyProfileViewViewModelProvider
+                                      .notifier)
                                   .getCompanyProfile(widget.companyId);
                             },
                             child: const Text('Retry'),
@@ -80,7 +96,9 @@ class _CompanyProfileViewPageState extends ConsumerState<CompanyProfileViewPage>
                         child: Text(
                           'No company profile found',
                           style: TextStyle(
-                            color: isDarkMode ? AppColors.darkTextColor : AppColors.lightTextColor,
+                            color: isDarkMode
+                                ? AppColors.darkTextColor
+                                : AppColors.lightTextColor,
                           ),
                         ),
                       )
@@ -99,17 +117,22 @@ class _CompanyProfileViewPageState extends ConsumerState<CompanyProfileViewPage>
                                     width: 80.w,
                                     height: 80.h,
                                     decoration: BoxDecoration(
-                                      color: isDarkMode ? Colors.grey[800] : Colors.grey[200],
+                                      color: isDarkMode
+                                          ? Colors.grey[800]
+                                          : Colors.grey[200],
                                       borderRadius: BorderRadius.circular(12.r),
                                     ),
                                     child: state.companyProfile?.logo != null &&
-                                            state.companyProfile!.logo!.isNotEmpty
+                                            state.companyProfile!.logo!
+                                                .isNotEmpty
                                         ? ClipRRect(
-                                            borderRadius: BorderRadius.circular(12.r),
+                                            borderRadius:
+                                                BorderRadius.circular(12.r),
                                             child: Image.network(
                                               state.companyProfile!.logo!,
                                               fit: BoxFit.cover,
-                                              errorBuilder: (context, error, stackTrace) {
+                                              errorBuilder:
+                                                  (context, error, stackTrace) {
                                                 return Center(
                                                   child: Icon(
                                                     Icons.business,
@@ -135,11 +158,14 @@ class _CompanyProfileViewPageState extends ConsumerState<CompanyProfileViewPage>
                                   SizedBox(width: 16.w),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          state.companyProfile?.name ?? 'Company Name',
-                                          style: TextStyles.font25_700Weight.copyWith(
+                                          state.companyProfile?.name ??
+                                              'Company Name',
+                                          style: TextStyles.font25_700Weight
+                                              .copyWith(
                                             color: isDarkMode
                                                 ? AppColors.darkSecondaryText
                                                 : AppColors.lightTextColor,
@@ -147,8 +173,10 @@ class _CompanyProfileViewPageState extends ConsumerState<CompanyProfileViewPage>
                                         ),
                                         SizedBox(height: 4.h),
                                         Text(
-                                          state.companyProfile?.industry ?? 'Industry',
-                                          style: TextStyles.font16_400Weight.copyWith(
+                                          state.companyProfile?.industry ??
+                                              'Industry',
+                                          style: TextStyles.font16_400Weight
+                                              .copyWith(
                                             color: isDarkMode
                                                 ? AppColors.darkTextColor
                                                 : AppColors.lightSecondaryText,
@@ -157,7 +185,8 @@ class _CompanyProfileViewPageState extends ConsumerState<CompanyProfileViewPage>
                                         SizedBox(height: 4.h),
                                         Text(
                                           '${state.companyProfile?.location?.city ?? ''}, ${state.companyProfile?.location?.country ?? ''}',
-                                          style: TextStyles.font14_400Weight.copyWith(
+                                          style: TextStyles.font14_400Weight
+                                              .copyWith(
                                             color: isDarkMode
                                                 ? AppColors.darkTextColor
                                                 : AppColors.lightSecondaryText,
@@ -180,7 +209,8 @@ class _CompanyProfileViewPageState extends ConsumerState<CompanyProfileViewPage>
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.blue,
                                     foregroundColor: Colors.white,
-                                    padding: EdgeInsets.symmetric(vertical: 12.h),
+                                    padding:
+                                        EdgeInsets.symmetric(vertical: 12.h),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(8.r),
                                     ),
@@ -200,7 +230,9 @@ class _CompanyProfileViewPageState extends ConsumerState<CompanyProfileViewPage>
                               Container(
                                 padding: EdgeInsets.all(16.w),
                                 decoration: BoxDecoration(
-                                  color: isDarkMode ? Colors.grey[800] : Colors.white,
+                                  color: isDarkMode
+                                      ? Colors.grey[800]
+                                      : Colors.white,
                                   borderRadius: BorderRadius.circular(12.r),
                                   boxShadow: [
                                     BoxShadow(
@@ -215,7 +247,8 @@ class _CompanyProfileViewPageState extends ConsumerState<CompanyProfileViewPage>
                                   children: [
                                     Text(
                                       'About',
-                                      style: TextStyles.font20_700Weight.copyWith(
+                                      style:
+                                          TextStyles.font20_700Weight.copyWith(
                                         color: isDarkMode
                                             ? AppColors.darkSecondaryText
                                             : AppColors.lightTextColor,
@@ -223,8 +256,10 @@ class _CompanyProfileViewPageState extends ConsumerState<CompanyProfileViewPage>
                                     ),
                                     SizedBox(height: 12.h),
                                     Text(
-                                      state.companyProfile?.description ?? 'No description available',
-                                      style: TextStyles.font16_400Weight.copyWith(
+                                      state.companyProfile?.description ??
+                                          'No description available',
+                                      style:
+                                          TextStyles.font16_400Weight.copyWith(
                                         color: isDarkMode
                                             ? AppColors.darkTextColor
                                             : AppColors.lightSecondaryText,
@@ -242,27 +277,37 @@ class _CompanyProfileViewPageState extends ConsumerState<CompanyProfileViewPage>
                                           _buildInfoItem(
                                             icon: Icons.people,
                                             title: 'Company Size',
-                                            subtitle: state.companyProfile?.size ?? 'N/A',
+                                            subtitle:
+                                                state.companyProfile?.size ??
+                                                    'N/A',
                                             isDarkMode: isDarkMode,
                                           ),
                                           _buildInfoItem(
                                             icon: Icons.business_center,
                                             title: 'Company Type',
-                                            subtitle: state.companyProfile?.type ?? 'N/A',
+                                            subtitle:
+                                                state.companyProfile?.type ??
+                                                    'N/A',
                                             isDarkMode: isDarkMode,
                                           ),
                                           _buildInfoItem(
                                             icon: Icons.category,
                                             title: 'Industry',
-                                            subtitle: state.companyProfile?.industry ?? 'N/A',
+                                            subtitle: state
+                                                    .companyProfile?.industry ??
+                                                'N/A',
                                             isDarkMode: isDarkMode,
                                           ),
-                                          if (state.companyProfile?.website != null &&
-                                              state.companyProfile!.website!.isNotEmpty)
+                                          if (state.companyProfile?.website !=
+                                                  null &&
+                                              state.companyProfile!.website!
+                                                  .isNotEmpty)
                                             _buildInfoItem(
                                               icon: Icons.language,
                                               title: 'Website',
-                                              subtitle: state.companyProfile?.website ?? 'N/A',
+                                              subtitle: state.companyProfile
+                                                      ?.website ??
+                                                  'N/A',
                                               isDarkMode: isDarkMode,
                                               isLink: true,
                                             ),
@@ -274,20 +319,22 @@ class _CompanyProfileViewPageState extends ConsumerState<CompanyProfileViewPage>
                               ),
                               SizedBox(height: 24.h),
 
-                              // Jobs section - Can be expanded later
+                              // Jobs section
                               Text(
-                                'Jobs',
+                                'Jobs at ${state.companyProfile?.name ?? 'Company'}',
                                 style: TextStyles.font20_700Weight.copyWith(
                                   color: isDarkMode
                                       ? AppColors.darkSecondaryText
                                       : AppColors.lightTextColor,
                                 ),
                               ),
-                              SizedBox(height: 8.h),
+                              SizedBox(height: 12.h),
                               Container(
                                 padding: EdgeInsets.all(16.w),
                                 decoration: BoxDecoration(
-                                  color: isDarkMode ? Colors.grey[800] : Colors.white,
+                                  color: isDarkMode
+                                      ? Colors.grey[800]
+                                      : Colors.white,
                                   borderRadius: BorderRadius.circular(12.r),
                                   boxShadow: [
                                     BoxShadow(
@@ -297,18 +344,102 @@ class _CompanyProfileViewPageState extends ConsumerState<CompanyProfileViewPage>
                                     ),
                                   ],
                                 ),
-                                child: Center(
-                                  child: Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 24.h),
-                                    child: Text(
-                                      'No jobs available at the moment',
-                                      style: TextStyles.font16_400Weight.copyWith(
-                                        color: isDarkMode
-                                            ? AppColors.darkGrey
-                                            : AppColors.lightGrey,
+                                child: Column(
+                                  children: [
+                                    if (state.isJobsLoading)
+                                      Center(
+                                        child: Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 24.h),
+                                          child: CircularProgressIndicator(),
+                                        ),
+                                      )
+                                    else if (state.isJobsError)
+                                      Center(
+                                        child: Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 24.h),
+                                          child: Column(
+                                            children: [
+                                              Icon(
+                                                Icons.error_outline,
+                                                size: 32.sp,
+                                                color: isDarkMode
+                                                    ? AppColors.darkGrey
+                                                    : AppColors.lightGrey,
+                                              ),
+                                              SizedBox(height: 8.h),
+                                              Text(
+                                                'Could not load jobs',
+                                                style: TextStyles
+                                                    .font14_400Weight
+                                                    .copyWith(
+                                                  color: isDarkMode
+                                                      ? AppColors.darkGrey
+                                                      : AppColors.lightGrey,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      )
+                                    else if (state.companyJobs.isEmpty)
+                                      Center(
+                                        child: Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 24.h),
+                                          child: Text(
+                                            'No jobs available at the moment',
+                                            style: TextStyles.font16_400Weight
+                                                .copyWith(
+                                              color: isDarkMode
+                                                  ? AppColors.darkGrey
+                                                  : AppColors.lightGrey,
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    else
+                                      Column(
+                                        children: [
+                                          ...state.companyJobs
+                                              .map((job) => CompanyJobCard(
+                                                    job: job,
+                                                    isDarkMode: isDarkMode,
+                                                  ))
+                                              .toList(),
+                                          if (state.companyJobs.isNotEmpty)
+                                            Padding(
+                                              padding:
+                                                  EdgeInsets.only(top: 16.h),
+                                              child: TextButton(
+                                                onPressed: () {
+                                                  // Navigate to a full job listing page
+                                                  // You could implement this later
+                                                },
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      'View all ${state.companyJobs.length} jobs',
+                                                      style: TextStyle(
+                                                        color: Colors.blue,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 4.w),
+                                                    Icon(Icons.arrow_forward,
+                                                        size: 16.sp,
+                                                        color: Colors.blue),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                        ],
                                       ),
-                                    ),
-                                  ),
+                                  ],
                                 ),
                               ),
                             ],
@@ -341,13 +472,17 @@ class _CompanyProfileViewPageState extends ConsumerState<CompanyProfileViewPage>
               Icon(
                 icon,
                 size: 18.sp,
-                color: isLink ? Colors.blue : (isDarkMode ? Colors.white70 : Colors.black54),
+                color: isLink
+                    ? Colors.blue
+                    : (isDarkMode ? Colors.white70 : Colors.black54),
               ),
               SizedBox(width: 8.w),
               Text(
                 title,
                 style: TextStyles.font14_600Weight.copyWith(
-                  color: isDarkMode ? AppColors.darkTextColor : AppColors.lightSecondaryText,
+                  color: isDarkMode
+                      ? AppColors.darkTextColor
+                      : AppColors.lightSecondaryText,
                 ),
               ),
             ],
@@ -356,9 +491,11 @@ class _CompanyProfileViewPageState extends ConsumerState<CompanyProfileViewPage>
           Text(
             subtitle,
             style: TextStyles.font14_400Weight.copyWith(
-              color: isLink               
+              color: isLink
                   ? Colors.blue
-                  : (isDarkMode ? AppColors.darkSecondaryText : AppColors.lightTextColor),
+                  : (isDarkMode
+                      ? AppColors.darkSecondaryText
+                      : AppColors.lightTextColor),
               decoration: isLink ? TextDecoration.underline : null,
             ),
             maxLines: 2,
